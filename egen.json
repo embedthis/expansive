@@ -1,0 +1,23 @@
+{
+    directories: {
+        documents:  'documents',
+        layouts:    'layouts',
+        partials:   'partials',
+        files:      'files',
+        output:     'out',
+    },
+    plugins: {
+        myext: {
+            /* Anything */
+            transform: 'transform.es'
+        },
+        less: {
+            compress: true,
+        },
+    },
+    mode: 'debug'
+    modes: {
+        debug: {
+        },
+    },
+}

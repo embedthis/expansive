@@ -99,11 +99,15 @@ class Egen {
     }
 
     function loadConfig(dir: Path, meta) {
-        let config = dir.join('egen.json')
-        if (config.exists) {
-            blendMeta(meta, config.readJSON())
+        let path = dir.join('egen.json')
+        if (path.exists) {
+            let config = path.readJSON()
+            blendMeta(meta, config)
             if (meta.mode && meta.modes && meta.modes[meta.mode]) {
                 blend(meta, meta.modes[meta.mode])
+            }
+            if (config.script) {
+                eval(config.script)
             }
         }
     }
@@ -211,7 +215,10 @@ class Egen {
     }
 
     function copyFiles(meta) {
-        if (!filters) {
+        if (!filters && meta.directories.files.exists) {
+            if (meta.directories.files.files().length == 0) {
+                return
+            }
             let home = App.dir
             let dest = meta.directories.out.absolute
             App.chdir(meta.directories.files)
@@ -382,14 +389,17 @@ class Egen {
         let priorMeta = global.meta
         setupTransform(file, meta)
         let parser = new TemplateParser
+        let code
         try {
-            let code = parser.parse(contents, {dir: '', layout: ''})
+            code = parser.parse(contents, {dir: '', layout: ''})
             code = 'global._export_ = function() { ' + code + ' }'
             eval(code)
             global._export_.call(this)
         } catch (e) {
+            trace('Error', 'Error when processing ' + meta.page + ' in file ' + file)
             trace('Error', 'Error when parsing ' + file)
             print('MOB CATCH', e)
+            // print("CODE", code)
             fatal('Cannot render file ' + file + '\n' + e.message)
         }
         let results = obuf.toString()
@@ -501,9 +511,11 @@ class Egen {
         if (partial) {
             let outfile
             try {
+                let meta = global.meta.clone()
+                blend(meta, options)
                 meta.partial = name
                 meta.isPartial = true
-                outfile = transform(partial, global.meta)
+                outfile = transform(partial, meta)
                 writeSafe(outfile.readString())
             }
             catch (e) {
@@ -515,7 +527,7 @@ print("NAME", name)
             }
             return
         }
-        fatal('Cannot find partial "' + partial + '" for ' + name)
+        fatal('Cannot find partial "' + name + '"' + ' for ' + meta.page)
     }
 
     function splitMeta(contents, file): Array {
@@ -525,7 +537,7 @@ print("NAME", name)
                 let parts = contents.split('---')
                 if (parts) {
                     let mdata = parts[1].trim()
-                    contents = parts.slice(1).join('---').trim()
+                    contents = parts.slice(2).join('---').trim()
                     meta = {}
                     for each (item in mdata.split('\n')) {
                         let parts = item.trim().match(/([^:]*):(.*)/)

@@ -204,6 +204,7 @@ class Egen {
         generateDir(topMeta.directories.documents, topMeta)
         copyFiles(topMeta)
         postclean()
+        sitemap()
         if (force) {
             if (filters && processCount == 0) {
                 trace('Warn', 'No matching files for filter: ' + filters)
@@ -283,6 +284,9 @@ class Egen {
     }
 
     function checkModified(file, meta) {
+        if (file.isDir) {
+            return checkModifiedDir(file, meta)
+        }
         let trimmed = rebase(file, meta.directories.documents)
         let outfile = meta.directories.out.join(trimmed)
         while (transforms[outfile.extension]) {
@@ -292,8 +296,25 @@ class Egen {
             return false
         } else {
             vtrace('Modified', file)
+            event('onchange', file, meta)
             return true
         }
+    }
+
+    function checkModifiedDir(file, meta) {
+        let trimmed = rebase(file, meta.directories.documents)
+        let outfile = meta.directories.out.join(trimmed)
+        if (!outfile.exists) {
+            return true
+        }
+        for each (f in file.files('**')) {
+            if (f.modified.time >= (lastGen.time - 1000)) {
+                vtrace('Modified', f)
+                event('onchange', f, meta)
+                return true
+            }
+        }
+        return false
     }
 
     function transform(file, meta) {
@@ -433,7 +454,11 @@ class Egen {
         if (meta.plugins.less && meta.plugins.less.compress) {
             compress = meta.plugins.less.compress
         }
-        return run('recess ' + compress + ' -compile', contents, file)
+        let results = run('recess ' + compress + ' -compile', contents, file)
+        if (results == '') {
+            fatal('Processing ' + file + ' yielded empty output.')
+        }
+        return results
     }
 
     function transformMarkdown(contents, file, meta) {
@@ -579,10 +604,17 @@ print("NAME", name)
         lastGen ||= Date(0)
         for each (file in dir.files('*')) {
             if (file.modified.time >= (lastGen.time - 1000)) {
+                event('onchange', file, topMeta)
                 return true
             }
         }
         return false
+    }
+
+    function event(name, file, meta) {
+        if (global[name]) {
+            (global[name]).call(this, file, meta)
+        }
     }
 
     function preclean() {
@@ -593,6 +625,27 @@ print("NAME", name)
 
     function postclean() {
         topMeta.directories.out.join('partials').remove()
+    }
+
+    function sitemap() {
+        let path = topMeta.directories.out.join('Sitemap.xml')
+        let fp = new File(path, 'w')
+        fp.write('<?xml version="1.0" encoding="UTF-8"?>\n' +
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
+
+        let count = 0
+        for each (file in topMeta.directories.out.files('**', topMeta.sitemap)) {
+            fp.write('    <url>\n' +
+                '        <loc>' + topMeta.url + file.trimComponents(1) + '</loc>\n' +
+                '        <lastmod>' + file.modified.format('%F') + '</lastmod>\n' +
+                '        <changefreq>weekly</changefreq>\n' +
+                '        <priority>0.5</priority>\n' +
+                '    </url>\n')
+            count++
+        }
+        fp.write('</urlset>\n')
+        fp.close()
+        trace('Create', path + ', ' + count + ' entries')
     }
 
     function fatal(...args): Void {
@@ -622,7 +675,6 @@ try {
 } catch (e) { 
     App.log.error(e)
 }
-
 } /* module egen */
 
 /*

@@ -173,11 +173,12 @@ class Egen {
 
     function watch(meta) {
         options.quiet = true
-        trace('Watching', 'for changes...')
+        trace('Watching', 'for changes every ' + meta.watch + ' msec ...')
         generate()
         options.quiet = false
         lastGen = new Date
         while (true) {
+            event('check', lastGen - meta.watch/2)
             genall = mastersModified(meta.directories.partials) || mastersModified(meta.directories.layouts)
             let mark = new Date()
             generate()
@@ -651,7 +652,7 @@ class Egen {
         return false
     }
 
-    function event(name, file, meta) {
+    function event(name, file = null, meta = null) {
         if (global[name]) {
             (global[name]).call(this, file, meta)
         }

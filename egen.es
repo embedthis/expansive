@@ -16,19 +16,17 @@ require ejs.web
 
 class Egen {
     const VERSION = '0.1.0'
-    const TIMEOUT: Number = 5 * 60 * 1000
     var args: Args
     var filters: Array
-    var force: Boolean
+    var genall: Boolean
     var lastGen: Date
     var log: Logger = App.log
     var obuf: ByteArray?
-    var options: Object                     //  Command line options
+    var options: Object
     var paks: Path
     var processCount
     var plugins
-    var program: String                     //  Program name
-    var topMeta: Object                     //  Top-level Meta
+    var topMeta: Object
     var transforms
     var verbosity: Number = 0
 
@@ -36,6 +34,7 @@ class Egen {
         options: {
             chdir: { range: Path },
             keep: { alias: 'k' },
+            quiet: { alias: 'q' },
             verbose: { alias: 'v' },
             version: { },
         },
@@ -43,7 +42,6 @@ class Egen {
     }
 
     function Egen() {
-        program = Path(App.args[0]).basename
         transforms = {
             ejs: transformEjs,
             less: transformLess,
@@ -53,12 +51,12 @@ class Egen {
     }
 
     function usage(): Void {
-        let program = Path(App.args[0]).basename
-        App.log.write('Usage: ' + program + ' [options] [filter patterns...]\n' +
-            '  --chdir dir           # Change to directory before testing\n' + 
-            '  --keep                # Keep intermediate transforms\n' + 
-            '  --verbose             # Verbose mode\n' + 
-            '  --version             # Output version information\n')
+        App.log.write('Usage: egen [options] [filter patterns...]\n' +
+            '  --chdir dir   # Change to directory before testing\n' + 
+            '  --keep        # Keep intermediate transforms\n' + 
+            '  --quiet       # Quiet mode\n' + 
+            '  --verbose     # Verbose mode\n' + 
+            '  --version     # Output version information\n')
         App.exit(1)
     }
 
@@ -89,8 +87,10 @@ class Egen {
                 files:     Path('files'),
                 out:       Path('out'),
             },
-            plugins: { },
             layout: 'default',
+            listen: '4000',
+            plugins: { },
+            watch: 2000,
         }
         if (App.config.egen) {
             blendMeta(topMeta, App.config.egen) 
@@ -141,43 +141,67 @@ class Egen {
         let rest = args.rest
         let meta = topMeta
         vtrace('Task', task, rest)
+        lastGen = new Date(0)
+
         switch (task) {
         case 'generate':
-            force = true
+            genall = true
             if (rest.length > 0) {
                 filters = rest
             }
             preclean()
             generate()
             break
+
         case 'watch':
-            lastGen = new Date(0)
-            generate()
-            lastGen = new Date
-            trace('Watching', 'for changes...')
-            while (true) {
-                force = mastersModified(meta.directories.partials) || mastersModified(meta.directories.layouts)
-                let mark = new Date()
-                generate()
-                lastGen = mark
-                App.sleep(meta.watch || 2000)
-            }
+            watch(meta)
             break
+
         case 'run':
-            force = mastersModified(meta.directories.partials) || mastersModified(meta.directories.layouts)
-            generate()
+            genall = mastersModified(meta.directories.partials) || mastersModified(meta.directories.layouts)
+            run(topMeta)
             break
 
         default:
             /* Process only specified files. If not, process all */
             filters = [task] + rest
-            force = true
+            genall = false
             generate()
             break
         }
     }
 
-    function ignore(file, meta): Boolean {
+    function watch(meta) {
+        options.quiet = true
+        trace('Watching', 'for changes...')
+        generate()
+        options.quiet = false
+        lastGen = new Date
+        while (true) {
+            genall = mastersModified(meta.directories.partials) || mastersModified(meta.directories.layouts)
+            let mark = new Date()
+            generate()
+            lastGen = mark
+            App.sleep(meta.watch || 2000)
+        }
+    }
+
+    function run(meta) {
+        let address = meta.listen || '127.0.0.1:4000'
+        let documents = meta.documents || 'out'
+        let server: HttpServer = new HttpServer({documents: documents})
+        let routes = meta.routes || Router.Top
+        var router = Router(routes)
+        server.on("readable", function (event, request) {
+            server.serve(request, router)
+        })
+        trace('Listen', address)
+        server.listen(address)
+        watch(meta)
+        App.run()
+    }
+
+    function exclude(file, meta): Boolean {
         for each (d in meta.exclude) {
             if (file.startsWith(d)) {
                 return true
@@ -202,10 +226,10 @@ class Egen {
         let started = new Date
         processCount = 0
         generateDir(topMeta.directories.documents, topMeta)
-        copyFiles(topMeta)
+        filesCopy(topMeta)
         postclean()
         sitemap()
-        if (force) {
+        if (genall) {
             if (filters && processCount == 0) {
                 trace('Warn', 'No matching files for filter: ' + filters)
             } else {
@@ -215,7 +239,7 @@ class Egen {
         }
     }
 
-    function copyFiles(meta) {
+    function filesCopy(meta) {
         if (!filters && meta.directories.files.exists) {
             if (meta.directories.files.files().length == 0) {
                 return
@@ -228,8 +252,8 @@ class Egen {
         }
     }
 
-    function preserve(file, meta): Boolean {
-        for each (d in meta.preserve) {
+    function shouldCopy(file, meta): Boolean {
+        for each (d in meta.copy) {
             if (file.startsWith(d)) {
                 return true
             }
@@ -237,8 +261,8 @@ class Egen {
         return false
     }
 
-    function preservedCopy(file, meta) {
-        if (force || checkModified(file, meta)) { 
+    function copy(file, meta) {
+        if (genall || checkModified(file, meta)) { 
             trace('Copy', file)
             if (file.isDir) {
                 let trimmed = rebase(file, meta.directories.documents)
@@ -256,21 +280,21 @@ class Egen {
     function generateDir(dir: Path, meta) {
         loadConfig(dir, meta)
         for each (file in dir.files()) {
-            if (ignore(file, meta)) {
-                vtrace('Ignore', file)
+            if (exclude(file, meta)) {
+                vtrace('Exclude', file)
                 continue
             }
             if (filters && !include(file, meta)) {
                 continue
             }
-            if (preserve(file, meta)) {
-                preservedCopy(file, meta)
+            if (shouldCopy(file, meta)) {
+                copy(file, meta)
                 continue
             }
             if (file.isDir) {
                 generateDir(file, meta.clone())
             } else {
-                if (force || checkModified(file, meta)) { 
+                if (genall || checkModified(file, meta)) { 
                     meta.page = rebase(file, meta.directories.documents)
                     transform(file, meta)
                 }
@@ -292,7 +316,7 @@ class Egen {
         while (transforms[outfile.extension]) {
             outfile = outfile.trimExt()
         }
-        if (outfile.exists && file.modified.time < (lastGen.time - 1000)) {
+        if (outfile.exists && file.modified.time < (lastGen.time - meta.watch/2)) {
             return false
         } else {
             vtrace('Modified', file)
@@ -308,7 +332,7 @@ class Egen {
             return true
         }
         for each (f in file.files('**')) {
-            if (f.modified.time >= (lastGen.time - 1000)) {
+            if (f.modified.time >= (lastGen.time - meta.watch/2)) {
                 vtrace('Modified', f)
                 event('onchange', f, meta)
                 return true
@@ -319,7 +343,6 @@ class Egen {
 
     function transform(file, meta) {
         let outfile
-
         while ((outfile = transformFile(file, meta.clone())) != null) {
             if (file.startsWith(meta.directories.out) && !options.keep) {
                 file.remove()
@@ -358,13 +381,14 @@ class Egen {
         } else {
             vtrace('Copy', file + ' => ' + outfile)
         }
+        vtrace('Save', outfile)
         if (fileMeta) {
             outfile.write(blendLayout(contents, outfile, meta))
         } else {
             outfile.write(contents.toString())
         }
         if (file.startsWith(dirs.documents)) {
-            if (!options.verbose) {
+            if (!options.verbose && !options.quiet) {
                 trace('Processed', file)
             }
             processCount++
@@ -420,7 +444,7 @@ class Egen {
             trace('Error', 'Error when processing ' + meta.page + ' in file ' + file)
             trace('Error', 'Error when parsing ' + file)
             print('MOB CATCH', e)
-            // print("CODE", code)
+            // print('CODE', code)
             fatal('Cannot render file ' + file + '\n' + e.message)
         }
         let results = obuf.toString()
@@ -429,7 +453,7 @@ class Egen {
         return results
     }
 
-    function run(cmd, contents, file) {
+    function runContents(cmd, contents, file) {
         let path = file.dirname.join('_etmp_').joinExt(file.extension)
         let results
         try {
@@ -445,35 +469,41 @@ class Egen {
         return results
     }
 
+    //  MOB - should be externalized via plugin
+
     function transformMinify(contents, file, meta) {
-        return run('recess -compress', contents, file)
+        return runContents('recess -compress', contents, file)
     }
+
+    //  MOB - should be externalized via plugin
 
     function transformLess(contents, file, meta) {
         let compress = ''
         if (meta.plugins.less && meta.plugins.less.compress) {
             compress = meta.plugins.less.compress
         }
-        let results = run('recess ' + compress + ' -compile', contents, file)
+        let results = runContents('recess ' + compress + ' -compile', contents, file)
         if (results == '') {
-            fatal('Processing ' + file + ' yielded empty output.')
+            /* Run again to get diagnostics */
+            results = runContents('recess ', contents, file)
+            fatal('Failed to parse less sheet ' + file + '\n' + results + '\n')
         }
-        return results
+        return runContents('autoprefixer -o -', results, file)
     }
 
     function transformMarkdown(contents, file, meta) {
-        return run('marked', contents, file)
+        return runContents('marked', contents, file)
     }
 
     function transformShell(contents, file, meta) {
-        return run('bash', contents, file)
+        return runContents('bash', contents, file)
     }
 
     function transformPlugin(contents, file, meta) {
         let transform = plugins[file.extension]
         vtrace('Run', 'ejs transform.es ' + file + ' ' + file.trimExt())
-//  MOB incomplete
-        return run('ejs transform.es ' + file + ' ' + file.trimExt(), file)
+        //  MOB incomplete
+        return runContents('ejs transform.es ' + file + ' ' + file.trimExt(), file)
     }
 
     function matchFile(dir: Path, pattern: String) {
@@ -500,13 +530,23 @@ class Egen {
             let ldata = layout.readString()
             contents = contents.replace(/\$/mg, '$$$$')
             contents = ldata.replace(/ *<%.*content.*%> */, contents)
-//  MOB - should it not be slicing off the last extension?
+            /*
+                Create a filename using the layout extensions and the filename base without extensions
+             */
             let extensions = layout.basename.toString().split('.').slice(1).join('.')
             let basename = file.basename.toString().split('.')[0]
             let path = file.dirname.join(basename).joinExt(extensions)
             vtrace('Blend', layout + ' + ' + file + ' => ' + path)
             path.write(contents)
-            contents = transform(path, meta).readString()
+            if (file.startsWith(meta.directories.out) && !options.keep) {
+                file.remove()
+            }
+            let outfile = transform(path, meta)
+            contents = outfile.readString()
+            if (outfile.startsWith(meta.directories.out) && !options.keep) {
+                //  MOB NEW
+                outfile.remove()
+            }
         }
         return contents
     }
@@ -544,8 +584,8 @@ class Egen {
                 writeSafe(outfile.readString())
             }
             catch (e) {
-print("CATCH in blendPartial", e)
-print("NAME", name)
+                print('CATCH in blendPartial', e)
+                print('NAME', name)
             }
             finally {
                 outfile.remove()
@@ -603,7 +643,7 @@ print("NAME", name)
     function mastersModified(dir): Boolean {
         lastGen ||= Date(0)
         for each (file in dir.files('*')) {
-            if (file.modified.time >= (lastGen.time - 1000)) {
+            if (file.modified.time >= (lastGen.time - topMeta.watch/2)) {
                 event('onchange', file, topMeta)
                 return true
             }
@@ -628,6 +668,9 @@ print("NAME", name)
     }
 
     function sitemap() {
+        if (!genall) {
+            return
+        }
         let path = topMeta.directories.out.join('Sitemap.xml')
         let fp = new File(path, 'w')
         fp.write('<?xml version="1.0" encoding="UTF-8"?>\n' +

@@ -128,13 +128,17 @@ class Exp {
     function loadConfig(dir: Path, meta) {
         let path = dir.join('exp.json')
         if (path.exists) {
-            let config = path.readJSON()
-            blendMeta(meta, config)
-            if (meta.mode && meta.modes && meta.modes[meta.mode]) {
-                blend(meta, meta.modes[meta.mode])
-            }
-            if (config.script) {
-                eval(config.script)
+            try {
+                let config = path.readJSON()
+                blendMeta(meta, config)
+                if (meta.mode && meta.modes && meta.modes[meta.mode]) {
+                    blend(meta, meta.modes[meta.mode])
+                }
+                if (config.script) {
+                    eval(config.script)
+                }
+            } catch (e) {
+                fatal('Syntax error in "' + path + '"')
             }
         }
     }

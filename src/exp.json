@@ -4,7 +4,7 @@
         layouts:    'layouts',
         partials:   'partials',
         files:      'files',
-        output:     'out',
+        final:      'final',
     },
     plugins: {
         myext: {

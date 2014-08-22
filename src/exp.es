@@ -1,20 +1,19 @@
 #!/usr/bin/env ejs
 /*
-    egen.es -- Ejs Generate Static Web Site
+    exp.es - Expansive Static Site Generator
 
-    egen generate                # generate entire site
-    egen [--out dir] paths       # process one file
-    egen run                     # watches for changes and serve
-    egen path                    # process one file to stdout
-
+    exp generate                # generate entire site
+    exp filters, ...            # Generate only matching documents
+    exp [--gen] watch           # Watch for changes and regen
+    exp [--nowatch]             # Serve and watches for changes
  */
-module egen {
+module exp {
 
 require ejs.unix
 require ejs.template
 require ejs.web
 
-class Egen {
+class Exp {
     const VERSION = '0.1.0'
     var args: Args
     var filters: Array
@@ -32,31 +31,56 @@ class Egen {
 
     let argsTemplate = {
         options: {
-            chdir: { range: Path },
-            keep: { alias: 'k' },
-            quiet: { alias: 'q' },
+            chdir:   { range: Path },
+            gen:     { alias: 'g' },
+            keep:    { alias: 'k' },
+            listen:  { range: String },
+            log:     { alias: 'l', range: String },
+            nowatch: { },
+            quiet:   { alias: 'q' },
             verbose: { alias: 'v' },
             version: { },
         },
+        unknown: unknown,
         usage: usage,
     }
 
-    function Egen() {
+    function Exp() {
         transforms = {
-            ejs: transformEjs,
+            exp: transformExp,
             less: transformLess,
             md: transformMarkdown,
             sh: transformShell,
         }
     }
 
+    public function unknown(argv, i) {
+        let arg = argv[i].slice(argv[i].startsWith("--") ? 2 : 1)
+        if (arg == '?') {
+            exp.usage()
+        } else if (!isNaN(parseInt(arg))) {
+            return i+1
+        }
+        throw "Undefined option '" + arg + "'"
+    }
+
     function usage(): Void {
-        App.log.write('Usage: egen [options] [filter patterns...]\n' +
-            '  --chdir dir   # Change to directory before testing\n' + 
-            '  --keep        # Keep intermediate transforms\n' + 
-            '  --quiet       # Quiet mode\n' + 
-            '  --verbose     # Verbose mode\n' + 
-            '  --version     # Output version information\n')
+        App.log.write('Usage: exp [options] [filter patterns...]\n' +
+            '    --chdir dir      # Change to directory before testing\n' + 
+            '    --gen            # Do an initial gen before watching\n' + 
+            '    --keep           # Keep intermediate transforms\n' + 
+            '    --listen IP:PORT # Endpoint to listen on\n' + 
+            '    --log path:level # Trace to logfile\n' + 
+            '    --nowatch        # No watch, just run\n' + 
+            '    --quiet          # Quiet mode\n' + 
+            '    --verbose        # Verbose mode\n' + 
+            '    --version        # Output version information\n' +
+            '  Commands:\n' +
+            '    generate         # generate entire site\n' +
+            '    filters, ...     # Generate only matching documents\n' +
+            '    watch            # Watch for changes and regen\n' +
+            '    <CR>             # Serve and watches for changes\n' +
+            '\n')
         App.exit(1)
     }
 
@@ -85,21 +109,24 @@ class Egen {
                 layouts:   Path('layouts'),
                 partials:  Path('partials'),
                 files:     Path('files'),
-                out:       Path('out'),
+                final:     Path('final'),
             },
             layout: 'default',
-            listen: '4000',
+            listen: options.listen || '4000',
             plugins: { },
             watch: 2000,
         }
-        if (App.config.egen) {
-            blendMeta(topMeta, App.config.egen) 
+        if (App.config.exp) {
+            blendMeta(topMeta, App.config.exp) 
+        }
+        if (!Path('exp.json').exists) {
+            throw 'Cannot find exp.json'
         }
         loadConfig('.', topMeta)
     }
 
     function loadConfig(dir: Path, meta) {
-        let path = dir.join('egen.json')
+        let path = dir.join('exp.json')
         if (path.exists) {
             let config = path.readJSON()
             blendMeta(meta, config)
@@ -113,7 +140,7 @@ class Egen {
     }
 
     /*
-        Package.json lists dependencies. Examine these for an egen.json
+        Package.json lists dependencies. Examine these for an exp.json
      */
     function setupPlugins() {
         let path = Path('package.json')
@@ -124,7 +151,7 @@ class Egen {
             paks = Path(package.directories.paks)
             for (dep in package.dependencies) {
                 let pdir = paks.join(dep)
-                let econfig = pdir.join('egen.json')
+                let econfig = pdir.join('exp.json')
                 if (econfig.exists) {
                     transforms[dep] = transformPlugin
                     loadConfig(transform.dirname, topMeta)
@@ -137,7 +164,7 @@ class Egen {
     }
 
     function process(): Void {
-        let task = args.rest.shift() || 'run'
+        let task = args.rest.shift()
         let rest = args.rest
         let meta = topMeta
         vtrace('Task', task, rest)
@@ -157,26 +184,29 @@ class Egen {
             watch(meta)
             break
 
-        case 'run':
-            genall = mastersModified(meta.directories.partials) || mastersModified(meta.directories.layouts)
-            run(topMeta)
-            break
-
         default:
-            /* Process only specified files. If not, process all */
-            filters = [task] + rest
-            genall = false
-            generate()
+            if (task) {
+                /* Process only specified files. If not, process all */
+                filters = [task] + rest
+                genall = false
+                generate()
+            } else {
+                genall = mastersModified(meta.directories.partials) || mastersModified(meta.directories.layouts)
+                serve(topMeta)
+            }
             break
         }
     }
 
     function watch(meta) {
-        options.quiet = true
-        trace('Watching', 'for changes every ' + meta.watch + ' msec ...')
-        generate()
-        options.quiet = false
+        if (options.gen) {
+            options.quiet = true
+            trace('Generate', 'Initial generation ...')
+            generate()
+            options.quiet = false
+        }
         lastGen = new Date
+        trace('Watching', 'for changes every ' + meta.watch + ' msec ...')
         while (true) {
             event('check', lastGen - meta.watch/2)
             genall = mastersModified(meta.directories.partials) || mastersModified(meta.directories.layouts)
@@ -187,19 +217,30 @@ class Egen {
         }
     }
 
-    function run(meta) {
-        let address = meta.listen || '127.0.0.1:4000'
-        let documents = meta.documents || 'out'
+    function serve(meta) {
+        let address = options.listen || meta.listen || '127.0.0.1:4000'
+        let documents = meta.final || 'final'
         let server: HttpServer = new HttpServer({documents: documents})
         let routes = meta.routes || Router.Top
-        var router = Router(routes)
+        var router = Router(Router.WebSite)
+        router.addCatchall()
         server.on("readable", function (event, request) {
-            server.serve(request, router)
+            try {
+                server.serve(request, router)
+            } catch (e) {
+                trace('Error', 'Cannot serve request')
+                App.log.debug(3, e)
+                App.exit(1)
+            }
         })
-        trace('Listen', address)
         server.listen(address)
-        watch(meta)
-        App.run()
+        if (options.nowatch) {
+            trace('Listen', address)
+            App.run()
+        } else {
+            trace('Listen', address)
+            watch(meta)
+        }
     }
 
     function exclude(file, meta): Boolean {
@@ -231,12 +272,10 @@ class Egen {
         postclean()
         sitemap()
         if (genall) {
-            if (filters && processCount == 0) {
-                trace('Warn', 'No matching files for filter: ' + filters)
-            } else {
-                trace('Info', 'Processed ' + processCount + ' files. ' + 
-                    'Elapsed time %.2f' % ((started.elapsed / 1000)) + ' secs.')
-            }
+            trace('Info', 'Generated ' + processCount + ' files to "' + topMeta.directories.final + '". ' +
+                'Elapsed time %.2f' % ((started.elapsed / 1000)) + ' secs.')
+        } else if (filters && processCount == 0) {
+            trace('Warn', 'No matching files for filter: ' + filters)
         }
     }
 
@@ -246,7 +285,7 @@ class Egen {
                 return
             }
             let home = App.dir
-            let dest = meta.directories.out.absolute
+            let dest = meta.directories.final.absolute
             App.chdir(meta.directories.files)
             cp('**', dest, {tree: true})
             App.chdir(home)
@@ -264,11 +303,13 @@ class Egen {
 
     function copy(file, meta) {
         if (genall || checkModified(file, meta)) { 
-            trace('Copy', file)
+            if (!options.quiet) {
+                trace('Copy', file)
+            }
             if (file.isDir) {
                 let trimmed = rebase(file, meta.directories.documents)
                 let home = App.dir
-                let dest = meta.directories.out.absolute
+                let dest = meta.directories.final.absolute
                 App.chdir(file)
                 cp('**', dest.join(trimmed), {tree: true})
                 App.chdir(home)
@@ -313,7 +354,7 @@ class Egen {
             return checkModifiedDir(file, meta)
         }
         let trimmed = rebase(file, meta.directories.documents)
-        let outfile = meta.directories.out.join(trimmed)
+        let outfile = meta.directories.final.join(trimmed)
         while (transforms[outfile.extension]) {
             outfile = outfile.trimExt()
         }
@@ -328,7 +369,7 @@ class Egen {
 
     function checkModifiedDir(file, meta) {
         let trimmed = rebase(file, meta.directories.documents)
-        let outfile = meta.directories.out.join(trimmed)
+        let outfile = meta.directories.final.join(trimmed)
         if (!outfile.exists) {
             return true
         }
@@ -345,7 +386,7 @@ class Egen {
     function transform(file, meta) {
         let outfile
         while ((outfile = transformFile(file, meta.clone())) != null) {
-            if (file.startsWith(meta.directories.out) && !options.keep) {
+            if (file.startsWith(meta.directories.final) && !options.keep) {
                 file.remove()
             }
             if (!transforms[outfile.extension]) {
@@ -361,10 +402,10 @@ class Egen {
         let outfile
         if (file.startsWith(dirs.documents)) {
             trimmed = rebase(file, dirs.documents)
-            outfile = dirs.out.join(trimmed)
+            outfile = dirs.final.join(trimmed)
         } else if (file.startsWith(dirs.partials)) {
             trimmed = rebase(file, dirs.partials)
-            outfile = dirs.out.join('partials', trimmed)
+            outfile = dirs.final.join('partials', trimmed)
         } else {
             outfile = file
         }
@@ -422,13 +463,13 @@ class Egen {
             let trimExt = meta.extensions.slice(1).join('.')
             let url = rebase(file, meta.directories.documents).trimEnd('.' + trimExt)
             meta.basename = url.basename
-            meta.outpath = meta.directories.out.join(url)
+            meta.outpath = meta.directories.final.join(url)
             meta.url = Uri(url)
         }
         global.top = meta.top
     }
 
-    function transformEjs(contents, file, meta) {
+    function transformExp(contents, file, meta) {
         vtrace('Parse', file)
         let priorBuf = this.obuf
         this.obuf = new ByteArray
@@ -443,10 +484,8 @@ class Egen {
             global._export_.call(this)
         } catch (e) {
             trace('Error', 'Error when processing ' + meta.page + ' in file ' + file)
-            trace('Error', 'Error when parsing ' + file)
-            print('MOB CATCH', e)
-            // print('CODE', code)
-            fatal('Cannot render file ' + file + '\n' + e.message)
+            trace('Details', e.messaage)
+            App.log.debug(3, e)
         }
         let results = obuf.toString()
         this.obuf = priorBuf
@@ -539,13 +578,12 @@ class Egen {
             let path = file.dirname.join(basename).joinExt(extensions)
             vtrace('Blend', layout + ' + ' + file + ' => ' + path)
             path.write(contents)
-            if (file.startsWith(meta.directories.out) && !options.keep) {
+            if (file.startsWith(meta.directories.final) && !options.keep) {
                 file.remove()
             }
             let outfile = transform(path, meta)
             contents = outfile.readString()
-            if (outfile.startsWith(meta.directories.out) && !options.keep) {
-                //  MOB NEW
+            if (outfile.startsWith(meta.directories.final) && !options.keep) {
                 outfile.remove()
             }
         }
@@ -585,8 +623,9 @@ class Egen {
                 writeSafe(outfile.readString())
             }
             catch (e) {
-                print('CATCH in blendPartial', e)
-                print('NAME', name)
+                trace('Error', 'Cannot process partial "' + name + '"')
+                trace('Details', e.messaage)
+                App.log.debug(3, e)
             }
             finally {
                 outfile.remove()
@@ -621,15 +660,17 @@ class Egen {
                         try {
                             meta = deserialize(parts[0] + '}')
                         } catch (e) {
-                            fatal('Badly formatted meta data in ' + file + '\n')
+                            trace('Error', 'Badly formatted meta data in ' + file)
+                            App.log.debug(3, e)
                         }
                         contents = parts.slice(1).join('\n}').trim()
                     }
                 }
             }
         } catch (e) {
-            print('MOB TEMP ONLY CATCH', e)
-            fatal('Cannot parse meta data in ' + file + '\n' + e)
+            trace('Error', 'Cannot parse meta data in ' + file)
+            App.log.debug(3, e)
+            App.exit(1)
         }
         return [meta, contents]
     }
@@ -660,25 +701,25 @@ class Egen {
 
     function preclean() {
         if (!filters) {
-            topMeta.directories.out.removeAll()
+            topMeta.directories.final.removeAll()
         }
     }
 
     function postclean() {
-        topMeta.directories.out.join('partials').remove()
+        topMeta.directories.final.join('partials').remove()
     }
 
     function sitemap() {
         if (!genall) {
             return
         }
-        let path = topMeta.directories.out.join('Sitemap.xml')
+        let path = topMeta.directories.final.join('Sitemap.xml')
         let fp = new File(path, 'w')
         fp.write('<?xml version="1.0" encoding="UTF-8"?>\n' +
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
 
         let count = 0
-        for each (file in topMeta.directories.out.files('**', topMeta.sitemap)) {
+        for each (file in topMeta.directories.final.files('**', topMeta.sitemap)) {
             fp.write('    <url>\n' +
                 '        <loc>' + topMeta.url + file.trimComponents(1) + '</loc>\n' +
                 '        <lastmod>' + file.modified.format('%F') + '</lastmod>\n' +
@@ -689,7 +730,9 @@ class Egen {
         }
         fp.write('</urlset>\n')
         fp.close()
-        trace('Create', path + ', ' + count + ' entries')
+        if (!options.quiet) {
+            trace('Create', path + ', ' + count + ' entries')
+        }
     }
 
     function fatal(...args): Void {
@@ -706,20 +749,26 @@ class Egen {
             log.activity(tag, ...args)
         }
     }
+
+    function touch(path: Path) {
+        path.write(path.readString())
+    }
 }
 
 /*
     Main program
  */
-var egen: Egen = new Egen
+var exp: Exp = new Exp
 
 try {
-    egen.parseArgs()
-    egen.process()
+    exp.parseArgs()
+    exp.process()
 } catch (e) { 
-    App.log.error(e)
+    App.log.error(e.message)
+    App.log.debug(3, e)
+    App.exit(1)
 }
-} /* module egen */
+} /* module exp */
 
 /*
     @copy   default

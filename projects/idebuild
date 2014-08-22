@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+#   idebuild -- Build a project using the native IDE 
+#
+
+PRODUCT=me
+VS="${PROGRAMFILES}/Microsoft Visual Studio 10.0/Common7/IDE/devenv.exe"
+XCODE=/usr/bin/xcodebuild
+PROFILE=default
+
+log() {
+    tag=$1
+    shift
+    printf "%12s %s\n" $tag "$*"
+}
+
+if [ -x "${VS}" ] ; then
+    log "[Test]" "Building ${PRODUCT} Visual Studio Project"
+    "${VS}" projects/${PRODUCT}-windows-${PROFILE}.sln /clean
+    "${VS}" projects/${PRODUCT}-windows-${PROFILE}.sln /build
+fi
+
+if [ -x "${XCODE}" ] ; then
+    log "[Test]" "Building ${PRODUCT} Xcode Project"
+    "${XCODE}" -project projects/${PRODUCT}-macosx-${PROFILE}.xcodeproj -alltargets clean
+    "${XCODE}" -project projects/${PRODUCT}-macosx-${PROFILE}.xcodeproj -alltargets build
+fi

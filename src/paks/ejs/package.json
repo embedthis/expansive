@@ -1,0 +1,53 @@
+{
+    "name": "ejs",
+    "description": "Embedthis Ejscript Javascript Language",
+    "title": "Embedthis Ejscript",
+    "version": "2.4.1",
+    "keywords": [
+        "ejs",
+        "ejscript",
+        "javascript",
+        "ecmascript"
+    ],
+    "homepage": "http://embedthis.com/products/ejs/",
+    "author": {
+        "name": "Embedthis Software",
+        "email": "dev@embedthis.com",
+        "url": "http://embedthis.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/embedthis/ejs.git"
+    },
+    "bugs": {
+        "email": "dev@embedthis.com",
+        "url": "http://github.com/embedthis/ejs/issues"
+    },
+    "licenses": [
+        {
+            "type": "GPL",
+            "url": "http://www.gnu.org/licenses/gpl-2.0.html"
+        },
+        {
+            "type": "Commercial",
+            "url": "http://embedthis.com/licensing/"
+        }
+    ],
+    "pak": "~0.9",
+    "dependencies": {
+        "http": "~5",
+        "me-dev": "~0.8",
+        "mpr": "~5",
+        "osdep": "~0.8",
+        "pcre": "~1.0",
+        "zlib": "~1.0"
+    },
+    "optionalDependencies": {
+        "est": "~0.6",
+        "me-ssl": "~0.8",
+        "sqlite": "~1.0"
+    },
+    "directories": {
+        "paks": "src/paks"
+    }
+}

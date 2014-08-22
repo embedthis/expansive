@@ -1,0 +1,111 @@
+/*
+    main.me -- Main MakeMe file for Expansive
+ */
+
+Me.load({
+    blend: [
+        "src/paks/*/*.me",
+    ],
+
+    configure: {
+        requires:  [ 'osdep', 'ejs', 'mpr', 'http', 'pcre', 'zlib' ],
+        discovers: [ 'ssl' ],
+        extras:    [ 'sqlite' ]
+    },
+
+    customize: [
+        /* 
+            The optional custom.me file is loaded after main.me is fully processed. It can
+            thus override any setting. Feel free to create and customize. 
+         */
+        'custom.me',
+    ],
+
+    settings: {
+        platforms: [ 'local' ],
+        static: false,
+        tune: 'size',
+
+        ejs: {
+            /*
+                Control if ejs.* is enabled or disabled
+             */
+            db: true,
+            mail: true,
+            mapper: true,
+            shell: true,
+            tar: true,                                                                                     
+            template: true,
+            web: true,
+            zlib: true,
+        }, 
+
+        /*
+            EST SSL stack configuration
+         */
+        est: {
+            camellia: false,
+            padlock: false,
+            sslClient: false,
+            des: false,
+            testCerts: false,
+            xtea: false,
+            romTables: false,
+            genPrime: false,
+        },
+
+        http: {
+            /* Use PAM (Plugable Authentication Module) to store passwords */
+            pam: false,
+        },
+                                                                                                           
+        mpr: {                                                                                             
+            /*                                                                                             
+                Enable logging via mprLog to the log file. Error messages are always enabled.              
+                The default is to enable logging for both debug and release builds.                        
+             */                                                                                            
+            logging: true,                                                                                 
+        },
+
+        tune: 'speed',
+
+        prefixes: 'package-prefixes',
+        manifest: 'package/manifest.me',
+    },
+
+    scripts: {
+        loaded: `
+            me.targets.makerom.enable = false
+        `
+    },
+
+    targets: {
+        'exp.mod': {
+            path: '${BIN}/exp.mod',
+            files: [ 'src/exp.es' ],
+            build: `
+                trace('Compile', 'exp.mod')
+                run('${LBIN}/ejsc --out ${BIN}/exp.mod --optimize 9 src/exp.es')
+            `,
+            'generate-nmake': `"${BIN}\\ejsc" --out "${BIN}/exp.mod" --optimize 9 ${target.cmdfiles}`,
+            'generate-sh': '${LBIN}/ejsc --out ${BIN}/exp.mod --optimize 9 ${target.cmdfiles}',
+            depends: [ 'ejsc' ],
+        },
+
+        'exp': {
+            type: 'exe',
+            path: '${BIN}/exp${EXE}',
+            sources: [ 'src/*.c' ],
+            static: false,
+            depends: [ 'libmpr', 'libhttp', 'libejs', 'exp.mod' ],
+        },
+
+        projects: {
+            action: `genProjects('--with est', 'default', ['freebsd-x86', 'linux-x86', 'macosx-x64', 'windows-x86'])`,
+        },
+
+        mine: {
+            action: `genProjects('', 'mine', Config.OS + '-' + Config.CPU)`,
+        },
+    },
+})

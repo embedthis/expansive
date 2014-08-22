@@ -1,0 +1,65 @@
+/*
+    ejs.me -- MakeMe file for Ejscript
+ */
+
+Me.load({
+    settings: {
+        ejsOneModule: true,
+    },
+
+    targets: {
+        ejs: {
+            configurable: true,
+            depends:      [ 'libejs', 'zlib' ],
+            requires:     [ 'zlib' ],
+            uses:         [ 'sqlite' ],
+        },
+
+        libejs: {
+            type:   'lib',
+            sources: [ 'ejsLib.c' ],
+            headers: [ '*.h' ],
+            depends: [ 'libhttp', 'libpcre', 'libmpr', 'libzlib' ],
+            uses:    [ 'sqlite' ],
+            ifdef:   [ 'ejs' ],
+        },
+
+        ejscmd: {
+            pname:  'ejs',
+            path:   '${BIN}/ejs${EXE}',
+            type:   'exe',
+            sources: [ 'ejs.c' ],
+            scripts: {
+                prebuild: `
+                    if (me.settings.compiler.hasLibEdit) {
+                        me.target.libraries.push('edit')
+                    }
+                `,
+            },
+            depends: [ 'libejs' ],
+            ifdef:   [ 'ejs' ],
+            enable: 'me.settings.ejs.shell',
+        },
+
+        ejsc: {
+            type:   'exe',
+            sources: [ 'ejsc.c' ],
+            depends: [ 'libejs' ],
+            ifdef:   [ 'ejs' ],
+        },
+
+		'ejs.mod': {
+            files: [ 'ejs.es' ],
+            path: "${BIN}/ejs.mod",
+            //  Add --debug for debug symbols
+            build: `
+                trace('Compile', 'ejs.mod')
+                run('${LBIN}/ejsc --out ${BIN}/ejs.mod --optimize 9 --bind --require null ejs.es')
+            `,
+            'generate-nmake': '"${LBIN}\\ejsc" --out "${BIN}/ejs.mod" --optimize 9 --bind --require null ejs.es',
+            'generate-sh': '${LBIN}/ejsc --out ${BIN}/ejs.mod --optimize 9 --bind --require null ejs.es',
+            depends: [ 'ejsc' ],
+            ifdef:   [ 'ejs' ],
+		},
+    },
+})

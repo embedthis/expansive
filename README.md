@@ -1,7 +1,7 @@
-# Embedthis Egen
+# Embedthis Expansive
 
-Egen is a static site generator similar to DocPad. However it is written in Ejscript, and is about 10 times faster
-than DocPad.
+Expansive is a static site generator. It is written in Ejscript, and is about 10 times faster
+than most other static site generators.
 
 Licensing
 ---

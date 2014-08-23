@@ -1,0 +1,81 @@
+{
+    title:  'Running the Expansive Service',
+    crumbs: [
+        { 'Getting Started', 'index.html' },
+        { 'Installing': 'installing.html' },
+    ],
+}
+            <h1>Running Expansive as a System Service or Daemon</h1>
+            <p>After installation, Expansive is started automatically as a system service or daemon. You can change this
+            behavior and only start Expansive manually if you wish.</p>
+            <p>This page gives generic and windows -specific information about starting and stopping the Expansive service.</p>
+            <ul>
+                <li><a href="#generic">Generic Instructions</a></li>
+                <li><a href="#windows">Windows Instructions</a></li>
+            </ul>
+            
+            <a id="generic"></a>
+            <h2>Generic Instructions</h2>
+            <p>Expansive includes a manager program called <em>appman</em>. This program is used to configure the running 
+            of Expansive as service. Appman provides a generic way to install/uninstall, enable/disable, start/stop, and
+            run the Expansive service regardless of the Operating System.</p>
+            <p>The Appman command takes the form:</p>
+            <pre class="ui code segment">appman commands...</pre>
+            <p>Where commands can be:</p>
+            <table title="commands" class="ui table segment">
+                <thead><tr><th>Command</th><th>Details</th></tr></thead>
+                <tbody>
+                    <tr><td>install</td><td>Install Expansive service</td></tr>
+                    <tr><td>uninstall</td><td>Uninstall Expansive service</td></tr>
+                    <tr><td>enable</td><td>Enable Expansive to start automatically on system boot</td></tr>
+                    <tr><td>disable</td><td>Disable Expansive from automatically starting</td></tr>
+                    <tr><td>start</td><td>Start Expansive manually</td></tr>
+                    <tr><td>stop</td><td>Stop Expansive</td></tr>
+                    <tr><td>run</td><td>Run Expansive and monitor its execution. Restart if it fails.</td></tr>
+                </tbody>
+            </table>
+            <h3>Stopping Expansive as a Service</h3>
+            <p>Use the following command to stop Expansive running as a service permanently:</p>
+            <pre class="ui code segment">
+appman disable
+</pre>
+            <p>Run the following commands to restore Expansive running as a service:</p>
+            <pre class="ui code segment">
+appman enable
+appman start
+</pre>
+            <a id="windows"></a>
+            <h2>Windows Instructions</h2>
+            <p>On Windows, Expansive is managed by two programs:</p>
+            <ul>
+                <li><a href="#appman">The Expansive Manager</a></li>
+                <li><a href="#monitor">The Expansive Monitor</a></li>
+            </ul><a id="appman"></a>
+            <p>The Appman manager program is installed as a windows service that starts, 
+            manages and restarts Expansive. If Expansive fails, Appman will automatically restart it.</p>
+            <p>Windows services run in the background with little interaction with the user. So to provide more
+            convenient access to manage Expansive, the <a href="#monitor">Expansive Monitor</a> program runs and is
+            accessible from the windows system tray (taskbar notification area). You can start and stop Expansive using
+            either the manager or Monitor programs.</p>
+            <h3>Appman &mdash; Expansive Manager Service</h3>
+            <p>You can interface with the Appman program via the Windows Services Applet. To invoke the applet select:</p>
+            <pre class="ui code segment">
+Start -&gt; Control Panel -&gt; Administrative Tools -&gt; Services
+</pre>
+            <p>Then select and double click on the <b>Embedthis Expansive</b> service. A dialog panel will be displayed
+            from which you can start and stop the manager (appman) process.</p>
+
+            <img src="../images/services.jpg" alt="services" class="bare-screen" />
+            <p>When started or stopped, the manager will first do the same operation on the real Expansive instance. Pausing
+            the manager will have no effect on Expansive, but will pause the manager itself.</p>
+            <p>Once installed, you will need to start the service via the Services control applet.</p>
+            <a id="monitor"></a>
+            <h3>Expansive Monitor</h3>
+            <p>The Windows Expansive Monitor is launched when you log in. It a quick and easy way to start, stop, and
+            restart Expansive. You can also launch a browser to display the documentation or the Expansive management console
+            (future feature).</p>
+
+            <img src="../images/tray.jpg" alt="tray" class="bare-screen" />
+            <p>When you select 'stop' Expansive, you actually stop the manager process which in turn stops Expansive. Similarly,
+            when you select 'start' Expansive, you are really starting the manager which detects that Expansive is not running
+            and automatically launches it. </p>

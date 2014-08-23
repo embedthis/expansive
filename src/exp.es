@@ -494,7 +494,7 @@ class Exp {
             global._export_.call(this)
         } catch (e) {
             trace('Error', 'Error when processing ' + meta.page + ' in file ' + file)
-            trace('Details', e.messaage)
+            trace('Details', e.message)
             App.log.debug(3, e)
         }
         let results = obuf.toString()
@@ -634,7 +634,7 @@ class Exp {
             }
             catch (e) {
                 trace('Error', 'Cannot process partial "' + name + '"')
-                trace('Details', e.messaage)
+                trace('Details', e.message)
                 App.log.debug(3, e)
             }
             finally {

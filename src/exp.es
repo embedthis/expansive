@@ -121,6 +121,7 @@ class Exp {
         }
         if (!Path('exp.json').exists) {
             throw 'Cannot find exp.json'
+            fatal('Cannot find exp.json')
         }
         loadConfig('.', topMeta)
     }
@@ -802,8 +803,12 @@ try {
     exp.parseArgs()
     exp.process()
 } catch (e) { 
-    App.log.error(e.message)
-    App.log.debug(3, e)
+    if (e is String) {
+        App.log.error(e)
+    } else {
+        App.log.error(e.message)
+        App.log.debug(3, e)
+    }
     App.exit(1)
 }
 } /* module exp */

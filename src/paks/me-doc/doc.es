@@ -64,7 +64,7 @@ public function apiwrap(patterns) {
 public function apiLayout(from: Path, to: Path)
 {
     trace('Generate', to)
-    let contents = from.readString().replace(/\\$/mg, '$$$$')
+    let contents = from.readString().replace(/\$/mg, '$$$$')
     let data = to.readString()
     to.write(data.
         replace(/DOC_CONTENT/g, contents).

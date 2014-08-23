@@ -763,14 +763,32 @@ class Exp {
         path.write(path.readString())
     }
 
-    public function getFileMeta(file: Path, upward = false) {
+    public function getFileMeta(file: Path) {
         let [meta, contents] = splitMeta(file.readString(), file)
-        meta = blend(topMeta.clone(), meta) 
+        meta = blend(topMeta.clone(), meta || {}) 
         return meta
     }
 
     public function get meta() {
         return topMeta
+    }
+
+    public function collection(query: Object, operation = 'and', pattern = "**") {
+        let list = []
+        for each (file in topMeta.directories.documents.files(pattern)) {
+            if (file.isDir) continue
+            let meta = getFileMeta(file)
+            let match = true
+            for (let [key, value] in query) {
+                if (meta[key] != value) {
+                    match = false
+                }
+            }
+            if (match) {
+                list.push(file)
+            }
+        }
+        return list
     }
 }
 

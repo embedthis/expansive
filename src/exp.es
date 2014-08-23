@@ -757,12 +757,20 @@ class Exp {
     function touch(path: Path) {
         path.write(path.readString())
     }
+
+    public function getFileMeta(file: Path, upward = false) {
+        file = topMeta.directories.documents.join(file)
+        let [meta, contents] = splitMeta(file.readString(), file)
+        meta = blend(topMeta.clone(), meta) 
+        return meta
+    }
 }
 
 /*
     Main program
  */
 var exp: Exp = new Exp
+global.expansive = exp
 
 try {
     exp.parseArgs()

@@ -128,17 +128,22 @@ class Exp {
     function loadConfig(dir: Path, meta) {
         let path = dir.join('exp.json')
         if (path.exists) {
+            let config
             try {
-                let config = path.readJSON()
-                blendMeta(meta, config)
-                if (meta.mode && meta.modes && meta.modes[meta.mode]) {
-                    blend(meta, meta.modes[meta.mode])
-                }
-                if (config.script) {
-                    eval(config.script)
-                }
+                config = path.readJSON()
             } catch (e) {
                 fatal('Syntax error in "' + path + '"')
+            }
+            blendMeta(meta, config)
+            if (meta.mode && meta.modes && meta.modes[meta.mode]) {
+                blend(meta, meta.modes[meta.mode])
+            }
+            if (config.script) {
+                try {
+                    eval(config.script)
+                } catch (e) {
+                    fatal('Script in "' + path + '"\n' + e)
+                }
             }
         }
     }
@@ -759,10 +764,13 @@ class Exp {
     }
 
     public function getFileMeta(file: Path, upward = false) {
-        file = topMeta.directories.documents.join(file)
         let [meta, contents] = splitMeta(file.readString(), file)
         meta = blend(topMeta.clone(), meta) 
         return meta
+    }
+
+    public function get meta() {
+        return topMeta
     }
 }
 

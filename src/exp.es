@@ -2,7 +2,7 @@
 /*
     exp.es - Expansive Static Site Generator
 
-    exp generate                # generate entire site
+    exp [--noclean] generate    # generate entire site
     exp filters, ...            # Generate only matching documents
     exp [--gen] watch           # Watch for changes and regen
     exp [--nowatch]             # Serve and watches for changes
@@ -36,6 +36,7 @@ class Exp {
             keep:    { alias: 'k' },
             listen:  { range: String },
             log:     { alias: 'l', range: String },
+            noclean: { },
             nowatch: { },
             quiet:   { alias: 'q' },
             verbose: { alias: 'v' },
@@ -71,6 +72,7 @@ class Exp {
             '    --keep           # Keep intermediate transforms\n' + 
             '    --listen IP:PORT # Endpoint to listen on\n' + 
             '    --log path:level # Trace to logfile\n' + 
+            '    --noclean        # Do not clean final before generate\n' + 
             '    --nowatch        # No watch, just run\n' + 
             '    --quiet          # Quiet mode\n' + 
             '    --verbose        # Verbose mode\n' + 
@@ -181,6 +183,10 @@ class Exp {
         lastGen = new Date(0)
 
         switch (task) {
+        case 'clean':
+            preclean(meta)
+            break
+
         case 'generate':
             genall = true
             if (rest.length > 0) {
@@ -711,7 +717,7 @@ class Exp {
     }
 
     function preclean() {
-        if (!filters) {
+        if (!filters && !options.noclean) {
             topMeta.directories.final.removeAll()
         }
     }

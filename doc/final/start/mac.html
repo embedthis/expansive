@@ -133,26 +133,11 @@
 sudo ./uninstall
 </pre>
             
-            <a id="running"></a>
-            <h2>Running Expansive</h2>
-            <p>Expansive will start when the installation procedure completes.
-            Thereafter, Expansive will automatically start when the system is rebooted.</p>
-            <p>If you wish to manually stop Expansive type:</p>
-            <pre class="ui code segment">
-sudo appman stop
-</pre>
-            <p>To restart Expansive:</p>
-            <pre class="ui code segment">
-sudo appman start
-</pre>
-            <p>Alternatively, you can run exp manually (if not already running):</p>
+            <p>You can run exp via:</p>
             <pre class="ui code segment">
 cd /etc/exp
 exp
 </pre>
-            <p>Expansive is configured by default to listen on port 80. To test that it is serving pages, point your
-            browser at http://localhost. To tailor the Embedthis Expansive configuration, including the default port,
-            you may wish to edit the exp.conf configuration file.</p>
             <p>To get all the options for Expansive read the man page via:</p>
             <pre class="ui code segment">
 man exp

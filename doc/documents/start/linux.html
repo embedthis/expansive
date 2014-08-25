@@ -9,80 +9,12 @@
             <p>Running Expansive on Linux is supported by building from source code. </p>
             <p>Please see instructions at <a href="source.html">Building from Source</a>.</p>
 
-<!-- KEEP
-            <p>The Expansive install distribution for LINUX is published in three formats:</p>
-            <ul>
-                <li>Native RPM format for RPM based systems such as Fedora</li>
-                <li>Native Debian format for Debian based systems such as Ubuntu</li>
-                <li>Tar format for custom/self installs</li>
-            </ul>
-            <p>It is recommended that you use either the native formats (if your system supports it) as these will
-            register the software installation with the system's software manager. The self-install format consists of
-            tar archives that you can manually extract for maximum control over the placement of the product files.</p>
-            <p>All formats contain a binary distribution, documentation and development headers and libraries in the
-            one package. During installation you will have the option of installing the full distribution or just
-            portions.</p><a id="native"></a>
-            <h2>Installing the RPM or Debian Images</h2>
-            <ol>
-                <li>Uncompress and extract the image:
-                    <pre>
-tar xvfz exp-VERSION-DIST-LINUX-CPU.FMT.tgz
-</pre>
-                    <p>Where VERSION is the current version (e.g. 1.2.3-1), and DIST is the name of the Linux
-                    distribution (e.g. fedora), and FMT is either <b>rpm</b> or <b>deb</b>.</p>
-                </li>
-                <li>Then start the installation with administrator privilege:
-                    <pre>
-sudo ./install
-</pre>
-                </li>
-            </ol><a id="self"></a>
-            <h2>Installing the Self-Install Image</h2>
-            <ol>
-                <li>Uncompress and extract the image:
-                    <pre>
-tar xvfz exp-VERSION-DIST-LINUX-CPU.tgz
-</pre>
-                </li>
-                <li>Then start the installation with administrator privilege:
-                    <pre>
-sudo ./install
-</pre>
-                </li>
-            </ol><a id="removing"></a>
-            <h2>Removing Expansive</h2>
-            <ol>
-                <li>Change directory to the installation directory for Expansive. This is usually
-                <b>/usr/lib/exp</b></li>
-                <li>Run the uninstall script in the install directory for exp:
-                    <pre>
-sudo ./uninstall
-</pre>
-                </li>
-            </ol>
--->
-            
             <a id="running"></a>
             <h2>Running Expansive</h2>
-            <p>Expansive will start when the Expansive installation procedure completes and on some systems, will launch your
-            browser directed at the Expansive local home page.Thereafter, Expansive will automatically start if the system is
-            rebooted.</p>
-            <p>If you wish to manually stop Expansive, type:</p>
+            <p>You can run exp via:</p>
             <pre class="ui code segment">
-appman start
-</pre>
-            <p>To restart Expansive:</p>
-            <pre class="ui code segment">
-appman stop
-</pre>
-            <p>Alternatively, you can run exp manually:</p>
-            <pre class="ui code segment">
-cd /etc/exp
 exp
 </pre>
-            <p>Expansive is configured by default to listen on port 80. To test that it is serving pages, point your
-            browser at http://localhost. To tailor the Embedthis Expansive configuration, including the default port,
-            you may wish to edit the exp.conf configuration file.</p>
             <p>To get all the options for Expansive, read the man page via:</p>
             <pre class="ui code segment">
 man exp

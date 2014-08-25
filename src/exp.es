@@ -705,6 +705,7 @@ class Exp {
 
     function event(name, file = null, meta = null) {
         if (global[name]) {
+            global.meta = topMeta
             (global[name]).call(this, file, meta)
         }
     }
@@ -770,9 +771,11 @@ class Exp {
         return meta
     }
 
+/*  UNUSED
     public function get meta() {
         return topMeta
     }
+*/
 
     public function collection(query: Object, operation = 'and', pattern = "**") {
         let list = []

@@ -1,0 +1,27 @@
+{
+    "name": "plugins",
+    "title": "Display Package Title - several words. E.g. Company Product",
+    "description": "Full Package Description - one line",
+    "version": "1.0.0",
+    "keywords": [
+        "Put search keywords here"
+    ],
+    "author": {
+        "name": "Your name",
+        "email": "Your email",
+        "url": "Your web site"
+    },
+    "bugs": {
+        "email": "name@example.com",
+        "url": "http://example.com/bugs"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/user/repo.git"
+    },
+    "license": "GPL",
+    "dependencies": {
+        "bash": "*",
+        "exp-marked": "~0.1"
+    }
+}

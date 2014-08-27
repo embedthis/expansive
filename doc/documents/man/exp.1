@@ -1,27 +1,429 @@
-.TH ME "1" "January 2014" "exp" "User Commands"
+.TH EXP "1" "March 2014" "exp" "User Commands"
 .SH NAME
-exp \- Expansive -- Static web site generator
+exp \- Embedthis Expansive -- Static web site generator using Ejscript
 .SH SYNOPSIS
-.B me 
-    \fB--chdir dir\fR
+.B exp 
+    \fB--chdir directory\fR
+    \fB--gen\fR
     \fB--keep\fR
+    \fB--listen IP:PORT\fR
+    \fB--log path:level\fR
+    \fB--noclean\fR
     \fB--nowatch\fR
     \fB--quiet\fR
-    \fB--verbose\fR
+    \fB--verbose dir\fR
     \fB--version\fR
+    \fBcommands ...\fB
 .SH ""
 .B Commands:
-    exp generate
-    exp run
-    exp watch
-    exp [path]
+    clean
+    init
+    generate
+    filters ...
+    watch
+    <CR>
+.RE
 .SH DESCRIPTION
+\fBExpansive\fR is a static web site generator using Ejscript.
+It quickly creates static HTML pages from layouts, partials and content pages.
+
+.PP
+.SH WHY EXPANSIVE?
+There are many static site generators, why another one?  Existing site generators are often slow, very slow, painfully slow.
+When creating or managing a web site, you need tools that do not delay the creative design process. They need to be as fast
+as possible. Expansive is fast, pure and simple.
+.PP 
+Other site generators frequently provide poor diagnostics. Fine when everything works, but when a page fails to generate due
+to a scripting error -- debugging can be a nightmare. Expansive shows exactly where errors occur.
+
+.SH FEATURES
+Expansive is implemented primarily as a single script of some 900 lines of Ejscript and is very hackable.  It has the
+following major features:
+
+    . Generate static site from pages, layouts, partials and scripts
+    . Ejscript templates for dynamic content
+    . Layout pages to define the look and feel of site
+    . Partial pages to include replicated content
+    . Per-page meta data to control layouts and partials
+    . Integrated web server to serve content
+    . Watches for changes and automatically regenerates site
+    . Scripting support via change events
+    . Automatic sitemap generation
+    . Content transition pipeline
+    . Open plugin architecture for new transitions
+
+.SH NICE PARTS
+While Expansive has a strong feature set, there are some characteristics that make Expansive particularly sweet.
+
+    . Fast, fast, fast
+    . Full power of Ejscript in every page
+    . Very simple code. By leveraging Ejscript, the code is simple and clean
+    . Great diagnostics when things go wrong
+
+.PP
+.SH BASIC USAGE
+.PP
+To prepare a directory for expansive and create an exp.json configuration file:
+    exp init
+
+To generate a site from 'documents' into 'final'
+    exp generate
+
+To serve content and watch for changes
+    exp
+    
+To watch for changes but not serve
+    exp watch
+
+To generate a matching set of documents 
+    exp documents/index.html
+    exp documents/manual
+
+To clean the generated site
+    exp clean
+
+.PP
+.SH DIRECTORIES
+Expansive uses the following directories:
+
+    layouts     For master page layouts
+    partials    For partial web pages that can be included by other pages
+    documents   Input web pages to be processed
+    files       Files to be copied and not processed
+    final       Final output directory containing the rendered web site
+
+These directories can be modified via the 'directories' object in the meta data collection.
+
+.SH PROCESSING
+Expansive operates by processing web pages from the 'documents' directory. It uses master layout pages from the 'layouts'
+directory and includes partial pages from the 'partials' directory. Raw files may be copied from the 'files' directory.
+Content is rendered to the 'final' output directory.
+
+.SH CONFIGURATION
+Expansive is controlled by a 'exp.json' configuration file. This defines top level configuration for the site and controls
+how Expansive generates the site. An exp.json file must be present for Expansive to generate a content.
+.PP
+To prepare a new site to use Expansive, run:
+
+    exp init
+
+.PP
+This creates an exp.json file similar to that below:
+.PP
+.RS 5
+ {
+    title: 'Home page title',
+    url: 'Home page url',
+    description: 'Meta data description (optional)',
+    keywords: 'Meta data keywords (optional)',
+    control: {
+        exclude: [ ],
+        copy: [ ],
+        script: '',
+        sitemap: {
+            include: '/\\.html/'
+        }
+    }
+ }
+.RE
+.PP
+The contents of the exp.json file are added to the Expansive meta data collection that is provided to every page, layout and
+partial. The exp.json file has a 'control' section that controls the operation of Expansive. The are a set of pre-defined
+properties, but you can add your own data as well. See the META PROPERTIES section below.
+
+.PP
+In the control section, the 'exclude' array defines a set of file patterns to exclude from processing. The 'copy' array
+defines a set of file patterns to copy without processing. The script string defines an optional global script to inject
+code into the Ejscript execution context. The sitemap collection configures what documents to include in the generated
+sitemap XML file.  
+
+.SH DYNAMIC CONTENT
+Expansive uses embedded Javascript in web pages to fully support dynamic content.  Scripts can be embedded via the special
+Expansive tag '<% ...  %>'. This will run the script when the page is generated and replace the script with generated data.
+For example:
+
+ <p>Today is <% write(Date()) %>
+
+The write function is used to render data to be used in place of the <% %> element.  You can use 'writeSafe' to HTML
+escape the data before writing. You can also use a simpler form <%= that means use the result of the Javascript 
+expression, HTML escapse the data and then write it. For example:
+
+ <p>Today is <%= Date() %>
+
+Even simpler, you can use an abbreviated @@variable to emit the value of a Javascript variable. For example:
+
+ <p>Site URL is @@{meta.url}</p>
+
+.SH TRANSFORMATIONS
+Expansive will interpret document extensions and automatically transform content from one format to another.  For example,
+the filename 'instructions.html.md' tells Expansive that the data is in Markdown format via the '.md' extension and it
+should be converted to 'html'.  Expansive will examine each nested extension and process the document until it reaches an
+extension for which there is no further transformations defined.
+.PP
+Expansive uses the '.exp' extension to specify the document has embedded Ejscript. For example:
+
+ index.html.md.exp
+
+This means the file is a Markdown file that has embedded Ejscript. Expansive will process this by first running the embedded
+Ejscript, then piping through the Markdown filter and saving the result as 'index.html' after applying the appropriate
+layout.
+
+.SH LAYOUTS
+A layout page defines the top level HTML content for a set of pages.  The layout defines the format, look and feel of the
+web site so that each pages does not need to replicate this content. Despite the fact that pages nominate a layout page to
+use, it is actually layout page that includes the content page inside it to create a composite page. The '<% content %>' tag
+in the layout is replaced with the actual web page data after separating the page meta data.
+.PP
+There can be multiple layout pages and the default layout is called 'default.html.exp'. Layout pages can use any desired
+transformation file extension.
+
+.RS 5
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <title><%= meta.title %></title>
+     <link href="css/api.css" rel="stylesheet" type="text/css" />
+ </head>
+ <body>
+     <div class="content">
+         <% content %>
+     </div>
+ </body>
+ </html>
+.RE
+.PP
+
+.SH PARTIALS
+Web pages often need to have content that is common across a set of pages. Expansive supports this via partial pages that
+can be included by any page, layout or other partial page. A page specifies a partial by using the 'partial' Javascript
+function. For example:
+
+ <% partial('header') %>
+
+The partial function will search for a file starting with 'header.html' in the 'partials' directory.  Partials are transformed
+according to their extension. If a partial called 'header.html.md.exp' was found, then it will be first transformed by
+running the embedded Ejscript, then piping the output into the Markdown to create html data that will then be included in
+place of the original partial tag.
+
+.PP
+Partials can be nested, in that a partial page may include another parital page to any depth.
+
+.SH META DATA
+Pages, layouts and partials can define meta data at the top of the file via a Javascript literal.  Meta data is passed to
+the Ejscript execution context for each page, layout and partial where scripts can examine and use in rendering pages.
+.PP
+.RS 5
+ {
+    draft: true,
+    navigation: 'blog',
+ }
+ <h1>Page Header</h1>
+
+.RE
+The meta data is added to the current meta data collection and passed to the layout page and any partials used by the page.
+The meta data can be accessed via the 'expansive.meta' Javascript property.
+
+.PP
+
+Meta data is inherited and aggregated as Expansive processes a web site directory. The meta data from upper directories is
+passed down to lower directories. In this manner upper levels can define the parameters for subdirectories in the site. Meta
+data is never passed back up the tree.
+.PP
+Meta data can also be defined by including additional 'exp.json' files at any level in the documents directory.
+
+.SH META PROPERTIES
+Expansive defines a rich set of meta properties for you to use in your pages:
+.TP 12
+basename
+Basename portion of the final document filename.
+.TP 12
+date
+Generation date of the document.
+.TP 12
+extension
+The extension of the final document filename.
+.TP 12
+extensions
+The set of extensions on the original input document.
+.TP 12
+isPartial
+True if the page being processed is a partial page.
+.TP 12
+layout
+Layout page in use. Set to '' if no layout being used.
+.TP 12
+mode
+Index in the modes property. The selected property collection is copied up to the top level of the meta data.
+.TP 12
+modes
+Array of property collections. Used to define 'debug', 'release' configurations.
+.TP 12
+outpath
+Final output filename for the document.
+.TP 12
+page
+Filename of the page being processed in documents.
+.TP 12
+partial
+Name of the partial page being processed.
+.TP 12
+path
+Input filename of the document.
+.TP 12
+top
+URL for the top level home page of the site.
+.TP 12
+url
+URL for the current page.
+.SH META CONTROL
+Expansive defines a set of control properites in the meta.control:
+.TP 12
+copy
+Array of directories to copy without processing.
+.TP 12
+directories
+Directories collection. Entries for 'documents', 'files', 'final', 'layouts', and 'partials'.
+.TP 12
+exclude
+Array of patterns to exclude from processing. If the document begins with a pattern, it is excluded.
+.TP 12
+listen
+Address on which to listen for HTTP requests. May be just a port number.
+.TP 12
+plugins
+List of plugins to use.
+.TP 12
+script
+Script to evaluate to inject code into the Expansive Ejscript global execution context.
+.TP 12
+sitemap
+Control what files to include in a sitemap.
+.TP 12
+transforms
+Cache of plugin transformations
+.TP 12
+watch
+Time in milliseconds to wait between checking for regeneration.
+
+.SH USING PLUGINS
+Expansive may be extended via plugins that provide transformations and additional scripting capability. A site specifies the
+plugins to use via dependencies in its package.json file or via a 'dependencies' field in its exp.json. When a plugin is
+installed via the Pak utility, Pak will add the plugin automatically to the dependencies property in package.json. Pak will
+create a package.json if required.
+.PP
+
+.SH CREATING PLUGINS
+Expansive plugins are created using the Pak utility (https://embedthis.com/pak) and published to the Pak Catalog at
+(https://embedthis.com/catalog/). The plugin contains a package.json file that includes an app.expansive property
+collection. For example:
+
+ {
+    name: 'my-plugin',
+    version: '1.0.0',
+    app: {
+        expansive: {
+            transforms: {
+                'my-extension': {
+                    render: `
+                        function transform(data, file, meta) {
+                            return transformed-data
+                        }
+                    `
+                }
+            }
+            script: 'Any script here'
+        }
+    }
+ }
+.PP
+
+The plugin specifies a set of transformations via the 'transforms' collection. The keys are the supported document filename
+extensions to be transformed and the key value is a transformation definition that includes a render property.  This render
+property is a script that will be invoked to transform matching documents. It is invoked with the data to transform
+(String), the target filename (Path) and the current meta data collection. The function should return the transformed data.
+.PP
+A plugin may also define any Ejscript code via the 'script' property. This will be injected into the global scope of Expansive when it executes.
+
+.SH SCRIPTING
+Expansive defines a top level global named "expansive" to access Expansive services. This object provides the following
+properties and methods:
+
+.TP
+getFileMeta(filename)
+To return the meta data specified in the given file.
+.TP
+collection({key: value})
+To return a list of matching documents that have meta data matching the specified keys and values.
+.TP
+trace(tag, msg...)
+To emit console trace while processing.
+
+.SH COMMANDS
+.TP 
+clean
+Remove generated content from the 'final' output directory.
+.TP
+init
+Initialize a directory by creating an 'exp.json' configuration file.
+.TP
+generate                   
+Generate the site by processing files from 'documents', 'layouts', 'partials' and 'files' into the 'final' output directory.
+.TP
+watch                   
+Watch for changes to 'documents', 'layouts' and 'partials' and regenerate the modified files. Changes to 'layouts' or 'partials' will cause the entire site to be regenerated.
+.TP
+<CR>                   
+Running exp without any arguments will cause run the embedded web server to serve the site. By default Expansive will listen on port 4000. This can be modified via the 'listen' property in the meta collection.
+
+.SH OPTIONS
+.TP 10
+\fB\--chdir directory\fR
+Change to directory before running.
+
+.TP 10
+\fB\--gen\fR
+Used with the 'watch' command to do an initial generation before watching for changes.
+
+.TP 10
+\fB\--keep URI\fR
+Keep intermediate files when transforming content. Useful for debugging.
+
+.TP 10
+\fB\--listen IP:PORT URI\fR
+Change the port on which Expansive will listen. Can omit the IP portion and only specify a port.
+
+.TP 10
+\fB\--log filename:level\fR
+Omit trace to the specified file. The level is a verbosity level from 0-5 with 5 being the most verbose.  The '-v' option is
+an alias for level 1.  Can also abbreviate this switch by just specify a level option. For example: '-5'.  HTTP requests and
+HTTP headers will be traced at levels 2-4.
+
+.TP 10
+\fB\--noclean\fR
+Do not clean the 'final' directory before generating. By default Expansive will remove all the content under 'final' before
+generating.
+
+.TP 10
+\fB\--nowatch\fR
+Do not watch for changes when serving content.
+
+.TP 10
+\fB\--quiet\fR
+Run in quiet mode. Do not emit activity trace to the console.
+
+.TP 10
+\fB\--verbose\fR
+Run in verbose mode. Emit more activity trace.
+
+.TP 10
+\fB\--versions URI\fR
+Show exp version information.
 
 .PP
 .SH "REPORTING BUGS"
 Report bugs to dev@embedthis.com.
 .SH COPYRIGHT
-Copyright \(co 2004-2014 Embedthis Software. Embedthis Expansive is a trademarks of Embedthis Software.
+Copyright \(co 2004-2014 Embedthis Software. Bit and Ejscript are a trademarks of Embedthis Software.
 .br
 .SH "SEE ALSO"
-pak
+ejs, bit, http://embedthis.com/products/exp/

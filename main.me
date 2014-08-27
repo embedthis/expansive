@@ -85,7 +85,7 @@ Me.load({
             files: [ 'src/exp.es' ],
             build: `
                 trace('Compile', 'exp.mod')
-                run('${LBIN}/ejsc --out ${BIN}/exp.mod --optimize 9 src/exp.es')
+                run('${LBIN}/ejsc --debug --out ${BIN}/exp.mod --optimize 9 src/exp.es')
             `,
             'generate-nmake': `"${BIN}\\ejsc" --out "${BIN}/exp.mod" --optimize 9 ${target.cmdfiles}`,
             'generate-sh': '${LBIN}/ejsc --out ${BIN}/exp.mod --optimize 9 ${target.cmdfiles}',

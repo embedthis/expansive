@@ -1,0 +1,14 @@
+{
+    title: "Home page title",
+    url: "Home page url",
+    description: "Meta data description (optional)",
+    keywords: "Meta data keywords (optional)",
+    expansive: {
+        exclude: [ ],
+        copy: [ ],
+        script: '',
+        sitemap: {
+            include: "/\\.html/"
+        }
+    },
+}

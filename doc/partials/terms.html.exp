@@ -1,4 +1,4 @@
-<div class="ui basic center aligned segment" id="terms">
+<div class="terms ui basic center aligned segment">
         <p>&copy; Embedthis Software, 2003-2014. All rights reserved.
             Generated on <%= Date().format('%b %e, %Y') %>.
         </p>

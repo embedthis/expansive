@@ -18,6 +18,7 @@ body {
   margin: 0;
   font-family: "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
   text-rendering: optimizeLegibility;
+  background-attachment: fixed;
   background-image: -webkit-linear-gradient(45deg, #f58000 150px, #da0024 70%);
   background-image: linear-gradient(45deg, #f58000 150px, #da0024 70%);
   -webkit-transition: none !important;
@@ -34,50 +35,82 @@ body {
   background: rgba(51, 51, 51, 0.3);
 }
 
-.ui.masthead {
+.ui.sidebar.inverted.menu .logo {
+  display: inline-block;
+  font-family: 'Julius Sans One', sans-serif;
+  font-size: 1.9em;
+  color: #ffffff;
+}
+
+.masthead {
   height: 70px;
 }
 
-.ui.masthead .header.item.left {
-  margin-left: 0;
-  font-family: 'Julius Sans One', sans-serif;
-  font-size: 1.5rem;
+.masthead .ui.inverted.menu {
+  margin: 0;
+  background-color: transparent;
+  border-bottom: none;
 }
 
-.ui.masthead .ui.top.right a.item {
-  padding: 1.0 0.4em;
+.masthead .ui.inverted.menu .right.menu {
+  margin-right: 10px;
+}
+
+.masthead .ui.inverted.menu .right.menu a.item {
+  padding: 1.1em 0.4em;
   color: #ffffff;
   opacity: 0.75;
 }
 
-.ui.masthead .ui.breadcrumb {
-  margin: -5px 0 0 85px;
+.masthead .ui.inverted.menu .right.menu a.item:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-.ui.masthead .ui.breadcrumb .section {
+.masthead .ui.inverted.menu .right.menu a.item.active:after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #dd2222;
+  content: "";
+}
+
+.masthead .version {
+  margin: -0.8rem 0.4rem 0 0;
+  font-size: 0.75rem;
+  color: #ffffff;
+  opacity: 0.75;
+}
+
+.masthead .ui.launch.button {
+  width: 40px;
+}
+
+.masthead .ui.breadcrumb {
+  margin: -5px 0 0 35px;
+}
+
+.masthead .ui.breadcrumb .section {
   padding-bottom: .5rem;
 }
 
-.ui.masthead .ui.breadcrumb .active.section {
+.masthead .ui.breadcrumb .active.section {
   font-weight: normal;
-  color: rgba(256, 256, 256, 0.8);
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.ui.masthead .ui.breadcrumb .divider {
+.masthead .ui.breadcrumb .divider {
   color: #ffffff;
 }
 
-.ui.masthead .ui.breadcrumb a {
-  color: rgba(256, 256, 256, 0.5);
+.masthead .ui.breadcrumb a {
+  color: rgba(255, 255, 255, 0.5);
 }
 
-.ui.masthead .ui.breadcrumb a:hover,
-.ui.masthead .ui.breadcrumb a:hover.active.section {
+.masthead .ui.breadcrumb a:hover,
+.masthead .ui.breadcrumb a:hover.active.section {
   color: #ffffff;
-}
-
-.ui.masthead .ui.launch.button {
-  margin-top: -15px;
 }
 
 .page {
@@ -100,19 +133,19 @@ body {
   background: #ffffff;
 }
 
-#terms {
+.terms {
   height: 20px;
   margin: 10px 0 26px 0;
   font-size: 0.75rem;
   color: #999999;
 }
 
-#terms a:link,
-#terms a:visited {
+.terms a:link,
+.terms a:visited {
   color: #c2c2c2;
 }
 
-#terms a:hover {
+.terms a:hover {
   color: #ffffff;
 }
 
@@ -156,56 +189,29 @@ h3 + ul {
 }
 
 .ui.code.segment {
-  color: #333;
-  background: #EFEFEF;
-  border: 1px solid #C8C8C8;
-  box-shadow: 2px 2px 2px #DDD;
-}
-
-.ui.code.segment b {
-  font-weight: normal;
-  color: #168;
+  color: #333333;
+  background: #eeeeee;
+  border: 1px solid #c2c2c2;
+  box-shadow: 2px 2px 2px #e8e8e8;
 }
 
 img.screen {
   margin: 8px 0 4px 0;
-  border: 1px solid #AAA;
+  border: 1px solid #999999;
   border-radius: 7px;
-  box-shadow: 9px 9px 9px #AAA;
+  box-shadow: 9px 9px 9px #999999;
 }
 
 img.bare-screen {
-  width: 100%;
   margin: 8px 0 10px 0;
-  border: 1px solid #AAA;
+  border: 1px solid #999999;
   border-radius: 7px;
-  box-shadow: 9px 9px 9px #AAA;
+  box-shadow: 9px 9px 9px #999999;
 }
 
 img.shadow {
   border-radius: 7px;
-  box-shadow: 5px 5px 9px #888;
-}
-
-.ui.secondary.pointing.menu,
-.ui.secondary.inverted.pointing.menu {
-  margin: 0;
-  border-bottom: none;
-}
-
-.ui.pointing.menu .ui.top.right .active.item:after {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  margin: 0;
-  background: #dd2222;
-  background-image: none;
-  border: none;
-  -webkit-transform: rotate(0deg);
-      -ms-transform: rotate(0deg);
-          transform: rotate(0deg);
+  box-shadow: 5px 5px 9px #999999;
 }
 
 /*

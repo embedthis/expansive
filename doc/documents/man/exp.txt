@@ -1,0 +1,37 @@
+ME(1)                            User Commands                           ME(1)
+
+
+
+NAME
+       exp - Expansive -- Static web site generator
+
+SYNOPSIS
+       me
+           --chdir dir
+           --keep
+           --nowatch
+           --quiet
+           --verbose
+           --version
+
+
+       Commands:
+           exp generate
+           exp run
+           exp watch
+           exp [path]
+
+DESCRIPTION
+REPORTING BUGS
+       Report bugs to dev@embedthis.com.
+
+COPYRIGHT
+       Copyright  (C)  2004-2014  Embedthis Software. Embedthis Expansive is a
+       trademarks of Embedthis Software.
+
+SEE ALSO
+       pak
+
+
+
+exp                              January 2014                            ME(1)

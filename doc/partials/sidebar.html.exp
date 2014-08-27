@@ -1,7 +1,10 @@
     
     <div class="ui large left vertical inverted labeled overlay sidebar menu">
         <div class="item">
-            <a href="@@{top}">
+            <a href="/index.html" class="logo">Expansive Docs</a>
+        </div>
+        <div class="item">
+            <a href="@@{top}index.html">
                 <b>General</b>
             </a>
             <div class="menu">

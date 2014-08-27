@@ -1,21 +1,41 @@
 #!/usr/bin/env ejs
 /*
     exp.es - Expansive Static Site Generator
-
-    exp [--noclean] generate    # generate entire site
-    exp filters, ...            # Generate only matching documents
-    exp [--gen] watch           # Watch for changes and regen
-    exp [--nowatch]             # Serve and watches for changes
  */
+
 module exp {
 
 require ejs.unix
 require ejs.template
 require ejs.web
 
+const CONFIG: Path = Path('exp.json')
+const VERSION = '0.1.0'
+const LISTEN = '4000'
+
+const USAGE = 'Usage: exp [options] [filters ...]
+    --chdir dir      # Change to directory before running
+    --gen            # Do an initial gen before watching
+    --keep           # Keep intermediate transforms
+    --listen IP:PORT # Endpoint to listen on
+    --log path:level # Trace to logfile
+    --noclean        # Do not clean final before generate
+    --nowatch        # No watch, just run
+    --quiet          # Quiet mode
+    --verbose        # Verbose mode
+    --version        # Output version information
+  Commands:
+    clean            # Clean final output directory
+    init             # Create exp.json
+    generate         # Generate entire site
+    filters, ...     # Generate only matching documents
+    watch            # Watch for changes and regen
+    <CR>             # Serve and watches for changes
+'
+
 class Exp {
-    const VERSION = '0.1.0'
     var args: Args
+    var dirs: Object
     var filters: Array
     var genall: Boolean
     var lastGen: Date
@@ -24,9 +44,8 @@ class Exp {
     var options: Object
     var paks: Path
     var processCount
-    var plugins
     var topMeta: Object
-    var transforms
+    var transforms: Object
     var verbosity: Number = 0
 
     let argsTemplate = {
@@ -46,14 +65,24 @@ class Exp {
         usage: usage,
     }
 
-    function Exp() {
-        transforms = {
-            exp: transformExp,
-            less: transformLess,
-            md: transformMarkdown,
-            sh: transformShell,
+    var ExpTemplate = {
+        title:       'Home page title',
+        url:         'Home page url',
+        description: 'Meta data description (optional)',
+        keywords:    'Meta data keywords (optional)',
+        control: {
+            exclude: [],
+            copy: [ ],
+            script: '',
+            plugins: [],
+            sitemap: {
+                include: /\.html/,
+            },
         }
     }
+
+
+    function Exp() { }
 
     public function unknown(argv, i) {
         let arg = argv[i].slice(argv[i].startsWith("--") ? 2 : 1)
@@ -66,27 +95,12 @@ class Exp {
     }
 
     function usage(): Void {
-        App.log.write('Usage: exp [options] [filter patterns...]\n' +
-            '    --chdir dir      # Change to directory before testing\n' + 
-            '    --gen            # Do an initial gen before watching\n' + 
-            '    --keep           # Keep intermediate transforms\n' + 
-            '    --listen IP:PORT # Endpoint to listen on\n' + 
-            '    --log path:level # Trace to logfile\n' + 
-            '    --noclean        # Do not clean final before generate\n' + 
-            '    --nowatch        # No watch, just run\n' + 
-            '    --quiet          # Quiet mode\n' + 
-            '    --verbose        # Verbose mode\n' + 
-            '    --version        # Output version information\n' +
-            '  Commands:\n' +
-            '    generate         # generate entire site\n' +
-            '    filters, ...     # Generate only matching documents\n' +
-            '    watch            # Watch for changes and regen\n' +
-            '    <CR>             # Serve and watches for changes\n' +
-            '\n')
+        App.log.write(USAGE)
         App.exit(1)
     }
 
     function parseArgs(): Void {
+        App.log.name = 'exp'
         args = Args(argsTemplate, App.args)
         options = args.options
         if (options.version) {
@@ -99,37 +113,44 @@ class Exp {
         if (options.verbose) {
             verbosity++
         }
+    }
+
+    function setup() {
         setupMeta()
+        setupInternalPlugins()
         setupPlugins()
         setupEjsTransformer()
+        return topMeta
     }
 
     function setupMeta() {
         topMeta = {
-            directories: {
-                documents: Path('documents'),
-                layouts:   Path('layouts'),
-                partials:  Path('partials'),
-                files:     Path('files'),
-                final:     Path('final'),
-            },
             layout: 'default',
-            listen: options.listen || '4000',
-            plugins: { },
-            watch: 2000,
+            control: {
+                directories: {
+                    documents: Path('documents'),
+                    layouts:   Path('layouts'),
+                    partials:  Path('partials'),
+                    files:     Path('files'),
+                    final:     Path('final'),
+                },
+                listen: options.listen || LISTEN
+                plugins: [],
+                watch: 2000,
+            }
         }
         if (App.config.exp) {
             blendMeta(topMeta, App.config.exp) 
         }
-        if (!Path('exp.json').exists) {
-            throw 'Cannot find exp.json'
-            fatal('Cannot find exp.json')
+        if (!CONFIG.exists) {
+            fatal('Cannot find ' + CONFIG)
         }
         loadConfig('.', topMeta)
+        dirs = topMeta.control.directories
     }
 
     function loadConfig(dir: Path, meta) {
-        let path = dir.join('exp.json')
+        let path = dir.join(CONFIG)
         if (path.exists) {
             let config
             try {
@@ -141,13 +162,40 @@ class Exp {
             if (meta.mode && meta.modes && meta.modes[meta.mode]) {
                 blend(meta, meta.modes[meta.mode])
             }
-            if (config.script) {
-                try {
-                    eval(config.script)
-                } catch (e) {
-                    fatal('Script in "' + path + '"\n' + e)
+            /* LEGACY */
+            let warned
+            for each (field in ['exclude', 'copy', 'script', 'sitemap', 'directories']) {
+                if (meta[field]) {
+                    meta.control[field] = meta[field]
+                    trace('Warn', 'Config "' + path + '" uses legacy property \"' + field + '"')
                 }
             }
+            if (config.control && config.control.script) {
+                delete meta.control.script
+                try {
+                    vtrace('Eval', 'Script for ' + CONFIG)
+                    eval(config.control.script)
+                } catch (e) {
+                    fatal('Script error in "' + path + '"\n' + e)
+                }
+            }
+            if (meta.control.sitemap) {
+                let ms = meta.control.sitemap
+                if (ms.include && (ms.include is String)) {
+                    ms.include = RegExp(ms.include.trim('/'))
+                }
+                if (ms.exclude && (ms.exclude is String)) {
+                    ms.exclude = RegExp(ms.exclude.trim('/'))
+                }
+            }
+        }
+    }
+
+    function setupInternalPlugins() {
+        transforms = topMeta.control.transforms = {
+            exp:  { render: transformExp },
+            less: { render: transformLess },
+            sh:   { render: transformShell },
         }
     }
 
@@ -155,30 +203,60 @@ class Exp {
         Package.json lists dependencies. Examine these for an exp.json
      */
     function setupPlugins() {
-        let path = Path('package.json')
-        let plugins = {}
-        if (path.exists) {
-            package = path.readJSON()
+        let package = Path('package.json')
+        if (package.exists) {
+            package = package.readJSON()
             blend(package, { directories: { paks: 'paks' } }, false)
+            dirs.paks = Path(package.directories.paks)
             paks = Path(package.directories.paks)
+            let plugins = []
             for (dep in package.dependencies) {
-                let pdir = paks.join(dep)
-                let econfig = pdir.join('exp.json')
-                if (econfig.exists) {
-                    transforms[dep] = transformPlugin
-                    loadConfig(transform.dirname, topMeta)
-                    let pconfig = topMeta.plugins[dep]
-                    plugins[dep] = (pconfig && pconfig.transform) ? pconfig.transform : 'transform.es'
+                plugins.push(dep)
+            }
+            plugins += topMeta.control.plugins
+            vtrace('Plugins', plugins.join(' '))
+            for each (name in plugins) {
+                let path = paks.join(name, 'exp.json')
+                if (path.exists) {
+                    let config = path.readJSON()
+                    for (let [ext, obj] in config.transforms) {
+                        if (!obj.script) {
+                            fatal('Plugin "' + file.extension + '" is missing a render script')
+                        }
+                        try {
+                            eval(obj.script)
+                        } catch (e) {
+                            fatal('Script error in "' + path + '"\n' + e)
+                        }
+                        vtrace('Config', 'Plugin "' + ext + '"')
+                    }
+                    if (config.script) {
+                        try {
+                            vtrace('Eval', 'Script for plugin "' + name + '"')
+                            eval(config.script)
+                        } catch (e) {
+                            fatal('Script error in "' + path + '"\n' + e)
+                        }
+                    }
                 }
             }
-            vtrace('Plugins', plugins)
         }
+    }
+
+    function plugin(ext, fun, obj = {}) {
+        let transform = transforms[ext] ||= {}
+        blend(transform, obj)
+        transform.render = fun
     }
 
     function process(): Void {
         let task = args.rest.shift()
+        if (task == 'init') {
+            init()
+            return
+        }
         let rest = args.rest
-        let meta = topMeta
+        let meta = setup()
         vtrace('Task', task, rest)
         lastGen = new Date(0)
 
@@ -207,7 +285,7 @@ class Exp {
                 genall = false
                 generate()
             } else {
-                genall = mastersModified(meta.directories.partials) || mastersModified(meta.directories.layouts)
+                genall = mastersModified(dirs.partials) || mastersModified(dirs.layouts)
                 serve(topMeta)
             }
             break
@@ -222,22 +300,21 @@ class Exp {
             options.quiet = false
         }
         lastGen = new Date
-        trace('Watching', 'for changes every ' + meta.watch + ' msec ...')
+        trace('Watching', 'for changes every ' + meta.control.watch + ' msec ...')
         while (true) {
-            event('check', lastGen - meta.watch/2)
-            genall = mastersModified(meta.directories.partials) || mastersModified(meta.directories.layouts)
+            event('check', lastGen - meta.control.watch/2)
+            genall = mastersModified(dirs.partials) || mastersModified(dirs.layouts)
             let mark = new Date()
             generate()
             lastGen = mark
-            App.sleep(meta.watch || 2000)
+            App.sleep(meta.control.watch || 2000)
         }
     }
 
     function serve(meta) {
-        let address = options.listen || meta.listen || '127.0.0.1:4000'
-        let documents = meta.final || 'final'
-        let server: HttpServer = new HttpServer({documents: documents})
-        let routes = meta.routes || Router.Top
+        let address = options.listen || meta.control.listen || '127.0.0.1:4000'
+        let server: HttpServer = new HttpServer({documents: dirs.final})
+        let routes = meta.control.routes || Router.Top
         var router = Router(Router.WebSite)
         router.addCatchall()
         server.on("readable", function (event, request) {
@@ -249,7 +326,11 @@ class Exp {
                 App.exit(1)
             }
         })
-        server.listen(address)
+        try {
+            server.listen(address)
+        } catch (e) {
+            fatal('Cannot listen on', address)
+        }
         if (options.nowatch) {
             trace('Listen', address)
             App.run()
@@ -260,7 +341,7 @@ class Exp {
     }
 
     function exclude(file, meta): Boolean {
-        for each (d in meta.exclude) {
+        for each (d in meta.control.exclude) {
             if (file.startsWith(d)) {
                 return true
             }
@@ -283,12 +364,12 @@ class Exp {
     function generate() {
         let started = new Date
         processCount = 0
-        generateDir(topMeta.directories.documents, topMeta)
+        generateDir(dirs.documents, topMeta)
         filesCopy(topMeta)
         postclean()
         sitemap()
         if (genall) {
-            trace('Info', 'Generated ' + processCount + ' files to "' + topMeta.directories.final + '". ' +
+            trace('Info', 'Generated ' + processCount + ' files to "' + dirs.final + '". ' +
                 'Elapsed time %.2f' % ((started.elapsed / 1000)) + ' secs.')
         } else if (filters && processCount == 0) {
             trace('Warn', 'No matching files for filter: ' + filters)
@@ -296,20 +377,20 @@ class Exp {
     }
 
     function filesCopy(meta) {
-        if (!filters && meta.directories.files.exists) {
-            if (meta.directories.files.files().length == 0) {
+        if (!filters && dirs.files.exists) {
+            if (dirs.files.files().length == 0) {
                 return
             }
             let home = App.dir
-            let dest = meta.directories.final.absolute
-            App.chdir(meta.directories.files)
+            let dest = dirs.final.absolute
+            App.chdir(dirs.files)
             cp('**', dest, {tree: true})
             App.chdir(home)
         }
     }
 
     function shouldCopy(file, meta): Boolean {
-        for each (d in meta.copy) {
+        for each (d in meta.control.copy) {
             if (file.startsWith(d)) {
                 return true
             }
@@ -323,9 +404,9 @@ class Exp {
                 trace('Copy', file)
             }
             if (file.isDir) {
-                let trimmed = rebase(file, meta.directories.documents)
+                let trimmed = rebase(file, dirs.documents)
                 let home = App.dir
-                let dest = meta.directories.final.absolute
+                let dest = dirs.final.absolute
                 App.chdir(file)
                 cp('**', dest.join(trimmed), {tree: true})
                 App.chdir(home)
@@ -336,7 +417,9 @@ class Exp {
     }
 
     function generateDir(dir: Path, meta) {
+        let priorDirs = dirs
         loadConfig(dir, meta)
+        dirs = meta.control.directories
         for each (file in dir.files()) {
             if (exclude(file, meta)) {
                 vtrace('Exclude', file)
@@ -353,11 +436,12 @@ class Exp {
                 generateDir(file, meta.clone())
             } else {
                 if (genall || checkModified(file, meta)) { 
-                    meta.page = rebase(file, meta.directories.documents)
+                    meta.page = rebase(file, dirs.documents)
                     transform(file, meta)
                 }
             }
         }
+        dirs = priorDirs
     }
 
     function rebase(file, to) {
@@ -369,12 +453,12 @@ class Exp {
         if (file.isDir) {
             return checkModifiedDir(file, meta)
         }
-        let trimmed = rebase(file, meta.directories.documents)
-        let outfile = meta.directories.final.join(trimmed)
+        let trimmed = rebase(file, dirs.documents)
+        let outfile = dirs.final.join(trimmed)
         while (transforms[outfile.extension]) {
             outfile = outfile.trimExt()
         }
-        if (outfile.exists && file.modified.time < (lastGen.time - meta.watch/2)) {
+        if (outfile.exists && file.modified.time < (lastGen.time - meta.control.watch/2)) {
             return false
         } else {
             vtrace('Modified', file)
@@ -384,13 +468,13 @@ class Exp {
     }
 
     function checkModifiedDir(file, meta) {
-        let trimmed = rebase(file, meta.directories.documents)
-        let outfile = meta.directories.final.join(trimmed)
+        let trimmed = rebase(file, dirs.documents)
+        let outfile = dirs.final.join(trimmed)
         if (!outfile.exists) {
             return true
         }
         for each (f in file.files('**')) {
-            if (f.modified.time >= (lastGen.time - meta.watch/2)) {
+            if (f.modified.time >= (lastGen.time - meta.control.watch/2)) {
                 vtrace('Modified', f)
                 event('onchange', f, meta)
                 return true
@@ -402,7 +486,7 @@ class Exp {
     function transform(file, meta) {
         let outfile
         while ((outfile = transformFile(file, meta.clone())) != null) {
-            if (file.startsWith(meta.directories.final) && !options.keep) {
+            if (file.startsWith(dirs.final) && !options.keep) {
                 file.remove()
             }
             if (!transforms[outfile.extension]) {
@@ -414,7 +498,6 @@ class Exp {
     }
 
     function transformFile(file, meta): Path? {
-        let dirs = meta.directories
         let outfile
         if (file.startsWith(dirs.documents)) {
             trimmed = rebase(file, dirs.documents)
@@ -433,9 +516,14 @@ class Exp {
         if (fileMeta) {
             blendMeta(meta, fileMeta)
         }
-        if (transforms[file.extension]) {
-            contents = transforms[file.extension].call(this, contents, file, meta)
-            vtrace('Processed', file, '=>', outfile)
+        let transform = transforms[file.extension]
+        if (transform) {
+            if (transform.render) {
+                contents = transform.render.call(this, contents, file, meta)
+                vtrace('Processed', file, '=>', outfile)
+            } else {
+                fatal("Transform missing render method", file)
+            }
         } else {
             vtrace('Copy', file + ' => ' + outfile)
         }
@@ -477,9 +565,9 @@ class Exp {
         meta.top = '../'.times(count)
         if (!meta.isPartial) {
             let trimExt = meta.extensions.slice(1).join('.')
-            let url = rebase(file, meta.directories.documents).trimEnd('.' + trimExt)
+            let url = rebase(file, dirs.documents).trimEnd('.' + trimExt)
             meta.basename = url.basename
-            meta.outpath = meta.directories.final.join(url)
+            meta.outpath = dirs.final.join(url)
             meta.url = Uri(url)
         }
         global.top = meta.top
@@ -500,8 +588,7 @@ class Exp {
             global._export_.call(this)
         } catch (e) {
             trace('Error', 'Error when processing ' + meta.page + ' in file ' + file)
-            trace('Details', e.message)
-            App.log.debug(3, e)
+            fatal(e)
         }
         let results = obuf.toString()
         this.obuf = priorBuf
@@ -509,7 +596,7 @@ class Exp {
         return results
     }
 
-    function runContents(cmd, contents, file) {
+    function transformContents(cmd, contents, file) {
         let path = file.dirname.join('_etmp_').joinExt(file.extension)
         let results
         try {
@@ -525,44 +612,45 @@ class Exp {
         return results
     }
 
-    //  MOB - should be externalized via plugin
-
-    function transformMinify(contents, file, meta) {
-        return runContents('recess -compress', contents, file)
-    }
-
-    //  MOB - should be externalized via plugin
-
     function transformLess(contents, file, meta) {
         let compress = ''
-        if (meta.plugins.less && meta.plugins.less.compress) {
-            compress = meta.plugins.less.compress
+        //  MOB - REVIEW
+        let plugins = meta.control.plugins
+        if (plugins.less && plugins.less.compress) {
+            compress = plugins.less.compress
         }
-        let results = runContents('recess ' + compress + ' -compile', contents, file)
+        let results = transformContents('recess ' + compress + ' -compile', contents, file)
         if (results == '') {
             /* Run again to get diagnostics */
-            results = runContents('recess ', contents, file)
+            results = transformContents('recess ', contents, file)
             fatal('Failed to parse less sheet ' + file + '\n' + results + '\n')
         }
-        return runContents('autoprefixer -o -', results, file)
-    }
-
-    function transformMarkdown(contents, file, meta) {
-        return runContents('marked', contents, file)
+        return transformContents('autoprefixer -o -', results, file)
     }
 
     function transformShell(contents, file, meta) {
-        return runContents('bash', contents, file)
+        return transformContents('bash', contents, file)
     }
 
+/*  UNUSED
     function transformPlugin(contents, file, meta) {
-        let transform = plugins[file.extension]
-        vtrace('Run', 'ejs transform.es ' + file + ' ' + file.trimExt())
-        //  MOB incomplete
-        return runContents('ejs transform.es ' + file + ' ' + file.trimExt(), file)
+        let render = meta.control.plugins[file.extension].render
+        if (!render) {
+            fatal('Plugin "' + file.extension + '" is missing a render script')
+        }
+        let result
+        try {
+            eval(render)
+            result = global.transform(contents, file, meta)
+        } catch (e) {
+            fatal('Script error in "' + file + '"\n' + e)
+        }
+        vtrace('Render', file)
+        return result
     }
+*/
 
-    function matchFile(dir: Path, pattern: String) {
+    function matchFile(dir: Path, pattern: String, meta) {
         for each (f in dir.files(pattern + '*')) {
             if (f.extension == 'html') {
                 return f
@@ -578,7 +666,7 @@ class Exp {
 
     function blendLayout(contents, file, meta) {
         if (meta.layout) {
-            let layout = matchFile(meta.directories.layouts, meta.layout)
+            let layout = matchFile(dirs.layouts, meta.layout, meta)
             if (!layout) {
                 fatal('Cannot find layout "' + meta.layout + '"')
             }
@@ -594,12 +682,12 @@ class Exp {
             let path = file.dirname.join(basename).joinExt(extensions)
             vtrace('Blend', layout + ' + ' + file + ' => ' + path)
             path.write(contents)
-            if (file.startsWith(meta.directories.final) && !options.keep) {
+            if (file.startsWith(dirs.final) && !options.keep) {
                 file.remove()
             }
             let outfile = transform(path, meta)
             contents = outfile.readString()
-            if (outfile.startsWith(meta.directories.final) && !options.keep) {
+            if (outfile.startsWith(dirs.final) && !options.keep) {
                 outfile.remove()
             }
         }
@@ -627,7 +715,7 @@ class Exp {
     }
 
     public function blendPartial(name: Path, options = {}) {
-        let partial = matchFile(meta.directories.partials, name)
+        let partial = matchFile(dirs.partials, name, global.meta)
         if (partial) {
             let outfile
             try {
@@ -693,15 +781,15 @@ class Exp {
 
     function blendMeta(meta, add) {
         blend(meta, add)
-        for (let [key, value] in meta.directories) {
-            meta.directories[key] = Path(value)
+        for (let [key, value] in dirs) {
+            dirs[key] = Path(value)
         }
     }
 
     function mastersModified(dir): Boolean {
         lastGen ||= Date(0)
         for each (file in dir.files('*')) {
-            if (file.modified.time >= (lastGen.time - topMeta.watch/2)) {
+            if (file.modified.time >= (lastGen.time - topMeta.control.watch/2)) {
                 event('onchange', file, topMeta)
                 return true
             }
@@ -718,25 +806,40 @@ class Exp {
 
     function preclean() {
         if (!filters && !options.noclean) {
-            topMeta.directories.final.removeAll()
+            dirs.final.removeAll()
         }
     }
 
     function postclean() {
-        topMeta.directories.final.join('partials').remove()
+        dirs.final.join('partials').remove()
+    }
+
+    function init() {
+print("HERE")
+        let path = CONFIG
+        if (path.exists) {
+            trace('Warn', CONFIG + ' already exists')
+            return
+        }
+        trace('Create', CONFIG)
+        path.write(serialize(ExpTemplate, {pretty: true, indent: 4, quotes: false}))
+        for each (p in [ 'documents', 'layouts', 'partials', 'files', 'final' ]) {
+            Path(p).makeDir()
+        }
     }
 
     function sitemap() {
         if (!genall) {
             return
         }
-        let path = topMeta.directories.final.join('Sitemap.xml')
+        let path = dirs.final.join('Sitemap.xml')
+        path.dirname.makeDir()
         let fp = new File(path, 'w')
         fp.write('<?xml version="1.0" encoding="UTF-8"?>\n' +
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
 
         let count = 0
-        for each (file in topMeta.directories.final.files('**', topMeta.sitemap)) {
+        for each (file in dirs.final.files('**', topMeta.control.sitemap)) {
             fp.write('    <url>\n' +
                 '        <loc>' + topMeta.url + file.trimComponents(1) + '</loc>\n' +
                 '        <lastmod>' + file.modified.format('%F') + '</lastmod>\n' +
@@ -785,7 +888,7 @@ class Exp {
 
     public function collection(query: Object, operation = 'and', pattern = "**") {
         let list = []
-        for each (file in topMeta.directories.documents.files(pattern)) {
+        for each (file in dirs.documents.files(pattern)) {
             if (file.isDir) continue
             let meta = getFileMeta(file)
             let match = true
@@ -812,12 +915,8 @@ try {
     exp.parseArgs()
     exp.process()
 } catch (e) { 
-    if (e is String) {
-        App.log.error(e)
-    } else {
-        App.log.error(e.message)
-        App.log.debug(3, e)
-    }
+    App.log.error('Internal application error')
+    App.log.error(e)
     App.exit(1)
 }
 } /* module exp */

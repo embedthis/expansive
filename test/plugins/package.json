@@ -21,7 +21,6 @@
     },
     "license": "GPL",
     "dependencies": {
-        "bash": "*",
-        "exp-marked": "~0.1"
-    }
+        "test": "*",
+    },
 }

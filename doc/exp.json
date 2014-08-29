@@ -6,13 +6,13 @@
 
     control: {
         exclude: [
-            'documents/css/app.less',
-            'documents/css/theme.less',
+            'css/app.less',
+            'css/theme.less',
         ],
         copy: [
-            'documents/images/',
-            'documents/lib/',
-            'documents/scripts/',
+            'images',
+            'lib',
+            'scripts',
         ],
         script: `
             function menu(item) meta.menu == item ? 'active' : ''

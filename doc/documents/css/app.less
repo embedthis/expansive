@@ -1,5 +1,5 @@
 /*
-    app.less
+    app.less - Embedthis Application Style Sheet
  */
 
 html, body {
@@ -28,6 +28,21 @@ body {
             font-family: @font-family-logo;
             font-size: 1.9em;
             color: @white;
+        }
+        .header.item {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            padding: 7px 21px 7px 10px;
+            font-weight: bold;
+            font-size: 1.05em;
+            background-color: transparent;
+            &:hover {
+              background: fade(@white, 10%);
+            }
+        }
+        a.item.active {
+            border-right: 6px solid @red;
         }
     }
 }
@@ -103,7 +118,7 @@ body {
 }
 
 .content {
-	min-height: @content-min-height;
+	min-height: 80%;
     text-decoration: none;
     background: @white;
     padding: 1rem 2rem 2rem 2rem;

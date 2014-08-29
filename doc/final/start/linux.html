@@ -87,20 +87,22 @@
     </div>
 
     <div class="ui inverted masthead">
-                <div class="column">
+         
+        <div class="column">
             <div class="ui inverted menu">
-                <div class="ui black small launch right attached toggle button" style="width: 40px;">
-                    <i class="icon list layout"> </i>
+                <div class="ui black small launch right attached toggle button">
+                    <i class="icon list layout"></i>
                 </div>
                 <div class="right menu">
                     <a class="item" href="https://embedthis.com/">Embedthis</a>
-                    <a class="item" href="https://embedthis.com/exp/">Expansive Site</a>
-                    <a class="item" href="http://goo.gl/dGRDl4">Expansive News</a>
-                    <a class="item" href="https://github.com/embedthis/exp">Repository</a>
+                    <a class="item" href="https://embedthis.com/appweb/">Appweb Site</a>
+                    <a class="item" href="http://goo.gl/dGRDl4">Appweb News</a>
+                    <a class="item" href="https://github.com/embedthis/appweb">Repository</a>
                     <a class="item" href="https://embedthis.com/blog/">Blog</a>
                     <a class="item" href="https://twitter.com/mobstream">Twitter</a>
                 </div>
             </div>
+            
             <div class="ui breadcrumb">
                 <a class="section" href="../">Home</a>
                 
@@ -117,8 +119,9 @@
                 <div class="divider">/</div>
                 <a class="section active" href="linux.html">Installing on Linux</a>
             </div>
+            
             <div class="ui right floated basic segment version">
-                Version: 0.4.0
+                v0.4.0
             </div>
         </div>
 
@@ -144,15 +147,27 @@ exp --help
     </div>
     <div class="terms ui basic center aligned segment">
         <p>&copy; Embedthis Software, 2003-2014. All rights reserved.
-            Generated on Aug 26, 2014.
+            Generated on Aug 27, 2014.
         </p>
     </div>
 
+     
     <script src="../lib/jquery/jquery.js"></script>
     <script src="../lib/semantic/packaged/javascript/semantic.js"></script>
     <script>
         $('.sidebar').sidebar({overlay: false}).sidebar('toggle');
         $('.sidebar').first().sidebar('attach events', '.toggle.button');
+        $(function() {
+            var active = $('.sidebar a[href$="' + window.location.pathname +'"]');
+            active.addClass('active');
+            var sidebar = $(".sidebar");
+            var height = sidebar.height();
+            if (active.offset().top >= height) {
+                var diff = height - active.offset().top;
+                sidebar.scrollTop(height);
+            }
+        });
     </script>
+
 </body>
 </html>

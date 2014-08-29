@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>Home page urlhello.html</loc>
-        <lastmod>2014-08-27</lastmod>
+        <loc>https://embedthis.com/hello.html.sh</loc>
+        <lastmod>2014-08-28</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>Home page urlindex.html</loc>
-        <lastmod>2014-08-27</lastmod>
+        <loc>https://embedthis.com/index.html</loc>
+        <lastmod>2014-08-28</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>Home page urlSitemap.xml</loc>
-        <lastmod>2014-08-27</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.5</priority>
-    </url>
-    <url>
-        <loc>Home page urltest.html</loc>
-        <lastmod>2014-08-27</lastmod>
+        <loc>https://embedthis.com/shell.html</loc>
+        <lastmod>2014-08-28</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.5</priority>
     </url>

@@ -2,7 +2,7 @@
 .SH NAME
 exp \- Embedthis Expansive -- Static web site generator using Ejscript
 .SH SYNOPSIS
-.B exp 
+.B exp
     \fB--chdir directory\fR
     \fB--gen\fR
     \fB--keep\fR
@@ -32,12 +32,12 @@ It quickly creates static HTML pages from layouts, partials and content pages.
 There are many static site generators, why another one?  Existing site generators are often slow, very slow, painfully slow.
 When creating or managing a web site, you need tools that do not delay the creative design process. They need to be as fast
 as possible. Expansive is fast, pure and simple.
-.PP 
+.PP
 Other site generators frequently provide poor diagnostics. Fine when everything works, but when a page fails to generate due
 to a scripting error -- debugging can be a nightmare. Expansive shows exactly where errors occur.
 
 .SH FEATURES
-Expansive is implemented primarily as a single script of some 900 lines of Ejscript and is very hackable.  It has the
+Expansive is implemented primarily as a single script of some 1K lines of Ejscript and is very hackable.  It has the
 following major features:
 
     . Generate static site from pages, layouts, partials and scripts
@@ -71,11 +71,11 @@ To generate a site from 'documents' into 'final'
 
 To serve content and watch for changes
     exp
-    
+
 To watch for changes but not serve
     exp watch
 
-To generate a matching set of documents 
+To generate a matching set of documents
     exp documents/index.html
     exp documents/manual
 
@@ -133,9 +133,9 @@ properties, but you can add your own data as well. See the META PROPERTIES secti
 
 .PP
 In the control section, the 'exclude' array defines a set of file patterns to exclude from processing. The 'copy' array
-defines a set of file patterns to copy without processing. The script string defines an optional global script to inject
-code into the Ejscript execution context. The sitemap collection configures what documents to include in the generated
-sitemap XML file.  
+defines a set of file patterns to copy without processing. These patterns are relative to the 'documents' directory. The
+script string defines an optional global script to inject code into the Ejscript execution context. The sitemap collection
+configures what documents to include in the generated sitemap XML file.
 
 .SH DYNAMIC CONTENT
 Expansive uses embedded Javascript in web pages to fully support dynamic content.  Scripts can be embedded via the special
@@ -145,7 +145,7 @@ For example:
  <p>Today is <% write(Date()) %>
 
 The write function is used to render data to be used in place of the <% %> element.  You can use 'writeSafe' to HTML
-escape the data before writing. You can also use a simpler form <%= that means use the result of the Javascript 
+escape the data before writing. You can also use a simpler form <%= that means use the result of the Javascript
 expression, HTML escapse the data and then write it. For example:
 
  <p>Today is <%= Date() %>
@@ -279,13 +279,15 @@ URL for the current page.
 Expansive defines a set of control properites in the meta.control:
 .TP 12
 copy
-Array of directories to copy without processing.
+Array of patterns to copy without processing. The patterns may include "*" or "**". If a directory is specifed, all files
+under the directory are copied.
 .TP 12
 directories
 Directories collection. Entries for 'documents', 'files', 'final', 'layouts', and 'partials'.
 .TP 12
 exclude
-Array of patterns to exclude from processing. If the document begins with a pattern, it is excluded.
+Array of patterns to exclude from processing. The patterns may include "*" or "**". If a directory is specifed, all files
+under the directory are excluded.
 .TP 12
 listen
 Address on which to listen for HTTP requests. May be just a port number.
@@ -359,21 +361,26 @@ trace(tag, msg...)
 To emit console trace while processing.
 
 .SH COMMANDS
-.TP 
+.TP
 clean
 Remove generated content from the 'final' output directory.
 .TP
 init
 Initialize a directory by creating an 'exp.json' configuration file.
 .TP
-generate                   
+generate
 Generate the site by processing files from 'documents', 'layouts', 'partials' and 'files' into the 'final' output directory.
 .TP
-watch                   
+watch
 Watch for changes to 'documents', 'layouts' and 'partials' and regenerate the modified files. Changes to 'layouts' or 'partials' will cause the entire site to be regenerated.
 .TP
-<CR>                   
+<CR>
 Running exp without any arguments will cause run the embedded web server to serve the site. By default Expansive will listen on port 4000. This can be modified via the 'listen' property in the meta collection.
+.TP
+patterns ...
+Providing a list of patterns to filter the set of documents to generate.  Expansive will generate only the documents that
+begin with the given patterns.
+
 
 .SH OPTIONS
 .TP 10

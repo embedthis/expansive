@@ -1,0 +1,5 @@
+.theme { 
+	color: #777;
+    -webkit-transition: color 0.3s ease;
+            transition: color 0.3s ease;
+}

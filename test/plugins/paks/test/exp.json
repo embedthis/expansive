@@ -1,0 +1,13 @@
+{
+    control: {
+        transforms: {
+            test: {
+                script: `
+                    expansive.plugin('test', 'test', '*', function (contents, file, meta, transform) {
+                        return runFromContents('bash', contents, file)
+                    })
+                `
+            }
+        }
+    }
+}

@@ -23,8 +23,11 @@ SYNOPSIS
        Commands:
            clean
            init
+           install
            render
            filters ...
+           upgrade
+           uninstall
            watch
            <CR>
 
@@ -485,21 +488,31 @@ COMMANDS
        init   Initialize a directory by creating an  'exp.json'  configuration
               file.
 
+       install
+              Install a plugin from the Pak catalog.
+
        render Render the site by processing files from 'documents', 'layouts',
               'partials' and 'files' into the 'public' output directory.
 
-       watch  Watch for changes to 'documents', 'layouts' and  'partials'  and
-              render  the  modified  files. Changes to 'layouts' or 'partials'
+       uninstall
+              Uninstall a plugin from the exp.json  plugin  list.  The  plugin
+              remains in the local Pak cache.
+
+       upgrade
+              Upgrade a plugin version in the local Pak cache.
+
+       watch  Watch  for  changes to 'documents', 'layouts' and 'partials' and
+              render the modified files. Changes to  'layouts'  or  'partials'
               will cause the entire site to be rendered.
 
-       <CR>   Running exp without any arguments will cause  run  the  embedded
-              web  server  to serve the site. By default Expansive will listen
-              on port 4000. This can be modified via the 'listen' property  in
+       <CR>   Running  exp  without  any arguments will cause run the embedded
+              web server to serve the site. By default Expansive  will  listen
+              on  port 4000. This can be modified via the 'listen' property in
               the meta collection.
 
        patterns ...
-              Providing  a  list of patterns to filter the set of documents to
-              render.  Expansive will render only  the  documents  that  begin
+              Providing a list of patterns to filter the set of  documents  to
+              render.   Expansive  will  render  only the documents that begin
               with the given patterns.
 
 
@@ -515,20 +528,20 @@ OPTIONS
 
 
        --listen IP:PORT URI
-                 Change the port on which Expansive will listen. Can omit  the
+                 Change  the port on which Expansive will listen. Can omit the
                  IP portion and only specify a port.
 
 
        --log filename:level
-                 Omit  trace  to  the specified file. The level is a verbosity
-                 level from 0-5 with 5  being  the  most  verbose.   The  '-v'
-                 option  is  an  alias  for level 1.  Can also abbreviate this
-                 switch by just specify a level  option.  For  example:  '-5'.
-                 HTTP  requests and HTTP headers will be traced at levels 2-4.
+                 Omit trace to the specified file. The level  is  a  verbosity
+                 level  from  0-5  with  5  being  the most verbose.  The '-v'
+                 option is an alias for level 1.   Can  also  abbreviate  this
+                 switch  by  just  specify  a level option. For example: '-5'.
+                 HTTP requests and HTTP headers will be traced at levels  2-4.
 
 
-       --noclean Do not clean the  'public'  directory  before  rendering.  By
-                 default  Expansive will remove all the content under 'public'
+       --noclean Do  not  clean  the  'public'  directory before rendering. By
+                 default Expansive will remove all the content under  'public'
                  first.
 
 
@@ -554,7 +567,7 @@ REPORTING BUGS
        Report bugs to dev@embedthis.com.
 
 COPYRIGHT
-       Copyright  (C)  2004-2014  Embedthis  Software.  Bit and Ejscript are a
+       Copyright (C) 2004-2014 Embedthis Software.  Bit  and  Ejscript  are  a
        trademarks of Embedthis Software.
 
 SEE ALSO

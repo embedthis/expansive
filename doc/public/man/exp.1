@@ -18,8 +18,11 @@ exp \- Embedthis Expansive -- Static web site generator using Ejscript
 .B Commands:
     clean
     init
+    install
     render
     filters ...
+    upgrade
+    uninstall
     watch
     <CR>
 .RE
@@ -428,8 +431,17 @@ Remove rendered content from the 'public' output directory.
 init
 Initialize a directory by creating an 'exp.json' configuration file.
 .TP
+install
+Install a plugin from the Pak catalog.
+.TP
 render
 Render the site by processing files from 'documents', 'layouts', 'partials' and 'files' into the 'public' output directory.
+.TP
+uninstall
+Uninstall a plugin from the exp.json plugin list. The plugin remains in the local Pak cache.
+.TP
+upgrade
+Upgrade a plugin version in the local Pak cache.
 .TP
 watch
 Watch for changes to 'documents', 'layouts' and 'partials' and render the modified files. Changes to 'layouts' or 'partials' will cause the entire site to be rendered.

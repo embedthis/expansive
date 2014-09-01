@@ -26,8 +26,11 @@ exp(1)                           user commands                          exp(1)
        <b>commands:</b>
            clean
            init
+           install
            render
            filters ...
+           upgrade
+           uninstall
            watch
            &lt;cr&gt;
 
@@ -459,21 +462,31 @@ exp(1)                           user commands                          exp(1)
        init   initialize a directory by creating an  'exp.json'  configuration
               file.
 
+       install
+              install a plugin from the pak catalog.
+
        render render the site by processing files from 'documents', 'layouts',
               'partials' and 'files' into the 'public' output directory.
 
-       watch  watch for changes to 'documents', 'layouts' and  'partials'  and
-              render  the  modified  files. changes to 'layouts' or 'partials'
+       uninstall
+              uninstall a plugin from the exp.json  plugin  list.  the  plugin
+              remains in the local pak cache.
+
+       upgrade
+              upgrade a plugin version in the local pak cache.
+
+       watch  watch  for  changes to 'documents', 'layouts' and 'partials' and
+              render the modified files. changes to  'layouts'  or  'partials'
               will cause the entire site to be rendered.
 
-       &lt;cr&gt;   running exp without any arguments will cause  run  the  embedded
-              web  server  to serve the site. by default expansive will listen
-              on port 4000. this can be modified via the 'listen' property  in
+       &lt;cr&gt;   running  exp  without  any arguments will cause run the embedded
+              web server to serve the site. by default expansive  will  listen
+              on  port 4000. this can be modified via the 'listen' property in
               the meta collection.
 
        patterns ...
-              providing  a  list of patterns to filter the set of documents to
-              render.  expansive will render only  the  documents  that  begin
+              providing a list of patterns to filter the set of  documents  to
+              render.   expansive  will  render  only the documents that begin
               with the given patterns.
 
 <b>options</b>
@@ -485,18 +498,18 @@ exp(1)                           user commands                          exp(1)
                  debugging.
 
        <b>--listen ip:port uri</b>
-                 change the port on which expansive will listen. can omit  the
+                 change  the port on which expansive will listen. can omit the
                  ip portion and only specify a port.
 
        <b>--log filename:level</b>
-                 omit  trace  to  the specified file. the level is a verbosity
-                 level from 0-5 with 5  being  the  most  verbose.   the  '-v'
-                 option  is  an  alias  for level 1.  can also abbreviate this
-                 switch by just specify a level  option.  for  example:  '-5'.
-                 http  requests and http headers will be traced at levels 2-4.
+                 omit trace to the specified file. the level  is  a  verbosity
+                 level  from  0-5  with  5  being  the most verbose.  the '-v'
+                 option is an alias for level 1.   can  also  abbreviate  this
+                 switch  by  just  specify  a level option. for example: '-5'.
+                 http requests and http headers will be traced at levels  2-4.
 
-       <b>--noclean </b>do not clean the  'public'  directory  before  rendering.  by
-                 default  expansive will remove all the content under 'public'
+       <b>--noclean </b>do  not  clean  the  'public'  directory before rendering. by
+                 default expansive will remove all the content under  'public'
                  first.
 
        <b>--norender</b>
@@ -515,7 +528,7 @@ exp(1)                           user commands                          exp(1)
        report bugs to dev@embedthis.com.
 
 <b>copyright</b>
-       copyright  (c)  2004-2014  embedthis  software.  bit and ejscript are a
+       copyright (c) 2004-2014 embedthis software.  bit  and  ejscript  are  a
        trademarks of embedthis software.
 
 <b>see also</b>

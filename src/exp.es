@@ -664,7 +664,7 @@ class Exp {
         meta.file = file
         meta.public = publicNames[file] = (publicNames[file] || getFinalDest(file, meta))
         meta.basename = meta.public.basename
-        meta.url = Uri(meta.public)
+        meta.url = Uri(rebase(meta.public, dirs.public))
         let dir = meta.document.dirname
         let count = (dir == '.') ? 0 : dir.components.length
         meta.top = '../'.times(count)

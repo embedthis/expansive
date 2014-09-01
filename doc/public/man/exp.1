@@ -120,6 +120,14 @@ This creates an exp.json file similar to that below:
     url: 'Home page url',
     description: 'Meta data description (optional)',
     keywords: 'Meta data keywords (optional)',
+    control: {
+        exclude: [ ],
+        copy: [ ],
+        script: '',
+        sitemap: {
+            include: '/\\.html/'
+        }
+    }
  }
 .RE
 .PP
@@ -182,9 +190,6 @@ Run shell scripts and capture the output
 exp-css
 Process CSS files to add browser specific prefixs and minify the output. Requires 'autoprefixer' and 'recess' to be installed.
 .TP 10
-exp-esp
-Compile ESP web pages and applications.
-.TP 10
 exp-gzip
 Compress final output using gzip. Files are rendered with a 'gz' extension.
 .TP 10
@@ -193,22 +198,6 @@ Process Javascript files to mangle and minify. Requires 'uglify' to be installed
 .TP 10
 exp-less
 Process Less stylesheets into CSS. Requires 'recess' to be installed.
-.TP 10
-exp-marked
-Install the Markdown program. Use with the exp-md plugin for Markdown files.
-.TP 10
-exp-md
-Process Markdown files and emit html.
-.TP 10
-exp-recess
-Install the recess program. Use with the exp-less plugin for Less file processing, and the exp-css file
-for minifying CSS files.
-.TP 10
-exp-sass
-Process SASS files into CSS. Requires "sass" to be installed. 
-.TP 10
-exp-uglifyjs
-Install Uglify-js. Use with the exp-js plugin to mangle and minify Javascripts.
 
 .SH LAYOUTS
 A layout page defines the top level HTML content for a set of pages.  The layout defines the format, look and feel of the
@@ -341,9 +330,6 @@ Expansive defines a set of control properites in the meta.control:
 copy
 Array of patterns to copy without processing. The patterns may include "*" or "**". If a directory is specifed, all files
 under the directory are copied.
-.TP 12
-dependencies
-Hash of file dependency relationships. The hash key is the document path and the value is a set of files that if modified, cause the document to be regenerated. The document and files are relative to the documents directory. The set of files can be a string or an array of files. Each value file may contain "*" or "**".
 .TP 12
 directories
 Directories collection. Entries for 'documents', 'files', 'public', 'layouts', and 'partials'.

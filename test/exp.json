@@ -1,0 +1,71 @@
+{
+    title: "Home page title",
+    url: "https://embedthis.com",
+    description: "Meta data description (optional)",
+    keywords: "Meta data keywords (optional)",
+    control: {
+        copy:    [ 'images', 'lib', 'scripts' ],
+        depends: { 'css/all.css.less': [ '*.less' ] },
+        exclude: [ 'theme.less' ],
+        plugins: [ 'bash', 'less', 'css', 'js', 'marked', 'test', 'gzip', 'uglifyjs' ],
+        sitemap: {
+            include: [ '**.html' ],
+            exclude: [ 'mob.html' ],
+        },
+
+        /*
+            UNUSED
+
+            dump("META", expansive.getFileMeta('documents/users/configuration.html'))
+            print("META", expansive.meta)
+            print("COLL", expansive.meta.coll)
+            print("LIST", expansive.collection({title: 'Internals'}))
+         */
+
+        _script: `
+            /* Detect changes to *.less and then touch all.css.less */
+            function onchange(file, meta) {
+                let path = Path('documents/css/all.css.less')
+                if (file.extension == 'less' && file != path) {
+                    touch(path)
+                }
+            }
+
+            /* If app.less and theme.less are being excluded - then manually check if they have been modified */
+            function check(mark) {
+                for each (file in ['app.less', 'theme.less']) {
+                    if (Path('documents/css').join(file).modified >= mark) {
+                        let path = Path('documents/css/all.css.less')
+                        vtrace('Touch', path)
+                        touch(path)
+                        break
+                    }
+                }
+            }
+        `
+    },
+    mode: 'debug',
+    modes: {
+        debug: {
+            control: {
+                services: {
+                    compress: {
+                        enable: false,
+                        include: [ '**.html' ],
+                    },
+                    'minify-js': {
+                        compress: true,
+                        mangle: true,
+                        dotmin: true,
+                    },
+                    'prefix-css': {
+                        enable: true,
+                    },
+                    'minify-css': {
+                        enable: true,
+                    }
+                }
+            }
+        }
+    }
+}

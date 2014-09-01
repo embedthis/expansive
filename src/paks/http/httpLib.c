@@ -15213,7 +15213,10 @@ PUBLIC void httpSetDefaultDirs(HttpRoute *route)
 {
     httpSetDir(route, "cache", 0);
     httpSetDir(route, "client", 0);
-    httpSetDir(route, "paks", "paks");
+    httpSetDir(route, "paks", 0);
+#if FUTURE
+    httpSetDir(route, "public", 0);
+#endif
 }
 
 

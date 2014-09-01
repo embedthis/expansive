@@ -1,0 +1,8 @@
+{
+}
+### Hello World
+My system is <@= System.hostname @>
+<@ var number = 42 @>
+ATAT @@number
+EXPR @@{number}
+-EOF-

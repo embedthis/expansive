@@ -4585,7 +4585,7 @@ PUBLIC int httpLoadConfig(HttpRoute *route, cchar *path);
 
 /**
     Define the default directory route variables
-    @description This defines the default directories for the "cache", "client" and "pak" directories.
+    @description This defines the default directories for the "cache", "client", "pak" and "public" directories.
     @param route Route to modify
     @ingroup HttpRoute
     @stability Prototype

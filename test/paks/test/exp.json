@@ -1,0 +1,13 @@
+{
+    control: {
+        transforms: {
+            name:   'test',
+            from:   'test',
+            to:     '*',
+            script: `
+                function transform(contents, meta, service)
+                    run('bash', contents)
+            `
+        }
+    }
+}

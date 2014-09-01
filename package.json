@@ -46,6 +46,7 @@
     "directories": {
         "paks": "src/paks"
     },
+    "import": true,
     "paks": {
         "*": {
             "ignore": [

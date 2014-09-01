@@ -1,0 +1,10 @@
+{
+    layout: 'outer',
+}
+<html>
+    <body>
+        <@ partial('header') @>
+        <@ content @>
+        <p>Generated on <@= Date() @></p>
+    </body>
+</html>

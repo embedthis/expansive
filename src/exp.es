@@ -77,21 +77,6 @@ class Exp {
         usage: usage,
     }
 
-    var ExpTemplate = {
-        title:       'Home page title',
-        url:         'Home page url',
-        description: 'Meta data description (optional)',
-        keywords:    'Meta data keywords (optional)',
-        control: {
-            exclude: [],
-            copy: [ 'images', 'lib' ],
-            script: '',
-            plugins: [],
-            transforms: {},
-        }
-    }
-
-
     function Exp() { 
         cache = {}
         stats = {services: {}}
@@ -981,7 +966,7 @@ class Exp {
             return
         }
         trace('Create', CONFIG)
-        path.write(serialize(ExpTemplate, {pretty: true, indent: 4, quotes: false}))
+        path.write(App.exeDir.join('exp.sample').readString())
         for each (p in [ 'documents', 'layouts', 'partials', 'files', 'public' ]) {
             Path(p).makeDir()
         }

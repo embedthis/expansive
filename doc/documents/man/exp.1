@@ -448,10 +448,6 @@ begin with the given patterns.
 Change to directory before running.
 
 .TP 10
-\fB\--gen\fR
-Used with the 'watch' command to do an initial generation before watching for changes.
-
-.TP 10
 \fB\--keep URI\fR
 Keep intermediate files when transforming content. Useful for debugging.
 
@@ -469,6 +465,10 @@ HTTP headers will be traced at levels 2-4.
 \fB\--noclean\fR
 Do not clean the 'public' directory before generating. By default Expansive will remove all the content under 'public' before
 generating.
+
+.TP 10
+\fB\--nogen\fR
+Do not do an initial generation before watching for changes.
 
 .TP 10
 \fB\--nowatch\fR

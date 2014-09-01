@@ -16,11 +16,11 @@ const LISTEN = '4000'
 
 const USAGE = 'Usage: exp [options] [filters ...]
     --chdir dir      # Change to directory before running
-    --gen            # Do an initial gen before watching
     --keep           # Keep intermediate transform results
     --listen IP:PORT # Endpoint to listen on
     --log path:level # Trace to logfile
     --noclean        # Do not clean "public" before generate
+    --nogen          # Do not do an initial gen before watching
     --nowatch        # No watch, just run
     --quiet          # Quiet mode
     --verbose        # Verbose mode
@@ -265,10 +265,6 @@ class Exp {
             definitions = [definitions]
         }
         for each (def in definitions) {
-            /* UNUSED
-            if (!def.name || !def.from || !def.to || !(def.script || def.render)) {
-                fatal('Plugin transform definition in "' + epath + '" is incomplete')
-            } */
             def.plugin = name
             def.path = path
             createService(def)
@@ -370,7 +366,7 @@ class Exp {
     }
 
     function watch(meta) {
-        if (options.gen) {
+        if (!options.nogen) {
             options.quiet = true
             trace('Generate', 'Initial generation ...')
             genall = true
@@ -428,7 +424,9 @@ class Exp {
     function generate() {
         stats.started = new Date
         stats.files = 0
-
+        if (mastersModified) {
+            cache = {}
+        }
         exclude = buildFileHash(topMeta.control.exclude, dirs.documents)
         copy = buildFileHash(topMeta.control.copy, dirs.documents)
 

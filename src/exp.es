@@ -19,8 +19,8 @@ const USAGE = 'Usage: exp [options] [filters ...]
     --keep           # Keep intermediate transform results
     --listen IP:PORT # Endpoint to listen on
     --log path:level # Trace to logfile
-    --noclean        # Do not clean "public" before generate
-    --nogen          # Do not do an initial gen before watching
+    --noclean        # Do not clean "public" before render
+    --norender       # Do not do an initial render before watching
     --nowatch        # No watch, just run
     --quiet          # Quiet mode
     --verbose        # Verbose mode
@@ -29,9 +29,9 @@ const USAGE = 'Usage: exp [options] [filters ...]
     clean            # Clean "public" output directory
     init             # Create exp.json
     install plugins  # Install new plugings
-    generate         # Generate entire site
-    filters, ...     # Generate only matching documents
-    watch            # Watch for changes and regen
+    render           # Render entire site
+    filters, ...     # Render only matching documents
+    watch            # Watch for changes and render as required
     <CR>             # Serve and watches for changes
 '
 
@@ -43,7 +43,7 @@ class Exp {
     var exclude: Object
     var filters: Array
     var publicNames: Object
-    var genall: Boolean
+    var renderAll: Boolean
     var impliedUpdates: Object
     var lastGen: Date
     var log: Logger = App.log
@@ -61,11 +61,11 @@ class Exp {
         options: {
             chdir:   { range: Path },
             debug:   { alias: 'd' },        /* Undocumented */
-            gen:     { alias: 'g' },
             keep:    { alias: 'k' },
             listen:  { range: String },
             log:     { alias: 'l', range: String },
             noclean: { },
+            norender:{ },
             nowatch: { },
             quiet:   { alias: 'q' },
             verbose: { alias: 'v' },
@@ -316,21 +316,21 @@ class Exp {
             preclean(meta)
             break
 
-        case 'generate':
-            if (rest.length > 0) {
-                filters = rest
-            } else {
-                genall = true
-            }
-            preclean()
-            generate()
-            break
-
         case 'install':
             if (rest.length == 0) {
                 usage()
             }
             install(rest, meta)
+            break
+
+        case 'render':
+            if (rest.length > 0) {
+                filters = rest
+            } else {
+                renderAll = true
+            }
+            preclean()
+            render()
             break
 
         case 'watch':
@@ -344,8 +344,8 @@ class Exp {
             if (task) {
                 /* Process only specified files. If not, process all */
                 filters = [task] + rest
-                genall = false
-                generate()
+                renderAll = false
+                render()
             } else {
                 serve(topMeta)
             }
@@ -366,12 +366,12 @@ class Exp {
     }
 
     function watch(meta) {
-        if (!options.nogen) {
+        if (!options.norender) {
             options.quiet = true
-            trace('Generate', 'Initial generation ...')
-            genall = true
-            generate()
-            genall = false
+            trace('Render', 'Initial render ...')
+            renderAll = true
+            render()
+            renderAll = false
             options.quiet = false
         }
         trace('Watching', 'for changes every ' + meta.control.watch + ' msec ...')
@@ -384,7 +384,7 @@ class Exp {
             checkDepends(meta)
             event('check', lastGen)
             mastersModified = checkMastersModified()
-            generate()
+            render()
             App.sleep(meta.control.watch)
             vtrace('Check', 'for changes (' + Date().format('%I:%M:%S') + ')')
             lastGen = mark
@@ -421,7 +421,7 @@ class Exp {
         }
     }
 
-    function generate() {
+    function render() {
         stats.started = new Date
         stats.files = 0
         if (mastersModified) {
@@ -430,8 +430,8 @@ class Exp {
         exclude = buildFileHash(topMeta.control.exclude, dirs.documents)
         copy = buildFileHash(topMeta.control.copy, dirs.documents)
 
-        generateDir(dirs.documents, topMeta.clone(true))
-        generateFiles(topMeta)
+        renderDir(dirs.documents, topMeta.clone(true))
+        renderFiles(topMeta)
         postclean()
         sitemap()
         if (options.debug) {
@@ -442,8 +442,8 @@ class Exp {
             }
             trace('Debug', 'Total plugin time %.2f' % ((total / 1000) + ' secs.'))
         }
-        if (genall) {
-            trace('Info', 'Generated ' + stats.files + ' files to "' + dirs.public + '". ' +
+        if (renderAll) {
+            trace('Info', 'Rendered ' + stats.files + ' files to "' + dirs.public + '". ' +
                 'Elapsed time %.2f' % ((stats.started.elapsed / 1000)) + ' secs.')
         } else if (filters && stats.files == 0) {
             trace('Warn', 'No matching files for filter: ' + filters)
@@ -453,7 +453,7 @@ class Exp {
     /*
         Not watched
      */
-    function generateFiles(meta) {
+    function renderFiles(meta) {
         if (!filters) {
             if (Path('files').exists && !meta.control.files) {
                 meta.control.files = [ Path('files') ]
@@ -467,7 +467,7 @@ class Exp {
     function copyFile(file, meta) {
         let trimmed = rebase(file, dirs.documents)
         if (file.isDir) {
-            if (genall || checkModified(file, meta)) {
+            if (renderAll || checkModified(file, meta)) {
                 let home = App.dir
                 let dest = dirs.public.absolute
                 App.chdir(file)
@@ -483,7 +483,7 @@ class Exp {
                 }
             }
         } else {
-            if (genall || checkModified(file, meta)) {
+            if (renderAll || checkModified(file, meta)) {
                 trace('Copy', file)
                 cp(file, dirs.public.join(trimmed))
             }
@@ -528,7 +528,7 @@ class Exp {
         return false
     }
 
-    function generateDir(dir: Path, meta) {
+    function renderDir(dir: Path, meta) {
         let priorDirs = dirs
         loadConfig(dir, meta)
         dirs = meta.control.directories
@@ -556,9 +556,9 @@ class Exp {
             if (copy[file]) {
                 copyFile(file, meta)
             } else if (file.isDir) {
-                generateDir(file, meta.clone(true))
+                renderDir(file, meta.clone(true))
             } else {
-                if (genall || filters || mastersModified || checkModified(file, meta)) {
+                if (renderAll || filters || mastersModified || checkModified(file, meta)) {
                     transformFile(file, meta)
                 }
             }
@@ -992,7 +992,7 @@ class Exp {
 
     function sitemap() {
         let sm = topMeta.control.sitemap
-        if (!sm || !(genall || mastersModified)) {
+        if (!sm || !(renderAll || mastersModified)) {
             return
         }
         let path = dirs.public.join('Sitemap.xml')

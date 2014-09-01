@@ -4,47 +4,47 @@
             <a href="/index.html" class="logo">Expansive Docs</a>
         </div>
         <div class="item">
-            <a href="@@{top}index.html">
+            <a href="@~index.html">
                 <b>General</b>
             </a>
             <div class="menu">
-                <a class="item" href="@@{top}index.html">Expansive Overview</a>
-                <a class="item" href="@@{top}users/features.html">Expansive Features</a>
+                <a class="item" href="@~index.html">Expansive Overview</a>
+                <a class="item" href="@~users/features.html">Expansive Features</a>
                 <a class="item" href="https://embedthis.com/exp/download.html">Download</a> 
-                <a class="item" href="@@{top}licensing/index.html">Licensing</a>
+                <a class="item" href="@~licensing/index.html">Licensing</a>
             </div>
         </div>
         <div class="item">
-            <a href="@@{top}start/index.html">
+            <a href="@~start/index.html">
                 <b>Getting Started</b>
             </a>
             <div class="menu">
-                <a class="item" href="@@{top}start/installing.html">Installing Expansive</a>
-                <a class="item" href="@@{top}start/tour.html">Tour of Expansive</a>
-                <a class="item" href="@@{top}start/releaseNotes.html">Release Notes</a>
-                <a class="item" href="@@{top}start/source.html">Building from Source</a>
+                <a class="item" href="@~start/installing.html">Installing Expansive</a>
+                <a class="item" href="@~start/tour.html">Tour of Expansive</a>
+                <a class="item" href="@~start/releaseNotes.html">Release Notes</a>
+                <a class="item" href="@~start/source.html">Building from Source</a>
             </div>
         </div>
         <div class="item">
-            <a href="@@{top}users/index.html"><b>User's Guide</b></a>
+            <a href="@~users/index.html"><b>User's Guide</b></a>
             <div class="menu">
-                <a class="item" href="@@{top}users/using.html">Using Expansive</a>
+                <a class="item" href="@~users/using.html">Using Expansive</a>
             </div>
         </div>
         <div class="item">
-            <a href="@@{top}developers/index.html">Developer's Guide</a>
+            <a href="@~developers/index.html">Developer's Guide</a>
             <div class="menu">
-                <a class="item" href="@@{top}developers/plugins.html">Expansive Plugins</a>
+                <a class="item" href="@~developers/plugins.html">Expansive Plugins</a>
             </div>
         </div>
         <div class="item">
-            <a href="@@{top}ref/index.html">Reference Guide</a>
+            <a href="@~ref/index.html">Reference Guide</a>
             <div class="menu">
-                <a class="item" href="@@{top}ref/configuration.html">Configuration</a>
+                <a class="item" href="@~ref/configuration.html">Configuration</a>
             </div>
         </div>
         <div class="item">
-            <a href="@@{top}developers/project.html">Project Resources</a>
+            <a href="@~developers/project.html">Project Resources</a>
             <div class="menu">
                 <!-- MOB -->
                 <a class="item" href="http://goo.gl/dGRDl4">Official Expansive News</a>

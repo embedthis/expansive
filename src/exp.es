@@ -15,24 +15,26 @@ const VERSION = '0.1.0'
 const LISTEN = '4000'
 
 const USAGE = 'Usage: exp [options] [filters ...]
-    --chdir dir      # Change to directory before running
-    --keep           # Keep intermediate transform results
-    --listen IP:PORT # Endpoint to listen on
-    --log path:level # Trace to logfile
-    --noclean        # Do not clean "public" before render
-    --norender       # Do not do an initial render before watching
-    --nowatch        # No watch, just run
-    --quiet          # Quiet mode
-    --verbose        # Verbose mode
-    --version        # Output version information
+    --chdir dir       # Change to directory before running
+    --keep            # Keep intermediate transform results
+    --listen IP:PORT  # Endpoint to listen on
+    --log path:level  # Trace to logfile
+    --noclean         # Do not clean "public" before render
+    --norender        # Do not do an initial render before watching
+    --nowatch         # No watch, just run
+    --quiet           # Quiet mode
+    --verbose         # Verbose mode
+    --version         # Output version information
   Commands:
-    clean            # Clean "public" output directory
-    init             # Create exp.json
-    install plugins  # Install new plugings
-    render           # Render entire site
-    filters, ...     # Render only matching documents
-    watch            # Watch for changes and render as required
-    <CR>             # Serve and watches for changes
+    clean             # Clean "public" output directory
+    init              # Create exp.json
+    install plugins   # Install new plugings
+    render            # Render entire site
+    filters, ...      # Render only matching documents
+    watch             # Watch for changes and render as required
+    uninstall plugins # Uninstall plugings
+    upgrade plugins   # Upgrade plugings
+    <CR>              # Serve and watches for changes
 '
 
 class Exp {
@@ -331,6 +333,20 @@ class Exp {
             }
             preclean()
             render()
+            break
+
+        case 'uninstall':
+            if (rest.length == 0) {
+                usage()
+            }
+            uninstall(rest, meta)
+            break
+
+        case 'upgrade':
+            if (rest.length == 0) {
+                usage()
+            }
+            upgrade(rest, meta)
             break
 
         case 'watch':
@@ -971,23 +987,71 @@ class Exp {
         }
     }
 
-    function install(plugins, meta) {
-        let pak = Cmd.locate('pak')
-        if (!pak) {
-            fatal('Cannot find pak. Install from https://embedthis.com/pak')
-        }
-        let paks = plugins.map(function(name) 'exp-' + name)
-        try {
-            Cmd.run([pak, 'cache'] + paks)
-            trace('Installed', plugins + ' to ' + App.home.join('.paks'))
-        } catch(e) {
-            fatal('Cannot install', plugins + '\n' + e.message)
-        }
+    function savePlugins(list) {
+    print("LIST", list)
+        let pstr = serialize(list).replace(/,/g, ', ').replace(/"/g, '\'').replace(/\[/, '[ ').replace(/\]/, ' ]')
         let path = Path('exp.json')
-        let obj = path.readJSON()
-        obj.plugins ||= []
-        obj.plugins.push(plugins)
-        path.write(serialize(obj, {pretty: true, indent: 4, quotes: false}))
+        let data = path.readString().replace(/ *plugins:.*,$/m, '        plugins: ' + pstr + ',')
+        path.write(data)
+    }
+
+    function install(plugins, meta) {
+        let pakcache = App.home.join('.paks')
+        let updated
+        for each (pak in plugins) {
+            pak = pak.trimStart('exp-')
+            let name = 'exp-' + pak
+            if (meta.control.plugins.contains(pak) && pakcache.join(name).exists) {
+                trace('Info', pak + ' is already installed')
+            } else {
+                if (pakcache.join(name).exists) {
+                    trace('Installed', 'Plugin ' + pak)
+                } else {
+                    try {
+                        let pakcmd = Cmd.locate('pak')
+                        if (!pakcmd) {
+                            fatal('Cannot find pak. Install from https://embedthis.com/pak')
+                        }
+                        trace('Run', 'pak cache ' + name)
+                        Cmd.run([pakcmd, 'cache', name])
+                        trace('Installed', name + ' to ' + App.home.join('.paks'))
+                    } catch(e) {
+                        fatal('Cannot install', name + '\n' + e.message)
+                    }
+                }
+                updated = true
+            }
+        }
+        if (updated) {
+            let path = Path('exp.json')
+            let plist = path.readJSON().control.plugins || []
+            savePlugins((plist + plugins).unique())
+        }
+    }
+
+    function uninstall(plugins, meta) {
+        plugins = plugins.map(function(e) e.trimStart('exp-'))
+        let path = Path('exp.json')
+        let plist = path.readJSON().control.plugins || []
+        savePlugins((plist - plugins).unique())
+    }
+
+    function upgrade(plugins, meta) {
+        for each (pak in plugins) {
+            pak = pak.trimStart('exp-')
+            let name = 'exp-' + pak
+            try {
+                let pakcmd = Cmd.locate('pak')
+                if (!pakcmd) {
+                    fatal('Cannot find pak. Install from https://embedthis.com/pak')
+                }
+                trace('Run', 'pak update ' + name)
+                Cmd.run([pakcmd, 'update', name])
+                trace('Updated', name)
+            } catch(e) {
+                fatal('Cannot update', name + '\n' + e.message)
+            }
+        }
     }
 
     function sitemap() {

@@ -1,18 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title><%= meta.title %></title>
-    <% partial('head') %>
+    <title>Installing on Mac</title>
+    <!-- Copyright Embedthis Software, LLC, 2003-2014. All Rights Reserved. -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="keywords" content="expansive, static site, generator, docpad" />
+    <meta name="description" content="A fast, flexible static site generator" />
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700'
+        rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
+    <link href="../lib/semantic/css/semantic.css" rel="stylesheet" type="text/css" />
+    <link href="../css/all.css" rel="stylesheet" type="text/css" />
+    <link href="../images/favicon.ico" rel="shortcut icon" />
+
 </head>
 <body>
-    <% partial('sidebar') %>
+        
+    <div class="ui large left vertical inverted labeled overlay sidebar menu">
+        <div class="item">
+            <a href="/index.html" class="logo">Expansive Docs</a>
+        </div>
+        <div class="item">
+            <a href="../index.html">
+                <b>General</b>
+            </a>
+            <div class="menu">
+                <a class="item" href="../index.html">Expansive Overview</a>
+                <a class="item" href="../users/features.html">Expansive Features</a>
+                <a class="item" href="https://embedthis.com/exp/download.html">Download</a> 
+                <a class="item" href="../licensing/index.html">Licensing</a>
+            </div>
+        </div>
+        <div class="item">
+            <a href="../start/index.html">
+                <b>Getting Started</b>
+            </a>
+            <div class="menu">
+                <a class="item" href="../start/installing.html">Installing Expansive</a>
+                <a class="item" href="../start/tour.html">Tour of Expansive</a>
+                <a class="item" href="../start/releaseNotes.html">Release Notes</a>
+                <a class="item" href="../start/source.html">Building from Source</a>
+            </div>
+        </div>
+        <div class="item">
+            <a href="../users/index.html"><b>User's Guide</b></a>
+            <div class="menu">
+                <a class="item" href="../users/using.html">Using Expansive</a>
+            </div>
+        </div>
+        <div class="item">
+            <a href="../developers/index.html">Developer's Guide</a>
+            <div class="menu">
+                <a class="item" href="../developers/plugins.html">Expansive Plugins</a>
+            </div>
+        </div>
+        <div class="item">
+            <a href="../ref/index.html">Reference Guide</a>
+            <div class="menu">
+                <a class="item" href="../ref/configuration.html">Configuration</a>
+            </div>
+        </div>
+        <div class="item">
+            <a href="../developers/project.html">Project Resources</a>
+            <div class="menu">
+                <!-- MOB -->
+                <a class="item" href="http://goo.gl/dGRDl4">Official Expansive News</a>
+                <a class="item" href="https://embedthis.com/exp/">Expansive Web Site</a>
+                <a class="item" href="https://github.com/embedthis/exp">Source Code Repository</a>
+                <a class="item" href="https://github.com/embedthis/exp/issues">Project Issue Database</a>
+                <a class="item" href="https://github.com/embedthis/exp/releases">Change Log</a>
+                <a class="item" href="https://github.com/embedthis/exp/milestones">Roadmap</a>
+                <a class="item" href="https://embedthis.com/developers/contributors.html">Contributors Agreement</a>
+            </div>
+        </div>
+        <div class="item">
+            <b>Links</b>
+            <div class="menu">
+                <a class="item" href="https://embedthis.com/">Embedthis Web Site</a>
+                <a class="item" href="https://embedthis.com/blog/">Embedthis Blog</a>
+                <a class="item" href="http://twitter.com/mobstream">Twitter</a>
+            </div>
+        </div>
+    </div>
+
     <div class="ui inverted masthead">
-        <% partial('nav') %>
+         
+        <div class="column">
+            <div class="ui inverted menu">
+                <div class="ui black small launch right attached toggle button">
+                    <i class="icon list layout"></i>
+                </div>
+                <div class="right menu">
+                    <a class="item" href="https://embedthis.com/">Embedthis</a>
+                    <a class="item" href="https://embedthis.com/appweb/">Appweb Site</a>
+                    <a class="item" href="http://goo.gl/dGRDl4">Appweb News</a>
+                    <a class="item" href="https://github.com/embedthis/appweb">Repository</a>
+                    <a class="item" href="https://embedthis.com/blog/">Blog</a>
+                    <a class="item" href="https://twitter.com/mobstream">Twitter</a>
+                </div>
+            </div>
+            
+            <div class="ui breadcrumb">
+                <a class="section" href="../">Home</a>
+                
+                <div class="divider">/</div>
+                <a class="section" href="index.html">
+                    Getting Started
+                </a>
+                
+                <div class="divider">/</div>
+                <a class="section" href="installing.html">
+                    Installing
+                </a>
+                
+                <div class="divider">/</div>
+                <a class="section active" href="mac.html">Installing on Mac</a>
+            </div>
+            
+            <div class="ui right floated basic segment version">
+                v0.4.0
+            </div>
+        </div>
+
     </div>
     <div class="content">
-        <% content %>
+
+            <h1>Installing on MAC OS X</h1>
+            <p>The Embedthis Expansive install distribution for Mac OS X is published as a an installable pkg file.</p>
+            
+            <a id="pkg"></a>
+            <h2>Installing the PKG Image</h2>
+            <ol>
+                <li>Double click on the PKG image.</li>
+            </ol>
+            
+            <a id="removing"></a>
+            <h2>Removing Expansive</h2>
+            <ol>
+                <li>Run a terminal and change directory to the installation directory for Expansive. </li>
+                <li>Run the remove script in the install directory for Expansive by typing:</li>
+            </ol>
+            <pre class="ui code segment">
+sudo ./uninstall
+</pre>
+            
+            <p>You can run exp via:</p>
+            <pre class="ui code segment">
+cd /etc/exp
+exp
+</pre>
+            <p>To get all the options for Expansive read the man page via:</p>
+            <pre class="ui code segment">
+man exp
+</pre>or get the command help via:
+            <pre class="ui code segment">
+exp --help
+</pre>
+
     </div>
-    <% partial('terms') %>
-    <% partial('scripts') %>
+    <div class="terms ui basic center aligned segment">
+        <p>&copy; Embedthis Software, 2003-2014. All rights reserved.
+            Generated on Sep  1, 2014.
+        </p>
+    </div>
+
+     
+    <script src="../lib/jquery/jquery.js"></script>
+    <script src="../lib/semantic/javascript/semantic.js"></script>
+    <script>
+        $('.sidebar').sidebar({overlay: false}).sidebar('toggle');
+        $('.sidebar').first().sidebar('attach events', '.toggle.button');
+        $(function() {
+            var url = '../' + window.location.pathname.slice(1);
+            var active = $('.sidebar a[href="' + url +'"]');
+            active.addClass('active');
+            var sidebar = $(".sidebar");
+            var height = sidebar.height();
+            var offset = active.offset();
+            if (offset && offset.top >= height) {
+                var diff = height - active.offset().top;
+                sidebar.scrollTop(height);
+            }
+        });
+    </script>
+
 </body>
 </html>

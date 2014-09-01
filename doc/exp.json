@@ -8,6 +8,6 @@
         copy: [ 'images' ],
         dependencies: { 'css/all.css.less': 'css/*.inc.less' },
         exclude: [ '**.inc.less' ],
-        plugins: [ 'less' ],
+        plugins: [ 'less', 'css' ],
     }
 }

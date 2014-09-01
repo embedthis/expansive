@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title><%= meta.title %></title>
-    <% partial('head') %>
+    <title><@= meta.title @></title>
+    <@ partial('head') @>
 </head>
 <body>
-    <% partial('sidebar') %>
+    <@ partial('sidebar') @>
     <div class="ui inverted masthead">
-        <% partial('nav') %>
+        <@ partial('nav') @>
     </div>
     <div class="content">
-        <% content %>
+        <@ content @>
     </div>
-    <% partial('terms') %>
-    <% partial('scripts') %>
+    <@ partial('terms') @>
+    <@ partial('scripts') @>
 </body>
 </html>

@@ -10,7 +10,7 @@
         plugins: [ 'bash', 'less', 'css', 'js', 'marked', 'test', 'gzip', 'uglifyjs' ],
         sitemap: {
             include: [ '**.html' ],
-            exclude: [ 'mob.html' ],
+            exclude: [ ],
         },
 
         /*

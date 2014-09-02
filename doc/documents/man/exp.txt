@@ -410,8 +410,6 @@ META CONTROL
 
        plugins     List of plugins to use.
 
-       plugins     List of plugins to use.
-
        script      Script to  evaluate  to  inject  code  into  the  Expansive
                    Ejscript global execution context.
 
@@ -419,15 +417,26 @@ META CONTROL
 
        transforms  Hash  of extension mappings to a list of transform services
                    for those mappings. Mappings are in the form 'ext ->  ext'.
+                   For example:
 
-       watch       Time  in  milliseconds to wait between checking for render-
+                    transforms: {
+                       'less -> css': [ 'compile-less', 'prefix-css', 'minify-
+                   css', 'compress' ]
+                    }
+
+                   Some of the standard service names are:  compile-esp,  com-
+                   pile-less,    compile-markdown,   compile-sass,   compress,
+                   minify-css, minify-js, prefix-css, shell.
+
+
+       watch       Time in milliseconds to wait between checking  for  render-
                    ing.
 
 
 CREATING PLUGINS
-       Expansive   plugins    are    created    using    the    Pak    utility
-       (https://embedthis.com/pak)   and  published  to  the  Pak  Catalog  at
-       (https://embedthis.com/catalog/). The plugin  contains  a  package.json
+       Expansive    plugins    are    created    using    the    Pak   utility
+       (https://embedthis.com/pak)  and  published  to  the  Pak  Catalog   at
+       (https://embedthis.com/catalog/).  The  plugin  contains a package.json
        file that includes an app.expansive property collection. For example:
 
         {
@@ -447,10 +456,15 @@ CREATING PLUGINS
 
 
        The plugin specifies a one or more transformations via the 'transforms'
-       collection. Each transform definition provides  an  implemention  of  a
-       transform  service. The 'name' property specifies the transform service
-       name. The 'from' property specifies the starting filename extension and
-       the 'to' property specifies the ending extension. If all extensions are
+       collection.  Each  transform  definition  provides an implemention of a
+       transform service. The 'name' property specifies the transform  service
+       name.  The  service  name  provides an abstract name for which multiple
+       plugins may provide the implementation. The service is selected via the
+       'plugins'  property  and Expansive chooses the first plugin that adver-
+       tized that service.
+
+       The 'from' property specifies the starting filename extension  and  the
+       'to'  property  specifies  the  ending extension. If all extensions are
        supported, set the value to '*'. Both 'from' and 'to' may be arrays  if
        multiple extensions are supported.
 

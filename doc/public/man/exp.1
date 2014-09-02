@@ -361,9 +361,6 @@ Address on which to listen for HTTP requests. May be just a port number.
 plugins
 List of plugins to use.
 .TP 12
-plugins
-List of plugins to use.
-.TP 12
 script
 Script to evaluate to inject code into the Expansive Ejscript global execution context.
 .TP 12
@@ -372,6 +369,14 @@ Control what files to include in a sitemap.
 .TP 12
 transforms
 Hash of extension mappings to a list of transform services for those mappings. Mappings are in the form 'ext -> ext'.
+For example: 
+
+ transforms: {
+    'less -> css': [ 'compile-less', 'prefix-css', 'minify-css', 'compress' ]
+ }
+
+Some of the standard service names are: compile-esp, compile-less, compile-markdown, compile-sass, compress, minify-css, minify-js, prefix-css, shell.
+ 
 .TP 12
 watch
 Time in milliseconds to wait between checking for rendering.
@@ -398,9 +403,12 @@ collection. For example:
 .PP
 
 The plugin specifies a one or more transformations via the 'transforms' collection. Each transform definition provides an
-implemention of a transform service. The 'name' property specifies the transform service name. The 'from' property specifies
-the starting filename extension and the 'to' property specifies the ending extension. If all extensions are supported, set
-the value to '*'. Both 'from' and 'to' may be arrays if multiple extensions are supported. 
+implemention of a transform service. The 'name' property specifies the transform service name. The service name provides
+an abstract name for which multiple plugins may provide the implementation. The service is selected via the 'plugins'
+property and Expansive chooses the first plugin that advertized that service.
+.PP
+The 'from' property specifies the starting filename extension and the 'to' property specifies the ending extension. If all
+extensions are supported, set the value to '*'. Both 'from' and 'to' may be arrays if multiple extensions are supported.
 .PP
 The transform script should define a global 'transform' function that will be invoked for matching content.  It is invoked
 with the 'contents' to transform (String), the meta data collection and the service object that contains service options.

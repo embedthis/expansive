@@ -389,8 +389,6 @@ exp(1)                           user commands                          exp(1)
 
        plugins     list of plugins to use.
 
-       plugins     list of plugins to use.
-
        script      script to  evaluate  to  inject  code  into  the  expansive
                    ejscript global execution context.
 
@@ -398,14 +396,24 @@ exp(1)                           user commands                          exp(1)
 
        transforms  hash  of extension mappings to a list of transform services
                    for those mappings. mappings are in the form 'ext -&gt;  ext'.
+                   for example:
 
-       watch       time  in  milliseconds to wait between checking for render-
+                    transforms: {
+                       'less -&gt; css': [ 'compile-less', 'prefix-css', 'minify-
+                   css', 'compress' ]
+                    }
+
+                   some of the standard service names are:  compile-esp,  com-
+                   pile-less,    compile-markdown,   compile-sass,   compress,
+                   minify-css, minify-js, prefix-css, shell.
+
+       watch       time in milliseconds to wait between checking  for  render-
                    ing.
 
 <b>creating plugins</b>
-       expansive   plugins    are    created    using    the    pak    utility
-       (https://embedthis.com/pak)   and  published  to  the  pak  catalog  at
-       (https://embedthis.com/catalog/). the plugin  contains  a  package.json
+       expansive    plugins    are    created    using    the    pak   utility
+       (https://embedthis.com/pak)  and  published  to  the  pak  catalog   at
+       (https://embedthis.com/catalog/).  the  plugin  contains a package.json
        file that includes an app.expansive property collection. for example:
 
         {
@@ -424,10 +432,15 @@ exp(1)                           user commands                          exp(1)
         }
 
        the plugin specifies a one or more transformations via the 'transforms'
-       collection. each transform definition provides  an  implemention  of  a
-       transform  service. the 'name' property specifies the transform service
-       name. the 'from' property specifies the starting filename extension and
-       the 'to' property specifies the ending extension. if all extensions are
+       collection.  each  transform  definition  provides an implemention of a
+       transform service. the 'name' property specifies the transform  service
+       name.  the  service  name  provides an abstract name for which multiple
+       plugins may provide the implementation. the service is selected via the
+       'plugins'  property  and expansive chooses the first plugin that adver-
+       tized that service.
+
+       the 'from' property specifies the starting filename extension  and  the
+       'to'  property  specifies  the  ending extension. if all extensions are
        supported, set the value to '*'. both 'from' and 'to' may be arrays  if
        multiple extensions are supported.
 

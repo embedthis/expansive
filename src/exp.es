@@ -40,6 +40,7 @@ const USAGE = 'Usage: exp [options] [filters ...]
 class Exp {
     var args: Args
     var cache: Object
+    var collections: Object
     var copy: Object
     var dirs: Object
     var exclude: Object
@@ -79,10 +80,11 @@ class Exp {
 
     function Exp() { 
         cache = {}
-        stats = {services: {}}
-        publicNames = {}
+        collections = {}
         impliedUpdates = {}
         lastGen = new Date()
+        publicNames = {}
+        stats = {services: {}}
     }
 
     public function unknown(argv, i) {
@@ -1107,7 +1109,7 @@ class Exp {
         return meta
     }
 
-    public function collection(query: Object, operation = 'and', pattern = "**") {
+    public function files(query: Object, operation = 'and', pattern = "**") {
         let list = []
         for each (file in dirs.documents.files(pattern)) {
             if (file.isDir) continue
@@ -1125,6 +1127,46 @@ class Exp {
         return list
     }
 
+    function addItems(collection, items) {
+        if (!items) {
+            return
+        }
+        if (!(items is Array)) {
+            items = [items]
+        }
+        collections[collection] = ((collections[collection] || []) + items).unique()
+    }
+
+    function getItems(collection) collections[collection]
+
+    function removeItems(collection, items) {
+        if (!items || !collections[collection]) {
+            return
+        }
+        if (!(items is Array)) {
+            items = [items]
+        }
+        collections[collection] -= items
+    }
+
+    function renderStyles() {
+        for each (script in collections.styles) {
+            write('<link href="' + meta.top + '/' + sheet + '" rel="stylesheet" type="text/css" />')
+        }
+    }
+
+    function renderScripts() {
+        for each (script in collections.scripts) {
+            write('<script src="' + meta.top + script + '"></script>\n    ')
+        }
+        if (collections['inline-scripts']) {
+            write('<script>')
+            for each (script in collections['inline-scripts']) {
+                write(script)
+            }
+            write('\n    </script>')
+        }
+    }
 
     function checkEngines(name, path) {
         path = path.join('package.json')

@@ -15,26 +15,27 @@ const VERSION = '0.1.0'
 const LISTEN = '4000'
 
 const USAGE = 'Usage: exp [options] [filters ...]
-    --chdir dir       # Change to directory before running
-    --keep            # Keep intermediate transform results
-    --listen IP:PORT  # Endpoint to listen on
-    --log path:level  # Trace to logfile
-    --noclean         # Do not clean "public" before render
-    --norender        # Do not do an initial render before watching
-    --nowatch         # No watch, just run
-    --quiet           # Quiet mode
-    --verbose         # Verbose mode
-    --version         # Output version information
+    --chdir dir        # Change to directory before running
+    --keep             # Keep intermediate transform results
+    --listen IP:PORT   # Endpoint to listen on
+    --log path:level   # Trace to logfile
+    --noclean          # Do not clean "public" before render
+    --norender         # Do not do an initial render before watching
+    --nowatch          # No watch, just run
+    --quiet            # Quiet mode
+    --trace path:level # Trace http requests
+    --verbose          # Verbose mode
+    --version          # Output version information
   Commands:
-    clean             # Clean "public" output directory
-    init              # Create exp.json
-    install plugins   # Install new plugings
-    render            # Render entire site
-    filters, ...      # Render only matching documents
-    watch             # Watch for changes and render as required
-    uninstall plugins # Uninstall plugings
-    upgrade plugins   # Upgrade plugings
-    <CR>              # Serve and watches for changes
+    clean              # Clean "public" output directory
+    init               # Create exp.json
+    install plugins    # Install new plugings
+    render             # Render entire site
+    filters, ...       # Render only matching documents
+    watch              # Watch for changes and render as required
+    uninstall plugins  # Uninstall plugings
+    upgrade plugins    # Upgrade plugings
+    <CR>               # Serve and watches for changes
 '
 
 class Exp {
@@ -71,6 +72,7 @@ class Exp {
             norender:{ },
             nowatch: { },
             quiet:   { alias: 'q' },
+            trace:   { alias: 't', range: String },
             verbose: { alias: 'v' },
             version: { },
         },
@@ -80,7 +82,6 @@ class Exp {
 
     function Exp() { 
         cache = {}
-        collections = {}
         impliedUpdates = {}
         lastGen = new Date()
         publicNames = {}
@@ -434,7 +435,7 @@ class Exp {
         copy = buildFileHash(topMeta.control.copy, dirs.documents)
 
         renderDir(dirs.documents, topMeta.clone(true))
-        renderFiles(topMeta)
+        publishFiles(topMeta)
         postclean()
         sitemap()
         if (options.debug) {
@@ -456,7 +457,7 @@ class Exp {
     /*
         Not watched
      */
-    function renderFiles(meta) {
+    function publishFiles(meta) {
         if (!filters) {
             if (Path('files').exists && !meta.control.files) {
                 meta.control.files = [ Path('files') ]
@@ -562,7 +563,7 @@ class Exp {
                 renderDir(file, meta.clone(true))
             } else {
                 if (renderAll || filters || mastersModified || checkModified(file, meta)) {
-                    transformFile(file, meta)
+                    renderDocument(file, meta)
                 }
             }
         }
@@ -674,7 +675,8 @@ class Exp {
         global.top = meta.top
     }
 
-    function transformFile(file, meta) {
+    function renderDocument(file, meta) {
+        collections = meta.control.colllections || {}
         let [fileMeta, contents] = splitMetaContents(file, file.readString())
         blendMeta(meta, fileMeta || {})
         initMeta(file, meta)
@@ -806,7 +808,7 @@ class Exp {
     }
 
     function findFile(dir: Path, pattern: String, meta) {
-        for each (f in dir.files(pattern + '*')) {
+        for each (f in dir.files(pattern + '.*')) {
             if (f.extension == 'html') {
                 return f
             }

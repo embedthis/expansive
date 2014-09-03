@@ -85,13 +85,10 @@ Me.load({
             files: [ 'src/exp.es', 'src/ExpTemplate.es', 'src/paks/ejs-version/Version.es' ],
             build: `
                 trace('Compile', 'exp.mod')
-                run('${LBIN}/ejsc --debug --out ${BIN}/exp.mod --optimize 9 ' + TARGET.cmdfiles)
+                run('${LBIN}/ejsc --debug --out ${BIN}/exp.mod --optimize 9 ${FILES}')
             `,
-            'generate-nmake': `"${LBIN}\\ejsc" --out "${BIN}/exp.mod" --optimize 9 ${target.cmdfiles}`,
-            'generate-sh': '${LBIN}/ejsc --out ${BIN}/exp.mod --optimize 9 ${target.cmdfiles}',
             depends: [ 'ejsc' ],
         },
-
         'exp': {
             type: 'exe',
             path: '${BIN}/exp${EXE}',
@@ -105,7 +102,7 @@ Me.load({
             files: [ 'src/exp.sample' ],
             build: `
                 trace('Export', me.target.files)
-                cp('src/exp.sample', me.dir.bin.join('exp.sample'))
+                copyFile('src/exp.sample', me.dir.bin.join('exp.sample'))
             `
         }
 

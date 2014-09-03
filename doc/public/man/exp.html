@@ -19,6 +19,7 @@ exp(1)                           user commands                          exp(1)
            <b>--norender</b>
            <b>--nowatch</b>
            <b>--quiet</b>
+           <b>--trace path:level</b>
            <b>--verbose dir</b>
            <b>--version</b>
            <b>commands ...</b>
@@ -160,7 +161,11 @@ exp(1)                           user commands                          exp(1)
        expansive uses embedded  javascript  in  web  pages  to  fully  support
        dynamic content.  scripts can be embedded via the special expansive tag
        '&lt;@ ...  @&gt;'. this will run the script when the page  is  rendered  and
-       replace the script with rendered data.  for example:
+       replace  the  script  with  rendered  data.   when the script runs, the
+       'this' object is set to the  'expansive'  object  for  easy  access  to
+       expansive methods. see scripting below for more details.
+
+       for example, to render the current date in a document:
 
         &lt;p&gt;today is &lt;@ write(date()) @&gt;
 
@@ -245,17 +250,36 @@ exp(1)                           user commands                          exp(1)
                  install uglify-js. use with the exp-js plugin to  mangle  and
                  minify javascripts.
 
+       many  plugins  can  be customized by passing configuration data via the
+       meta data. for example: to request that minified javascript files use a
+       '.min.js' extension and are compressed but not managed:
+
+       {
+           control: {
+               services: {
+                   'minify-js': {
+                       compress: true,
+                       mangle: true,
+                       dotmin: true,
+                   }
+               }
+           }
+        }
+
+        see  specific  plugin  documentation for the configuration options for
+       each plugin.
+
 <b>layouts</b>
-       a  layout  page  defines the top level html content for a set of pages.
-       the layout defines the format, look and feel of the web  site  so  that
-       each  pages  does  not need to replicate this content. despite the fact
-       that pages nominate a layout page to use, it is  actually  layout  page
-       that  includes  the  content page inside it to create a composite page.
-       the '&lt;@ content @&gt;' tag in the layout is replaced with the  actual  web
+       a layout page defines the top level html content for a  set  of  pages.
+       the  layout  defines  the format, look and feel of the web site so that
+       each pages does not need to replicate this content.  despite  the  fact
+       that  pages  nominate  a layout page to use, it is actually layout page
+       that includes the content page inside it to create  a  composite  page.
+       the  '&lt;@  content @&gt;' tag in the layout is replaced with the actual web
        page data after separating the page meta data.
 
-       there  can  be  multiple  layout pages and the default layout is called
-       'default.html.exp'. layout pages may next, i.e. may  use  other  layout
+       there can be multiple layout pages and the  default  layout  is  called
+       'default.html.exp'.  layout  pages  may next, i.e. may use other layout
        pages.  layout pages can use any desired transformation file extension.
 
              &lt;!doctype html&gt;
@@ -272,18 +296,18 @@ exp(1)                           user commands                          exp(1)
              &lt;/html&gt;
 
 <b>partials</b>
-       web pages often need to have content that is common  across  a  set  of
-       pages.  expansive  supports this via partial pages that can be included
-       by any page, layout or other partial page. a page specifies  a  partial
+       web  pages  often  need  to have content that is common across a set of
+       pages. expansive supports this via partial pages that can  be  included
+       by  any  page, layout or other partial page. a page specifies a partial
        by using the 'partial' javascript function. for example:
 
         &lt;@ partial('header') @&gt;
 
        the partial function will search for a file starting with 'header.html'
-       in the 'partials' directory.  partials  are  transformed  according  to
-       their  extension.  if  a partial called 'header.html.md.exp' was found,
-       then it will be first transformed by  running  the  embedded  ejscript,
-       then  piping the output into the markdown to create html data that will
+       in  the  'partials'  directory.   partials are transformed according to
+       their extension. if a partial called  'header.html.md.exp'  was  found,
+       then  it  will  be  first transformed by running the embedded ejscript,
+       then piping the output into the markdown to create html data that  will
        then be included in place of the original partial tag.
 
        partials can be nested, in that a partial page may include another par-
@@ -291,8 +315,8 @@ exp(1)                           user commands                          exp(1)
 
 <b>meta data</b>
        pages, layouts and partials can define meta data at the top of the file
-       via a javascript literal.  meta data is passed to the  ejscript  execu-
-       tion  context for each page, layout and partial where scripts can exam-
+       via  a  javascript literal.  meta data is passed to the ejscript execu-
+       tion context for each page, layout and partial where scripts can  exam-
        ine and use in rendering pages.
 
              {
@@ -301,20 +325,20 @@ exp(1)                           user commands                          exp(1)
              }
              &lt;h1&gt;page header&lt;/h1&gt;
 
-       the meta data is added to the current meta data collection  and  passed
-       to  the  layout  page and any partials used by the page.  the meta data
+       the  meta  data is added to the current meta data collection and passed
+       to the layout page and any partials used by the page.   the  meta  data
        can be accessed via the 'expansive.meta' javascript property.
 
        meta data is inherited and aggregated as expansive processes a web site
        directory. the meta data from upper directories is passed down to lower
-       directories. in this manner upper levels can define the parameters  for
+       directories.  in this manner upper levels can define the parameters for
        subdirectories in the site. meta data is never passed back up the tree.
 
-       meta data can also be defined by including additional 'exp.json'  files
+       meta  data can also be defined by including additional 'exp.json' files
        at any level in the documents directory.
 
 <b>meta properties</b>
-       expansive  defines a rich set of meta properties for you to use in your
+       expansive defines a rich set of meta properties for you to use in  your
        pages:
 
        basename    basename portion of the public document filename.
@@ -323,7 +347,7 @@ exp(1)                           user commands                          exp(1)
 
        date        generation date of the document.
 
-       document    name of the document in  'documents'  that  is  being  pro-
+       document    name  of  the  document  in  'documents' that is being pro-
                    cessed.
 
        extension   the extension of the public document filename.
@@ -332,7 +356,7 @@ exp(1)                           user commands                          exp(1)
 
        file        filename of the document or partial being processed.
 
-       from        the  filename  extension  being  processed  by  the current
+       from        the filename  extension  being  processed  by  the  current
                    transformation.
 
        islayout    true if a layout is being processed.
@@ -341,10 +365,10 @@ exp(1)                           user commands                          exp(1)
 
        layout      layout page in use. set to '' if no layout being used.
 
-       mode        index in the modes property. the selected property  collec-
+       mode        index  in the modes property. the selected property collec-
                    tion is copied up to the top level of the meta data.
 
-       modes       array  of  property  collections.  used  to define 'debug',
+       modes       array of property  collections.  used  to  define  'debug',
                    'release' configurations.
 
        partial     name of the partial page being processed.
@@ -355,7 +379,7 @@ exp(1)                           user commands                          exp(1)
 
        service     name of the transformation service being run.
 
-       to          the destination filename extension after processing by  the
+       to          the  destination filename extension after processing by the
                    current transformation.
 
        top         url for the top level home page of the site.
@@ -365,23 +389,23 @@ exp(1)                           user commands                          exp(1)
 <b>meta control</b>
        expansive defines a set of control properites in the meta.control:
 
-       copy        array  of patterns to copy without processing. the patterns
-                   may include "*" or "**". if a directory  is  specifed,  all
+       copy        array of patterns to copy without processing. the  patterns
+                   may  include  "*"  or "**". if a directory is specifed, all
                    files under the directory are copied.
 
        dependencies
-                   hash  of file dependency relationships. the hash key is the
+                   hash of file dependency relationships. the hash key is  the
                    document path and the value is a set of files that if modi-
-                   fied,  cause  the document to be rendered. the document and
-                   files are relative to the documents directory. the  set  of
+                   fied, cause the document to be rendered. the  document  and
+                   files  are  relative to the documents directory. the set of
                    files can be a string or an array of files. each value file
                    may contain "*" or "**".
 
-       directories directories collection. entries for  'documents',  'files',
+       directories directories  collection.  entries for 'documents', 'files',
                    'public', 'layouts', and 'partials'.
 
-       exclude     array  of patterns to exclude from processing. the patterns
-                   may include "*" or "**". if a directory  is  specifed,  all
+       exclude     array of patterns to exclude from processing. the  patterns
+                   may  include  "*"  or "**". if a directory is specifed, all
                    files under the directory are excluded.
 
        listen      address on which to listen for http requests. may be just a
@@ -389,13 +413,13 @@ exp(1)                           user commands                          exp(1)
 
        plugins     list of plugins to use.
 
-       script      script to  evaluate  to  inject  code  into  the  expansive
+       script      script  to  evaluate  to  inject  code  into  the expansive
                    ejscript global execution context.
 
        sitemap     control what files to include in a sitemap.
 
-       transforms  hash  of extension mappings to a list of transform services
-                   for those mappings. mappings are in the form 'ext -&gt;  ext'.
+       transforms  hash of extension mappings to a list of transform  services
+                   for  those mappings. mappings are in the form 'ext -&gt; ext'.
                    for example:
 
                     transforms: {
@@ -403,17 +427,17 @@ exp(1)                           user commands                          exp(1)
                    css', 'compress' ]
                     }
 
-                   some of the standard service names are:  compile-esp,  com-
-                   pile-less,    compile-markdown,   compile-sass,   compress,
+                   some  of  the standard service names are: compile-esp, com-
+                   pile-less,   compile-markdown,   compile-sass,    compress,
                    minify-css, minify-js, prefix-css, shell.
 
-       watch       time in milliseconds to wait between checking  for  render-
+       watch       time  in  milliseconds to wait between checking for render-
                    ing.
 
 <b>creating plugins</b>
-       expansive    plugins    are    created    using    the    pak   utility
-       (https://embedthis.com/pak)  and  published  to  the  pak  catalog   at
-       (https://embedthis.com/catalog/).  the  plugin  contains a package.json
+       expansive   plugins    are    created    using    the    pak    utility
+       (https://embedthis.com/pak)   and  published  to  the  pak  catalog  at
+       (https://embedthis.com/catalog/). the plugin  contains  a  package.json
        file that includes an app.expansive property collection. for example:
 
         {
@@ -432,39 +456,63 @@ exp(1)                           user commands                          exp(1)
         }
 
        the plugin specifies a one or more transformations via the 'transforms'
-       collection.  each  transform  definition  provides an implemention of a
-       transform service. the 'name' property specifies the transform  service
-       name.  the  service  name  provides an abstract name for which multiple
+       collection. each transform definition provides  an  implemention  of  a
+       transform  service. the 'name' property specifies the transform service
+       name. the service name provides an abstract  name  for  which  multiple
        plugins may provide the implementation. the service is selected via the
-       'plugins'  property  and expansive chooses the first plugin that adver-
+       'plugins' property and expansive chooses the first plugin  that  adver-
        tized that service.
 
-       the 'from' property specifies the starting filename extension  and  the
-       'to'  property  specifies  the  ending extension. if all extensions are
-       supported, set the value to '*'. both 'from' and 'to' may be arrays  if
+       the  'from'  property specifies the starting filename extension and the
+       'to' property specifies the ending extension.  if  all  extensions  are
+       supported,  set the value to '*'. both 'from' and 'to' may be arrays if
        multiple extensions are supported.
 
-       the  transform  script should define a global 'transform' function that
-       will be invoked for matching content.  it is  invoked  with  the  'con-
-       tents'  to transform (string), the meta data collection and the service
-       object that contains service options.  the function should  return  the
+       the transform script should define a global 'transform'  function  that
+       will  be  invoked  for  matching content.  it is invoked with the 'con-
+       tents' to transform (string), the meta data collection and the  service
+       object  that  contains service options.  the function should return the
        transformed data.
 
-       a  plugin  may  also  define  other ejscript functions and variables in
-       'script' that will be injected into the global scope of expansive  when
+       a plugin may also define other  ejscript  functions  and  variables  in
+       'script'  that will be injected into the global scope of expansive when
        it executes.
 
 <b>scripting</b>
        expansive defines a top level global named "expansive" to access expan-
-       sive services. this object provides the following properties and  meth-
+       sive  services. this object provides the following properties and meth-
        ods:
+
+       additems(collection, items)
+              add items  to  a  named  collection.  collections  are  globally
+              defined  and reset at the start of processing for each document.
+              documents, partials and layouts can inject  items  into  collec-
+              tions  for  sharing to other documents. items may be a string or
+              an array of strings. items are uniquely added to the collection.
 
        getfilemeta(filename)
               to return the meta data specified in the given file.
 
-       collection({key: value})
+       getitems(collection)
+              return the items in a named collection as an array.
+
+       getfiles({key: value})
               to  return  a  list  of  matching  documents that have meta data
               matching the specified keys and values.
+
+       removeitems(collection, items)
+              remove the specified items from the named collection.
+
+       renderscripts
+              render  all  scripts  added  to  the  'scripts'  collection  via
+              'additems'.  this  permits  documents,  partials  and layouts to
+              require javascripts and have them emitted uniquely by a partial.
+
+       renderstyles
+              render all stylesheets added to the 'styles' and 'inline-styles'
+              collections via 'additems'. this permits documents, partials and
+              layouts to require stylesheets and have them emitted uniquely by
+              a partial.
 
        trace(tag, msg...)
               to emit console trace while processing.
@@ -515,11 +563,8 @@ exp(1)                           user commands                          exp(1)
                  ip portion and only specify a port.
 
        <b>--log filename:level</b>
-                 omit trace to the specified file. the level  is  a  verbosity
-                 level  from  0-5  with  5  being  the most verbose.  the '-v'
-                 option is an alias for level 1.   can  also  abbreviate  this
-                 switch  by  just  specify  a level option. for example: '-5'.
-                 http requests and http headers will be traced at levels  2-4.
+                 emit trace to the specified file. the level  is  a  verbosity
+                 level from 0-5 with 5 being the most verbose.
 
        <b>--noclean </b>do  not  clean  the  'public'  directory before rendering. by
                  default expansive will remove all the content under  'public'
@@ -532,16 +577,26 @@ exp(1)                           user commands                          exp(1)
 
        <b>--quiet   </b>run in quiet mode. do not emit activity trace to the console.
 
+       <b>--trace filename:level</b>
+                 trace http requests to the specified file.  the  level  is  a
+                 verbosity level from 0-5 with 5 being the most verbose.  http
+                 requests and http headers will be traced at levels 2-4.
+
        <b>--verbose </b>run in verbose mode. emit more activity trace.
 
        <b>--versions uri</b>
                  show exp version information.
 
+       <b>--digit   </b>emit log and http trace to stderr at the specified level. the
+                 digit  must  be  0  to 5 with 5 being the most verbose.  this
+                 option  is  the   same   as   "--log   stderr:digit   --trace
+                 stderr:digit"
+
 <b>reporting bugs</b>
        report bugs to dev@embedthis.com.
 
 <b>copyright</b>
-       copyright (c) 2004-2014 embedthis software.  bit  and  ejscript  are  a
+       copyright  (c)  2004-2014  embedthis  software.  bit and ejscript are a
        trademarks of embedthis software.
 
 <b>see also</b>

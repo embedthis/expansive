@@ -11,6 +11,7 @@ exp \- Embedthis Expansive -- Static web site generator using Ejscript
     \fB--norender\fR
     \fB--nowatch\fR
     \fB--quiet\fR
+    \fB--trace path:level\fR
     \fB--verbose dir\fR
     \fB--version\fR
     \fBcommands ...\fB
@@ -139,7 +140,10 @@ configures what documents to include in the created sitemap XML file.
 .SH DYNAMIC CONTENT
 Expansive uses embedded Javascript in web pages to fully support dynamic content.  Scripts can be embedded via the special
 Expansive tag '<@ ...  @>'. This will run the script when the page is rendered and replace the script with rendered data.
-For example:
+When the script runs, the 'this' object is set to the 'expansive' object for easy access to Expansive methods. See SCRIPTING
+below for more details. 
+.PP
+For example, to render the current date in a document:
 
  <p>Today is <@ write(Date()) @>
 
@@ -212,6 +216,23 @@ Process SASS files into CSS. Requires "sass" to be installed.
 .TP 10
 exp-uglifyjs
 Install Uglify-js. Use with the exp-js plugin to mangle and minify Javascripts.
+.PP
+Many plugins can be customized by passing configuration data via the Meta data. For example:
+To request that minified Javascript files use a '.min.js' extension and are compressed but not managed:
+.PP
+{
+    control: {
+        services: {
+            'minify-js': {
+                compress: true,
+                mangle: true,
+                dotmin: true,
+            }
+        }
+    }
+ }
+ 
+ See specific plugin documentation for the configuration options for each plugin.
 
 .SH LAYOUTS
 A layout page defines the top level HTML content for a set of pages.  The layout defines the format, look and feel of the
@@ -422,11 +443,30 @@ Expansive defines a top level global named "expansive" to access Expansive servi
 properties and methods:
 
 .TP
+addItems(collection, items)
+Add items to a named collection. Collections are globally defined and reset at the start of processing for each document.
+Documents, partials and layouts can inject items into collections for sharing to other documents. Items may be a string
+or an array of strings. Items are uniquely added to the collection.
+.TP
 getFileMeta(filename)
 To return the meta data specified in the given file.
 .TP
-collection({key: value})
+getItems(collection)
+Return the items in a named collection as an Array.
+.TP
+getFiles({key: value})
 To return a list of matching documents that have meta data matching the specified keys and values.
+.TP
+removeItems(collection, items)
+Remove the specified items from the named collection.
+.TP
+renderScripts
+Render all scripts added to the 'scripts' collection via 'addItems'. This permits documents, partials and layouts to 
+require Javascripts and have them emitted uniquely by a partial.
+.TP
+renderStyles
+Render all stylesheets added to the 'styles' and 'inline-styles' collections via 'addItems'. This permits documents, 
+partials and layouts to require stylesheets and have them emitted uniquely by a partial.
 .TP
 trace(tag, msg...)
 To emit console trace while processing.
@@ -477,9 +517,7 @@ Change the port on which Expansive will listen. Can omit the IP portion and only
 
 .TP 10
 \fB\--log filename:level\fR
-Omit trace to the specified file. The level is a verbosity level from 0-5 with 5 being the most verbose.  The '-v' option is
-an alias for level 1.  Can also abbreviate this switch by just specify a level option. For example: '-5'.  HTTP requests and
-HTTP headers will be traced at levels 2-4.
+Emit trace to the specified file. The level is a verbosity level from 0-5 with 5 being the most verbose. 
 
 .TP 10
 \fB\--noclean\fR
@@ -498,12 +536,22 @@ Do not watch for changes when serving content.
 Run in quiet mode. Do not emit activity trace to the console.
 
 .TP 10
+\fB\--trace filename:level\fR
+Trace HTTP requests to the specified file. The level is a verbosity level from 0-5 with 5 being the most verbose.
+HTTP requests and HTTP headers will be traced at levels 2-4.
+
+.TP 10
 \fB\--verbose\fR
 Run in verbose mode. Emit more activity trace.
 
 .TP 10
 \fB\--versions URI\fR
 Show exp version information.
+
+.TP 10
+\fB\--DIGIT
+Emit log and HTTP trace to stderr at the specified level. The DIGIT must be 0 to 5 with 5 being the most verbose.
+This option is the same as "--log stderr:DIGIT --trace stderr:DIGIT"
 
 .PP
 .SH "REPORTING BUGS"

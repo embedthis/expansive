@@ -21,7 +21,75 @@
 
 </head>
 <body>
-    
+        
+    <div class="ui large left vertical inverted labeled overlay sidebar menu">
+        <div class="item">
+            <a href="../index.html" class="logo">Expansive Docs</a>
+        </div>
+        <div class="item">
+            <a href="../index.html">
+                <b>General</b>
+            </a>
+            <div class="menu">
+                <a class="item" href="../index.html">Expansive Overview</a>
+                <a class="item" href="../users/features.html">Expansive Features</a>
+                <a class="item" href="https://embedthis.com/exp/download.html">Download</a> 
+                <a class="item" href="../licensing/index.html">Licensing</a>
+            </div>
+        </div>
+        <div class="item">
+            <a href="../start/index.html">
+                <b>Getting Started</b>
+            </a>
+            <div class="menu">
+                <a class="item" href="../start/installing.html">Installing Expansive</a>
+                <a class="item" href="../start/tour.html">Tour of Expansive</a>
+                <a class="item" href="../start/releaseNotes.html">Release Notes</a>
+                <a class="item" href="../start/source.html">Building from Source</a>
+            </div>
+        </div>
+        <div class="item">
+            <a href="../users/index.html"><b>User's Guide</b></a>
+            <div class="menu">
+                <a class="item" href="../users/using.html">Using Expansive</a>
+            </div>
+        </div>
+        <div class="item">
+            <a href="../developers/index.html">Developer's Guide</a>
+            <div class="menu">
+                <a class="item" href="../developers/plugins.html">Expansive Plugins</a>
+            </div>
+        </div>
+        <div class="item">
+            <a href="../ref/index.html">Reference Guide</a>
+            <div class="menu">
+                <a class="item" href="../ref/configuration.html">Configuration</a>
+            </div>
+        </div>
+        <div class="item">
+            <a href="../developers/project.html">Project Resources</a>
+            <div class="menu">
+                <!-- MOB -->
+                <a class="item" href="http://goo.gl/dGRDl4">Official Expansive News</a>
+                <a class="item" href="https://embedthis.com/exp/">Expansive Web Site</a>
+                <a class="item" href="https://github.com/embedthis/exp">Source Code Repository</a>
+                <a class="item" href="https://github.com/embedthis/exp/issues">Project Issue Database</a>
+                <a class="item" href="https://github.com/embedthis/exp/releases">Change Log</a>
+                <a class="item" href="https://github.com/embedthis/exp/milestones">Roadmap</a>
+                <a class="item" href="https://embedthis.com/developers/contributors.html">Contributors Agreement</a>
+            </div>
+        </div>
+        <div class="item">
+            <b>Links</b>
+            <div class="menu">
+                <a class="item" href="https://embedthis.com/">Embedthis Web Site</a>
+                <a class="item" href="https://embedthis.com/blog/">Embedthis Blog</a>
+                <a class="item" href="http://twitter.com/mobstream">Twitter</a>
+            </div>
+        </div>
+    </div>
+
+
 
     <div class="ui inverted masthead">
          
@@ -85,15 +153,17 @@
     </div>
     <div class="terms ui basic center aligned segment">
         <p>&copy; Embedthis Software, 2003-2014. All rights reserved.
-            Generated on Sep  2, 2014.
+            Generated on Sep  3, 2014.
         </p>
     </div>
 
     <script src="../lib/jquery/jquery.js"></script>
-    <script src="../lib/semantic/javascript/query.js"></script>
+    <script src="../lib/semantic/javascript/semantic.js"></script>
     <script>
+        $('.sidebar').sidebar({overlay: false}).sidebar('toggle');
+        $('.sidebar').first().sidebar('attach events', '.toggle.button');
         $(function() {
-            var url = '@@{top}@@{meta.url}';
+            var url = '../start/installing.html';
             var active = $('.sidebar a[href="' + url +'"]');
             active.addClass('active');
             var sidebar = $(".sidebar");

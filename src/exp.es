@@ -285,7 +285,7 @@ class Exp {
                 if (path.join('exp.json').exists) {
                     loadPlugin(name, dirs.paks.join(name))
                 } else {
-                    trace('Warn', 'Cannot find plugin "' + name + '"')
+                    trace('Warn', 'Cannot find requested plugin "' + name + '"')
                 }
             }
         }
@@ -979,7 +979,6 @@ class Exp {
     }
 
     function savePlugins(list) {
-    print("LIST", list)
         let pstr = serialize(list).replace(/,/g, ', ').replace(/"/g, '\'').replace(/\[/, '[ ').replace(/\]/, ' ]')
         let path = Path('exp.json')
         let data = path.readString().replace(/ *plugins:.*,$/m, '        plugins: ' + pstr + ',')
@@ -989,8 +988,8 @@ class Exp {
     function install(plugins, meta) {
         let pakcache = App.home.join('.paks')
         let updated
+        plugins = plugins.map(function(e) e.trimStart('exp-'))
         for each (pak in plugins) {
-            pak = pak.trimStart('exp-')
             let name = 'exp-' + pak
             if (meta.control.plugins.contains(pak) && pakcache.join(name).exists) {
                 trace('Info', pak + ' is already installed')
@@ -1024,12 +1023,17 @@ class Exp {
         plugins = plugins.map(function(e) e.trimStart('exp-'))
         let path = Path('exp.json')
         let plist = path.readJSON().control.plugins || []
+        for each (pak in plugins) {
+            if (plugins.contains(pak)) {
+                trace('Uninstalled', 'Plugin ' + pak)
+            }
+        }
         savePlugins((plist - plugins).unique())
     }
 
     function upgrade(plugins, meta) {
+        plugins = plugins.map(function(e) e.trimStart('exp-'))
         for each (pak in plugins) {
-            pak = pak.trimStart('exp-')
             let name = 'exp-' + pak
             try {
                 let pakcmd = Cmd.locate('pak')

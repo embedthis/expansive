@@ -371,8 +371,8 @@ class Exp {
 
     function watch(meta) {
         if (!options.norender) {
-            options.quiet = true
             trace('Render', 'Initial render ...')
+            options.quiet = true
             renderAll = true
             render()
             renderAll = false
@@ -388,7 +388,7 @@ class Exp {
             checkDepends(meta)
             event('check', lastGen)
             mastersModified = checkMastersModified()
-            render()
+            render(false)
             App.sleep(meta.control.watch)
             vtrace('Check', 'for changes (' + Date().format('%I:%M:%S') + ')')
             lastGen = mark
@@ -425,7 +425,7 @@ class Exp {
         }
     }
 
-    function render() {
+    function render(initial = true) {
         stats.started = new Date
         stats.files = 0
         if (mastersModified) {
@@ -433,9 +433,10 @@ class Exp {
         }
         exclude = buildFileHash(topMeta.control.exclude, dirs.documents)
         copy = buildFileHash(topMeta.control.copy, dirs.documents)
-
+        if (initial) {
+            publishFiles(topMeta)
+        }
         renderDir(dirs.documents, topMeta.clone(true))
-        publishFiles(topMeta)
         postclean()
         sitemap()
         if (options.debug) {
@@ -459,6 +460,7 @@ class Exp {
      */
     function publishFiles(meta) {
         if (!filters) {
+            dirs.public.makeDir()
             if (Path('files').exists && !meta.control.files) {
                 meta.control.files = [ Path('files') ]
             }

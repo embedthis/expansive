@@ -84,9 +84,9 @@ Me.load({
             path: '${BIN}/exp.mod',
             files: [ 'src/exp.es', 'src/ExpTemplate.es', 'src/paks/ejs-version/Version.es' ],
             build: `
-                trace('Compile', 'exp.mod')
                 run('${LBIN}/ejsc --debug --out ${BIN}/exp.mod --optimize 9 ${FILES}')
             `,
+            message: [ 'Compile', 'exp.mod'],
             depends: [ 'ejsc' ],
         },
         'exp': {
@@ -97,13 +97,10 @@ Me.load({
             depends: [ 'libmpr', 'libhttp', 'libejs', 'exp.mod' ],
         },
 
-        'exp.sample': {
+        sample: {
             path: [ '${BIN}/exp.sample' ],
             files: [ 'src/exp.sample' ],
-            build: `
-                trace('Export', me.target.files)
-                copyFile('src/exp.sample', me.dir.bin.join('exp.sample'))
-            `
+            type: 'file',
         }
 
         projects: {

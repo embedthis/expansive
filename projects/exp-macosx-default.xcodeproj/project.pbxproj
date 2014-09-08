@@ -33,29 +33,29 @@
 			name = exp.mod;
 			productName = exp.mod;
 		};
-		EFDF7BA2EFDF8D0C00000010 /* exp.sample */ = {
+		EFDF7BA2EFDF8D0C00000010 /* http-ca-crt */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = EFDF7BA2EFDF8D0C0000000F /* Build configuration list for PBXAggregateTarget "exp.sample" */;
+			buildConfigurationList = EFDF7BA2EFDF8D0C0000000F /* Build configuration list for PBXAggregateTarget "http-ca-crt" */;
 			buildPhases = (
 				EFDF7BA2EFDF8D0C00000011,
 			);
 			dependencies = (
 				EFDF7BA2EFDF8D0C00000012 /* PBXTargetDependency Prep */,
 			);
-			name = exp.sample;
-			productName = exp.sample;
+			name = http-ca-crt;
+			productName = http-ca-crt;
 		};
-		EFDF7BA2EFDF8D0C00000014 /* http-ca-crt */ = {
+		EFDF7BA2EFDF8D0C00000014 /* sample */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = EFDF7BA2EFDF8D0C00000013 /* Build configuration list for PBXAggregateTarget "http-ca-crt" */;
+			buildConfigurationList = EFDF7BA2EFDF8D0C00000013 /* Build configuration list for PBXAggregateTarget "sample" */;
 			buildPhases = (
 				EFDF7BA2EFDF8D0C00000015,
 			);
 			dependencies = (
 				EFDF7BA2EFDF8D0C00000016 /* PBXTargetDependency Prep */,
 			);
-			name = http-ca-crt;
-			productName = http-ca-crt;
+			name = sample;
+			productName = sample;
 		};
 		EFDF7BA2EFDF8D0C00000018 /* All */ = {
 			isa = PBXAggregateTarget;
@@ -69,16 +69,16 @@
 				EFDF7BA2EFDF8D0C0000001B /* PBXTargetDependency ejscmd */,
 				EFDF7BA2EFDF8D0C0000001C /* PBXTargetDependency exp */,
 				EFDF7BA2EFDF8D0C0000001D /* PBXTargetDependency exp.mod */,
-				EFDF7BA2EFDF8D0C0000001E /* PBXTargetDependency exp.sample */,
-				EFDF7BA2EFDF8D0C0000001F /* PBXTargetDependency http-ca-crt */,
-				EFDF7BA2EFDF8D0C00000020 /* PBXTargetDependency httpcmd */,
-				EFDF7BA2EFDF8D0C00000021 /* PBXTargetDependency libejs */,
-				EFDF7BA2EFDF8D0C00000022 /* PBXTargetDependency libest */,
-				EFDF7BA2EFDF8D0C00000023 /* PBXTargetDependency libhttp */,
-				EFDF7BA2EFDF8D0C00000024 /* PBXTargetDependency libmpr */,
-				EFDF7BA2EFDF8D0C00000025 /* PBXTargetDependency libmprssl */,
-				EFDF7BA2EFDF8D0C00000026 /* PBXTargetDependency libpcre */,
-				EFDF7BA2EFDF8D0C00000027 /* PBXTargetDependency libzlib */,
+				EFDF7BA2EFDF8D0C0000001E /* PBXTargetDependency http-ca-crt */,
+				EFDF7BA2EFDF8D0C0000001F /* PBXTargetDependency httpcmd */,
+				EFDF7BA2EFDF8D0C00000020 /* PBXTargetDependency libejs */,
+				EFDF7BA2EFDF8D0C00000021 /* PBXTargetDependency libest */,
+				EFDF7BA2EFDF8D0C00000022 /* PBXTargetDependency libhttp */,
+				EFDF7BA2EFDF8D0C00000023 /* PBXTargetDependency libmpr */,
+				EFDF7BA2EFDF8D0C00000024 /* PBXTargetDependency libmprssl */,
+				EFDF7BA2EFDF8D0C00000025 /* PBXTargetDependency libpcre */,
+				EFDF7BA2EFDF8D0C00000026 /* PBXTargetDependency libzlib */,
+				EFDF7BA2EFDF8D0C00000027 /* PBXTargetDependency sample */,
 			);
 			name = All;
 			productName = All;
@@ -376,147 +376,147 @@
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C0000006F;
 			remoteInfo = ejsc;
 		};
-		EFDF7BA2EFDF8D0C0000008B /* PBXContainerItemProxy Prep from exp.sample */ = {
+		EFDF7BA2EFDF8D0C0000008B /* PBXContainerItemProxy Prep from http-ca-crt */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000029;
 			remoteInfo = Prep;
 		};
-		EFDF7BA2EFDF8D0C0000008C /* PBXContainerItemProxy Prep from http-ca-crt */ = {
+		EFDF7BA2EFDF8D0C0000008C /* PBXContainerItemProxy Prep from httpcmd */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000029;
 			remoteInfo = Prep;
 		};
-		EFDF7BA2EFDF8D0C0000008D /* PBXContainerItemProxy Prep from httpcmd */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000029;
-			remoteInfo = Prep;
-		};
-		EFDF7BA2EFDF8D0C0000008E /* PBXContainerItemProxy libmpr from httpcmd */ = {
+		EFDF7BA2EFDF8D0C0000008D /* PBXContainerItemProxy libmpr from httpcmd */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000065;
 			remoteInfo = libmpr;
 		};
-		EFDF7BA2EFDF8D0C0000008F /* PBXContainerItemProxy libpcre from httpcmd */ = {
+		EFDF7BA2EFDF8D0C0000008E /* PBXContainerItemProxy libpcre from httpcmd */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000067;
 			remoteInfo = libpcre;
 		};
-		EFDF7BA2EFDF8D0C00000090 /* PBXContainerItemProxy libhttp from httpcmd */ = {
+		EFDF7BA2EFDF8D0C0000008F /* PBXContainerItemProxy libhttp from httpcmd */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000069;
 			remoteInfo = libhttp;
 		};
-		EFDF7BA2EFDF8D0C00000091 /* PBXContainerItemProxy Prep from libejs */ = {
+		EFDF7BA2EFDF8D0C00000090 /* PBXContainerItemProxy Prep from libejs */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000029;
 			remoteInfo = Prep;
 		};
-		EFDF7BA2EFDF8D0C00000092 /* PBXContainerItemProxy libmpr from libejs */ = {
+		EFDF7BA2EFDF8D0C00000091 /* PBXContainerItemProxy libmpr from libejs */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000065;
 			remoteInfo = libmpr;
 		};
-		EFDF7BA2EFDF8D0C00000093 /* PBXContainerItemProxy libpcre from libejs */ = {
+		EFDF7BA2EFDF8D0C00000092 /* PBXContainerItemProxy libpcre from libejs */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000067;
 			remoteInfo = libpcre;
 		};
-		EFDF7BA2EFDF8D0C00000094 /* PBXContainerItemProxy libhttp from libejs */ = {
+		EFDF7BA2EFDF8D0C00000093 /* PBXContainerItemProxy libhttp from libejs */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000069;
 			remoteInfo = libhttp;
 		};
-		EFDF7BA2EFDF8D0C00000095 /* PBXContainerItemProxy libzlib from libejs */ = {
+		EFDF7BA2EFDF8D0C00000094 /* PBXContainerItemProxy libzlib from libejs */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C0000006B;
 			remoteInfo = libzlib;
 		};
-		EFDF7BA2EFDF8D0C00000096 /* PBXContainerItemProxy Prep from libest */ = {
+		EFDF7BA2EFDF8D0C00000095 /* PBXContainerItemProxy Prep from libest */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000029;
 			remoteInfo = Prep;
 		};
-		EFDF7BA2EFDF8D0C00000097 /* PBXContainerItemProxy Prep from libhttp */ = {
+		EFDF7BA2EFDF8D0C00000096 /* PBXContainerItemProxy Prep from libhttp */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000029;
 			remoteInfo = Prep;
 		};
-		EFDF7BA2EFDF8D0C00000098 /* PBXContainerItemProxy libmpr from libhttp */ = {
+		EFDF7BA2EFDF8D0C00000097 /* PBXContainerItemProxy libmpr from libhttp */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000065;
 			remoteInfo = libmpr;
 		};
-		EFDF7BA2EFDF8D0C00000099 /* PBXContainerItemProxy libpcre from libhttp */ = {
+		EFDF7BA2EFDF8D0C00000098 /* PBXContainerItemProxy libpcre from libhttp */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000067;
 			remoteInfo = libpcre;
 		};
-		EFDF7BA2EFDF8D0C0000009A /* PBXContainerItemProxy Prep from libmpr */ = {
+		EFDF7BA2EFDF8D0C00000099 /* PBXContainerItemProxy Prep from libmpr */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000029;
 			remoteInfo = Prep;
 		};
-		EFDF7BA2EFDF8D0C0000009B /* PBXContainerItemProxy Prep from libmprssl */ = {
+		EFDF7BA2EFDF8D0C0000009A /* PBXContainerItemProxy Prep from libmprssl */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000029;
 			remoteInfo = Prep;
 		};
-		EFDF7BA2EFDF8D0C0000009C /* PBXContainerItemProxy libmpr from libmprssl */ = {
+		EFDF7BA2EFDF8D0C0000009B /* PBXContainerItemProxy libmpr from libmprssl */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000065;
 			remoteInfo = libmpr;
 		};
-		EFDF7BA2EFDF8D0C0000009D /* PBXContainerItemProxy libest from libmprssl */ = {
+		EFDF7BA2EFDF8D0C0000009C /* PBXContainerItemProxy libest from libmprssl */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = EFDF7BA2EFDF8D0C0000009E;
+			remoteGlobalIDString = EFDF7BA2EFDF8D0C0000009D;
 			remoteInfo = libest;
 		};
-		EFDF7BA2EFDF8D0C0000009F /* PBXContainerItemProxy Prep from libpcre */ = {
+		EFDF7BA2EFDF8D0C0000009E /* PBXContainerItemProxy Prep from libpcre */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000029;
 			remoteInfo = Prep;
 		};
-		EFDF7BA2EFDF8D0C000000A0 /* PBXContainerItemProxy Prep from libzlib */ = {
+		EFDF7BA2EFDF8D0C0000009F /* PBXContainerItemProxy Prep from libzlib */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000029;
+			remoteInfo = Prep;
+		};
+		EFDF7BA2EFDF8D0C000000A0 /* PBXContainerItemProxy Prep from sample */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
@@ -600,40 +600,40 @@
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C000000AD;
 			remoteInfo = exp;
 		};
-		EFDF7BA2EFDF8D0C000000AE /* PBXContainerItemProxy exp.sample from All */ = {
+		EFDF7BA2EFDF8D0C000000AE /* PBXContainerItemProxy http-ca-crt from All */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000010;
-			remoteInfo = exp.sample;
+			remoteInfo = http-ca-crt;
 		};
-		EFDF7BA2EFDF8D0C000000AF /* PBXContainerItemProxy http-ca-crt from All */ = {
+		EFDF7BA2EFDF8D0C000000AF /* PBXContainerItemProxy httpcmd from All */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EFDF7BA2EFDF8D0C000000B0;
+			remoteInfo = httpcmd;
+		};
+		EFDF7BA2EFDF8D0C000000B1 /* PBXContainerItemProxy libest from All */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EFDF7BA2EFDF8D0C0000009D;
+			remoteInfo = libest;
+		};
+		EFDF7BA2EFDF8D0C000000B2 /* PBXContainerItemProxy libmprssl from All */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EFDF7BA2EFDF8D0C000000B3;
+			remoteInfo = libmprssl;
+		};
+		EFDF7BA2EFDF8D0C000000B4 /* PBXContainerItemProxy sample from All */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EFDF7BA2EFDF8D0C00000014;
-			remoteInfo = http-ca-crt;
-		};
-		EFDF7BA2EFDF8D0C000000B0 /* PBXContainerItemProxy httpcmd from All */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EFDF7BA2EFDF8D0C000000B1;
-			remoteInfo = httpcmd;
-		};
-		EFDF7BA2EFDF8D0C000000B2 /* PBXContainerItemProxy libest from All */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EFDF7BA2EFDF8D0C0000009E;
-			remoteInfo = libest;
-		};
-		EFDF7BA2EFDF8D0C000000B3 /* PBXContainerItemProxy libmprssl from All */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EFDF7BA2EFDF8D0C00000001 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EFDF7BA2EFDF8D0C000000B4;
-			remoteInfo = libmprssl;
+			remoteInfo = sample;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -1024,7 +1024,7 @@
 			productReference = EFDF7BA2EFDF8D0C000000BA /* exp */;
 			productType = "com.apple.product-type.tool";
 		};
-		EFDF7BA2EFDF8D0C000000B1 /* httpcmd */ = {
+		EFDF7BA2EFDF8D0C000000B0 /* httpcmd */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EFDF7BA2EFDF8D0C000000F7 /* Build configuration list for PBXNativeTarget "httpcmd" */;
 			buildPhases = (
@@ -1065,7 +1065,7 @@
 			productReference = EFDF7BA2EFDF8D0C00000044 /* libejs */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		EFDF7BA2EFDF8D0C0000009E /* libest */ = {
+		EFDF7BA2EFDF8D0C0000009D /* libest */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EFDF7BA2EFDF8D0C00000104 /* Build configuration list for PBXNativeTarget "libest" */;
 			buildPhases = (
@@ -1118,7 +1118,7 @@
 			productReference = EFDF7BA2EFDF8D0C00000048 /* libmpr */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		EFDF7BA2EFDF8D0C000000B4 /* libmprssl */ = {
+		EFDF7BA2EFDF8D0C000000B3 /* libmprssl */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EFDF7BA2EFDF8D0C0000010F /* Build configuration list for PBXNativeTarget "libmprssl" */;
 			buildPhases = (
@@ -1180,7 +1180,7 @@
 			files = (
 			);
 			inputPaths = (
-/Users/mob/git/exp/src/paks/ejs/ejs.es
+../src/paks/ejs/ejs.es
 			);
 			outputPaths = (
 ../build/macosx-x64-default/bin/ejs.mod
@@ -1189,33 +1189,36 @@
 			shellPath = /bin/bash;
 			shellScript = "PATH=$PATH:/usr/local/bin
 cd ../src/paks/ejs
-../../../build/macosx-x64-default/bin/ejsc --out ../../../build/macosx-x64-default/bin/ejs.mod --optimize 9 --bind --require null ejs.es";
+	../../${OUT_DIR}/bin/ejsc --out ../../${OUT_DIR}/bin/ejs.mod --optimize 9 --bind --require null ejs.es
+";
 		};
-		EFDF7BA2EFDF8D0C00000011 /* ShellScript for exp.sample */ = {
+		EFDF7BA2EFDF8D0C0000000C /* ShellScript for exp.mod */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-/Users/mob/git/exp/src/exp.sample
+../src/ExpTemplate.es,
+../src/exp.es,
+../src/paks/ejs-version/Version.es
 			);
 			outputPaths = (
-../build/macosx-x64-default/bin/exp.sample
+../build/macosx-x64-default/bin/exp.mod
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "PATH=$PATH:/usr/local/bin
 cd ..
-	cp src/exp.sample build/macosx-x64-default/bin/exp.sample
+	build/macosx-x64-default/bin/ejsc --debug --out build/macosx-x64-default/bin/exp.mod --optimize 9 src/ExpTemplate.es src/exp.es src/paks/ejs-version/Version.es
 ";
 		};
-		EFDF7BA2EFDF8D0C00000015 /* ShellScript for http-ca-crt */ = {
+		EFDF7BA2EFDF8D0C00000011 /* ShellScript for http-ca-crt */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-/Users/mob/git/exp/src/paks/http/ca.crt
+../src/paks/http/ca.crt
 			);
 			outputPaths = (
 ../build/macosx-x64-default/bin/ca.crt
@@ -1226,6 +1229,25 @@ cd ..
 cd ../src/paks/http
 mkdir -p ../../${OUT_DIR}/bin
 cp -r ca.crt ../../${OUT_DIR}/bin/ca.crt
+";
+		};
+		EFDF7BA2EFDF8D0C00000015 /* ShellScript for sample */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+../src/exp.sample
+			);
+			outputPaths = (
+../build/macosx-x64-default/bin/exp.sample
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "PATH=$PATH:/usr/local/bin
+cd ..
+mkdir -p build/macosx-x64-default/bin
+cp -r src/exp.sample build/macosx-x64-default/bin/exp.sample
 ";
 		};
 		EFDF7BA2EFDF8D0C0000002A /* ShellScript for Prep */ = {
@@ -1331,20 +1353,20 @@ fi";
 				EFDF7BA2EFDF8D0C00000018 /* All */,
 				EFDF7BA2EFDF8D0C00000029 /* Prep */,
 				EFDF7BA2EFDF8D0C0000006D /* libejs */,
-				EFDF7BA2EFDF8D0C0000009E /* libest */,
+				EFDF7BA2EFDF8D0C0000009D /* libest */,
 				EFDF7BA2EFDF8D0C00000069 /* libhttp */,
 				EFDF7BA2EFDF8D0C00000065 /* libmpr */,
-				EFDF7BA2EFDF8D0C000000B4 /* libmprssl */,
+				EFDF7BA2EFDF8D0C000000B3 /* libmprssl */,
 				EFDF7BA2EFDF8D0C00000067 /* libpcre */,
 				EFDF7BA2EFDF8D0C0000006B /* libzlib */,
 				EFDF7BA2EFDF8D0C0000006F /* ejsc */,
 				EFDF7BA2EFDF8D0C000000AA /* ejscmd */,
 				EFDF7BA2EFDF8D0C000000AD /* exp */,
-				EFDF7BA2EFDF8D0C000000B1 /* httpcmd */,
+				EFDF7BA2EFDF8D0C000000B0 /* httpcmd */,
 				EFDF7BA2EFDF8D0C00000006 /* ejs.mod */,
 				EFDF7BA2EFDF8D0C0000000B /* exp.mod */,
-				EFDF7BA2EFDF8D0C00000010 /* exp.sample */,
-				EFDF7BA2EFDF8D0C00000014 /* http-ca-crt */,
+				EFDF7BA2EFDF8D0C00000010 /* http-ca-crt */,
+				EFDF7BA2EFDF8D0C00000014 /* sample */,
 			);
 		};
 /* End PBXProject section */
@@ -1612,107 +1634,107 @@ fi";
 			target = EFDF7BA2EFDF8D0C0000006F /* ejsc */;
 			targetProxy = EFDF7BA2EFDF8D0C0000008A /* PBXContainerItemProxy */;
 		};
-		EFDF7BA2EFDF8D0C00000012 /* PBXTargetDependency exp.sample depends on Prep */ = {
+		EFDF7BA2EFDF8D0C00000012 /* PBXTargetDependency http-ca-crt depends on Prep */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000029 /* Prep */;
 			targetProxy = EFDF7BA2EFDF8D0C0000008B /* PBXContainerItemProxy */;
 		};
-		EFDF7BA2EFDF8D0C00000016 /* PBXTargetDependency http-ca-crt depends on Prep */ = {
+		EFDF7BA2EFDF8D0C000000F8 /* PBXTargetDependency httpcmd depends on Prep */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000029 /* Prep */;
 			targetProxy = EFDF7BA2EFDF8D0C0000008C /* PBXContainerItemProxy */;
 		};
-		EFDF7BA2EFDF8D0C000000F8 /* PBXTargetDependency httpcmd depends on Prep */ = {
-			isa = PBXTargetDependency;
-			target = EFDF7BA2EFDF8D0C00000029 /* Prep */;
-			targetProxy = EFDF7BA2EFDF8D0C0000008D /* PBXContainerItemProxy */;
-		};
 		EFDF7BA2EFDF8D0C000000F9 /* PBXTargetDependency httpcmd depends on libmpr */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000065 /* libmpr */;
-			targetProxy = EFDF7BA2EFDF8D0C0000008E /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C0000008D /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C000000FA /* PBXTargetDependency httpcmd depends on libpcre */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000067 /* libpcre */;
-			targetProxy = EFDF7BA2EFDF8D0C0000008F /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C0000008E /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C000000FB /* PBXTargetDependency httpcmd depends on libhttp */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000069 /* libhttp */;
-			targetProxy = EFDF7BA2EFDF8D0C00000090 /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C0000008F /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C000000FE /* PBXTargetDependency libejs depends on Prep */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000029 /* Prep */;
-			targetProxy = EFDF7BA2EFDF8D0C00000091 /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C00000090 /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C000000FF /* PBXTargetDependency libejs depends on libmpr */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000065 /* libmpr */;
-			targetProxy = EFDF7BA2EFDF8D0C00000092 /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C00000091 /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C00000100 /* PBXTargetDependency libejs depends on libpcre */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000067 /* libpcre */;
-			targetProxy = EFDF7BA2EFDF8D0C00000093 /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C00000092 /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C00000101 /* PBXTargetDependency libejs depends on libhttp */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000069 /* libhttp */;
-			targetProxy = EFDF7BA2EFDF8D0C00000094 /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C00000093 /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C00000102 /* PBXTargetDependency libejs depends on libzlib */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C0000006B /* libzlib */;
-			targetProxy = EFDF7BA2EFDF8D0C00000095 /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C00000094 /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C00000105 /* PBXTargetDependency libest depends on Prep */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000029 /* Prep */;
-			targetProxy = EFDF7BA2EFDF8D0C00000096 /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C00000095 /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C00000108 /* PBXTargetDependency libhttp depends on Prep */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000029 /* Prep */;
-			targetProxy = EFDF7BA2EFDF8D0C00000097 /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C00000096 /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C00000109 /* PBXTargetDependency libhttp depends on libmpr */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000065 /* libmpr */;
-			targetProxy = EFDF7BA2EFDF8D0C00000098 /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C00000097 /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C0000010A /* PBXTargetDependency libhttp depends on libpcre */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000067 /* libpcre */;
-			targetProxy = EFDF7BA2EFDF8D0C00000099 /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C00000098 /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C0000010D /* PBXTargetDependency libmpr depends on Prep */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000029 /* Prep */;
-			targetProxy = EFDF7BA2EFDF8D0C0000009A /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C00000099 /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C00000110 /* PBXTargetDependency libmprssl depends on Prep */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000029 /* Prep */;
-			targetProxy = EFDF7BA2EFDF8D0C0000009B /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C0000009A /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C00000111 /* PBXTargetDependency libmprssl depends on libmpr */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000065 /* libmpr */;
-			targetProxy = EFDF7BA2EFDF8D0C0000009C /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C0000009B /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C00000112 /* PBXTargetDependency libmprssl depends on libest */ = {
 			isa = PBXTargetDependency;
-			target = EFDF7BA2EFDF8D0C0000009E /* libest */;
-			targetProxy = EFDF7BA2EFDF8D0C0000009D /* PBXContainerItemProxy */;
+			target = EFDF7BA2EFDF8D0C0000009D /* libest */;
+			targetProxy = EFDF7BA2EFDF8D0C0000009C /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C00000115 /* PBXTargetDependency libpcre depends on Prep */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000029 /* Prep */;
-			targetProxy = EFDF7BA2EFDF8D0C0000009F /* PBXContainerItemProxy */;
+			targetProxy = EFDF7BA2EFDF8D0C0000009E /* PBXContainerItemProxy */;
 		};
 		EFDF7BA2EFDF8D0C00000118 /* PBXTargetDependency libzlib depends on Prep */ = {
+			isa = PBXTargetDependency;
+			target = EFDF7BA2EFDF8D0C00000029 /* Prep */;
+			targetProxy = EFDF7BA2EFDF8D0C0000009F /* PBXContainerItemProxy */;
+		};
+		EFDF7BA2EFDF8D0C00000016 /* PBXTargetDependency sample depends on Prep */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000029 /* Prep */;
 			targetProxy = EFDF7BA2EFDF8D0C000000A0 /* PBXContainerItemProxy */;
@@ -1722,27 +1744,27 @@ fi";
 			target = EFDF7BA2EFDF8D0C00000029 /* Prep */;
 			targetProxy = EFDF7BA2EFDF8D0C000000A1 /* PBXContainerItemProxy */;
 		};
-		EFDF7BA2EFDF8D0C00000024 /* PBXTargetDependency All depends on libmpr */ = {
+		EFDF7BA2EFDF8D0C00000023 /* PBXTargetDependency All depends on libmpr */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000065 /* libmpr */;
 			targetProxy = EFDF7BA2EFDF8D0C000000A2 /* PBXContainerItemProxy */;
 		};
-		EFDF7BA2EFDF8D0C00000026 /* PBXTargetDependency All depends on libpcre */ = {
+		EFDF7BA2EFDF8D0C00000025 /* PBXTargetDependency All depends on libpcre */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000067 /* libpcre */;
 			targetProxy = EFDF7BA2EFDF8D0C000000A3 /* PBXContainerItemProxy */;
 		};
-		EFDF7BA2EFDF8D0C00000023 /* PBXTargetDependency All depends on libhttp */ = {
+		EFDF7BA2EFDF8D0C00000022 /* PBXTargetDependency All depends on libhttp */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C00000069 /* libhttp */;
 			targetProxy = EFDF7BA2EFDF8D0C000000A4 /* PBXContainerItemProxy */;
 		};
-		EFDF7BA2EFDF8D0C00000027 /* PBXTargetDependency All depends on libzlib */ = {
+		EFDF7BA2EFDF8D0C00000026 /* PBXTargetDependency All depends on libzlib */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C0000006B /* libzlib */;
 			targetProxy = EFDF7BA2EFDF8D0C000000A5 /* PBXContainerItemProxy */;
 		};
-		EFDF7BA2EFDF8D0C00000021 /* PBXTargetDependency All depends on libejs */ = {
+		EFDF7BA2EFDF8D0C00000020 /* PBXTargetDependency All depends on libejs */ = {
 			isa = PBXTargetDependency;
 			target = EFDF7BA2EFDF8D0C0000006D /* libejs */;
 			targetProxy = EFDF7BA2EFDF8D0C000000A6 /* PBXContainerItemProxy */;
@@ -1772,30 +1794,30 @@ fi";
 			target = EFDF7BA2EFDF8D0C000000AD /* exp */;
 			targetProxy = EFDF7BA2EFDF8D0C000000AC /* PBXContainerItemProxy */;
 		};
-		EFDF7BA2EFDF8D0C0000001E /* PBXTargetDependency All depends on exp.sample */ = {
+		EFDF7BA2EFDF8D0C0000001E /* PBXTargetDependency All depends on http-ca-crt */ = {
 			isa = PBXTargetDependency;
-			target = EFDF7BA2EFDF8D0C00000010 /* exp.sample */;
+			target = EFDF7BA2EFDF8D0C00000010 /* http-ca-crt */;
 			targetProxy = EFDF7BA2EFDF8D0C000000AE /* PBXContainerItemProxy */;
 		};
-		EFDF7BA2EFDF8D0C0000001F /* PBXTargetDependency All depends on http-ca-crt */ = {
+		EFDF7BA2EFDF8D0C0000001F /* PBXTargetDependency All depends on httpcmd */ = {
 			isa = PBXTargetDependency;
-			target = EFDF7BA2EFDF8D0C00000014 /* http-ca-crt */;
+			target = EFDF7BA2EFDF8D0C000000B0 /* httpcmd */;
 			targetProxy = EFDF7BA2EFDF8D0C000000AF /* PBXContainerItemProxy */;
 		};
-		EFDF7BA2EFDF8D0C00000020 /* PBXTargetDependency All depends on httpcmd */ = {
+		EFDF7BA2EFDF8D0C00000021 /* PBXTargetDependency All depends on libest */ = {
 			isa = PBXTargetDependency;
-			target = EFDF7BA2EFDF8D0C000000B1 /* httpcmd */;
-			targetProxy = EFDF7BA2EFDF8D0C000000B0 /* PBXContainerItemProxy */;
+			target = EFDF7BA2EFDF8D0C0000009D /* libest */;
+			targetProxy = EFDF7BA2EFDF8D0C000000B1 /* PBXContainerItemProxy */;
 		};
-		EFDF7BA2EFDF8D0C00000022 /* PBXTargetDependency All depends on libest */ = {
+		EFDF7BA2EFDF8D0C00000024 /* PBXTargetDependency All depends on libmprssl */ = {
 			isa = PBXTargetDependency;
-			target = EFDF7BA2EFDF8D0C0000009E /* libest */;
+			target = EFDF7BA2EFDF8D0C000000B3 /* libmprssl */;
 			targetProxy = EFDF7BA2EFDF8D0C000000B2 /* PBXContainerItemProxy */;
 		};
-		EFDF7BA2EFDF8D0C00000025 /* PBXTargetDependency All depends on libmprssl */ = {
+		EFDF7BA2EFDF8D0C00000027 /* PBXTargetDependency All depends on sample */ = {
 			isa = PBXTargetDependency;
-			target = EFDF7BA2EFDF8D0C000000B4 /* libmprssl */;
-			targetProxy = EFDF7BA2EFDF8D0C000000B3 /* PBXContainerItemProxy */;
+			target = EFDF7BA2EFDF8D0C00000014 /* sample */;
+			targetProxy = EFDF7BA2EFDF8D0C000000B4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1846,7 +1868,7 @@ fi";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
-					"/Users/mob/git/exp/build/macosx-x64-default/inc",
+					"../build/macosx-x64-default/inc",
 					"$(inherited)"
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1854,7 +1876,7 @@ fi";
 					"$(inherited)"
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"/Users/mob/git/exp/build/macosx-x64-default/bin",
+					"../build/macosx-x64-default/bin",
 					"$(inherited)"
 				);
 				OTHER_LDFLAGS = (
@@ -1916,12 +1938,12 @@ fi";
 				GCC_OPTIMIZATION_LEVEL = s;
                 GCC_WARN_UNINITIALIZED_AUTOS = NO;
 				HEADER_SEARCH_PATHS = (
-					"/Users/mob/git/exp/build/macosx-x64-default/inc",
+					"../build/macosx-x64-default/inc",
 					"$(inherited)"
 				);
 
 				LIBRARY_SEARCH_PATHS = (
-					"/Users/mob/git/exp/build/macosx-x64-default/bin",
+					"../build/macosx-x64-default/bin",
 					"$(inherited)"
 				);
 				OTHER_LDFLAGS = (
@@ -2053,7 +2075,7 @@ fi";
 		EFDF7BA2EFDF8D0C0000012E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = exp.sample;
+				PRODUCT_NAME = http-ca-crt;
 
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ME_DEBUG",
@@ -2065,7 +2087,7 @@ fi";
 		EFDF7BA2EFDF8D0C0000012F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = exp.sample;
+				PRODUCT_NAME = http-ca-crt;
 
 
 			};
@@ -2074,7 +2096,7 @@ fi";
 		EFDF7BA2EFDF8D0C00000130 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = http-ca-crt;
+				PRODUCT_NAME = http;
 
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ME_DEBUG",
@@ -2086,7 +2108,7 @@ fi";
 		EFDF7BA2EFDF8D0C00000131 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = http-ca-crt;
+				PRODUCT_NAME = http;
 
 
 			};
@@ -2095,7 +2117,7 @@ fi";
 		EFDF7BA2EFDF8D0C00000132 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = http;
+				PRODUCT_NAME = libejs;
 
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ME_DEBUG",
@@ -2107,7 +2129,7 @@ fi";
 		EFDF7BA2EFDF8D0C00000133 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = http;
+				PRODUCT_NAME = libejs;
 
 
 			};
@@ -2116,7 +2138,7 @@ fi";
 		EFDF7BA2EFDF8D0C00000134 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libejs;
+				PRODUCT_NAME = libest;
 
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ME_DEBUG",
@@ -2128,7 +2150,7 @@ fi";
 		EFDF7BA2EFDF8D0C00000135 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libejs;
+				PRODUCT_NAME = libest;
 
 
 			};
@@ -2137,7 +2159,7 @@ fi";
 		EFDF7BA2EFDF8D0C00000136 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libest;
+				PRODUCT_NAME = libhttp;
 
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ME_DEBUG",
@@ -2149,7 +2171,7 @@ fi";
 		EFDF7BA2EFDF8D0C00000137 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libest;
+				PRODUCT_NAME = libhttp;
 
 
 			};
@@ -2158,7 +2180,7 @@ fi";
 		EFDF7BA2EFDF8D0C00000138 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libhttp;
+				PRODUCT_NAME = libmpr;
 
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ME_DEBUG",
@@ -2170,7 +2192,7 @@ fi";
 		EFDF7BA2EFDF8D0C00000139 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libhttp;
+				PRODUCT_NAME = libmpr;
 
 
 			};
@@ -2179,7 +2201,7 @@ fi";
 		EFDF7BA2EFDF8D0C0000013A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libmpr;
+				PRODUCT_NAME = libmprssl;
 
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ME_DEBUG",
@@ -2191,7 +2213,7 @@ fi";
 		EFDF7BA2EFDF8D0C0000013B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libmpr;
+				PRODUCT_NAME = libmprssl;
 
 
 			};
@@ -2200,9 +2222,10 @@ fi";
 		EFDF7BA2EFDF8D0C0000013C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libmprssl;
+				PRODUCT_NAME = libpcre;
 
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					"PCRE_CHAR=char",
 					"ME_DEBUG",
 					"$(inherited)"
 				);
@@ -2212,19 +2235,21 @@ fi";
 		EFDF7BA2EFDF8D0C0000013D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libmprssl;
+				PRODUCT_NAME = libpcre;
 
-
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"PCRE_CHAR=char",
+					"$(inherited)"
+				);
 			};
 			name = Release;
 		};
 		EFDF7BA2EFDF8D0C0000013E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libpcre;
+				PRODUCT_NAME = libzlib;
 
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"PCRE_CHAR=char",
 					"ME_DEBUG",
 					"$(inherited)"
 				);
@@ -2234,19 +2259,16 @@ fi";
 		EFDF7BA2EFDF8D0C0000013F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libpcre;
+				PRODUCT_NAME = libzlib;
 
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"PCRE_CHAR=char",
-					"$(inherited)"
-				);
+
 			};
 			name = Release;
 		};
 		EFDF7BA2EFDF8D0C00000140 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libzlib;
+				PRODUCT_NAME = sample;
 
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ME_DEBUG",
@@ -2258,7 +2280,7 @@ fi";
 		EFDF7BA2EFDF8D0C00000141 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = libzlib;
+				PRODUCT_NAME = sample;
 
 
 			};
@@ -2363,7 +2385,7 @@ fi";
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EFDF7BA2EFDF8D0C0000000F /* Build configuration list for PBXNativeTarget "exp.sample" */ = {
+		EFDF7BA2EFDF8D0C0000000F /* Build configuration list for PBXNativeTarget "http-ca-crt" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EFDF7BA2EFDF8D0C0000012E /* Debug */,
@@ -2372,7 +2394,7 @@ fi";
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EFDF7BA2EFDF8D0C00000013 /* Build configuration list for PBXNativeTarget "http-ca-crt" */ = {
+		EFDF7BA2EFDF8D0C000000F7 /* Build configuration list for PBXNativeTarget "httpcmd" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EFDF7BA2EFDF8D0C00000130 /* Debug */,
@@ -2381,7 +2403,7 @@ fi";
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EFDF7BA2EFDF8D0C000000F7 /* Build configuration list for PBXNativeTarget "httpcmd" */ = {
+		EFDF7BA2EFDF8D0C000000FD /* Build configuration list for PBXNativeTarget "libejs" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EFDF7BA2EFDF8D0C00000132 /* Debug */,
@@ -2390,7 +2412,7 @@ fi";
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EFDF7BA2EFDF8D0C000000FD /* Build configuration list for PBXNativeTarget "libejs" */ = {
+		EFDF7BA2EFDF8D0C00000104 /* Build configuration list for PBXNativeTarget "libest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EFDF7BA2EFDF8D0C00000134 /* Debug */,
@@ -2399,7 +2421,7 @@ fi";
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EFDF7BA2EFDF8D0C00000104 /* Build configuration list for PBXNativeTarget "libest" */ = {
+		EFDF7BA2EFDF8D0C00000107 /* Build configuration list for PBXNativeTarget "libhttp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EFDF7BA2EFDF8D0C00000136 /* Debug */,
@@ -2408,7 +2430,7 @@ fi";
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EFDF7BA2EFDF8D0C00000107 /* Build configuration list for PBXNativeTarget "libhttp" */ = {
+		EFDF7BA2EFDF8D0C0000010C /* Build configuration list for PBXNativeTarget "libmpr" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EFDF7BA2EFDF8D0C00000138 /* Debug */,
@@ -2417,7 +2439,7 @@ fi";
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EFDF7BA2EFDF8D0C0000010C /* Build configuration list for PBXNativeTarget "libmpr" */ = {
+		EFDF7BA2EFDF8D0C0000010F /* Build configuration list for PBXNativeTarget "libmprssl" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EFDF7BA2EFDF8D0C0000013A /* Debug */,
@@ -2426,7 +2448,7 @@ fi";
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EFDF7BA2EFDF8D0C0000010F /* Build configuration list for PBXNativeTarget "libmprssl" */ = {
+		EFDF7BA2EFDF8D0C00000114 /* Build configuration list for PBXNativeTarget "libpcre" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EFDF7BA2EFDF8D0C0000013C /* Debug */,
@@ -2435,7 +2457,7 @@ fi";
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EFDF7BA2EFDF8D0C00000114 /* Build configuration list for PBXNativeTarget "libpcre" */ = {
+		EFDF7BA2EFDF8D0C00000117 /* Build configuration list for PBXNativeTarget "libzlib" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EFDF7BA2EFDF8D0C0000013E /* Debug */,
@@ -2444,7 +2466,7 @@ fi";
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EFDF7BA2EFDF8D0C00000117 /* Build configuration list for PBXNativeTarget "libzlib" */ = {
+		EFDF7BA2EFDF8D0C00000013 /* Build configuration list for PBXNativeTarget "sample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EFDF7BA2EFDF8D0C00000140 /* Debug */,

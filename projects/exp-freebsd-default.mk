@@ -84,7 +84,6 @@ ifeq ($(ME_COM_EJS),1)
     TARGETS           += build/$(CONFIG)/bin/ejs
 endif
 TARGETS               += build/$(CONFIG)/bin/exp
-TARGETS               += build/$(CONFIG)/bin/exp.sample
 TARGETS               += build/$(CONFIG)/bin/ca.crt
 ifeq ($(ME_COM_HTTP),1)
     TARGETS           += build/$(CONFIG)/bin/http
@@ -93,6 +92,7 @@ ifeq ($(ME_COM_EST),1)
     TARGETS           += build/$(CONFIG)/bin/libest.so
 endif
 TARGETS               += build/$(CONFIG)/bin/libmprssl.so
+TARGETS               += build/$(CONFIG)/bin/exp.sample
 
 unexport CDPATH
 
@@ -147,6 +147,7 @@ clean:
 	rm -f "build/$(CONFIG)/bin/libmprssl.so"
 	rm -f "build/$(CONFIG)/bin/libpcre.so"
 	rm -f "build/$(CONFIG)/bin/libzlib.so"
+	rm -f "build/$(CONFIG)/bin/exp.sample"
 
 clobber: clean
 	rm -fr ./$(BUILD)
@@ -155,6 +156,8 @@ clobber: clean
 #
 #   mpr.h
 #
+DEPS_1 += src/paks/mpr/mpr.h
+
 build/$(CONFIG)/inc/mpr.h: $(DEPS_1)
 	@echo '      [Copy] build/$(CONFIG)/inc/mpr.h'
 	mkdir -p "build/$(CONFIG)/inc"
@@ -169,6 +172,8 @@ build/$(CONFIG)/inc/me.h: $(DEPS_2)
 #
 #   osdep.h
 #
+DEPS_3 += src/paks/osdep/osdep.h
+
 build/$(CONFIG)/inc/osdep.h: $(DEPS_3)
 	@echo '      [Copy] build/$(CONFIG)/inc/osdep.h'
 	mkdir -p "build/$(CONFIG)/inc"
@@ -201,6 +206,8 @@ build/$(CONFIG)/bin/libmpr.so: $(DEPS_5)
 #
 #   pcre.h
 #
+DEPS_6 += src/paks/pcre/pcre.h
+
 build/$(CONFIG)/inc/pcre.h: $(DEPS_6)
 	@echo '      [Copy] build/$(CONFIG)/inc/pcre.h'
 	mkdir -p "build/$(CONFIG)/inc"
@@ -233,6 +240,8 @@ endif
 #
 #   http.h
 #
+DEPS_9 += src/paks/http/http.h
+
 build/$(CONFIG)/inc/http.h: $(DEPS_9)
 	@echo '      [Copy] build/$(CONFIG)/inc/http.h'
 	mkdir -p "build/$(CONFIG)/inc"
@@ -280,6 +289,8 @@ endif
 #
 #   zlib.h
 #
+DEPS_12 += src/paks/zlib/zlib.h
+
 build/$(CONFIG)/inc/zlib.h: $(DEPS_12)
 	@echo '      [Copy] build/$(CONFIG)/inc/zlib.h'
 	mkdir -p "build/$(CONFIG)/inc"
@@ -312,6 +323,8 @@ endif
 #
 #   ejs.h
 #
+DEPS_15 += src/paks/ejs/ejs.h
+
 build/$(CONFIG)/inc/ejs.h: $(DEPS_15)
 	@echo '      [Copy] build/$(CONFIG)/inc/ejs.h'
 	mkdir -p "build/$(CONFIG)/inc"
@@ -320,6 +333,8 @@ build/$(CONFIG)/inc/ejs.h: $(DEPS_15)
 #
 #   ejs.slots.h
 #
+DEPS_16 += src/paks/ejs/ejs.slots.h
+
 build/$(CONFIG)/inc/ejs.slots.h: $(DEPS_16)
 	@echo '      [Copy] build/$(CONFIG)/inc/ejs.slots.h'
 	mkdir -p "build/$(CONFIG)/inc"
@@ -328,6 +343,8 @@ build/$(CONFIG)/inc/ejs.slots.h: $(DEPS_16)
 #
 #   ejsByteGoto.h
 #
+DEPS_17 += src/paks/ejs/ejsByteGoto.h
+
 build/$(CONFIG)/inc/ejsByteGoto.h: $(DEPS_17)
 	@echo '      [Copy] build/$(CONFIG)/inc/ejsByteGoto.h'
 	mkdir -p "build/$(CONFIG)/inc"
@@ -490,7 +507,8 @@ DEPS_22 += build/$(CONFIG)/bin/ejsc
 build/$(CONFIG)/bin/ejs.mod: $(DEPS_22)
 	( \
 	cd src/paks/ejs; \
-	../../../$(LBIN)/ejsc --out ../../../build/$(CONFIG)/bin/ejs.mod --optimize 9 --bind --require null ejs.es ; \
+	echo '   [Compile] ejs.mod' ; \
+	../../../build/$(CONFIG)/bin/ejsc --out ../../../build/$(CONFIG)/bin/ejs.mod --optimize 9 --bind --require null ejs.es ; \
 	)
 endif
 
@@ -553,104 +571,137 @@ build/$(CONFIG)/bin/ejs: $(DEPS_24)
 	$(CC) -o build/$(CONFIG)/bin/ejs $(LDFLAGS) $(LIBPATHS) "build/$(CONFIG)/obj/ejs.o" $(LIBPATHS_24) $(LIBS_24) $(LIBS_24) $(LIBS) $(LIBS) 
 endif
 
+#
+#   exp.mod
+#
+DEPS_25 += src/ExpTemplate.es
+DEPS_25 += src/exp.es
+DEPS_25 += src/paks/ejs-version/Version.es
+DEPS_25 += build/$(CONFIG)/inc/mpr.h
+DEPS_25 += build/$(CONFIG)/inc/me.h
+DEPS_25 += build/$(CONFIG)/inc/osdep.h
+DEPS_25 += build/$(CONFIG)/obj/mprLib.o
+DEPS_25 += build/$(CONFIG)/bin/libmpr.so
+DEPS_25 += build/$(CONFIG)/inc/pcre.h
+DEPS_25 += build/$(CONFIG)/obj/pcre.o
+ifeq ($(ME_COM_PCRE),1)
+    DEPS_25 += build/$(CONFIG)/bin/libpcre.so
+endif
+DEPS_25 += build/$(CONFIG)/inc/http.h
+DEPS_25 += build/$(CONFIG)/obj/httpLib.o
+ifeq ($(ME_COM_HTTP),1)
+    DEPS_25 += build/$(CONFIG)/bin/libhttp.so
+endif
+DEPS_25 += build/$(CONFIG)/inc/zlib.h
+DEPS_25 += build/$(CONFIG)/obj/zlib.o
+ifeq ($(ME_COM_ZLIB),1)
+    DEPS_25 += build/$(CONFIG)/bin/libzlib.so
+endif
+DEPS_25 += build/$(CONFIG)/inc/ejs.h
+DEPS_25 += build/$(CONFIG)/inc/ejs.slots.h
+DEPS_25 += build/$(CONFIG)/inc/ejsByteGoto.h
+DEPS_25 += build/$(CONFIG)/obj/ejsLib.o
+ifeq ($(ME_COM_EJS),1)
+    DEPS_25 += build/$(CONFIG)/bin/libejs.so
+endif
+DEPS_25 += build/$(CONFIG)/obj/ejsc.o
+ifeq ($(ME_COM_EJS),1)
+    DEPS_25 += build/$(CONFIG)/bin/ejsc
+endif
+
+build/$(CONFIG)/bin/exp.mod: $(DEPS_25)
+	( \
+	cd .; \
+	echo '   [Compile] exp.mod' ; \
+	./build/$(CONFIG)/bin/ejsc --debug --out ./build/$(CONFIG)/bin/exp.mod --optimize 9 src/ExpTemplate.es src/exp.es src/paks/ejs-version/Version.es ; \
+	)
 
 #
 #   exp.h
 #
-build/$(CONFIG)/inc/exp.h: $(DEPS_25)
+build/$(CONFIG)/inc/exp.h: $(DEPS_26)
 	@echo '      [Copy] build/$(CONFIG)/inc/exp.h'
 
 #
 #   exp.o
 #
-DEPS_26 += build/$(CONFIG)/inc/me.h
-DEPS_26 += build/$(CONFIG)/inc/ejs.h
-DEPS_26 += build/$(CONFIG)/inc/exp.h
+DEPS_27 += build/$(CONFIG)/inc/me.h
+DEPS_27 += build/$(CONFIG)/inc/ejs.h
+DEPS_27 += build/$(CONFIG)/inc/exp.h
 
 build/$(CONFIG)/obj/exp.o: \
-    src/exp.c $(DEPS_26)
+    src/exp.c $(DEPS_27)
 	@echo '   [Compile] build/$(CONFIG)/obj/exp.o'
 	$(CC) -c -o build/$(CONFIG)/obj/exp.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/exp.c
 
 #
 #   expTemplate.o
 #
-DEPS_27 += build/$(CONFIG)/inc/me.h
-DEPS_27 += build/$(CONFIG)/inc/ejs.h
-DEPS_27 += build/$(CONFIG)/inc/exp.h
+DEPS_28 += build/$(CONFIG)/inc/me.h
+DEPS_28 += build/$(CONFIG)/inc/ejs.h
+DEPS_28 += build/$(CONFIG)/inc/exp.h
 
 build/$(CONFIG)/obj/expTemplate.o: \
-    src/expTemplate.c $(DEPS_27)
+    src/expTemplate.c $(DEPS_28)
 	@echo '   [Compile] build/$(CONFIG)/obj/expTemplate.o'
 	$(CC) -c -o build/$(CONFIG)/obj/expTemplate.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/expTemplate.c
 
 #
 #   exp
 #
-DEPS_28 += build/$(CONFIG)/inc/mpr.h
-DEPS_28 += build/$(CONFIG)/inc/me.h
-DEPS_28 += build/$(CONFIG)/inc/osdep.h
-DEPS_28 += build/$(CONFIG)/obj/mprLib.o
-DEPS_28 += build/$(CONFIG)/bin/libmpr.so
-DEPS_28 += build/$(CONFIG)/inc/pcre.h
-DEPS_28 += build/$(CONFIG)/obj/pcre.o
+DEPS_29 += build/$(CONFIG)/inc/mpr.h
+DEPS_29 += build/$(CONFIG)/inc/me.h
+DEPS_29 += build/$(CONFIG)/inc/osdep.h
+DEPS_29 += build/$(CONFIG)/obj/mprLib.o
+DEPS_29 += build/$(CONFIG)/bin/libmpr.so
+DEPS_29 += build/$(CONFIG)/inc/pcre.h
+DEPS_29 += build/$(CONFIG)/obj/pcre.o
 ifeq ($(ME_COM_PCRE),1)
-    DEPS_28 += build/$(CONFIG)/bin/libpcre.so
+    DEPS_29 += build/$(CONFIG)/bin/libpcre.so
 endif
-DEPS_28 += build/$(CONFIG)/inc/http.h
-DEPS_28 += build/$(CONFIG)/obj/httpLib.o
+DEPS_29 += build/$(CONFIG)/inc/http.h
+DEPS_29 += build/$(CONFIG)/obj/httpLib.o
 ifeq ($(ME_COM_HTTP),1)
-    DEPS_28 += build/$(CONFIG)/bin/libhttp.so
+    DEPS_29 += build/$(CONFIG)/bin/libhttp.so
 endif
-DEPS_28 += build/$(CONFIG)/inc/zlib.h
-DEPS_28 += build/$(CONFIG)/obj/zlib.o
+DEPS_29 += build/$(CONFIG)/inc/zlib.h
+DEPS_29 += build/$(CONFIG)/obj/zlib.o
 ifeq ($(ME_COM_ZLIB),1)
-    DEPS_28 += build/$(CONFIG)/bin/libzlib.so
+    DEPS_29 += build/$(CONFIG)/bin/libzlib.so
 endif
-DEPS_28 += build/$(CONFIG)/inc/ejs.h
-DEPS_28 += build/$(CONFIG)/inc/ejs.slots.h
-DEPS_28 += build/$(CONFIG)/inc/ejsByteGoto.h
-DEPS_28 += build/$(CONFIG)/obj/ejsLib.o
+DEPS_29 += build/$(CONFIG)/inc/ejs.h
+DEPS_29 += build/$(CONFIG)/inc/ejs.slots.h
+DEPS_29 += build/$(CONFIG)/inc/ejsByteGoto.h
+DEPS_29 += build/$(CONFIG)/obj/ejsLib.o
 ifeq ($(ME_COM_EJS),1)
-    DEPS_28 += build/$(CONFIG)/bin/libejs.so
+    DEPS_29 += build/$(CONFIG)/bin/libejs.so
 endif
-DEPS_28 += build/$(CONFIG)/obj/ejsc.o
+DEPS_29 += build/$(CONFIG)/obj/ejsc.o
 ifeq ($(ME_COM_EJS),1)
-    DEPS_28 += build/$(CONFIG)/bin/ejsc
+    DEPS_29 += build/$(CONFIG)/bin/ejsc
 endif
-DEPS_28 += build/$(CONFIG)/bin/exp.mod
-DEPS_28 += build/$(CONFIG)/inc/exp.h
-DEPS_28 += build/$(CONFIG)/obj/exp.o
-DEPS_28 += build/$(CONFIG)/obj/expTemplate.o
+DEPS_29 += build/$(CONFIG)/bin/exp.mod
+DEPS_29 += build/$(CONFIG)/inc/exp.h
+DEPS_29 += build/$(CONFIG)/obj/exp.o
+DEPS_29 += build/$(CONFIG)/obj/expTemplate.o
 
-LIBS_28 += -lmpr
+LIBS_29 += -lmpr
 ifeq ($(ME_COM_HTTP),1)
-    LIBS_28 += -lhttp
+    LIBS_29 += -lhttp
 endif
 ifeq ($(ME_COM_PCRE),1)
-    LIBS_28 += -lpcre
+    LIBS_29 += -lpcre
 endif
 ifeq ($(ME_COM_EJS),1)
-    LIBS_28 += -lejs
+    LIBS_29 += -lejs
 endif
 ifeq ($(ME_COM_ZLIB),1)
-    LIBS_28 += -lzlib
+    LIBS_29 += -lzlib
 endif
 
-build/$(CONFIG)/bin/exp: $(DEPS_28)
+build/$(CONFIG)/bin/exp: $(DEPS_29)
 	@echo '      [Link] build/$(CONFIG)/bin/exp'
-	$(CC) -o build/$(CONFIG)/bin/exp $(LDFLAGS) $(LIBPATHS) "build/$(CONFIG)/obj/exp.o" "build/$(CONFIG)/obj/expTemplate.o" $(LIBPATHS_28) $(LIBS_28) $(LIBS_28) $(LIBS) $(LIBS) 
-
-#
-#   exp.sample
-#
-DEPS_29 += src/exp.sample
-
-build/$(CONFIG)/bin/exp.sample: $(DEPS_29)
-	( \
-	cd .; \
-	cp src/exp.sample build/$(CONFIG)/bin/exp.sample ; \
-	)
+	$(CC) -o build/$(CONFIG)/bin/exp $(LDFLAGS) $(LIBPATHS) "build/$(CONFIG)/obj/exp.o" "build/$(CONFIG)/obj/expTemplate.o" $(LIBPATHS_29) $(LIBS_29) $(LIBS_29) $(LIBS) $(LIBS) 
 
 
 #
@@ -707,6 +758,8 @@ endif
 #
 #   est.h
 #
+DEPS_33 += src/paks/est/est.h
+
 build/$(CONFIG)/inc/est.h: $(DEPS_33)
 	@echo '      [Copy] build/$(CONFIG)/inc/est.h'
 	mkdir -p "build/$(CONFIG)/inc"
@@ -782,14 +835,24 @@ build/$(CONFIG)/bin/libmprssl.so: $(DEPS_37)
 	$(CC) -shared -o build/$(CONFIG)/bin/libmprssl.so $(LDFLAGS) $(LIBPATHS)  "build/$(CONFIG)/obj/mprSsl.o" $(LIBPATHS_37) $(LIBS_37) $(LIBS_37) $(LIBS) 
 
 #
+#   sample
+#
+DEPS_38 += src/exp.sample
+
+build/$(CONFIG)/bin/exp.sample: $(DEPS_38)
+	@echo '      [Copy] build/$(CONFIG)/bin/exp.sample'
+	mkdir -p "build/$(CONFIG)/bin"
+	cp src/exp.sample build/$(CONFIG)/bin/exp.sample
+
+#
 #   stop
 #
-stop: $(DEPS_38)
+stop: $(DEPS_39)
 
 #
 #   installBinary
 #
-installBinary: $(DEPS_39)
+installBinary: $(DEPS_40)
 	( \
 	cd .; \
 	mkdir -p "$(ME_APP_PREFIX)" ; \
@@ -833,23 +896,23 @@ installBinary: $(DEPS_39)
 #
 #   start
 #
-start: $(DEPS_40)
+start: $(DEPS_41)
 
 #
 #   install
 #
-DEPS_41 += stop
-DEPS_41 += installBinary
-DEPS_41 += start
+DEPS_42 += stop
+DEPS_42 += installBinary
+DEPS_42 += start
 
-install: $(DEPS_41)
+install: $(DEPS_42)
 
 #
 #   uninstall
 #
-DEPS_42 += stop
+DEPS_43 += stop
 
-uninstall: $(DEPS_42)
+uninstall: $(DEPS_43)
 	( \
 	cd .; \
 	rm -fr "$(ME_VAPP_PREFIX)" ; \
@@ -860,6 +923,6 @@ uninstall: $(DEPS_42)
 #
 #   version
 #
-version: $(DEPS_43)
+version: $(DEPS_44)
 	echo 0.4.0
 

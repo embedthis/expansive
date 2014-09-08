@@ -30995,11 +30995,13 @@ static int parseOptions(Ejs *ejs, EjsCmd *cmd)
     cmd->throw = 0;    
     flags = MPR_CMD_IN | MPR_CMD_OUT | MPR_CMD_ERR;
     if (cmd->options) {
+#if DEPRECATE || 1
         if ((value = ejsGetPropertyByName(ejs, cmd->options, EN("noio"))) != 0) {
             if (value == ESV(true)) {
                 flags &= ~(MPR_CMD_OUT | MPR_CMD_ERR);
             }
         }
+#endif
         if ((value = ejsGetPropertyByName(ejs, cmd->options, EN("detach"))) != 0) {
             if (value == ESV(true)) {
                 flags |= MPR_CMD_DETACH;
@@ -31011,7 +31013,7 @@ static int parseOptions(Ejs *ejs, EjsCmd *cmd)
                 mprSetCmdDir(cmd->mc, path->value);
             }
         }
-        if ((value = ejsGetPropertyByName(ejs, cmd->options, EN("exception"))) != 0) {
+        if ((value = ejsGetPropertyByName(ejs, cmd->options, EN("exceptions"))) != 0) {
             if (value == ESV(true)) {
                 cmd->throw = 1;
             }
@@ -42117,30 +42119,24 @@ PUBLIC EjsArray *ejsGetPathFiles(Ejs *ejs, EjsPath *fp, int argc, EjsObj **argv)
         path = fp->value;
         base = "";
 
-#if UNUSED
-        if (mprIsPathAbs(pattern)) {
-#endif
-            start = pattern;
-            if ((special = strpbrk(start, "*?")) != 0) {
-                if (special > start) {
-                    for (pattern = special; pattern > start && !strchr(fs->separators, *pattern); pattern--) { }
-                    if (pattern > start) {
-                        *pattern++ = '\0';
-                        path = mprJoinPath(path, start);
-                        base = start;
-                    }
-                }
-            } else {
-                pattern = (char*) mprGetPathBaseRef(start);
+        start = pattern;
+        if ((special = strpbrk(start, "*?")) != 0) {
+            if (special > start) {
+                for (pattern = special; pattern > start && !strchr(fs->separators, *pattern); pattern--) { }
                 if (pattern > start) {
-                    pattern[-1] = '\0';
+                    *pattern++ = '\0';
                     path = mprJoinPath(path, start);
                     base = start;
                 }
             }
-#if UNUSED
+        } else {
+            pattern = (char*) mprGetPathBaseRef(start);
+            if (pattern > start) {
+                pattern[-1] = '\0';
+                path = mprJoinPath(path, start);
+                base = start;
+            }
         }
-#endif
         if (!globPath(ejs, result, path, base, pattern, flags, exclude, include)) {
             return 0;
         }

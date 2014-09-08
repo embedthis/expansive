@@ -93,6 +93,13 @@
     <AdditionalDependencies>libejs.lib;libhttp.lib;libmpr.lib;libpcre.lib;libzlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     <AdditionalLibraryDirectories>$(OutDir);build\$(Cfg)\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
   </Link>
+
+  <CustomBuildStep>
+    <Command>cd ..\..
+../../build/windows-x86-default/bin/ejsc --debug --out ../../build/windows-x86-default/bin/exp.mod --optimize 9 src/ExpTemplate.es src/exp.es src/paks/ejs-version/Version.es
+cd projects\exp-windows-default</Command>
+    <Outputs>$(BinDir)\exp.mod</Outputs>
+  </CustomBuildStep>
   </ItemDefinitionGroup>
 
 <ItemGroup>

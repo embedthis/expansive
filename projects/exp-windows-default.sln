@@ -6,10 +6,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmpr", "exp-windows-defau
 	ProjectSection(ProjectDependencies) = postProject
 		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
 	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{02CA7374-D1AA-425D-8F85-9AD8320980E7} = {02CA7374-D1AA-425D-8F85-9AD8320980E7}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpcre", "exp-windows-default\libpcre.vcxproj", "{4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00} = {4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libhttp", "exp-windows-default\libhttp.vcxproj", "{55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9}"
@@ -22,10 +28,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libhttp", "exp-windows-defa
 	ProjectSection(ProjectDependencies) = postProject
 		{4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00} = {4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00}
 	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9} = {55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libzlib", "exp-windows-default\libzlib.vcxproj", "{CB7A943F-B210-498C-80DD-8BA85D017F7E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{CB7A943F-B210-498C-80DD-8BA85D017F7E} = {CB7A943F-B210-498C-80DD-8BA85D017F7E}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libejs", "exp-windows-default\libejs.vcxproj", "{12F2348B-A901-4127-BE49-8E456FDA9002}"
@@ -33,16 +45,19 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libejs", "exp-windows-defau
 		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
-		{55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9} = {55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9}
+		{02CA7374-D1AA-425D-8F85-9AD8320980E7} = {02CA7374-D1AA-425D-8F85-9AD8320980E7}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00} = {4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
-		{02CA7374-D1AA-425D-8F85-9AD8320980E7} = {02CA7374-D1AA-425D-8F85-9AD8320980E7}
+		{55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9} = {55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{CB7A943F-B210-498C-80DD-8BA85D017F7E} = {CB7A943F-B210-498C-80DD-8BA85D017F7E}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{12F2348B-A901-4127-BE49-8E456FDA9002} = {12F2348B-A901-4127-BE49-8E456FDA9002}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ejsc", "exp-windows-default\ejsc.vcxproj", "{75A3C39B-7CD5-473D-8AA0-E3C369AB6B33}"
@@ -50,7 +65,22 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ejsc", "exp-windows-default
 		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
+		{02CA7374-D1AA-425D-8F85-9AD8320980E7} = {02CA7374-D1AA-425D-8F85-9AD8320980E7}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00} = {4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9} = {55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{CB7A943F-B210-498C-80DD-8BA85D017F7E} = {CB7A943F-B210-498C-80DD-8BA85D017F7E}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
 		{12F2348B-A901-4127-BE49-8E456FDA9002} = {12F2348B-A901-4127-BE49-8E456FDA9002}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{75A3C39B-7CD5-473D-8AA0-E3C369AB6B33} = {75A3C39B-7CD5-473D-8AA0-E3C369AB6B33}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ejs.mod", "exp-windows-default\ejs.mod.vcxproj", "{58ABBB3C-AF93-4C4C-B6FA-A27E1603A1C9}"
@@ -58,7 +88,25 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ejs.mod", "exp-windows-defa
 		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
+		{02CA7374-D1AA-425D-8F85-9AD8320980E7} = {02CA7374-D1AA-425D-8F85-9AD8320980E7}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00} = {4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9} = {55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{CB7A943F-B210-498C-80DD-8BA85D017F7E} = {CB7A943F-B210-498C-80DD-8BA85D017F7E}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{12F2348B-A901-4127-BE49-8E456FDA9002} = {12F2348B-A901-4127-BE49-8E456FDA9002}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
 		{75A3C39B-7CD5-473D-8AA0-E3C369AB6B33} = {75A3C39B-7CD5-473D-8AA0-E3C369AB6B33}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{58ABBB3C-AF93-4C4C-B6FA-A27E1603A1C9} = {58ABBB3C-AF93-4C4C-B6FA-A27E1603A1C9}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ejscmd", "exp-windows-default\ejscmd.vcxproj", "{03098E3E-8A0C-4717-9DBC-E1E61D1C8F71}"
@@ -66,7 +114,22 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ejscmd", "exp-windows-defau
 		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
+		{02CA7374-D1AA-425D-8F85-9AD8320980E7} = {02CA7374-D1AA-425D-8F85-9AD8320980E7}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00} = {4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9} = {55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{CB7A943F-B210-498C-80DD-8BA85D017F7E} = {CB7A943F-B210-498C-80DD-8BA85D017F7E}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
 		{12F2348B-A901-4127-BE49-8E456FDA9002} = {12F2348B-A901-4127-BE49-8E456FDA9002}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{03098E3E-8A0C-4717-9DBC-E1E61D1C8F71} = {03098E3E-8A0C-4717-9DBC-E1E61D1C8F71}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exp.mod", "exp-windows-default\exp.mod.vcxproj", "{5064444E-641A-4728-8008-9B738E56D9DA}"
@@ -74,7 +137,25 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exp.mod", "exp-windows-defa
 		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
+		{02CA7374-D1AA-425D-8F85-9AD8320980E7} = {02CA7374-D1AA-425D-8F85-9AD8320980E7}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00} = {4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9} = {55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{CB7A943F-B210-498C-80DD-8BA85D017F7E} = {CB7A943F-B210-498C-80DD-8BA85D017F7E}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{12F2348B-A901-4127-BE49-8E456FDA9002} = {12F2348B-A901-4127-BE49-8E456FDA9002}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
 		{75A3C39B-7CD5-473D-8AA0-E3C369AB6B33} = {75A3C39B-7CD5-473D-8AA0-E3C369AB6B33}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{5064444E-641A-4728-8008-9B738E56D9DA} = {5064444E-641A-4728-8008-9B738E56D9DA}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exp", "exp-windows-default\exp.vcxproj", "{605236CD-76F6-4979-9A94-D8295A85CC1C}"
@@ -85,23 +166,33 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exp", "exp-windows-default\
 		{02CA7374-D1AA-425D-8F85-9AD8320980E7} = {02CA7374-D1AA-425D-8F85-9AD8320980E7}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
+		{4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00} = {4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
 		{55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9} = {55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{CB7A943F-B210-498C-80DD-8BA85D017F7E} = {CB7A943F-B210-498C-80DD-8BA85D017F7E}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{12F2348B-A901-4127-BE49-8E456FDA9002} = {12F2348B-A901-4127-BE49-8E456FDA9002}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
+		{75A3C39B-7CD5-473D-8AA0-E3C369AB6B33} = {75A3C39B-7CD5-473D-8AA0-E3C369AB6B33}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
 		{5064444E-641A-4728-8008-9B738E56D9DA} = {5064444E-641A-4728-8008-9B738E56D9DA}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exp.sample", "exp-windows-default\exp.sample.vcxproj", "{9021F789-9124-4902-8B0C-822FE257F957}"
 	ProjectSection(ProjectDependencies) = postProject
-		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
+		{605236CD-76F6-4979-9A94-D8295A85CC1C} = {605236CD-76F6-4979-9A94-D8295A85CC1C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "http-ca-crt", "exp-windows-default\http-ca-crt.vcxproj", "{C859320E-03EB-41F0-8779-EC350442CE94}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{C859320E-03EB-41F0-8779-EC350442CE94} = {C859320E-03EB-41F0-8779-EC350442CE94}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "httpcmd", "exp-windows-default\httpcmd.vcxproj", "{35E35408-AD4B-417E-8045-9A11A101363F}"
@@ -109,12 +200,24 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "httpcmd", "exp-windows-defa
 		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
+		{02CA7374-D1AA-425D-8F85-9AD8320980E7} = {02CA7374-D1AA-425D-8F85-9AD8320980E7}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00} = {4BDD6F9C-78F4-4F4C-9A4B-9EBD713D1D00}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
 		{55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9} = {55D3272A-C6B1-45CB-9B3B-7BD1FF9B0ED9}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{35E35408-AD4B-417E-8045-9A11A101363F} = {35E35408-AD4B-417E-8045-9A11A101363F}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libest", "exp-windows-default\libest.vcxproj", "{F10861D4-48AC-4AD3-927A-4BF193C7E528}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{F10861D4-48AC-4AD3-927A-4BF193C7E528} = {F10861D4-48AC-4AD3-927A-4BF193C7E528}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmprssl", "exp-windows-default\libmprssl.vcxproj", "{95619AFD-CB4A-4CD7-A680-E4DAF392FC43}"
@@ -124,10 +227,27 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmprssl", "exp-windows-de
 	ProjectSection(ProjectDependencies) = postProject
 		{02CA7374-D1AA-425D-8F85-9AD8320980E7} = {02CA7374-D1AA-425D-8F85-9AD8320980E7}
 	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{F10861D4-48AC-4AD3-927A-4BF193C7E528} = {F10861D4-48AC-4AD3-927A-4BF193C7E528}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{95619AFD-CB4A-4CD7-A680-E4DAF392FC43} = {95619AFD-CB4A-4CD7-A680-E4DAF392FC43}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "removeFiles", "exp-windows-default\removeFiles.vcxproj", "{56DED85F-6687-4071-8146-3AA68341DBAD}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{56DED85F-6687-4071-8146-3AA68341DBAD} = {56DED85F-6687-4071-8146-3AA68341DBAD}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sample", "exp-windows-default\sample.vcxproj", "{B31144AE-D1DF-4933-9764-92F97354B33F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{B31144AE-D1DF-4933-9764-92F97354B33F} = {B31144AE-D1DF-4933-9764-92F97354B33F}
 	EndProjectSection
 EndProject
 
@@ -227,14 +347,6 @@ Global
 {605236CD-76F6-4979-9A94-D8295A85CC1C}.Release|Win32.Build.0 = Release|Win32
 {605236CD-76F6-4979-9A94-D8295A85CC1C}.Release|x64.ActiveCfg = Release|x64
 {605236CD-76F6-4979-9A94-D8295A85CC1C}.Release|x64.Build.0 = Release|x64
-{9021F789-9124-4902-8B0C-822FE257F957}.Debug|Win32.ActiveCfg = Debug|Win32
-{9021F789-9124-4902-8B0C-822FE257F957}.Debug|Win32.Build.0 = Debug|Win32
-{9021F789-9124-4902-8B0C-822FE257F957}.Debug|x64.ActiveCfg = Debug|x64
-{9021F789-9124-4902-8B0C-822FE257F957}.Debug|x64.Build.0 = Debug|x64
-{9021F789-9124-4902-8B0C-822FE257F957}.Release|Win32.ActiveCfg = Release|Win32
-{9021F789-9124-4902-8B0C-822FE257F957}.Release|Win32.Build.0 = Release|Win32
-{9021F789-9124-4902-8B0C-822FE257F957}.Release|x64.ActiveCfg = Release|x64
-{9021F789-9124-4902-8B0C-822FE257F957}.Release|x64.Build.0 = Release|x64
 {C859320E-03EB-41F0-8779-EC350442CE94}.Debug|Win32.ActiveCfg = Debug|Win32
 {C859320E-03EB-41F0-8779-EC350442CE94}.Debug|Win32.Build.0 = Debug|Win32
 {C859320E-03EB-41F0-8779-EC350442CE94}.Debug|x64.ActiveCfg = Debug|x64
@@ -275,6 +387,14 @@ Global
 {56DED85F-6687-4071-8146-3AA68341DBAD}.Release|Win32.Build.0 = Release|Win32
 {56DED85F-6687-4071-8146-3AA68341DBAD}.Release|x64.ActiveCfg = Release|x64
 {56DED85F-6687-4071-8146-3AA68341DBAD}.Release|x64.Build.0 = Release|x64
+{B31144AE-D1DF-4933-9764-92F97354B33F}.Debug|Win32.ActiveCfg = Debug|Win32
+{B31144AE-D1DF-4933-9764-92F97354B33F}.Debug|Win32.Build.0 = Debug|Win32
+{B31144AE-D1DF-4933-9764-92F97354B33F}.Debug|x64.ActiveCfg = Debug|x64
+{B31144AE-D1DF-4933-9764-92F97354B33F}.Debug|x64.Build.0 = Debug|x64
+{B31144AE-D1DF-4933-9764-92F97354B33F}.Release|Win32.ActiveCfg = Release|Win32
+{B31144AE-D1DF-4933-9764-92F97354B33F}.Release|Win32.Build.0 = Release|Win32
+{B31144AE-D1DF-4933-9764-92F97354B33F}.Release|x64.ActiveCfg = Release|x64
+{B31144AE-D1DF-4933-9764-92F97354B33F}.Release|x64.Build.0 = Release|x64
 EndGlobalSection
 
   GlobalSection(SolutionProperties) = preSolution

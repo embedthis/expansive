@@ -11,11 +11,8 @@
     <meta name="description" content="A fast, flexible static site generator" />
     <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700'
         rel='stylesheet' type='text/css'>
-<!--
-    <link href='http://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'>
--->
     <link href='http://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
-    <link href="../lib/semantic/css/semantic.css" rel="stylesheet" type="text/css" />
+    <link href="../lib/semantic/themes/packages/beach.css" rel="stylesheet" type="text/css" />
     <link href="../css/all.css" rel="stylesheet" type="text/css" />
     <link href="../images/favicon.ico" rel="shortcut icon" />
 
@@ -93,43 +90,38 @@
 
     <div class="ui inverted masthead">
          
-        <div class="column">
-            <div class="ui inverted menu">
-                <div class="ui black small launch right attached toggle button">
-                    <i class="icon list layout"></i>
-                </div>
-                <div class="right menu">
-                      
+        <div class="ui inverted menu">
+            <div class="right menu">
+                  
                     <a class="item" href="https://embedthis.com/">Embedthis</a>
-                    <a class="item" href="https://embedthis.com/appweb/">Appweb Site</a>
-                    <a class="item" href="http://goo.gl/dGRDl4">Appweb News</a>
-                    <a class="item" href="https://github.com/embedthis/appweb">Repository</a>
+                    <a class="item" href="https://embedthis.com/exp/">Expansive Site</a>
+                    <a class="item" href="http://goo.gl/dGRDl4">Expansive News</a>
+                    <a class="item" href="https://github.com/embedthis/exp">Repository</a>
                     <a class="item" href="https://embedthis.com/blog/">Blog</a>
                     <a class="item" href="https://twitter.com/mobstream">Twitter</a>
 
-                </div>
             </div>
+        </div>
+        
+        <div class="ui breadcrumb">
+            <a class="section" href="../">Home</a>
             
-            <div class="ui breadcrumb">
-                <a class="section" href="../">Home</a>
-                
-                <div class="divider">/</div>
-                <a class="section" href="index.html">
-                    Getting Started
-                </a>
-                
-                <div class="divider">/</div>
-                <a class="section" href="installing.html">
-                    Installing
-                </a>
-                
-                <div class="divider">/</div>
-                <a class="active section" href="mac.html">Installing on Mac</a>
-            </div>
+            <div class="divider">/</div>
+            <a class="section" href="index.html">
+                Getting Started
+            </a>
             
-            <div class="ui right floated basic segment version">
-                v0.4.0
-            </div>
+            <div class="divider">/</div>
+            <a class="section" href="installing.html">
+                Installing
+            </a>
+            
+            <div class="divider">/</div>
+            <a class="active section" href="mac.html">Installing on Mac</a>
+        </div>
+        
+        <div class="ui right floated basic segment version">
+            v0.4.0
         </div>
 
     </div>
@@ -170,15 +162,26 @@ exp --help
     </div>
     <div class="terms ui basic center aligned segment">
         <p>&copy; Embedthis Software, 2003-2014. All rights reserved.
-            Generated on Sep  5, 2014.
+            Generated on Sep 11, 2014.
         </p>
     </div>
 
     <script src="../lib/jquery/jquery.js"></script>
-    <script src="../lib/semantic/javascript/semantic.js"></script>
+    <script src="../lib/semantic/js/semantic.js"></script>
     <script>
-        $('.sidebar').sidebar({overlay: false}).sidebar('toggle');
-        $('.sidebar').first().sidebar('attach events', '.toggle.button');
+        var sl = $('.sidebar-launch');
+        $('.sidebar-launch').click(function() {
+            var body = $('body');
+            if (!body.hasClass('show-sidebar')) {
+                body.addClass('show-sidebar');
+                $('.sidebar').css('visibility', 'visible');
+            } else {
+                body.removeClass('show-sidebar');
+                $('.sidebar').css('visibility', 'hidden');
+            }
+        });
+        $('.sidebar-launch').trigger('click');
+
         $(function() {
             var url = '../start/mac.html';
             var active = $('.sidebar a[href="' + url +'"]');

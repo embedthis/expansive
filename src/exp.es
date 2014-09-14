@@ -12,7 +12,7 @@ require exp.template
 
 const CONFIG: Path = Path('exp.json')
 const VERSION = '0.1.0'
-const LISTEN = '4000'
+const LISTEN = '127.0.0.1:4000'
 
 const USAGE = 'Usage: exp [options] [filters ...]
     --chdir dir        # Change to directory before running
@@ -52,6 +52,7 @@ class Exp {
     var lastGen: Date
     var log: Logger = App.log
     var mastersModified: Boolean
+    var modified: Boolean
     var obuf: ByteArray?
     var options: Object
     var paks: Path
@@ -364,6 +365,8 @@ class Exp {
             for (let file: Path in deps) {
                 if (file.modified.time >= lastGen.time) {
                     impliedUpdates[path] = true
+                    modified = true
+                    event('onchange', file, meta)
                 }
             }
         }
@@ -385,13 +388,16 @@ class Exp {
         }
         while (true) {
             let mark = Date(((Date().time / 1000).toFixed(0) * 1000))
-            checkDepends(meta)
+            modified = false
             event('check', lastGen)
+            checkDepends(meta)
             mastersModified = checkMastersModified()
             render(false)
             App.sleep(meta.control.watch)
             vtrace('Check', 'for changes (' + Date().format('%I:%M:%S') + ')')
-            lastGen = mark
+            if (modified) {
+                lastGen = mark
+            }
         }
     }
 
@@ -416,6 +422,7 @@ class Exp {
         } catch (e) {
             fatal('Cannot listen on', address)
         }
+        options.serve = true
         if (options.nowatch) {
             trace('Listen', address)
             App.run()
@@ -587,6 +594,7 @@ class Exp {
             return false
         }
         vtrace('Modified', file)
+        modified = true
         event('onchange', file, meta)
         return true
     }
@@ -594,12 +602,14 @@ class Exp {
     function checkMastersModified(dir): Boolean {
         for each (file in dirs.partials.files('*')) {
             if (file.modified.time >= lastGen.time) {
+                modified = true
                 event('onchange', file, topMeta)
                 return true
             }
         }
         for each (file in dirs.layouts.files('*')) {
             if (file.modified.time >= lastGen.time) {
+                modified = true
                 event('onchange', file, topMeta)
                 return true
             }
@@ -664,7 +674,6 @@ class Exp {
     }
 
     function initMeta(file, meta) {
-        global.meta = meta
         meta.document = rebase(file, dirs.documents)
         meta.file = file
         meta.public = publicNames[file] = (publicNames[file] || getFinalDest(file, meta))
@@ -726,7 +735,16 @@ class Exp {
                     [meta.from, meta.to] = mapping.split(' -> ')
                     vtrace('Service', service.name + ' from "' + service.plugin + '"')
                     let started = new Date
-                    contents = service.render.call(this, contents, meta, service)
+                    try {
+                        contents = service.render.call(this, contents, meta, service)
+                    } catch (e) {
+                        if (options.serve) {
+                            trace('Error', 'Cannot render ' + file)
+                            print(e)
+                        } else {
+                            throw e
+                        }
+                    }
                     publicNames[file] = meta.public
                     stats.services[service.name].count++
                     stats.services[service.name].elapsed += started.elapsed
@@ -755,10 +773,10 @@ class Exp {
     function transformExp(contents, meta, service) {
         let priorBuf = this.obuf
         this.obuf = new ByteArray
-        let priorMeta = global.meta
         let parser = new ExpParser
         let code
         let stat = stats.services.exp
+        let priorMeta = global.meta
         try {
             let mark = new Date
             code = parser.parse(contents)
@@ -768,6 +786,7 @@ class Exp {
             stat.eval += mark.elapsed
 
             mark = new Date
+            global.meta = meta
             global._export_.call(this)
             stat.run += mark.elapsed
         } catch (e) {
@@ -826,12 +845,15 @@ class Exp {
 
     function getCached(path, meta) {
         if (cache[path]) {
-            return cache[path]
+            let [fileMeta, contents] = cache[path]
+            blendMeta(meta, fileMeta)
+            return [meta, contents]
         }
         let data = path.readString()
         let [fileMeta, contents] = splitMetaContents(path, data)
+        cache[path] = [fileMeta, contents]
         blendMeta(meta, fileMeta || {})
-        return cache[path] = [meta, contents]
+        return [meta, contents]
     }
 
     function blendLayout(contents, meta) {
@@ -857,12 +879,11 @@ class Exp {
         This is the partial() global function
      */
     public function blendPartial(name: Path, options = {}) {
-        let partial = findFile(dirs.partials, name, global.meta)
+        let meta = global.meta.clone(true)
+        let partial = findFile(dirs.partials, name, meta)
         if (!partial) {
             fatal('Cannot find partial "' + name + '"' + ' for ' + meta.document)
         }
-        let priorMeta = global.meta
-        let meta = global.meta.clone(true)
         blend(meta, options)
         meta.partial = name
         meta.isPartial = true
@@ -876,8 +897,6 @@ class Exp {
         catch (e) {
             trace('Error', 'Cannot process partial "' + name + '"')
             fatal(e)
-        } finally {
-            global.meta = priorMeta
         }
     }
 
@@ -950,7 +969,6 @@ class Exp {
 
     function event(name, arg = null, meta = null) {
         if (global[name]) {
-            global.meta = topMeta
             (global[name]).call(this, arg, meta)
         }
     }

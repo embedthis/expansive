@@ -9484,6 +9484,7 @@ PUBLIC int mprSetMimeProgram(MprHash *table, cchar *mimeType, cchar *program);
 #define MPR_LOG_CONFIG      0x2         /**< Show the configuration at the start of the log */
 #define MPR_LOG_CMDLINE     0x4         /**< Command line log switch uses */
 #define MPR_LOG_DETAILED    0x8         /**< Use detailed log formatting with timestamps and tags */
+#define MPR_NOT_ALL         0x10        /**< Don't invoke all destructors when terminating */
 
 typedef bool (*MprIdleCallback)(bool traceRequests);
 
@@ -9700,8 +9701,8 @@ PUBLIC int mprDaemon();
     \n\n
     Applications that have a service events thread can call mprDestroy directly from their main program when ready to exit.
     Applications that call mprServiceEvents from their main program will typically have some other MPR thread call
-    #mprShutdown to initiate a shutdown sequence. This will stop accepting new requests or connections and when the application
-    is idle, the #mprServiceEvents routine will return and then the main program can call then call mprDestroy.
+    #mprShutdown to initiate a shutdown sequence. This will stop accepting new requests or connections and when the 
+    application is idle, the #mprServiceEvents routine will return and then the main program can call then call mprDestroy.
     \n\n
     Once the shutdown conditions are satisfied, a thread executing #mprServiceEvents will return from that API and then
     the application should call #mprDestroy and exit().

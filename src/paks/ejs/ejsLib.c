@@ -31123,7 +31123,7 @@ static EjsObj *cmd_start(Ejs *ejs, EjsCmd *cmd, int argc, EjsObj **argv)
         if (cmd->throw) {
             status = mprGetCmdExitStatus(cmd->mc);
             if (status != 0) {
-                ejsThrowIOError(ejs, "Command failed status %d, %@", status, ejsToString(ejs, cmd->error));
+                ejsThrowIOError(ejs, "Command failed status %d\n%@", status, ejsToString(ejs, cmd->error));
             }
         }
     }
@@ -42077,7 +42077,6 @@ PUBLIC EjsArray *ejsGetPathFiles(Ejs *ejs, EjsPath *fp, int argc, EjsObj **argv)
     } else {
         patterns = (EjsArray*) argv[0];
     }
-
     if (options) {
         if (ejsGetPropertyByName(ejs, options, EN("depthFirst")) == ESV(true)) {
             flags |= FILES_DEPTH_FIRST;
@@ -42118,7 +42117,6 @@ PUBLIC EjsArray *ejsGetPathFiles(Ejs *ejs, EjsPath *fp, int argc, EjsObj **argv)
         pattern = ejsToMulti(ejs, ejsGetItem(ejs, patterns, i));
         path = fp->value;
         base = "";
-
         start = pattern;
         if ((special = strpbrk(start, "*?")) != 0) {
             if (special > start) {
@@ -42257,6 +42255,7 @@ static EjsArray *globPath(Ejs *ejs, EjsArray *results, cchar *path, cchar *base,
     MprList         *list;
     cchar           *filename, *nextPartPattern, *nextPath, *matchFile;
     int             next, add;
+
 
     if ((list = mprGetPathFiles(path, flags | MPR_PATH_RELATIVE)) == 0) {
         if (flags & FILES_NOMATCH_EXC) {
@@ -42492,27 +42491,37 @@ static void getUserGroup(Ejs *ejs, EjsObj *attributes, int *uid, int *gid)
     struct passwd   *pp;
     struct group    *gp;
 
+    assert(uid);
+    assert(gid);
+
     *uid = *gid = -1;
     if ((vp = ejsGetPropertyByName(ejs, attributes, EN("group"))) != 0 && ejsIsDefined(ejs, vp)) {
         vp = ejsToString(ejs, vp);
-        //  TODO - these are thread-safe on mac, but not on all systems. use getgrnam_r
-        if ((gp = getgrnam(ejsToMulti(ejs, vp))) == 0) {
-            ejsThrowArgError(ejs, "Cannot find group %@", vp);
-            return;
+        if (ejsIs(ejs, vp, Number)) {
+            *gid = ejsGetInt(ejs, vp);
+        } else {
+            if ((gp = getgrnam(ejsToMulti(ejs, vp))) == 0) {
+                ejsThrowArgError(ejs, "Cannot find group %@", vp);
+                return;
+            }
+            *gid = gp->gr_gid;
         }
-        *gid = gp->gr_gid;
-
     } else if ((vp = ejsGetPropertyByName(ejs, attributes, EN("gid"))) != 0 && ejsIsDefined(ejs, vp)) {
         if (ejsIs(ejs, vp, Number)) {
             *gid = ejsGetInt(ejs, vp);
         }
     }
+
     if ((vp = ejsGetPropertyByName(ejs, attributes, EN("user"))) != 0 && ejsIsDefined(ejs, vp)) {
-        if ((pp = getpwnam(ejsToMulti(ejs, vp))) == 0) {
-            ejsThrowArgError(ejs, "Cannot find user %@", vp);
-            return;
+        if (ejsIs(ejs, vp, Number)) {
+            *uid = ejsGetInt(ejs, vp);
+        } else {
+            if ((pp = getpwnam(ejsToMulti(ejs, vp))) == 0) {
+                ejsThrowArgError(ejs, "Cannot find user %@", vp);
+                return;
+            }
+            *uid = pp->pw_uid;
         }
-        *uid = pp->pw_uid;
     } else if ((vp = ejsGetPropertyByName(ejs, attributes, EN("uid"))) != 0 && ejsIsDefined(ejs, vp)) {
         if (ejsIs(ejs, vp, Number)) {
             *uid = ejsGetInt(ejs, vp);
@@ -51644,8 +51653,8 @@ static void onWebSocketEvent(EjsWebSocket *ws, int event, EjsAny *data, HttpPack
     case HTTP_EVENT_APP_CLOSE:
         eventName = "complete";
         slot = ES_WebSocket_onclose;
-        status = rx ? rx->webSocket->closeStatus: WS_STATUS_COMMS_ERROR;
-        reason = rx ? rx->webSocket->closeReason: 0;
+        status = (rx && rx->webSocket) ? rx->webSocket->closeStatus: WS_STATUS_COMMS_ERROR;
+        reason = (rx && rx->webSocket) ? rx->webSocket->closeReason: ws->conn->errorMsg;
         ejsSetPropertyByName(ejs, eobj, EN("code"), ejsCreateNumber(ejs, status));
         ejsSetPropertyByName(ejs, eobj, EN("reason"), ejsCreateStringFromAsc(ejs, reason));
         ejsSetPropertyByName(ejs, eobj, EN("wasClean"), ejsCreateBoolean(ejs, status != WS_STATUS_COMMS_ERROR));
@@ -67380,8 +67389,13 @@ Ejs *ejsCreateVM(int argc, cchar **argv, int flags)
     ejs->dontExit = sp->dontExit;
     ejs->flags |= (flags & (EJS_FLAG_NO_INIT | EJS_FLAG_DOC | EJS_FLAG_HOSTED));
     ejs->hosted = (flags & EJS_FLAG_HOSTED) ? 1 : 0;
-
     ejs->global = ejsCreateBlock(ejs, 0);
+
+    /*
+        Use conservative GC shutdown
+     */
+    MPR->flags |= MPR_NOT_ALL;
+
     mprSetName(ejs->global, "global");
     ejsDefineGlobalNamespaces(ejs);
 

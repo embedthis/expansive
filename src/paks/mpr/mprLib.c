@@ -2744,10 +2744,21 @@ PUBLIC Mpr *mprCreate(int argc, char **argv, int flags)
 static void manageMpr(Mpr *mpr, int flags)
 {
     if (flags & MPR_MANAGE_MARK) {
-        mprMark(mpr->logPath);
         mprMark(mpr->logFile);
         mprMark(mpr->mimeTypes);
         mprMark(mpr->timeTokens);
+        mprMark(mpr->keys);
+        mprMark(mpr->stdError);
+        mprMark(mpr->stdInput);
+        mprMark(mpr->stdOutput);
+        mprMark(mpr->appPath);
+        mprMark(mpr->appDir);
+        /* 
+            Argv will do a single allocation into argv == argBuf. May reallocate the program name in argv[0] 
+         */
+        mprMark(mpr->argv);
+        mprMark(mpr->argv[0]);
+        mprMark(mpr->logPath);
         mprMark(mpr->pathEnv);
         mprMark(mpr->name);
         mprMark(mpr->title);
@@ -2755,13 +2766,7 @@ static void manageMpr(Mpr *mpr, int flags)
         mprMark(mpr->domainName);
         mprMark(mpr->hostName);
         mprMark(mpr->ip);
-        mprMark(mpr->keys);
-        mprMark(mpr->stdError);
-        mprMark(mpr->stdInput);
-        mprMark(mpr->stdOutput);
         mprMark(mpr->serverName);
-        mprMark(mpr->appPath);
-        mprMark(mpr->appDir);
         mprMark(mpr->cmdService);
         mprMark(mpr->eventService);
         mprMark(mpr->fileSystem);
@@ -2786,8 +2791,6 @@ static void manageMpr(Mpr *mpr, int flags)
         mprMark(mpr->stopCond);
         mprMark(mpr->emptyString);
         mprMark(mpr->oneString);
-        mprMark(mpr->argv);
-        mprMark(mpr->argv[0]);
     }
 }
 
@@ -5417,6 +5420,7 @@ static void manageCacheItem(CacheItem *item, int flags)
     if (flags & MPR_MANAGE_MARK) {
         mprMark(item->key);
         mprMark(item->data);
+        mprMark(item->link);
     }
 }
 
@@ -5582,8 +5586,8 @@ static void manageCmd(MprCmd *cmd, int flags)
         mprMark(cmd->program);
         mprMark(cmd->makeArgv);
         mprMark(cmd->defaultEnv);
-        mprMark(cmd->env);
         mprMark(cmd->dir);
+        mprMark(cmd->env);
         for (i = 0; i < MPR_CMD_MAX_PIPE; i++) {
             mprMark(cmd->files[i].name);
         }
@@ -5862,19 +5866,19 @@ static int addCmdHandlers(MprCmd *cmd)
 
     if (stdinFd >= 0 && cmd->handlers[MPR_CMD_STDIN] == 0) {
         if ((cmd->handlers[MPR_CMD_STDIN] = mprCreateWaitHandler(stdinFd, MPR_WRITABLE, cmd->dispatcher,
-                stdinCallback, cmd, 0)) == 0) {
+                stdinCallback, cmd, MPR_WAIT_NOT_SOCKET)) == 0) {
             return MPR_ERR_CANT_OPEN;
         }
     }
     if (stdoutFd >= 0 && cmd->handlers[MPR_CMD_STDOUT] == 0) {
         if ((cmd->handlers[MPR_CMD_STDOUT] = mprCreateWaitHandler(stdoutFd, MPR_READABLE, cmd->dispatcher,
-                stdoutCallback, cmd,0)) == 0) {
+                stdoutCallback, cmd, MPR_WAIT_NOT_SOCKET)) == 0) {
             return MPR_ERR_CANT_OPEN;
         }
     }
     if (stderrFd >= 0 && cmd->handlers[MPR_CMD_STDERR] == 0) {
         if ((cmd->handlers[MPR_CMD_STDERR] = mprCreateWaitHandler(stderrFd, MPR_READABLE, cmd->dispatcher,
-                stderrCallback, cmd,0)) == 0) {
+                stderrCallback, cmd, MPR_WAIT_NOT_SOCKET)) == 0) {
             return MPR_ERR_CANT_OPEN;
         }
     }
@@ -9618,6 +9622,10 @@ PUBLIC int mprServiceEvents(MprTicks timeout, int flags)
         mprLog("warn mpr event", 0, "mprServiceEvents called reentrantly");
         return 0;
     }
+    mprAtomicBarrier();
+    if (mprIsDestroying()) {
+        return 0;
+    }
     MPR->eventing = 1;
     es = MPR->eventService;
     beginEventCount = eventCount = es->eventCount;
@@ -10625,6 +10633,7 @@ PUBLIC int mprCreateNotifierService(MprWaitService *ws)
 PUBLIC void mprManageEpoll(MprWaitService *ws, int flags)
 {
     if (flags & MPR_MANAGE_MARK) {
+        /* Handlers are not marked here so they will auto-remove from the list */
         mprMark(ws->handlerMap);
 
     } else if (flags & MPR_MANAGE_FREE) {
@@ -11266,7 +11275,9 @@ static void manageFile(MprFile *file, int flags)
     if (flags & MPR_MANAGE_MARK) {
         mprMark(file->buf);
         mprMark(file->path);
-
+#if ME_ROM
+        mprMark(file->inode);
+#endif
     } else if (flags & MPR_MANAGE_FREE) {
         if (!file->attached) {
             /* Prevent flushing */
@@ -12604,10 +12615,10 @@ static void manageJson(MprJson *obj, int flags)
 {
     if (flags & MPR_MANAGE_MARK) {
         mprMark(obj->name);
+        mprMark(obj->value);
         mprMark(obj->prev);
         mprMark(obj->next);
         mprMark(obj->children);
-        mprMark(obj->value);
     }
 }
 
@@ -12654,8 +12665,8 @@ static void manageJsonParser(MprJsonParser *parser, int flags)
         mprMark(parser->token);
         mprMark(parser->putback);
         mprMark(parser->path);
-        mprMark(parser->buf);
         mprMark(parser->errorMsg);
+        mprMark(parser->buf);
     }
 }
 
@@ -14559,6 +14570,7 @@ static void manageList(MprList *lp, int flags)
 
     if (flags & MPR_MANAGE_MARK) {
         mprMark(lp->mutex);
+        /* OPT - no need to lock as this is running solo */
         lock(lp);
         mprMark(lp->items);
         if (!(lp->flags & MPR_LIST_STATIC_VALUES)) {
@@ -15387,9 +15399,11 @@ PUBLIC MprMutex *mprInitLock(MprMutex *lock)
 
 #elif ME_WIN_LIKE && !ME_DEBUG && CRITICAL_SECTION_NO_DEBUG_INFO && ME_64 && _WIN32_WINNT >= 0x0600
     InitializeCriticalSectionEx(&lock->cs, ME_MPR_SPIN_COUNT, CRITICAL_SECTION_NO_DEBUG_INFO);
+    lock->freed = 0;
 
 #elif ME_WIN_LIKE
     InitializeCriticalSectionAndSpinCount(&lock->cs, ME_MPR_SPIN_COUNT);
+    lock->freed = 0;
 
 #elif VXWORKS
     lock->cs = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE);
@@ -17063,9 +17077,9 @@ PUBLIC MprModule *mprCreateModule(cchar *name, cchar *path, cchar *entry, void *
 static void manageModule(MprModule *mp, int flags)
 {
     if (flags & MPR_MANAGE_MARK) {
-        mprMark(mp->entry);
         mprMark(mp->name);
         mprMark(mp->path);
+        mprMark(mp->entry);
         mprMark(mp->moduleData);
     }
 }
@@ -18506,7 +18520,7 @@ PUBLIC char *mprGetTempPath(cchar *tempDir)
     file = 0;
     path = 0;
     for (i = 0; i < 128; i++) {
-        path = sfmt("%s/MPR_%d_%d_%d.tmp", dir, getpid(), now, ++tempSeed);
+        path = sfmt("%s/MPR-%s-_%d_%d_%d.tmp", dir, mprGetPathBase(MPR->name), getpid(), now, ++tempSeed);
         file = mprOpenFile(path, O_CREAT | O_EXCL | O_BINARY, 0664);
         if (file) {
             mprCloseFile(file);
@@ -20611,9 +20625,9 @@ static MprFile *openFile(MprFileSystem *fileSystem, cchar *path, int flags, int 
 static void manageRomFile(MprFile *file, int flags)
 {
     if (flags & MPR_MANAGE_MARK) {
-        mprMark(file->fileSystem);
         mprMark(file->path);
         mprMark(file->buf);
+        mprMark(file->fileSystem);
         mprMark(file->inode);
     }
 }
@@ -21261,9 +21275,9 @@ PUBLIC MprSignalService *mprCreateSignalService()
 static void manageSignalService(MprSignalService *ssp, int flags)
 {
     if (flags & MPR_MANAGE_MARK) {
-        mprMark(ssp->mutex);
-        mprMark(ssp->standard);
         mprMark(ssp->signals);
+        mprMark(ssp->standard);
+        mprMark(ssp->mutex);
         /* Don't mark signals elements as it will prevent signal handlers being reclaimed */
     }
 }
@@ -21495,9 +21509,9 @@ PUBLIC MprSignal *mprAddSignalHandler(int signo, void *handler, void *data, MprD
 static void manageSignal(MprSignal *sp, int flags)
 {
     if (flags & MPR_MANAGE_MARK) {
-        mprMark(sp->dispatcher);
-        mprMark(sp->data);
         /* Don't mark next as it will prevent other signal handlers being reclaimed */
+        mprMark(sp->data);
+        mprMark(sp->dispatcher);
     }
 }
 
@@ -21710,8 +21724,8 @@ static void manageSocketService(MprSocketService *ss, int flags)
         mprMark(ss->standardProvider);
         mprMark(ss->providers);
         mprMark(ss->sslProvider);
-        mprMark(ss->mutex);
         mprMark(ss->secureSockets);
+        mprMark(ss->mutex);
     }
 }
 
@@ -21817,19 +21831,19 @@ PUBLIC MprSocket *mprCloneSocket(MprSocket *sp)
 static void manageSocket(MprSocket *sp, int flags)
 {
     if (flags & MPR_MANAGE_MARK) {
-        mprMark(sp->acceptIp);
-        mprMark(sp->cipher);
-        mprMark(sp->errorMsg);
         mprMark(sp->handler);
+        mprMark(sp->acceptIp);
         mprMark(sp->ip);
+        mprMark(sp->errorMsg);
+        mprMark(sp->provider);
         mprMark(sp->listenSock);
+        mprMark(sp->sslSocket);
+        mprMark(sp->ssl);
+        mprMark(sp->cipher);
         mprMark(sp->peerName);
         mprMark(sp->peerCert);
         mprMark(sp->peerCertIssuer);
-        mprMark(sp->provider);
         mprMark(sp->service);
-        mprMark(sp->ssl);
-        mprMark(sp->sslSocket);
         mprMark(sp->mutex);
 
     } else if (flags & MPR_MANAGE_FREE) {
@@ -23294,16 +23308,16 @@ PUBLIC void mprSetSocketPrebindCallback(MprSocketPrebind callback)
 static void manageSsl(MprSsl *ssl, int flags) 
 {
     if (flags & MPR_MANAGE_MARK) {
+        mprMark(ssl->providerName);
+        mprMark(ssl->provider);
         mprMark(ssl->key);
         mprMark(ssl->keyFile);
         mprMark(ssl->certFile);
         mprMark(ssl->caFile);
         mprMark(ssl->caPath);
         mprMark(ssl->ciphers);
-        mprMark(ssl->mutex);
         mprMark(ssl->config);
-        mprMark(ssl->provider);
-        mprMark(ssl->providerName);
+        mprMark(ssl->mutex);
     }
 }
 
@@ -24754,6 +24768,7 @@ static void manageThreadService(MprThreadService *ts, int flags)
     if (flags & MPR_MANAGE_MARK) {
         mprMark(ts->threads);
         mprMark(ts->mainThread);
+        mprMark(ts->eventsThread);
         mprMark(ts->pauseThreads);
     }
 }
@@ -24852,10 +24867,10 @@ PUBLIC MprThread *mprCreateThread(cchar *name, void *entry, void *data, ssize st
 static void manageThread(MprThread *tp, int flags)
 {
     if (flags & MPR_MANAGE_MARK) {
-        mprMark(tp->name);
-        mprMark(tp->data);
-        mprMark(tp->cond);
         mprMark(tp->mutex);
+        mprMark(tp->cond);
+        mprMark(tp->data);
+        mprMark(tp->name);
 
     } else if (flags & MPR_MANAGE_FREE) {
 #if ME_WIN_LIKE
@@ -27982,11 +27997,11 @@ static void manageWaitHandler(MprWaitHandler *wp, int flags)
 {
     if (flags & MPR_MANAGE_MARK) {
         mprMark(wp->handlerData);
+        mprMark(wp->event);
         mprMark(wp->dispatcher);
         mprMark(wp->requiredWorker);
         mprMark(wp->thread);
         mprMark(wp->callbackComplete);
-        mprMark(wp->event);
     }
 }
 

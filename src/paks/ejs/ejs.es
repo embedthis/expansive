@@ -8752,7 +8752,7 @@ module ejs {
             Create a new Path object and set the path's location.
             @param path Name of the path to associate with this path object. 
          */
-        native function Path(path: String = ".")
+        native function Path(path: String = '.')
 
         /**
             An equivalent absolute path equivalent for the current path. The path is normalized and uses the native system
@@ -8773,9 +8773,9 @@ module ejs {
         /**
             Append data to a file.
             @param data Data to append to the file
-            @param options File open options. Defaults to "atw"
+            @param options File open options. Defaults to 'atw'
          */
-        function append(data, options = "atw"): Void {
+        function append(data, options = 'atw'): Void {
             let file = open(options)
             file.write(data)
             file.close()
@@ -8812,7 +8812,7 @@ module ejs {
             Path components. The path is normalized and then broken into components for each directory level. 
             The result is an array object with an element for each segment of the path. If the path is an absolute path, 
             the first element represents the file system root and will be the empty string or drive spec 
-            on a Windows like systems. Array.join("/") can be used to put components back into a complete path.
+            on a Windows like systems. Array.join('/') can be used to put components back into a complete path.
          */
         native function get components(): Array
   
@@ -8824,18 +8824,16 @@ module ejs {
         function contains(pattern: String): Boolean
             name.contains(pattern)
 
-        //  TODO - should allow destination to be a directory.
         /**
             Copy a file to the destination
-            @param destination New file location
+            @param destination New file location. If the destination is a directory or ends with the file separator ('/'), 
+                the file is copied to that directory using the basename portion of the source filename.
             @param options Object hash
             @options permissions Set to a numeric Posix permissions mask. Not implemented.
             @options user String representing the file user name or numeric user id.
                 If both user and uid are specified, user takes precedence. 
             @options group String representing the file group name or numeric group id.
                 If both group and gid are specified, group takes precedence.
-            @options uid Number representing the file user id
-            @options gid Number representing the file group id
          */
         native function copy(destination: Object, options: Object? = null): Void
 
@@ -8865,7 +8863,7 @@ module ejs {
         native function get exists(): Boolean 
 
         /**
-            File extension portion of the path. The file extension is the portion after (and not including) the last ".".
+            File extension portion of the path. The file extension is the portion after (and not including) the last '.'.
             Returns empty string if there is no extension
          */
         native function get extension(): String 
@@ -8886,30 +8884,53 @@ module ejs {
         }
 
         /**
-            Do Posix glob style file matching.
+            Do Posix glob style file matching on supplied patterns and return an array of matching files.
+            This method supports several invocation forms:
+            <ul>
+                <li>files(pattern, {options})</li>
+                <li>files([pattern, pattern, ...], {options})</li>
+                <li>files({files: pattern, options...})</li>
+                <li>files([{files: pattern, options...}])</li>
+            </ul>
+            A single pattern may be supplied with or with out options. Multiple patterns may be provide in an array. 
+            Alternatively, the pattern or patterns may be provide via a object with a 'files' property. In this case, the
+            options are provided in the same object.
+
             @param patterns Pattern to match files. This can be a String, Path or array of String/Paths. 
             If the Path is a directory, then files that match the specified patterns are returned.
             If the Path is not a directory, then the path itself is matched against the pattern.
-            The wildcard '?' matches any single character, '*' matches zero or more characters in a filename or 
-                directory, '** /' matches zero or more files or directories and matches recursively in a directory
-                tree.  If a pattern terminates with "/" it will only match directories. 
-                The pattern '**' is equivalent to '** / *' (ignore spaces). 
-                The Posix "[]" and "{a,b}" style expressions are not supported.
+            The following special sequences are supported:
+            <ul>
+                <li>The wildcard '?' matches any single character</li>
+                <li>* matches zero or more characters in a filename or directory</li>
+                <li>** matches zero or more files or directories and matches recursively in a directory tree</li>
+            </ul>
+            If a pattern terminates with '/' it will only match directories. 
             @param options Optional properties to control the matching.
-            @option depthFirst Do a depth first traversal of directories. If true, then the directories will be shown after
-                the files in the directory. Otherwise, directories will be listed first.
-            @option exclude Regular expression pattern of files to exclude from the results. Matches the entire path.
-                Only for the purpose of this match, directories will have "/" appended. To exclude directories in the
-                results, use {exclude: /\/$/}. The trailing "/" will not be returned in the results.
-            @option hidden Include hidden files starting with "."
+            @option contents Boolean If contents is set to tru and the path pattern matches a directory, then return the
+                contents of the directory in addition to the directory itself. This applies if the pattern matches an 
+                existing directory or the pattern ends with '/'. This is implemented by appending '**' to the pattern.
+            @option depthFirst Boolean Do a depth first traversal of directories. If true, then the directories will be 
+                shown after the files in the directory. Otherwise, directories will be listed first. Defaults to false.
+            @option exclude String|Regular RegExp pattern of files to exclude from the results. Matches the entire path.
+                Only for the purpose of this match, directories will have '/' appended. May be set to the string
+                'directories' to exclude directories from the results which are by default included.
+            @option expand Object Expand tokens in filenames using this object. Object hash containing properties to use 
+                when replacing tokens of the form ${token} in the patterns.
+            @option filter Function Callback function to test if a file should be processed.
+                Function(path: Path, options: Object): Boolean
+            @option hidden Include hidden files starting with '.' Defaults to false.
             @option include Regular expression pattern of files to include in the results. Matches the entire returned path.
-                Only for the purpose of this match, directories will have "/" appended. To include only directories in the
-                results, use {include: /\/$/}
+                Only for the purpose of this match, directories will have '/' appended. To include only directories in the
+                results, use {include: 'directories'}
             @option missing Set to undefined to report patterns that don't resolve into any files or directories 
                 by throwing an exception. Set to any non-null value to be used in the results when there are no matching
                 files or directories. Set to the empty string to use the patterns in the results and set
                 to null to do nothing.
-            @option relative Return matching files relative to the Path, otherwise results include the Path. Defaults to false.
+            @option noneg Boolean Do not process negated file patterns.
+            @option relative Return matching files relative to the Path, otherwise results include the Path. 
+                Defaults to false. If a pattern includes a path portion, it will be included in the result regardless of
+                the value of this option, even if the pattern path is absolute.
             @return An Array of Path objects for each file in the directory.
          */
         native function files(patterns: Object! = '*', options: Object? = null): Array 
@@ -8922,22 +8943,32 @@ module ejs {
             FileSystem(this)
 
         /**
-            Get iterate over any files contained under this path (assuming it is a directory) "for (v in files)". 
+            Get iterate over any files contained under this path (assuming it is a directory) 'for (v in files)'. 
                 This operates the same as getValues on a Path object.
             @return An iterator object.
             @example:
-                for (f in Path("."))
+                for (f in Path('.'))
          */
         override iterator native function get(): Iterator
 
         /**
-            Get an iterator for this file to be used by "for each (v in obj)". Return 
+            Get an iterator for this file to be used by 'for each (v in obj)'. Return 
                 This operates the same as $get on a Path object.
             @return An iterator object.
             @example
-                for each (f in Path("."))
+                for each (f in Path('.'))
          */
         override iterator native function getValues(): Iterator
+
+        /**
+            Test if the path matches a 'glob' style pattern
+            @return True if the path matches the pattern.
+            @hide
+         */
+        native function glob(pattern: String): Boolean
+        /* MOB
+            this.dirname.files(pattern, {relative: true}).contains(this.basename)
+            */
 
         /**
             Does the file path have a drive spec (C:) in it's name. Only relevant on Windows like systems.
@@ -9079,13 +9110,13 @@ module ejs {
 
         /**
             Natural (native) respresentation of the path for the platform. This uses the platform file system path 
-            separator, this is "\" on Windows and "/" on unix and Cygwin. The returned path is normalized. 
+            separator, this is '\' on Windows and '/' on unix and Cygwin. The returned path is normalized. 
             See also $portable for a portable representation.
          */
         native function get natural(): Path 
 
         /**
-            Normalized representation of the path. This removes "segment/.." and "./" components. Separators are made 
+            Normalized representation of the path. This removes 'segment/..' and './' components. Separators are made 
             uniform by converting all separators to be the same as the first separator found in the path. Note: the 
             result is not converted to an absolute path.
          */
@@ -9094,8 +9125,8 @@ module ejs {
         /**
             Open a path and return a File object.
             @param options
-            @options mode optional file access mode string. Use "r" for read, "w" for write, "a" for append to existing
-                content, "+" never truncate.
+            @options mode optional file access mode string. Use 'r' for read, 'w' for write, 'a' for append to existing
+                content, '+' never truncate.
             @options permissions optional Posix permissions number mask. Defaults to 0664.
             @options user String representing the file user
             @options group String representing the file group
@@ -9108,8 +9139,8 @@ module ejs {
         /**
             Open a file and return a TextStream object.
             @param options Optional options object
-            @options mode optional file access mode string. Use "r" for read, "w" for write, "a" for append to existing
-                content, "+" never truncate.
+            @options mode optional file access mode string. Use 'r' for read, 'w' for write, 'a' for append to existing
+                content, '+' never truncate.
             @options encoding Text encoding format
             @options permissions optional Posix permissions number mask. Defaults to 0664.
             @options user String representing the file user
@@ -9150,8 +9181,8 @@ module ejs {
         native function set perms(perms: Number): Void
 
         /**
-            The path in a portable (like Unix) representation. This uses "/" separators. The value is is normalized and 
-            the separators are mapped to "/". See also $natural for convertion to the O/S native path representation.
+            The path in a portable (like Unix) representation. This uses '/' separators. The value is is normalized and 
+            the separators are mapped to '/'. See also $natural for convertion to the O/S native path representation.
          */
         native function get portable(): Path 
 
@@ -9161,7 +9192,7 @@ module ejs {
             @return A ByteArray
             @throws IOError if the file cannot be read
             @example:
-                var b: ByteArray = Path("/tmp/a.txt").readBytes()
+                var b: ByteArray = Path('/tmp/a.txt').readBytes()
          */
         function readBytes(): ByteArray? {
             let file: File = File(this).open()
@@ -9176,7 +9207,7 @@ module ejs {
             @return An object.
             @throws IOError if the file cannot be read
             @example:
-                data = Path("/tmp/a.json").readJSON()
+                data = Path('/tmp/a.json').readJSON()
          */
         function readJSON(): Object? {
             let file: File = open(this)
@@ -9191,7 +9222,7 @@ module ejs {
             @return An array of strings.
             @throws IOError if the file cannot be read
             @example:
-                for each (line in Path("/tmp/a.txt").readLines())
+                for each (line in Path('/tmp/a.txt').readLines())
          */
         function readLines(): Array? {
             let stream: TextStream = TextStream(open(this))
@@ -9205,7 +9236,7 @@ module ejs {
             @return A string.
             @throws IOError if the file cannot be read
             @example:
-                data = Path("/tmp/a.txt").readString()
+                data = Path('/tmp/a.txt').readString()
          */
         function readString(): String? {
             let file: File = open(this)
@@ -9258,8 +9289,8 @@ module ejs {
          */
         function removeAll(): Boolean {
             let passed = true
-            if (name == "" || name == "/") {
-                throw new ArgError("Bad path for removeAll")
+            if (name == '' || name == '/') {
+                throw new ArgError('Bad path for removeAll')
             }
             for each (f in files('**', {depthFirst: true, hidden: true})) {
                 if (!f.remove()) {
@@ -9294,7 +9325,7 @@ module ejs {
          */
         function replaceExt(ext: String): Path {
             if (ext && ext[0] != '.') {
-                ext = "." + ext
+                ext = '.' + ext
             }
             return this.trimExt() + ext
         }
@@ -9304,9 +9335,9 @@ module ejs {
             and replace it with the replace text. If the pattern is a string, only the first occurrence is replaced.
             @param pattern The regular expression or string pattern to search for.
             @param replacement The string to replace the match with or a function to generate the replacement text. The
-                replacement string can contain special replacement patterns: "$$" inserts a "\$", "\$&" inserts the
-                matched substring, "\$`" inserts the portion that preceeds the matched substring, "\$'" inserts the
-                portion that follows the matched substring, and "\$N" inserts the Nth parenthesized substring.
+                replacement string can contain special replacement patterns: '$$' inserts a '\$', '\$&' inserts the
+                matched substring, '\$`' inserts the portion that preceeds the matched substring, '\$'' inserts the
+                portion that follows the matched substring, and '\$N' inserts the Nth parenthesized substring.
                 The replacement parameter can also be a function which will be invoked and the function return value 
                 will be used as the resplacement text. The function will be invoked multiple times for each match to be 
                 replaced if the regular expression is global. The function will be invoked with the signature:
@@ -9320,9 +9351,9 @@ module ejs {
 
         /**
             Resolve paths in the neighborhood of this path. Resolve operates like join, except that it joins the 
-            given paths to the directory portion of the current ("this") path. For example: 
-            Path("/usr/bin/ejs/bin").resolve("lib") will return "/usr/lib/ejs/lib". i.e. it will return the
-            sibling directory "lib".
+            given paths to the directory portion of the current ('this') path. For example: 
+            Path('/usr/bin/ejs/bin').resolve('lib') will return '/usr/lib/ejs/lib'. i.e. it will return the
+            sibling directory 'lib'.
 
             Resolve operates by determining a virtual current directory for this Path object. It then successively 
             joins the given paths to the directory portion of the current result. If the next path is an absolute path, 
@@ -9351,7 +9382,7 @@ module ejs {
         /**
             The path separator for this path. This will return the first path separator used by the path
             or the default file system path separator if the path has no separators. On Windows, a path may use
-            "/" or "\" separators. Use $natural, $portable or $windows to create a new path with different path separators.
+            '/' or '\' separators. Use $natural, $portable or $windows to create a new path with different path separators.
          */
         native function get separator(): String
 
@@ -9397,6 +9428,267 @@ module ejs {
             @return a string representing the path.
          */
         native override function toString(): String
+
+        /**
+            Process a directory tree and perform operations on matching files.
+            This may be used to copy, move or process entire directory trees.
+            This method supports several invocation forms:
+            <ul>
+                <li>tree(from, to, {options})</li>
+                <li>tree([from, from, ...], to, {options})</li>
+                <li>tree({from: pattern, to: directory, options...})</li>
+                <li>tree([{from: pattern, to: directory, options...}])</li>
+            </ul>
+            A single 'from' pattern may be supplied with a destination 'to' directory. 
+            Multiple 'from' patterns may be provide in an array. 
+            Alternatively, the arguments may be provide via a object with a 'from' property. In this case, the
+            'to' directory and options are provided in the same object.
+
+            This method uses the Path.files() API to create a files list. All the options for Path.files are supported.
+
+            @return The number of files processed.
+            @param from Path|String|Object|Array This may be a String or Path containing the source directory/file to 
+                process. Or it may be an object that supplies 'from', 'to' and 'options' as processing instructions. 
+                It may also be an array of Paths, Strings or Objects. The patterns may contain:
+                    *
+                    **
+                    ?
+                    {}  Comma separated patterns
+                    !   Negates pattern. This removes matching patterns from the set. These are applied after all source
+                        patterns have been processed.
+                    If item starts with !, adds to exclusion set. !! to escape.
+                    If item is a directory, then appends / **
+            @param to String|Path|Undefined Destination target. If 'from' is a Path or String, then the 'to' argument must 
+                be a destination Path or String. If 'from' is an Object or Array of instruction objects, then 'to' may 
+                be omitted and will be ignored. In that case, the destination must be provided via a 'to' property in the
+                object instructions. If multiple source files are specified or the destination ends in the separator ('/'), 
+                the destination is assumed to be a directory. If the destination is a directory, the destination filename 
+                is created by appending the the source path to the directory.
+            @param options Object of additional processing instructions.
+
+            @option action Function Callback function to implement a single action. 
+                Function(from: Path, to: Path, options: Object): Void
+            @option active Boolean If destination is an active executable or library, rename the active file using a '.old' 
+                extension and retry.
+            @option append Boolean Set to true to append all input files into a single destination.
+            @option compress Boolean Compress destination file using Zlib. Results in a '.gz' extension.
+            @option depthFirst Boolean: Do a depth first traversal. If true, the directories will be visited after
+                the files in the directory. Otherwise, directories will be visited first. Defaults to false.
+            @option dir Assume the destination is a directory. Create if it does not exist.
+            @option dot String Specifies where the filename extension begins for filenames with multiple dots. Set to 
+                'first' or 'last'.
+            @option exclude String|Regular RegExp pattern of files to exclude from the results. Matches the entire path.
+                Only for the purpose of this match, directories will have '/' appended. May be set to the string
+                'directories' to exclude directories from the results which are by default included.
+            @option expand Object Expand tokens in filenames using this object. Object hash containing properties to use 
+                when replacing tokens of the form ${token} in the src and dest filenames. 
+            @option extension String|Path Extension to use for the destination filenames.
+            @option files Array Output array to contain a list of processed destination filenames
+            @option filter Function Callback function to test if a file should be processed.
+                Function(from: Path, options: Object): Boolean
+            @option flatten Boolean Flatten the input source tree to a single level. Defaults to false.
+            @option group String | Number System group name or number to use for the destination files.
+            @option hidden Boolean Include hidden files starting with '.'. Defaults to false.
+            @option include RegExp Regular expression pattern of files to include in the results.
+            @option keep Boolean Keep uncompressed file after compressing.
+            @option missing String Determine what happens if source patterns do not match any files.
+                Set to undefined to report patterns that don't resolve by throwing an exception. 
+                Set to any non-null value to be used in the results when there are no matching files or directories. 
+                Set to the empty string to use the patterns in the results and set to null to do nothing.
+            @option noneg Boolean Do not process negated file patterns.
+            @option move Boolean If true, do a move instead of a copy.
+            @option patch Object. Expand file contents tokens using this object. Object hash containing properties to use 
+                when replacing tokens of the form ${token} in file contents.
+            @option permissions Number Posix style permissions mask. E.g. 0644.
+            @option relative String|Path Create paths relative to this path value when constructing destination filename.
+                Defaults to false. If a pattern includes a path portion, it will be included in destination filenames 
+                regardless of the value of this option.
+            @option rename Function Callback function to provide a new destination filename. 
+                Function(from, to, options):Path
+            @option symlink String|Path Create a symbolic link to the destination in this directory
+            @option strip Boolean Run 'strip' on the destination files.
+            @option trim Number of path components to trim from the start of the source filename. Does not apply when using
+                    'flatten'
+            @option user String | Number System user account name or number to use for destination files.
+            @option verbose true | function. If true, then trace to stdout. Otherwise call function for each item.
+        */
+        function tree(from, to, options): Number {
+            let instructions
+            if (to == undefined) {
+                instructions = from
+            } else {
+                options ||= {}
+                instructions = [ blend(options.clone(), { from: from, to: to }) ]
+            }
+            if (!(instructions is Array)) {
+                instructions = [instructions]
+            }
+            let destHash = {}
+
+            let files = []
+            for each (options in instructions) {
+                let from = options.from
+                let to = Path(options.to)
+                let trace = options.verbose
+                if (trace && !(trace is Function)) {
+                    trace = function(...args) {
+                        let msg = '%12s %s' % (['[' + args[0] + ']'] + [args.slice(1).join(' ')]) + '\n'
+                        stdout.write(msg)
+                    }
+                }
+                let home = options.home
+                let sep = to.separator
+
+                if (!(from is Array)) from = [from]
+                if (options.expand) {
+                    /* Do twice to allow two levels of nest */
+                    let eo = {fill: '${}'}
+                    to = Path(to.name.expand(options.expand, eo).expand(options.expand, eo))
+                }
+                list = this.files(from, blend({contents: true, relative: true}, options, {overwrite: false}))
+                let toDir = to.isDir || to.name.endsWith(sep) || options.dir
+                if (!options.append) {
+                    toDir ||= from.length > 1 || list.length > 1
+                }
+
+                /* 
+                    Process matching files and build list of files to copy in 'files'
+                 */
+                for each (let src: Path in list) {
+                    let dest
+                    if (toDir) {
+                        if (options.flatten) {
+                            dest = to.join(src.basename)
+                        } else if (options.relative) {
+                            dest = to.join(this.join(src).relativeTo(options.relative))
+                        } else if (options.trim) {
+                            dest = to.join(this.join(src).components.slice(options.trim).join(to.separator))
+                        } else if (src.isAbsolute) {
+                            dest = Path(to.name + src.name)
+                        } else {
+                            dest = to.join(src)
+                        }
+                    } else {
+                        dest = to
+                    }
+                    if (options.extension) {
+                        if (options.dot == 'first') {
+                            dest = dest.split('.')[0].joinExt(options.extension)
+                        } else {
+                            dest = dest.replaceExt(options.extension)
+                        }
+                    }
+                    if (options.rename) {
+                        dest = options.rename(src, dest, options)
+                    }
+                    if (destHash[dest]) {
+                        continue
+                    }
+                    if (options.filter) {
+                        if (!options.filter(src, dest, options)) {
+                            continue
+                        }
+                    } else if (options.temp && src.name.match(options.temp)) {
+                        continue
+                    }
+                    files.push({from: src, to: dest, base: this, options: options})
+                    destHash[dest] = true
+                }
+                if (options.debug) {
+                    dump('Tree', files)
+                }
+
+                /*
+                    Process all qualifying files
+                 */
+                let data = []
+                for each (item in files) {
+                    let src = this.join(item.from)
+                    let dest = item.to
+                    if (options.dryrun) {
+                        print('DryRun', '\n    From:    ' + src + '\n    To:      ' + dest + '\n    Options: ' + 
+                            serialize(options, {pretty: true}))
+                    } else if (options.action) {
+                        options.action(src, dest, options)
+                    } else if (options.move) {
+                        src.rename(dest)
+                    } else if (options.append) {
+                        data.push(src.readString())
+                    } else {
+                        if (dest.endsWith(sep)) {
+                            dest.makeDir()
+                        } else {
+                            dest.dirname.makeDir()
+                        }
+                        if (src.isDir) {
+                            dest.makeDir()
+                        } else {
+                            try {
+                                trace && trace('Copy', src + ' => ' + dest)
+                                src.copy(dest, options)
+                            } catch (e) {
+                                if (options.active) {
+                                    let active = dest.replaceExt('old')
+                                    active.remove()
+                                    try { dest.rename(active) } catch {}
+                                }
+                                src.copy(dest, options)
+                            }
+                        }
+                    }
+                }
+                if (options.append) {
+                    files = files.slice(0, 1)
+                    files.to.write(data.join('\n'))
+                }
+                /*
+                    Post processing: patch, strip, compress, symlink
+                 */
+                for each (item in files) {
+                    let to = item.to
+                    if (options.patch) {
+                        to.write(to.readString().expand(options.patch, {fill: '${}'}))
+                        to.setAttributes(attributes)
+                    }
+                    if (options.strip) {
+                        Cmd.run('strip', to)
+                    }
+                    if (options.compress) {
+                        let zname = Path(to.name + '.gz')
+                        zname.remove()
+                        Zlib.compress(to.name, zname)
+                        if (!options.keep) {
+                            to.remove()
+                            item.to = zname
+                        }
+                    }
+                    if (options.symlink) {
+                        let symlink = Path(options.symlink)
+                        symlink.makeDir(options)
+                        let lto = symlink.join(to.basename)
+                        linkFile(to.relativeTo(lto.dirname), lto, options)
+                        item.to = lto
+                    }
+                    if (options.post) {
+                        options.post(item.from, to, options)
+                    }
+                }
+                /*
+                    Return the expanded instruct list of files to process
+                 */
+                if (options.files) {
+                    for each (item in files) {
+                        options.files.push(item.to)
+                    }
+                }
+                if (options.instructions) {
+                    for each (item in files) {
+                        options.instructions.push(item)
+                    }
+                }
+            }
+            return files.length
+        }
 
         /**
             Trim the requested number of path components from the start or end of the path
@@ -9455,7 +9747,7 @@ module ejs {
          */
         native function get windows(): Path
 
-        //  TODO rename? - bit confusing "write". This really does a "save"
+        //  TODO rename? - bit confusing 'write'. This really does a 'save'
         //  TODO - rename to writecContents or save
         //  TODO - last arg should be permissions?
         /**
@@ -9465,7 +9757,7 @@ module ejs {
             @throws IOError if the data cannot be written
          */
         function write(...args): Void {
-            var file: File = new File(this, { mode: "w", permissions: 0644 })
+            var file: File = new File(this, { mode: 'w', permissions: 0644 })
             try {
                 for each (item in args) {
                     if (item is String) {
@@ -9476,7 +9768,7 @@ module ejs {
                 }
             } 
             catch (es) {
-                throw new IOError("Cannot write to file")
+                throw new IOError('Cannot write to file')
             }
             finally {
                 file.close()
@@ -16558,21 +16850,42 @@ module ejs.unix {
         embedded wildcards. If a src element is a directory, then it all all files and subdirectories will be copied
         preserving its directory structure under dest. 
 
+        This routine is implemented using the Path.tree method. All the options supported by Path.tree are supported.
+
         @param src Source files/directories to copy. This can be a String, Path or array of String/Paths. 
             The wildcards "*", "**" and "?" are the only wild card patterns supported. The "**" pattern matches
             every directory and file. The Posix "[]" and "{a,b}" style expressions are not supported.
-            If src is an existing directory, then the pattern is converted to 'dir/ * *' (without spaces) 
-            and the tree option is enabled. This will copy the directories contents and not the directory itself.
+            If src is a directory, this routine functions recursively and copies the entire directory by converting
+            the source pattern to 'pattern / **' (without spaces) and enabling the 'tree' option.
         @param dest Destination file or directory. If multiple files are copied, dest is assumed to be a directory and 
             will be created if required.  If dest has a trailing "/", it is assumed to be a directory.
         @param options Processing and file attributes
-        @options owner String representing the file owner                                                     
-        @options group String representing the file group                                                     
-        @options exceptions Set to false to disable exceptions if cp finds no files to copy. Defaults to true.
+        @option dir Assume the destination is a directory. Create if it does not exist.
+        @option filter Function Callback function to test if a file should be processed.
+            Function(from: Path, to: Path, options: Object): Boolea
+        @option flatten Boolean Flatten the input source tree to a single level. Defaults to false.
+        @option group String representing the file group                                                     
+        @option missing String Determine what happens if source patterns do not match any files.
+            Set to undefined to report patterns that don't resolve by throwing an exception.
+            Set to any non-null value to be used in the results when there are no matching files or directories.
+                Set to the empty string to use the patterns in the results and set to null to do nothing.
+        @options user String representing the file user                                                     
         @options permissions Number File Posix permissions mask
-        @options tree Copy the src subtree and preserve the directory structure under the destination.
+        @option relative String|Path Create paths relative to this path option when constructing destination paths.
+        @option trim Number of path components to trim from the start of the source filename. Does not apply when using
+                'flatten'
         @return Number of files copied
     */
+    function cp(src, dest: Path, options = {}): Number {
+        //  DEPRECATED tree option
+        if (options.tree != undefined) {
+            options = options.clone()
+            options.flatten = !options.tree
+        }
+        return Path().tree(src, dest, options)
+    }
+
+/* UNUSED
     function cp(src, dest: Path, options = {}): Number {
         if (!(src is Array)) src = [src]
         let count = 0
@@ -16617,6 +16930,7 @@ module ejs.unix {
         }
         return count
     }
+*/
 
     /**
         Get the directory name portion of a file. The dirname name portion is the leading portion including all 
@@ -16674,12 +16988,17 @@ module ejs.unix {
             The wildcards "*", "**" and "?" are the only wild card patterns supported. The "**" pattern matches
             every directory. The Posix "[]" and "{a,b}" style expressions are not supported.
         @param options If set to true, then files will include sub-directories in the returned list of files.
-        @option dirs Include directories in the file list
-        @option depthFirst Do a depth first traversal. If "dirs" is specified, the directories will be shown after
-        the files in the directory. Otherwise, directories will be listed first.
-        @option exclude Regular expression pattern of files to exclude from the results. Matches the entire path.
+        @option depthFirst Do a depth first traversal of directories. If true, then the directories will be shown after
+            the files in the directory. Otherwise, directories will be listed first.
+        @option exclude String|Regular RegExp pattern of files to exclude from the results. Matches the entire path.
+            Only for the purpose of this match, directories will have "/" appended. May be set to the string
+            "directories" to exclude directories from the results which are by default included.
         @option hidden Show hidden files starting with "."
         @option include Regular expression pattern of files to include in the results. Matches the entire returned path.
+        @option missing Set to undefined to report patterns that don't resolve into any files or directories 
+            by throwing an exception. Set to any non-null value to be used in the results when there are no matching
+            files or directories. Set to the empty string to use the patterns in the results and set
+            to null to do nothing.
         @return An Array of Path objects for each matching file.
      */
     function ls(patterns = "*", options: Object? = null): Array {
@@ -16708,11 +17027,11 @@ module ejs.unix {
             The pattern '**' is equivalent to '** / *' (ignore spaces). 
             The Posix "[]" and "{a,b}" style expressions are not supported.
         @param options Optional properties to control the matching.
-        @option depthFirst Do a depth first traversal. If "dirs" is specified, the directories will be shown after
+        @option depthFirst Do a depth first traversal of directories. If true, then the directories will be shown after
             the files in the directory. Otherwise, directories will be listed first.
-        @option exclude Regular expression pattern of files to exclude from the results. Matches the entire path.
-            Only for the purpose of this match, directories will have "/" appended. To exclude directories in the
-            results, use {exclude: /\/$/}. The trailing "/" will not be returned in the results.
+        @option exclude String|Regular RegExp pattern of files to exclude from the results. Matches the entire path.
+            Only for the purpose of this match, directories will have "/" appended. May be set to the string
+            "directories" to exclude directories from the results which are by default included.
         @option hidden Include hidden files starting with "."
         @option include Regular expression pattern of files to include in the results. Matches the entire returned path.
             Only for the purpose of this match, directories will have "/" appended. To include only directories in the

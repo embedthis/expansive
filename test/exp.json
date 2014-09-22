@@ -4,14 +4,11 @@
     description: "Meta data description (optional)",
     keywords: "Meta data keywords (optional)",
     control: {
-        copy:    [ 'images', 'lib', 'scripts' ],
-        depends: { 'css/all.css.less': [ '*.less' ] },
-        exclude: [ 'theme.less' ],
+        copy:    [ 'images' ],
+        dependencies: { 'css/all.css.less': 'css/*.inc.less' },
+        documents: [ '**', '!css/*.inc.less' ],
         plugins: [ 'bash', 'less', 'css', 'js', 'marked', 'test', 'gzip', 'uglifyjs' ],
-        sitemap: {
-            include: [ '**.html' ],
-            exclude: [ ],
-        },
+        sitemap: { files: '**.html' },
 
         /*
             UNUSED

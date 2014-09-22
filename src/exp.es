@@ -44,7 +44,6 @@ class Exp {
     var collections: Object
     var copy: Object
     var dirs: Object
-    var exclude: Object
     var filters: Array
     var publicNames: Object
     var renderAll: Boolean
@@ -361,8 +360,8 @@ class Exp {
     function checkDepends(meta) {
         for (let [path, dependencies] in meta.control.dependencies) {
             path = dirs.documents.join(path)
-            let deps = buildFileHash(dependencies, dirs.documents)
-            for (let file: Path in deps) {
+            let deps = dirs.documents.files(dependencies)
+            for each (let file: Path in deps) {
                 if (file.modified.time >= lastGen.time) {
                     impliedUpdates[path] = true
                     modified = true
@@ -438,12 +437,11 @@ class Exp {
         if (mastersModified) {
             cache = {}
         }
-        exclude = buildFileHash(topMeta.control.exclude, dirs.documents)
-        copy = buildFileHash(topMeta.control.copy, dirs.documents)
+        copy = dirs.documents.files(topMeta.control.copy, {contents: true})
         if (initial) {
             publishFiles(topMeta)
         }
-        renderDir(dirs.documents, topMeta.clone(true))
+        renderDocuments(topMeta.clone(true))
         postclean()
         sitemap()
         if (options.debug) {
@@ -463,7 +461,7 @@ class Exp {
     }
 
     /*
-        Not watched
+        Files are not watched
      */
     function publishFiles(meta) {
         if (!filters) {
@@ -472,21 +470,21 @@ class Exp {
                 meta.control.files = [ Path('files') ]
             }
             for each (let pattern: Path in meta.control.files) {
-                cp(pattern, dirs.public, {tree: true, nothrow: true})
+                cp(pattern, dirs.public, { trim: 1 })
             }
         }
     }
 
+    /*
+        Copy file as-is without processing
+     */
     function copyFile(file, meta) {
         let trimmed = rebase(file, dirs.documents)
         if (file.isDir) {
             if (renderAll || checkModified(file, meta)) {
-                let home = App.dir
-                let dest = dirs.public.absolute
-                App.chdir(file)
                 trace('Copy', file)
-                cp('**', dest.join(trimmed), {tree: true, nothrow: true})
-                App.chdir(home)
+                cp(file.join('**'), dirs.public.join(trimmed), {dir: true, relative: file})
+
             } else {
                 for each (path in file.files('**')) {
                     if (checkModified(path, meta)) {
@@ -501,26 +499,6 @@ class Exp {
                 cp(file, dirs.public.join(trimmed))
             }
         }
-    }
-
-    function buildFileHash(list, dir: Path) {
-        let hash = {}
-        if (list) {
-            if (!(list is Array)) {
-                list = [list]
-            }
-            for each (pattern in list) {
-                let path = dir.join(pattern)
-                if (path.isDir) {
-                    pattern = pattern.toString() + '/**'
-                    hash[path] = true
-                }
-                for each (path in dir.files(pattern)) {
-                    hash[path] = true
-                }
-            }
-        }
-        return hash
     }
 
     function matchFile(file, dir, patterns) {
@@ -541,17 +519,14 @@ class Exp {
         return false
     }
 
-    function renderDir(dir: Path, meta) {
+    function renderDocuments(meta) {
         let priorDirs = dirs
-        loadConfig(dir, meta)
+        loadConfig(dirs.documents, meta)
         dirs = meta.control.directories
-
-        for each (file in dir.files()) {
-            if (exclude[file]) {
-                continue
-            }
+        for each (file in dirs.documents.files(meta.control.documents || '**', {exclude: 'directories'})) {
             if (filters) {
                 let match
+                /* Check command line filters (esp render filters...) */
                 for each (filter in filters) {
                     if (filter.startsWith(file)) {
                         match = true
@@ -568,12 +543,8 @@ class Exp {
             }
             if (copy[file]) {
                 copyFile(file, meta)
-            } else if (file.isDir) {
-                renderDir(file, meta.clone(true))
-            } else {
-                if (renderAll || filters || mastersModified || checkModified(file, meta)) {
-                    renderDocument(file, meta)
-                }
+            } else if (renderAll || filters || mastersModified || checkModified(file, meta)) {
+                renderDocument(file, meta)
             }
         }
         dirs = priorDirs
@@ -1077,30 +1048,20 @@ class Exp {
         let fp = new File(path, 'w')
         fp.write('<?xml version="1.0" encoding="UTF-8"?>\n' +
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
-        let include = buildFileHash(sm.include, dirs.public)
-        let exclude = buildFileHash(sm.exclude, dirs.public)
-        let count = 0
-        for each (file in dirs.public.files('**')) {
-            if (!include[file]) {
-                continue
-            }
-            if (exclude[file]) {
-                continue
-            }
-            let trimmed = rebase(file, dirs.public)
-            let filename = trimmed.toString().trimEnd('.gz') 
+        let list = dirs.public.files(sm.files || '**.html', {exclude: 'directories', relative: true})
+        for each (file in list) {
+            let filename = file.name.trimEnd('.gz') 
             fp.write('    <url>\n' +
-                '        <loc>' + topMeta.url + '/' + trimmed + '</loc>\n' +
-                '        <lastmod>' + file.modified.format('%F') + '</lastmod>\n' +
+                '        <loc>' + topMeta.url + '/' + filename + '</loc>\n' +
+                '        <lastmod>' + dirs.public.join(file).modified.format('%F') + '</lastmod>\n' +
                 '        <changefreq>weekly</changefreq>\n' +
                 '        <priority>0.5</priority>\n' +
                 '    </url>\n')
-            count++
         }
         fp.write('</urlset>\n')
         fp.close()
         if (!options.quiet) {
-            trace('Create', path + ', ' + count + ' entries')
+            trace('Create', path + ', ' + list.length + ' entries')
         }
     }
 
@@ -1109,19 +1070,33 @@ class Exp {
         App.exit(1)
     }
 
-    function trace(tag: String, ...args): Void {
+    function checkEngines(name, path) {
+        path = path.join('package.json')
+        if (path.exists) {
+            let obj = path.readJSON()
+            for (engine in obj.engines) {
+                if (!Cmd.locate(engine)) {
+                    trace('Warn', 'Cannot locate required "' + engine + '" for plugin "' + name + '"')
+                }
+            }
+        }
+    }
+
+    //////// Public API 
+
+    public function trace(tag: String, ...args): Void {
         if (!options.quiet) {
             log.activity(tag, ...args)
         }
     }
 
-    function vtrace(tag: String, ...args): Void {
+    public function vtrace(tag: String, ...args): Void {
         if (verbosity > 0) {
             log.activity(tag, ...args)
         }
     }
 
-    function touch(path: Path) {
+    public function touch(path: Path) {
         path.dirname.makeDir()
         if (path.exists) {
         } else {
@@ -1129,13 +1104,17 @@ class Exp {
         }
     }
 
-    public function getFileMeta(file: Path) {
-        let [meta, contents] = splitMetaContents(file, file.readString())
-        meta = blend(topMeta.clone(true), meta || {})
-        return meta
+    public function addItems(collection, items) {
+        if (!items) {
+            return
+        }
+        if (!(items is Array)) {
+            items = [items]
+        }
+        collections[collection] = ((collections[collection] || []) + items).unique()
     }
 
-    public function files(query: Object, operation = 'and', pattern = "**") {
+    public function getFiles(query: Object, operation = 'and', options = {files: "**"}) {
         let list = []
         for each (file in dirs.documents.files(pattern)) {
             if (file.isDir) continue
@@ -1153,19 +1132,15 @@ class Exp {
         return list
     }
 
-    function addItems(collection, items) {
-        if (!items) {
-            return
-        }
-        if (!(items is Array)) {
-            items = [items]
-        }
-        collections[collection] = ((collections[collection] || []) + items).unique()
+    public function getFileMeta(file: Path) {
+        let [meta, contents] = splitMetaContents(file, file.readString())
+        meta = blend(topMeta.clone(true), meta || {})
+        return meta
     }
 
-    function getItems(collection) collections[collection]
+    public function getItems(collection) collections[collection]
 
-    function removeItems(collection, items) {
+    public function removeItems(collection, items) {
         if (!items || !collections[collection]) {
             return
         }
@@ -1175,13 +1150,13 @@ class Exp {
         collections[collection] -= items
     }
 
-    function renderStyles() {
+    public function renderStyles() {
         for each (script in collections.styles) {
             write('<link href="' + meta.top + '/' + sheet + '" rel="stylesheet" type="text/css" />')
         }
     }
 
-    function renderScripts() {
+    public function renderScripts() {
         for each (script in collections.scripts) {
             write('<script src="' + meta.top + script + '"></script>\n    ')
         }
@@ -1191,18 +1166,6 @@ class Exp {
                 write(script)
             }
             write('\n    </script>')
-        }
-    }
-
-    function checkEngines(name, path) {
-        path = path.join('package.json')
-        if (path.exists) {
-            let obj = path.readJSON()
-            for (engine in obj.engines) {
-                if (!Cmd.locate(engine)) {
-                    trace('Warn', 'Cannot locate required "' + engine + '" for plugin "' + name + '"')
-                }
-            }
         }
     }
 }

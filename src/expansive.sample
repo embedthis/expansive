@@ -1,30 +1,28 @@
 /*
-    exp.json - Expansive Configuration
+    expansive.es - Sample Expansive Configuration
 
     This file includes all directives. Most of these have intelligent defaults and so a minimal 
-    exp.json may be much smaller.
-
-    This file is a "relaxed" json file. Commas are permitted in the last property of a collection.
-    Key names to not have to be quoted and single quotes may be used.
+    expansive.es may be much smaller.
  */
-{
-    title:       'Home page title',
-
-    url:         'Home page url',
-
-    description: 'Meta data description (optional)',
-
-    keywords:    'Meta data keywords (optional)',
+Expansive.load({
+    /*
+        Document meta information
+     */
+    meta: {
+        description: 'Meta data description (optional)',
+        keywords:    'Meta data keywords (optional)',
+        title:       'Home page title',
+        url:         'Home page URL',
+    },
 
     /*
         Expansive control section
      */
-    control: {
+    expansive: {
         /*
-            Copy these directories from documents without rending.
-            Not set by default.
+            Copy these directories from documents without rending. Not set by default.
          */
-        copy: [ 'images', 'lib' ],
+        copy: [ 'images' ],
 
         /*
             Dependency relationships. Used to detect when a document must be rendered due to
@@ -33,7 +31,7 @@
             The hash key is the document path and the value is a set of files that if modified,
             cause the document to be rendered. The document and files are relative to the 
             documents directory. The set of files can be a string or an array of files. Each 
-            value file may contain "*" or "**".
+            value file may contain '*' or '**'.
     
             Useful to notice when changes occur in included Less files. For example:
                 dependencies: { 'css/all.css.less': 'css/*.inc.less' },
@@ -53,14 +51,19 @@
         },
 
         /*
-            Address on which to listen. Format is: "IP:PORT", but may be just a port number. Defaults to 4000.
+            Documents to process under directories.documents
+         */
+        documents: [ '**', '!css/*.inc.less' ],
+
+        /*
+            Address on which to listen. Format is: 'IP:PORT', but may be just a port number. Defaults to 4000.
          */
         listen: '4000',
 
         /*
-            Exclude these documents from rendering. Patterns can contains "*" or "**"
+            Files to copy outside of the documents directory. This defaults to [ documents.files ] if unset.
          */
-        exclude: [],
+        files: [ 'files' ],
 
         /*
             Index in the modes property. The selected property collection is copied up to 
@@ -69,31 +72,21 @@
         mode: 'debug',
 
         /*
-            Set of operational modes. Depending on the value of 'mode', the selected collection
-            it made active by copying to the top level of the configuration.
+            List of plugins to load. These are installed via 'exp install name'.
+            These names should not have the 'exp-' prefix.
          */
-        modes: {
-            debug: {},
-            release: {},
-        },
-
-        /*
-            List of plugins to load. These are installed via "exp install name".
-            These names should not have the "exp-" prefix.
-         */
-        plugins: [],
+        plugins: [ 'less', 'css', 'analytics', 'gzip' ],
 
         /*
             Run this script before at launch before rendering
          */
-        script: '',
+        script: ``,
 
         /*
             Generate a sitemap
          */
         sitemap: {
-            include: [ "**.html" ],
-            exclude: [],
+            files: [ '**.html' ],
         },
 
         /*
@@ -113,11 +106,18 @@
             Time period in milliseconds to wait when watching for changes. Must be > 1000 (1 sec)
          */
         watch: 1000,
-    }
+    },
+
+    /*
+        Set of per-mode properties. Depending on the value of 'mode', the selected collection
+        it made active by copying to the top level of the configuration.
+     */
+    debug: {},
+    release: {},
 
     /*
         Internal meta properties. These are defined internally by Expansive and made available 
-        via the "meta" object.
+        via the 'meta' object.
 
         basename    Basename portion of the public document filename.
 
@@ -142,4 +142,4 @@
         layout      Layout page in use. Set to '' if no layout being used.
 
      */
-}
+})

@@ -133,6 +133,7 @@ public class Expansive {
         control = {
             directories: {
                 documents: Path('documents'),
+                files:     Path('files'),
                 layouts:   Path('layouts'),
                 partials:  Path('partials'),
                 public:    Path('public'),
@@ -488,8 +489,8 @@ public class Expansive {
     function renderFiles(meta) {
         if (!filters) {
             directories.public.makeDir()
-            if (!control.files && Path('files').exists) {
-                control.files = [ Path('files') ]
+            if (!control.files && directories.files.exists) {
+                control.files = [ directories.files ]
             }
             if (control.files) {
                 cp(control.files, directories.public, { trim: 1, post: function(from, to) {

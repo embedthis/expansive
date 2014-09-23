@@ -3,7 +3,7 @@
 #
 
 NAME                  := exp
-VERSION               := 0.4.0
+VERSION               := 0.4.1
 PROFILE               ?= default
 ARCH                  ?= $(shell uname -m | sed 's/i.86/x86/;s/x86_64/x64/;s/arm.*/arm/;s/mips.*/mips/')
 CC_ARCH               ?= $(shell echo $(ARCH) | sed 's/x86/i686/;s/x64/x86_64/')
@@ -857,7 +857,7 @@ installBinary: $(DEPS_40)
 	cd .; \
 	mkdir -p "$(ME_APP_PREFIX)" ; \
 	rm -f "$(ME_APP_PREFIX)/latest" ; \
-	ln -s "0.4.0" "$(ME_APP_PREFIX)/latest" ; \
+	ln -s "0.4.1" "$(ME_APP_PREFIX)/latest" ; \
 	mkdir -p "$(ME_VAPP_PREFIX)/bin" ; \
 	cp build/$(CONFIG)/bin/exp $(ME_VAPP_PREFIX)/bin/exp ; \
 	mkdir -p "$(ME_BIN_PREFIX)" ; \
@@ -882,8 +882,7 @@ installBinary: $(DEPS_40)
 	cp build/$(CONFIG)/bin/exp.sample $(ME_VAPP_PREFIX)/bin/exp.sample ; \
 	cp src/exp.es $(ME_VAPP_PREFIX)/bin/exp.es ; \
 	cp src/exp.h $(ME_VAPP_PREFIX)/bin/exp.h ; \
-	cp src/exp.mod $(ME_VAPP_PREFIX)/bin/exp.mod ; \
-	cp src/exp.sample $(ME_VAPP_PREFIX)/bin/exp.sample ; \
+	cp src/expansive.sample $(ME_VAPP_PREFIX)/bin/expansive.sample ; \
 	cp src/expTemplate.c $(ME_VAPP_PREFIX)/bin/expTemplate.c ; \
 	cp src/ExpTemplate.es $(ME_VAPP_PREFIX)/bin/ExpTemplate.es ; \
 	mkdir -p "$(ME_VAPP_PREFIX)/doc/man/man1" ; \
@@ -924,5 +923,5 @@ uninstall: $(DEPS_43)
 #   version
 #
 version: $(DEPS_44)
-	echo 0.4.0
+	echo 0.4.1
 

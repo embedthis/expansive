@@ -3,7 +3,7 @@
 #
 
 NAME                  = exp
-VERSION               = 0.4.0
+VERSION               = 0.4.1
 
 OS                    = windows
 PA                    = $(PROCESSOR_ARCHITECTURE)
@@ -962,8 +962,7 @@ installBinary: $(DEPS_42)
 	copy /Y /B build\$(CONFIG)\bin\exp.sample+modified "$(ME_VAPP_PREFIX)\bin\exp.sample" $(LOG)
 	copy /Y /B src\exp.es+modified "$(ME_VAPP_PREFIX)\bin\exp.es" $(LOG)
 	copy /Y /B src\exp.h+modified "$(ME_VAPP_PREFIX)\bin\exp.h" $(LOG)
-	copy /Y /B src\exp.mod+modified "$(ME_VAPP_PREFIX)\bin\exp.mod" $(LOG)
-	copy /Y /B src\exp.sample+modified "$(ME_VAPP_PREFIX)\bin\exp.sample" $(LOG)
+	copy /Y /B src\expansive.sample+modified "$(ME_VAPP_PREFIX)\bin\expansive.sample" $(LOG)
 	copy /Y /B src\expTemplate.c+modified "$(ME_VAPP_PREFIX)\bin\expTemplate.c" $(LOG)
 	copy /Y /B src\ExpTemplate.es+modified "$(ME_VAPP_PREFIX)\bin\ExpTemplate.es" $(LOG)
 	cd .
@@ -1003,5 +1002,5 @@ uninstall: $(DEPS_45)
 #   version
 #
 version: $(DEPS_46)
-	echo 0.4.0
+	echo 0.4.1
 

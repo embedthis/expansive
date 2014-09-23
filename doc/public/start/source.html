@@ -118,7 +118,7 @@
         </div>
         
         <div class="ui right floated basic segment version">
-            v0.4.0
+            v0.4.1
         </div>
 
     </div>
@@ -217,18 +217,14 @@
             }
         });
         $('.sidebar-launch').trigger('click');
-
+        $('.sidebar a.item').click(function(e) {
+            sessionStorage.setItem('scroll-top', $('.sidebar').scrollTop());
+        });
         $(function() {
             var url = '../start/source.html';
             var active = $('.sidebar a[href="' + url +'"]');
             active.addClass('active');
-            var sidebar = $(".sidebar");
-            var height = sidebar.height();
-            var offset = active.offset();
-            if (offset && offset.top >= height) {
-                var diff = height - active.offset().top;
-                sidebar.scrollTop(height);
-            }
+            $('.sidebar').scrollTop(sessionStorage.getItem('scroll-top'));
         });
     </script> 
 

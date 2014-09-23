@@ -1,5 +1,5 @@
 Expansive.load({
-    meta {
+    meta: {
         title:       'Embedthis Expansive Documentation',
         url:         'https://embedthis.com/esp/doc/',
         description: 'A fast, flexible static site generator',

@@ -41565,8 +41565,8 @@ PUBLIC void ejsConfigureObjectType(Ejs *ejs)
 static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *fp, EjsObj *instructions);
 static cchar *getPathString(Ejs *ejs, EjsObj *vp);
 static void getUserGroup(Ejs *ejs, EjsObj *attributes, int *uid, int *gid);
-static EjsArray *getFiles(Ejs *ejs, EjsArray *results, EjsPath *thisPath, cchar *base, cchar *path, cchar *pattern,
-        MprList *negate, EjsRegExp *exclude, EjsRegExp *include, EjsFunction *filter, EjsObj *options, int flags);
+static EjsArray *getFiles(Ejs *ejs, EjsArray *results, EjsPath *thisPath, cchar *base, cchar *path, cchar *pattern, 
+    MprList *negate, EjsRegExp *exclude, EjsRegExp *include, EjsFunction *filter, EjsObj *options, int flags);
 
 /************************************ Helpers *********************************/
 
@@ -42114,7 +42114,7 @@ PUBLIC EjsArray *ejsGetPathFiles(Ejs *ejs, EjsPath *fp, int argc, EjsAny **argv)
 static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *fp, EjsObj *instructions)
 {
     MprFileSystem   *fs;
-    EjsAny          *vp, *fill, *from;
+    EjsAny          *vp, *fill;
     EjsObj          *options, *expand;
     EjsArray        *patterns, *list;
     EjsRegExp       *exclude, *include;
@@ -42208,7 +42208,7 @@ static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *
     }
     negate = 0;
     for (i = 0; i < patterns->length; i++) {
-        pattern = ejsGetItem(ejs, patterns, i);
+        pattern = ejsToString(ejs, ejsGetItem(ejs, patterns, i));
         if (expand) {
             /* Allow two levels of expansion */
             //  OPT
@@ -42224,7 +42224,7 @@ static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *
         }
     }
     for (i = 0; i < patterns->length; i++) {
-        pattern = ejsGetItem(ejs, patterns, i);
+        pattern = ejsToString(ejs, ejsGetItem(ejs, patterns, i));
         if (expand) {
             pattern = ejsExpandString(ejs, pattern, expand);
             pattern = ejsExpandString(ejs, pattern, expand);
@@ -42240,8 +42240,8 @@ static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *
         path = fp->value;
         base = "";
         /*
-            Split the pattern into a [directory, pattern]
-            The directory portion is joined to the path
+            Optimization. Move static part of pattern into base directory.
+            Split the pattern into a [directory, pattern], the directory portion is joined to the path.
          */
         if ((special = strpbrk(start, "*?")) != 0) {
             if (special > start) {
@@ -42279,19 +42279,18 @@ static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *
 /*
     Get the files matching a pattern. This recurses down the directory tree.
 
-    thisPath    Original Path object.
     base        Base directory for the glob. Resultant files have this prepended unless relative.
     dir         Directory to match.
     pattern     Glob pattern.
  */
-static EjsArray *getFiles(Ejs *ejs, EjsArray *results, EjsPath *thisPath, cchar *base, cchar *dir, cchar *pattern,
-        MprList *negate, EjsRegExp *exclude, EjsRegExp *include, EjsFunction *filter, EjsObj *options, int flags)
+static EjsArray *getFiles(Ejs *ejs, EjsArray *results, EjsPath *thisPath, cchar *base, cchar *dir, cchar *pattern, 
+    MprList *negate, EjsRegExp *exclude, EjsRegExp *include, EjsFunction *filter, EjsObj *options, int flags)
 {
     MprFileSystem   *fs;
     MprDirEntry     *dp;
     MprList         *list;
     EjsAny          *argv[2];
-    cchar           *filename, *nextPartPattern, *nextPath, *matchFile, *npat;
+    cchar           *filename, *fullname, *name, *nextPartPattern, *matchFile, *npat;
     int             add, next, paused, i;
 
     if ((list = mprGetPathFiles(dir, flags | MPR_PATH_RELATIVE)) == 0) {
@@ -42313,7 +42312,9 @@ static EjsArray *getFiles(Ejs *ejs, EjsArray *results, EjsPath *thisPath, cchar 
             /* Double star matches zero or more */
             add = 0;
         }
-        filename = (flags & MPR_PATH_RELATIVE) ? mprJoinPath(base, dp->name) : mprJoinPath(dir, dp->name);
+        filename = mprJoinPath(base, dp->name);
+        fullname = mprJoinPath(dir, dp->name);
+
         if (add && (exclude || filter || include || negate)) {
             matchFile = (dp->isDir && !dp->isLink) ? sjoin(filename, "/", NULL) : filename;
             if (include && pcre_exec(include->compiled, NULL, matchFile, (int) slen(matchFile), 0, 0, NULL, 0) < 0) {
@@ -42331,7 +42332,7 @@ static EjsArray *getFiles(Ejs *ejs, EjsArray *results, EjsPath *thisPath, cchar 
                 }
             }
             if (filter) {
-                argv[0] = ejsCreateStringFromAsc(ejs, filename);
+                argv[0] = ejsCreateStringFromAsc(ejs, mprJoinPath(dir, dp->name));
                 argv[1] = options;
                 paused = ejsBlockGC(ejs);
                 if (ejsRunFunction(ejs, filter, thisPath, 2, argv) != ESV(true)) {
@@ -42340,16 +42341,17 @@ static EjsArray *getFiles(Ejs *ejs, EjsArray *results, EjsPath *thisPath, cchar 
                 ejsUnblockGC(ejs, paused);
             }
         }
+        name = (flags & MPR_PATH_RELATIVE) ? filename : fullname;
         if (!(flags & FILES_DEPTH_FIRST) && add) {
             /* Exclude mid-pattern directories and terminal directories if only "files" */
-            ejsSetProperty(ejs, results, -1, ejsCreatePathFromAsc(ejs, filename));
+            ejsSetProperty(ejs, results, -1, ejsCreatePathFromAsc(ejs, name));
         }
         if (dp->isDir && nextPartPattern) {
-            nextPath = (flags & MPR_PATH_RELATIVE) ? mprJoinPath(dir, dp->name) : filename;
-            getFiles(ejs, results, thisPath, filename, nextPath, nextPartPattern, negate, exclude, include, filter, options, flags);
+            getFiles(ejs, results, thisPath, filename, fullname, nextPartPattern, negate, exclude, include, filter, 
+                options, flags);
         }
         if ((flags & FILES_DEPTH_FIRST) && add) {
-            ejsSetProperty(ejs, results, -1, ejsCreatePathFromAsc(ejs, filename));
+            ejsSetProperty(ejs, results, -1, ejsCreatePathFromAsc(ejs, name));
         }
     }
     return results;

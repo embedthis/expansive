@@ -18174,16 +18174,26 @@ PUBLIC bool mprMatchPath(cchar *path, cchar *pattern)
     bool            isDir;
 
     fs = mprLookupFileSystem(path);
+    if (!path || !pattern) {
+        return 1;
+    }
     for (cp = name = sclone(path); *cp; cp++) {
         if (*cp == fs->separators[0] || *cp == fs->separators[1]) {
             *cp++ = '\0';
             if (!mprMatchPartPath(name, 1, pattern, &nextPartPattern, 0, 0)) {
                 return 0;
             }
+            if (!nextPartPattern) {
+                return 1;
+            }
+            pattern = nextPartPattern;
             name = cp;
         }
     }
     if (name < cp) {
+        if (!pattern) {
+            return 1;
+        }
         if (!mprMatchPartPath(name, 0, pattern, &nextPartPattern, 0, 0)) {
             return 0;
         }

@@ -8918,7 +8918,9 @@ module ejs {
             @option expand Object Expand tokens in filenames using this object. Object hash containing properties to use 
                 when replacing tokens of the form ${token} in the patterns.
             @option filter Function Callback function to test if a file should be processed.
-                Function(path: Path, options: Object): Boolean
+                Function(filename: Path, options: Object): Boolean
+                The file argument is the filename being considered, it include the Path.
+                The value of "this" is set to the Path value.
             @option hidden Include hidden files starting with '.' Defaults to false.
             @option include Regular expression pattern of files to include in the results. Matches the entire returned path.
                 Only for the purpose of this match, directories will have '/' appended. To include only directories in the
@@ -9485,7 +9487,9 @@ module ejs {
             @option extension String|Path Extension to use for the destination filenames.
             @option files Array Output array to contain a list of processed destination filenames
             @option filter Function Callback function to test if a file should be processed.
-                Function(from: Path, options: Object): Boolean
+                Function(filename: Path, options: Object): Boolean
+                The file argument is the filename being considered, it include the Path.
+                The value of "this" is set to the Path value.
             @option flatten Boolean Flatten the input source tree to a single level. Defaults to false.
             @option group String | Number System group name or number to use for the destination files.
             @option hidden Boolean Include hidden files starting with '.'. Defaults to false.
@@ -9500,9 +9504,10 @@ module ejs {
             @option patch Object. Expand file contents tokens using this object. Object hash containing properties to use 
                 when replacing tokens of the form ${token} in file contents.
             @option permissions Number Posix style permissions mask. E.g. 0644.
-            @option relative String|Path Create paths relative to this path value when constructing destination filename.
-                Defaults to false. If a pattern includes a path portion, it will be included in destination filenames 
-                regardless of the value of this option.
+            @option relative String|Path Create destination filenames relative to this path value.
+                Each source filename is mapped relative to the relative value and then appended to the 'to' directory.
+                If a pattern includes a path portion, it will be included in destination filenames regardless of 
+                the value of this option.
             @option rename Function Callback function to provide a new destination filename. 
                 Function(from, to, options):Path
             @option symlink String|Path Create a symbolic link to the destination in this directory
@@ -9564,6 +9569,7 @@ module ejs {
                         } else if (options.trim) {
                             dest = to.join(this.join(src).components.slice(options.trim).join(to.separator))
                         } else if (src.isAbsolute) {
+                            /* Can happen if the from pattern is absolute */
                             dest = Path(to.name + src.name)
                         } else {
                             dest = to.join(src)
@@ -9579,16 +9585,12 @@ module ejs {
                         }
                     }
                     if (options.rename) {
-                        dest = options.rename(src, dest, options)
+                        dest = options.rename.call(this, this.join(src), dest, options)
                     }
                     if (destHash[dest]) {
                         continue
                     }
-                    if (options.filter) {
-                        if (!options.filter(src, dest, options)) {
-                            continue
-                        }
-                    } else if (options.temp && src.name.match(options.temp)) {
+                    if (options.temp && src.name.match(options.temp)) {
                         continue
                     }
                     files.push({from: src, to: dest, base: this, options: options})
@@ -9609,7 +9611,7 @@ module ejs {
                         print('DryRun', '\n    From:    ' + src + '\n    To:      ' + dest + '\n    Options: ' + 
                             serialize(options, {pretty: true}))
                     } else if (options.action) {
-                        options.action(src, dest, options)
+                        options.action.call(this, src, dest, options)
                     } else if (options.move) {
                         src.rename(dest)
                     } else if (options.append) {
@@ -9670,7 +9672,7 @@ module ejs {
                         item.to = lto
                     }
                     if (options.post) {
-                        options.post(item.from, to, options)
+                        options.post.call(this, item.from, to, options)
                     }
                 }
                 /*

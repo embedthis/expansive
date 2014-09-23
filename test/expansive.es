@@ -18,7 +18,6 @@ Expansive.init({
         },
         documents: [ '**', '!css/*.inc.less' ],
         files: [],
-        mode:    'debug',
         plugins: [ 'bash', 'less', 'css', 'js', 'marked', 'test', 'gzip', 'uglifyjs' ],
         routes: [],
         script: `
@@ -49,11 +48,12 @@ Expansive.init({
         },
         watch: 1234,
     },
+    mode:  'debug',
     debug: {
         services: {
             compress: {
                 enable: false,
-                include: [ '**.html' ],
+                files: [ '**.html' ],
             },
             'minify-js': {
                 compress: true,

@@ -66,12 +66,6 @@ Expansive.load({
         files: [ 'files' ],
 
         /*
-            Index in the modes property. The selected property collection is copied up to 
-            the top level. This is not set by default.
-         */
-        mode: 'debug',
-
-        /*
             List of plugins to load. These are installed via 'exp install name'.
             These names should not have the 'exp-' prefix.
          */
@@ -107,6 +101,11 @@ Expansive.load({
          */
         watch: 1000,
     },
+
+    /*
+        The selected mode collection is copied up to the top level. This is not set by default.
+     */
+    mode: 'debug',
 
     /*
         Set of per-mode properties. Depending on the value of 'mode', the selected collection

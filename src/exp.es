@@ -189,12 +189,12 @@ public class Expansive {
         blend(services, config.services)
         let meta = global.meta
         blend(meta, config.meta)
-        let mode = config[control.mode]
+        let mode = config[config.mode]
         if (mode) {
             blend(meta, mode.meta, {combine: true})
             blend(control, mode.control, {combine: true})
             blend(services, mode.services, {combine: true})
-            delete meta[control.mode]
+            delete meta[config.mode]
         }
         if (config.expansive && config.expansive.script) {
             delete meta.expansive.script
@@ -213,6 +213,17 @@ public class Expansive {
     }
 
     function createService(def) {
+        //  LEGACY
+        if (def.from) {
+            trace('Warn', 'Service ' + def.name + ' is using the legacy "from" property. Use "input" instead')
+            def.input = def.from
+            delete def.from
+        }
+        if (def.to) {
+            trace('Warn', 'Service ' + def.name + ' is using the legacy "to" property. Use "output" instead')
+            def.output = def.to
+            delete def.to
+        }
         let service = services[def.name] ||= {}
         if (service.name) {
             vtrace('Warn', 'Redefining service "' + def.name + '"" from ' + 
@@ -233,15 +244,15 @@ public class Expansive {
         }
         stats.services[def.name] = { elapsed: 0, count: 0}
 
-        if (def.to && !(def.to is Array)) {
-            def.to = [def.to]
+        if (def.output && !(def.output is Array)) {
+            def.output = [def.output]
         }
-        if (def.from && !(def.from is Array)) {
-            def.from = [def.from]
+        if (def.input && !(def.input is Array)) {
+            def.input = [def.input]
         }
-        for each (from in def.from) {
-            for each (to in def.to) {
-                let mapping = from + ' -> ' + to
+        for each (input in def.input) {
+            for each (output in def.output) {
+                let mapping = input + ' -> ' + output
                 let transform = transforms[mapping] ||= []
                 if (!transform.contains(def.name)) {
                     transform.push(def.name)
@@ -283,7 +294,7 @@ public class Expansive {
     }
 
     function loadPlugins() {
-        createService({ plugin: 'exp-internal', name: 'exp', from: 'exp', to: '*', render: transformExp } )
+        createService({ plugin: 'exp-internal', name: 'exp', input: 'exp', output: '*', render: transformExp } )
         let stat = stats.services.exp
         stat.parse = stat.eval = stat.run = 0
 
@@ -731,7 +742,7 @@ public class Expansive {
             }
             if (service.enable !== false) {
                 if (service.render) {
-                    [meta.from, meta.to] = mapping.split(' -> ')
+                    [meta.input, meta.output] = mapping.split(' -> ')
                     vtrace('Service', service.name + ' from "' + service.plugin + '"')
                     let started = new Date
                     try {

@@ -18197,7 +18197,7 @@ PUBLIC bool mprMatchPath(cchar *path, cchar *pattern)
         if (!mprMatchPartPath(name, 0, pattern, &nextPartPattern, 0, 0)) {
             return 0;
         }
-        if (nextPartPattern && *nextPartPattern) {
+        if (nextPartPattern && *nextPartPattern && !smatch(nextPartPattern, "**")) {
             return 0;
         }
     }

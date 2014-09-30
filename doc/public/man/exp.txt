@@ -3,7 +3,7 @@ EXP(1)                           User Commands                          EXP(1)
 
 
 NAME
-       exp - Embedthis Expansive -- Static web site generator using Ejscript
+       exp - Embedthis Expansive -- Fast, Powerful Web Site Generator
 
 SYNOPSIS
        exp
@@ -33,17 +33,17 @@ SYNOPSIS
            <CR>
 
 DESCRIPTION
-       Expansive  is  a  static web site generator using Ejscript.  It quickly
-       creates static HTML pages from layouts, partials and content pages.
+       Expansive is a fast and powerful web site generator using Ejscript.  It
+       quickly creates HTML pages from layouts, partials and content pages.
 
 
 
 WHY EXPANSIVE?
-       There are many static site generators, why another one?  Existing  site
-       generators are often slow, very slow, painfully slow.  When creating or
-       managing a web site, you need tools that  do  not  delay  the  creative
-       design process. They need to be as fast as possible. Expansive is fast,
-       pure and simple.
+       There are many web site site generators,  why  another  one?   Existing
+       site generators are often slow, very slow, painfully slow.  When creat-
+       ing or managing a web site, you need tools that do not delay  the  cre-
+       ative design process. They need to be as fast as possible. Expansive is
+       fast, pure and simple.
 
        Other site generators frequently provide poor  diagnostics.  Fine  when
        everything  works,  but  when a page fails to render due to a scripting
@@ -52,8 +52,9 @@ WHY EXPANSIVE?
 
 
 FEATURES
-       Expansive  is implemented primarily as a single script of some 1K lines
-       of Ejscript and is very hackable.  It has the following major features:
+       Expansive  is  implemented  primarily  as  a single script of some 1.5K
+       lines of Ejscript and is very hackable.  It  has  the  following  major
+       features:
 
            .  Generate  static  web  sites  from  pages, layouts, partials and
        scripts
@@ -83,8 +84,8 @@ NICE PARTS
 
 
 BASIC USAGE
-       To prepare a directory for expansive and create an exp.json  configura-
-       tion file:
+       To prepare a directory for expansive and create an expansive.es config-
+       uration file:
            exp init
 
        To  install  new  plugins  to  transform content. The exp-less compiles
@@ -112,15 +113,15 @@ BASIC USAGE
 DIRECTORIES
        Expansive uses the following directories:
 
-           layouts     For master page layouts
-           partials    For partial web pages that can  be  included  by  other
-       pages
            documents   Input web pages to be processed
            files       Files to be copied and not processed
+           layouts     For master page layouts
            public      Final output directory containing the rendered web site
+           partials     For  partial  web  pages that can be included by other
+       pages
 
-       These directories can be modified via the 'directories' object  in  the
-       meta 'control' collection.
+       These directories can be modified via meta 'expansive.directories' col-
+       lection.
 
 
 PROCESSING
@@ -132,9 +133,9 @@ PROCESSING
 
 
 CONFIGURATION
-       Expansive  is  controlled  by  a  'exp.json'  configuration  file. This
+       Expansive  is  controlled by an 'expansive.es' configuration file. This
        defines top level configuration for the site and controls how Expansive
-       renders  the  site.  An  exp.json file must be present for Expansive to
+       renders the site. An expansive.es file must be present for Expansive to
        render content.
 
        To prepare a new site to use Expansive, run:
@@ -142,29 +143,43 @@ CONFIGURATION
            exp init
 
 
-       This creates an exp.json file similar to that below:
+       This creates an expansive.es file. Here is a cut-down portion:
 
-             {
-                title: 'Home page title',
-                url: 'Home page url',
-                description: 'Meta data description (optional)',
-                keywords: 'Meta data keywords (optional)',
-             }
+            Expansive.load({
+                meta: {
+                    title: 'Home page title',
+                    url: 'Home page url',
+                    description: 'Meta data description (optional)',
+                    keywords: 'Meta data keywords (optional)',
+                },
+                expansive: {
+                    copy: [ '**.tags', 'images' ],
+                    dependencies: { 'css/all.css.less': 'css/*.inc.less' },
+                    documents: [ '**', '!css/*.inc.less' ],
+                    plugins: [ 'less', 'css', 'analytics', 'gzip' ],
+                    script: `
+                        function menu(item) meta.menu == item ? 'active' : ''
+                    `
+                },
+                services: {
+                    /* Configuration for plugins */
+                }
+             })
 
-       The contents of the exp.json file are added to the Expansive meta  data
-       collection  that  is  provided  to  every page, layout and partial. The
-       exp.json file has a 'control' section that controls  the  operation  of
-       Expansive.  The  are  a  set of pre-defined properties, but you can add
-       your own data as well. See the META PROPERTIES section below.
+       The 'meta' contents of the expansive.es file are added to the Expansive
+       meta data collection that is provided to every page, layout and partial
+       page. The 'expansive' collection has properties that control the opera-
+       tion of Expansive. These values are made available to web pages via the
+       'meta.expansive' property.
 
 
-       In the control section, the 'exclude' array defines a set of file  pat-
-       terns  to  exclude  from  processing. The 'copy' array defines a set of
-       file patterns to copy without processing. These patterns  are  relative
-       to  the  'documents'  directory.  The script string defines an optional
-       global script to inject code into the Ejscript execution  context.  The
-       sitemap  collection configures what documents to include in the created
-       sitemap XML file.
+       In the expansive section, the 'documents' array defines the set of pat-
+       terns  to  select documents for processing.  The 'copy' array defines a
+       set of patterns to select files to copy without  processing.  The  copy
+       patterns are relative to the 'documents' directory. The 'script' string
+       defines an optional global script to inject code into the Ejscript exe-
+       cution  context.  The  'sitemap'  collection  defines what documents to
+       include in the created sitemap XML file.
 
 
 DYNAMIC CONTENT
@@ -207,7 +222,7 @@ TRANSFORMATIONS
        Expansive uses the '.exp' extension to specify the document has  embed-
        ded Ejscript. For example:
 
-        index.html.md.exp
+            index.html.md.exp
 
        This  means the file has Embedded Ejscript in a Markdown file that will
        be compiled to HTML. Expansive will process this by first  running  the
@@ -219,11 +234,11 @@ TRANSFORMATIONS
 PLUGINS
        Expansive  may be extended via plugins that provide transformations and
        additional scripting capability. A site specifies the  plugins  to  use
-       via a 'control.plugins' meta property in its exp.json. When a plugin is
-       installed via 'exp install', the plugin automatically  to  the  ordered
-       'plugins'  list in package.json.  When a plugin is loaded, it registers
-       itself to handle specific file extension transformations. The transfor-
-       mation pipeline for specific extensions can be overridden via the
+       via  the  'expansive.plugins'  property. When a plugin is installed via
+       'exp install', the plugin automatically to the ordered 'plugins'  list.
+       When  a  plugin  is loaded, it registers itself to handle specific file
+       extension transformations. The  transformation  pipeline  for  specific
+       extensions can be overridden via the
 
 
 USEFUL PLUGINS
@@ -263,37 +278,36 @@ USEFUL PLUGINS
                  Install Uglify-js. Use with the exp-js plugin to  mangle  and
                  minify Javascripts.
 
-       Many  plugins  can  be customized by passing configuration data via the
-       Meta data. For example: To request that minified Javascript files use a
-       '.min.js' extension and are compressed but not managed:
+       Many  plugins  can be customized by passing configuration to the plugin
+       via expansive.es file. For example:  To  request  that  all  Javascript
+       files be minified, use a '.min.js' extension, and be compressed but not
+       managed:
 
        {
-           control: {
-               services: {
-                   'minify-js': {
-                       compress: true,
-                       mangle: true,
-                       dotmin: true,
-                   }
+           services: {
+               'minify-js': {
+                   compress: true,
+                   mangle: true,
+                   dotmin: true,
                }
            }
         }
 
-        See  specific  plugin  documentation for the configuration options for
+        See specific plugin documentation for the  configuration  options  for
        each plugin.
 
 
 LAYOUTS
-       A layout page defines the top level HTML content for a  set  of  pages.
-       The  layout  defines  the format, look and feel of the web site so that
-       each pages does not need to replicate this content.  Despite  the  fact
-       that  pages  nominate  a layout page to use, it is actually layout page
-       that includes the content page inside it to create  a  composite  page.
-       The  '<@  content @>' tag in the layout is replaced with the actual web
+       A  layout  page  defines the top level HTML content for a set of pages.
+       The layout defines the format, look and feel of the web  site  so  that
+       each  pages  does  not need to replicate this content. Despite the fact
+       that pages nominate a layout page to use, it is  actually  layout  page
+       that  includes  the  content page inside it to create a composite page.
+       The '<@ content @>' tag in the layout is replaced with the  actual  web
        page data after separating the page meta data.
 
-       There can be multiple layout pages and the  default  layout  is  called
-       'default.html.exp'.  Layout  pages  may next, i.e. may use other layout
+       There  can  be  multiple  layout pages and the default layout is called
+       'default.html.exp'. Layout pages may next, i.e. may  use  other  layout
        pages.  Layout pages can use any desired transformation file extension.
 
              <!DOCTYPE html>
@@ -312,18 +326,18 @@ LAYOUTS
 
 
 PARTIALS
-       Web  pages  often  need  to have content that is common across a set of
-       pages. Expansive supports this via partial pages that can  be  included
-       by  any  page, layout or other partial page. A page specifies a partial
+       Web pages often need to have content that is common  across  a  set  of
+       pages.  Expansive  supports this via partial pages that can be included
+       by any page, layout or other partial page. A page specifies  a  partial
        by using the 'partial' Javascript function. For example:
 
         <@ partial('header') @>
 
        The partial function will search for a file starting with 'header.html'
-       in  the  'partials'  directory.   Partials are transformed according to
-       their extension. If a partial called  'header.html.md.exp'  was  found,
-       then  it  will  be  first transformed by running the embedded Ejscript,
-       then piping the output into the Markdown to create html data that  will
+       in the 'partials' directory.  Partials  are  transformed  according  to
+       their  extension.  If  a partial called 'header.html.md.exp' was found,
+       then it will be first transformed by  running  the  embedded  Ejscript,
+       then  piping the output into the Markdown to create html data that will
        then be included in place of the original partial tag.
 
 
@@ -333,8 +347,8 @@ PARTIALS
 
 META DATA
        Pages, layouts and partials can define meta data at the top of the file
-       via  a  Javascript literal.  Meta data is passed to the Ejscript execu-
-       tion context for each page, layout and partial where scripts can  exam-
+       via a Javascript literal.  Meta data is passed to the  Ejscript  execu-
+       tion  context for each page, layout and partial where scripts can exam-
        ine and use in rendering pages.
 
              {
@@ -343,19 +357,18 @@ META DATA
              }
              <h1>Page Header</h1>
 
-       The  meta  data is added to the current meta data collection and passed
-       to the layout page and any partials used by the page.   The  meta  data
-       can be accessed via the 'expansive.meta' Javascript property.
-
+       The meta data is added to the current meta  data  collection  from  the
+       expansive.es  file  and  passed  to the layout page, partials pages and
+       content pages. The meta data can be  accessed  via  the  global  'meta'
+       Javascript variable.
 
 
        Meta data is inherited and aggregated as Expansive processes a web site
-       directory. The meta data from upper directories is passed down to lower
-       directories.  In this manner upper levels can define the parameters for
-       subdirectories in the site. Meta data is never passed back up the tree.
-
-       Meta  data can also be defined by including additional 'exp.json' files
-       at any level in the documents directory.
+       directory. In each directory, a site may define an 'expansive.es'  file
+       that  provides  additional meta data for that directory level. The meta
+       data from upper directories is passed down  to  lower  directories.  In
+       this  manner  upper levels can define the parameters for subdirectories
+       in the site. Meta data is never passed back up the tree.
 
 
 META PROPERTIES
@@ -363,8 +376,6 @@ META PROPERTIES
        pages:
 
        basename    Basename portion of the public document filename.
-
-       control     Control collection specified in exp.json.
 
        date        Generation date of the document.
 
@@ -389,9 +400,6 @@ META PROPERTIES
        mode        Index  in the modes property. The selected property collec-
                    tion is copied up to the top level of the meta data.
 
-       modes       Array of property  collections.  Used  to  define  'debug',
-                   'release' configurations.
-
        partial     Name of the partial page being processed.
 
        path        Input filename of the document.
@@ -400,34 +408,38 @@ META PROPERTIES
 
        service     Name of the transformation service being run.
 
-       to          The  destination filename extension after processing by the
+       to          The destination filename extension after processing by  the
                    current transformation.
 
        top         URL for the top level home page of the site.
 
        url         URL for the current page.
 
-META CONTROL
-       Expansive defines a set of control properites in the meta.control:
+
+EXPANSIVE CONTROL
+       Expansive  defines  a  set  of control properites in the meta.expansive
+       property. These are originally sourced from the
 
        copy        Array of patterns to copy without processing. The  patterns
                    may  include  "*"  or "**". If a directory is specifed, all
-                   files under the directory are copied.
+                   files under the directory are copied. The files  are  rela-
+                   tive to the documents directory.
 
        dependencies
-                   Hash of file dependency relationships. The hash key is  the
+                   Hash  of file dependency relationships. The hash key is the
                    document path and the value is a set of files that if modi-
-                   fied, cause the document to be rendered. The  document  and
-                   files  are  relative to the documents directory. The set of
+                   fied,  cause  the document to be rendered. The document and
+                   files are relative to the documents directory. The  set  of
                    files can be a string or an array of files. Each value file
                    may contain "*" or "**".
 
-       directories Directories  collection.  Entries for 'documents', 'files',
+       directories Directories collection. Entries for  'documents',  'files',
                    'public', 'layouts', and 'partials'.
 
-       exclude     Array of patterns to exclude from processing. The  patterns
-                   may  include  "*"  or "**". If a directory is specifed, all
-                   files under the directory are excluded.
+       documents   Array  of patterns to process. The patterns may include "*"
+                   or "**". If a directory is specifed, all  files  under  the
+                   directory are processed. The files are relative to the doc-
+                   uments directory.
 
        listen      Address on which to listen for HTTP requests. May be just a
                    port number.
@@ -437,7 +449,15 @@ META CONTROL
        script      Script  to  evaluate  to  inject  code  into  the Expansive
                    Ejscript global execution context.
 
-       sitemap     Control what files to include in a sitemap.
+       sitemap     Control what files to include in  a  sitemap.  If  defined,
+                   Expansive  will  by  default  include all HTML files in the
+                   sitemap.  To change the file set included in  the  sitemap,
+                   define  a 'files' property with an array of patterns in the
+                   sitemap object.
+
+                   sitemap: {
+                      files: [ '**.html', '!draft.html' ],
+                   }
 
        transforms  Hash of extension mappings to a list of transform  services
                    for  those mappings. Mappings are in the form 'ext -> ext'.
@@ -460,15 +480,15 @@ META CONTROL
 CREATING PLUGINS
        Expansive   plugins    are    created    using    the    Pak    utility
        (https://embedthis.com/pak)   and  published  to  the  Pak  Catalog  at
-       (https://embedthis.com/catalog/). The plugin  contains  a  package.json
-       file that includes an app.expansive property collection. For example:
+       (https://embedthis.com/catalog/). The plugin contains  an  expansive.es
+       file that includes transforms relevant to the plugin.  For example:
 
         {
-           control: {
+           expansive: {
                transforms: {
                    name:       'my-transform',
-                   from:       'ext1',
-                   to:         'ext2',
+                   input:      'ext1',
+                   output:         'ext2',
                    script:     '
                        function transform(contents, meta, service) {
                            return transformed data
@@ -487,10 +507,10 @@ CREATING PLUGINS
        'plugins' property and Expansive chooses the first plugin  that  adver-
        tized that service.
 
-       The  'from'  property specifies the starting filename extension and the
-       'to' property specifies the ending extension.  If  all  extensions  are
-       supported,  set the value to '*'. Both 'from' and 'to' may be arrays if
-       multiple extensions are supported.
+       The  'input'  property  specifies  the input filename extension and the
+       'output' property specifies the output extension.   If  all  extensions
+       are  supported,  set the value to '*'. Both 'input' and 'output' may be
+       arrays if multiple extensions are supported.
 
        The transform script should define a global 'transform'  function  that
        will  be  invoked  for  matching content.  It is invoked with the 'con-
@@ -505,16 +525,19 @@ CREATING PLUGINS
 
 SCRIPTING
        Expansive defines a top level global named "expansive" to access Expan-
-       sive  services. This object provides the following properties and meth-
-       ods:
+       sive services. This object provides the following methods:
 
 
        addItems(collection, items)
-              Add items  to  a  named  collection.  Collections  are  globally
-              defined  and reset at the start of processing for each document.
-              Documents, partials and layouts can inject  items  into  collec-
-              tions  for  sharing to other documents. Items may be a string or
+              Add  items  to  a  named  collection.  Collections  are globally
+              defined and reset at the start of processing for each  document.
+              Documents,  partials  and  layouts can inject items into collec-
+              tions for sharing to other documents. Items may be a  string  or
               an array of strings. Items are uniquely added to the collection.
+
+       getFiles({key: value})
+              To return a list of  matching  documents  that  have  meta  data
+              matching the specified keys and values.
 
        getFileMeta(filename)
               To return the meta data specified in the given file.
@@ -522,16 +545,12 @@ SCRIPTING
        getItems(collection)
               Return the items in a named collection as an Array.
 
-       getFiles({key: value})
-              To  return  a  list  of  matching  documents that have meta data
-              matching the specified keys and values.
-
        removeItems(collection, items)
               Remove the specified items from the named collection.
 
        renderScripts
               Render  all  scripts  added  to  the  'scripts'  collection  via
-              'addItems'.  This  permits  documents,  partials  and layouts to
+              'addItems'. This permits  documents,  partials  and  layouts  to
               require Javascripts and have them emitted uniquely by a partial.
 
        renderStyles
@@ -547,8 +566,8 @@ SCRIPTING
 COMMANDS
        clean  Remove rendered content from the 'public' output directory.
 
-       init   Initialize a directory by creating an  'exp.json'  configuration
-              file.
+       init   Initialize  a directory by creating an 'expansive.es' configura-
+              tion file.
 
        install
               Install a plugin from the Pak catalog.
@@ -557,24 +576,24 @@ COMMANDS
               'partials' and 'files' into the 'public' output directory.
 
        uninstall
-              Uninstall a plugin from the exp.json  plugin  list.  The  plugin
+              Uninstall a plugin from the expansive.es plugin list. The plugin
               remains in the local Pak cache.
 
        upgrade
               Upgrade a plugin version in the local Pak cache.
 
-       watch  Watch  for  changes to 'documents', 'layouts' and 'partials' and
-              render the modified files. Changes to  'layouts'  or  'partials'
+       watch  Watch for changes to 'documents', 'layouts' and  'partials'  and
+              render  the  modified  files. Changes to 'layouts' or 'partials'
               will cause the entire site to be rendered.
 
-       <CR>   Running  exp  without  any arguments will cause run the embedded
-              web server to serve the site. By default Expansive  will  listen
-              on  port 4000. This can be modified via the 'listen' property in
+       <CR>   Running exp without any arguments will cause  run  the  embedded
+              web  server  to serve the site. By default Expansive will listen
+              on port 4000. This can be modified via the 'listen' property  in
               the meta collection.
 
        patterns ...
-              Providing a list of patterns to filter the set of  documents  to
-              render.   Expansive  will  render  only the documents that begin
+              Providing  a  list of patterns to filter the set of documents to
+              render.  Expansive will render only  the  documents  that  begin
               with the given patterns.
 
 
@@ -590,17 +609,17 @@ OPTIONS
 
 
        --listen IP:PORT URI
-                 Change  the port on which Expansive will listen. Can omit the
+                 Change the port on which Expansive will listen. Can omit  the
                  IP portion and only specify a port.
 
 
        --log filename:level
-                 Emit trace to the specified file. The level  is  a  verbosity
+                 Emit  trace  to  the specified file. The level is a verbosity
                  level from 0-5 with 5 being the most verbose.
 
 
-       --noclean Do  not  clean  the  'public'  directory before rendering. By
-                 default Expansive will remove all the content under  'public'
+       --noclean Do not clean the  'public'  directory  before  rendering.  By
+                 default  Expansive will remove all the content under 'public'
                  first.
 
 
@@ -615,7 +634,7 @@ OPTIONS
 
 
        --trace filename:level
-                 Trace HTTP requests to the specified file.  The  level  is  a
+                 Trace  HTTP  requests  to  the specified file. The level is a
                  verbosity level from 0-5 with 5 being the most verbose.  HTTP
                  requests and HTTP headers will be traced at levels 2-4.
 
@@ -628,8 +647,8 @@ OPTIONS
 
 
        --DIGIT   Emit log and HTTP trace to stderr at the specified level. The
-                 DIGIT  must  be  0  to 5 with 5 being the most verbose.  This
-                 option  is  the   same   as   "--log   stderr:DIGIT   --trace
+                 DIGIT must be 0 to 5 with 5 being  the  most  verbose.   This
+                 option   is   the   same   as   "--log  stderr:DIGIT  --trace
                  stderr:DIGIT"
 
 
@@ -638,7 +657,7 @@ REPORTING BUGS
        Report bugs to dev@embedthis.com.
 
 COPYRIGHT
-       Copyright  (C)  2004-2014  Embedthis  Software.  Bit and Ejscript are a
+       Copyright (C) 2004-2014 Embedthis Software.  Bit  and  Ejscript  are  a
        trademarks of Embedthis Software.
 
 SEE ALSO

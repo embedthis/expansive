@@ -34,9 +34,8 @@ Expansive.load({
             value file may contain '*' or '**'.
     
             Useful to notice when changes occur in included Less files. For example:
-                dependencies: { 'css/all.css.less': 'css/*.inc.less' },
          */
-        dependencies: {},
+        dependencies: { 'css/all.css.less': 'css/*.inc.less' },
 
         /*
             Directory mappings. These are the default directory settings.

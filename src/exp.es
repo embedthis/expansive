@@ -188,6 +188,7 @@ public class Expansive {
         blend(control, config.expansive)
         blend(services, config.services)
         let meta = global.meta
+        meta.expansive = control
         blend(meta, config.meta)
         let mode = config[config.mode]
         if (mode) {
@@ -520,6 +521,9 @@ public class Expansive {
             if (renderAll || checkModified(file, meta)) {
                 trace('Copy', file)
                 cp(file.join('**'), directories.public.join(trimmed), {dir: true, relative: file})
+                
+                // file.operate('**', directories.public.join(trimmed), {operation: 'copy', dir: true, relative: file})
+
 
             } else {
                 for each (path in file.files('**')) {
@@ -1191,12 +1195,6 @@ public class Expansive {
         collections[collection] -= items
     }
 
-    public function renderStyles() {
-        for each (script in collections.styles) {
-            write('<link href="' + meta.top + '/' + sheet + '" rel="stylesheet" type="text/css" />')
-        }
-    }
-
     public function renderScripts() {
         for each (script in collections.scripts) {
             write('<script src="' + meta.top + script + '"></script>\n    ')
@@ -1207,6 +1205,12 @@ public class Expansive {
                 write(script)
             }
             write('\n    </script>')
+        }
+    }
+    
+    public function renderStyles() {
+        for each (script in collections.styles) {
+            write('<link href="' + meta.top + '/' + sheet + '" rel="stylesheet" type="text/css" />')
         }
     }
 }

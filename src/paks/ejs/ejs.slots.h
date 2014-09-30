@@ -2048,7 +2048,7 @@
 #define ES_Path_toJSON                                                 68
 #define ES_Path_toLowerCase                                            69
 #define ES_Path_toString                                               70
-#define ES_Path_tree                                                   71
+#define ES_Path_operate                                                71
 #define ES_Path_trimComponents                                         72
 #define ES_Path_trimEnd                                                73
 #define ES_Path_trimExt                                                74
@@ -2621,7 +2621,7 @@
 #define ES_XMLList_NUM_INSTANCE_PROP                                   20
 #define ES_XMLList_NUM_INHERITED_PROP                                  0
 
-#define _ES_CHECKSUM_ejs   1541240
+#define _ES_CHECKSUM_ejs   1545255
 
 #endif
 

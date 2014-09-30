@@ -41562,11 +41562,11 @@ PUBLIC void ejsConfigureObjectType(Ejs *ejs)
 
 /************************************ Forwards ********************************/
 
-static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *fp, EjsObj *instructions);
+static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsPath *fp, EjsObj *instructions, EjsArray *results);
 static cchar *getPathString(Ejs *ejs, EjsObj *vp);
 static void getUserGroup(Ejs *ejs, EjsObj *attributes, int *uid, int *gid);
 static EjsArray *getFiles(Ejs *ejs, EjsArray *results, EjsPath *thisPath, cchar *base, cchar *path, cchar *pattern, 
-    MprList *negate, EjsRegExp *exclude, EjsRegExp *include, EjsFunction *filter, EjsObj *options, int flags);
+    MprList *negate, EjsRegExp *exclude, EjsRegExp *include, EjsObj *options, int flags);
 
 /************************************ Helpers *********************************/
 
@@ -42060,7 +42060,7 @@ PUBLIC EjsArray *ejsGetPathFiles(Ejs *ejs, EjsPath *fp, int argc, EjsAny **argv)
     if (argc == 0) {
         instructions = ejsCreateEmptyPot(ejs);
         ejsSetPropertyByName(ejs, instructions, EN("files"), ejsCreateStringFromAsc(ejs, "*"));
-        getFilesWithInstructions(ejs, results, fp, instructions);
+        getFilesWithInstructions(ejs, fp, instructions, results);
     } else if (ejsIs(ejs, argv[0], Array)) {
         list = argv[0];
         allPots = 1;
@@ -42074,7 +42074,7 @@ PUBLIC EjsArray *ejsGetPathFiles(Ejs *ejs, EjsPath *fp, int argc, EjsAny **argv)
         if (allPots) {
             for (i = 0; i < list->length; i++) {
                 item = ejsGetItem(ejs, list, i);
-                getFilesWithInstructions(ejs, results, fp, item);
+                getFilesWithInstructions(ejs, fp, item, results);
             }
         } else {
             instructions = ejsCreateEmptyPot(ejs);
@@ -42082,19 +42082,43 @@ PUBLIC EjsArray *ejsGetPathFiles(Ejs *ejs, EjsPath *fp, int argc, EjsAny **argv)
             if (argc >= 2) {
                 ejsSetPropertyByName(ejs, instructions, EN("options"), argv[1]);
             }
-            getFilesWithInstructions(ejs, results, fp, instructions);
+            getFilesWithInstructions(ejs, fp, instructions, results);
         }
     } else if (ejsIsPot(ejs, argv[0])) {
-        getFilesWithInstructions(ejs, results, fp, argv[0]);
+        getFilesWithInstructions(ejs, fp, argv[0], results);
     } else {
         instructions = ejsCreateEmptyPot(ejs);
         ejsSetPropertyByName(ejs, instructions, EN("files"), argv[0]);
         if (argc >= 2) {
             ejsSetPropertyByName(ejs, instructions, EN("options"), argv[1]);
         }
-        getFilesWithInstructions(ejs, results, fp, instructions);
+        getFilesWithInstructions(ejs, fp, instructions, results);
     }
     return results;
+}
+
+
+/*
+    Expand filename tokens of the form '${token}' using an object of key/values or a callback function of the form:
+
+    function expand(filename: Path, options): Path
+ */
+static EjsString *expandPath(Ejs *ejs, EjsPath *thisPath, EjsString *path, EjsAny *expand, EjsAny *options)
+{
+    EjsAny  *argv[2];
+    int     paused;
+
+    if (ejsIs(ejs, expand, Function)) {
+        argv[0] = path;
+        argv[1] = options;
+        paused = ejsBlockGC(ejs);
+        path = ejsRunFunction(ejs, expand, thisPath, 2, argv);
+        path = ejsToString(ejs, path);
+        ejsUnblockGC(ejs, paused);
+    } else {
+        path = ejsExpandString(ejs, path, expand);
+    }
+    return path;
 }
 
 
@@ -42103,7 +42127,7 @@ PUBLIC EjsArray *ejsGetPathFiles(Ejs *ejs, EjsPath *fp, int argc, EjsAny **argv)
  */
 #define FILES_DESCEND           MPR_PATH_DESCEND
 #define FILES_DEPTH_FIRST       MPR_PATH_DEPTH_FIRST
-#define FILES_HIDDEN            MPR_PATH_INC_HIDDEN
+#define FILES_HIDDEN            MPR_PATH_INC_HIDDEN 
 #define FILES_NODIRS            MPR_PATH_NODIRS
 #define FILES_RELATIVE          MPR_PATH_RELATIVE
 #define FILES_NOMATCH_EXC       0x10000                 /* Throw an exception if no matching files */
@@ -42111,7 +42135,7 @@ PUBLIC EjsArray *ejsGetPathFiles(Ejs *ejs, EjsPath *fp, int argc, EjsAny **argv)
 #define FILES_NONEG             0x40000
 #define FILES_CONTENTS          0x80000
 
-static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *fp, EjsObj *instructions)
+static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsPath *fp, EjsObj *instructions, EjsArray *results)
 {
     MprFileSystem   *fs;
     EjsAny          *vp, *fill;
@@ -42121,7 +42145,7 @@ static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *
     EjsString       *pattern;
     EjsFunction     *filter;
     MprList         *negate;
-    cchar           *path, *base, *ex;
+    cchar           *path, *base;
     char            *start, *special, *pat, *bp;
     int             flags, i, lastc;
 
@@ -42149,44 +42173,9 @@ static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *
             flags |= FILES_HIDDEN;
         }
         exclude = ejsGetPropertyByName(ejs, options, EN("exclude"));
-        if (exclude) {
-            if (ejsIs(ejs, exclude, String)) {
-                ex = ejsToMulti(ejs, exclude);
-                if (smatch(ex, "directories")) {
-                    exclude = ejsParseRegExp(ejs, ejsCreateStringFromAsc(ejs, "/\\/$/"));
-                }
-            } 
-            if (exclude && !ejsIs(ejs, exclude, RegExp)) {
-                if (ejsIsDefined(ejs, exclude)) {
-                    ejsThrowArgError(ejs, "Exclude option must be a regular expression");
-                    return 0;
-                }
-                exclude = 0;
-            }
-        }
         expand = ejsGetPropertyByName(ejs, options, EN("expand"));
-        if ((filter = ejsGetPropertyByName(ejs, options, EN("filter"))) != 0) {
-            if (!ejsIs(ejs, filter, Function)) {
-                ejsThrowArgError(ejs, "Filter option must be a function");
-                return 0;
-            }
-        }
         include = ejsGetPropertyByName(ejs, options, EN("include"));
-        if (include) {
-            if (ejsIs(ejs, include, String)) {
-                ex = ejsToMulti(ejs, include);
-                if (smatch(ex, "directories")) {
-                    include = ejsParseRegExp(ejs, ejsCreateStringFromAsc(ejs, "/\\/$/"));
-                }
-            }
-            if (include && !ejsIs(ejs, include, RegExp)) {
-            if (ejsIsDefined(ejs, include)) {
-                    ejsThrowArgError(ejs, "Include option must be a regular expression");
-                    return 0;
-                }
-                include = 0;
-            }
-        }
+
         if ((vp = ejsGetPropertyByName(ejs, options, EN("missing"))) != 0) {
             if (vp == ESV(undefined)) {
                 flags |= FILES_NOMATCH_EXC;
@@ -42209,25 +42198,21 @@ static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *
     negate = 0;
     for (i = 0; i < patterns->length; i++) {
         pattern = ejsToString(ejs, ejsGetItem(ejs, patterns, i));
-        if (expand) {
-            /* Allow two levels of expansion */
-            //  OPT
-            pattern = ejsExpandString(ejs, pattern, expand);
-            pattern = ejsExpandString(ejs, pattern, expand);
-        }
-        pat = ejsToMulti(ejs, pattern);
-        if (*pat == '!' && !(flags & FILES_NONEG)) {
+        if (pattern->value[0] == '!' && !(flags & FILES_NONEG)) {
+            if (expand) {
+                pattern = expandPath(ejs, fp, pattern, expand, options);
+            }
             if (!negate) {
                 negate = mprCreateList(0, 0);
             }
+            pat = ejsToMulti(ejs, pattern);
             mprAddItem(negate, &pat[1]);
         }
     }
     for (i = 0; i < patterns->length; i++) {
         pattern = ejsToString(ejs, ejsGetItem(ejs, patterns, i));
         if (expand) {
-            pattern = ejsExpandString(ejs, pattern, expand);
-            pattern = ejsExpandString(ejs, pattern, expand);
+            pattern = expandPath(ejs, fp, pattern, expand, options);
         }
         pat = ejsToMulti(ejs, pattern);
         if (flags & FILES_CONTENTS && *pat) {
@@ -42261,7 +42246,7 @@ static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *
                 pat = bp;
             }
         }
-        if (!getFiles(ejs, results, fp, base, path, pat, negate, exclude, include, filter, options, flags)) {
+        if (!getFiles(ejs, results, fp, base, path, pat, negate, exclude, include, options, flags)) {
             return 0;
         }
     }
@@ -42277,6 +42262,46 @@ static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *
 
 
 /*
+    Test if a path matches. Used by Path.files() for the include|exclude options
+    The 'path' argument has "/" appended if it is a directory.
+ */
+static bool matchPath(Ejs *ejs, EjsPath *thisPath, EjsAny *matcher, cchar *path, EjsAny *options)
+{
+    EjsRegExp   *re;
+    EjsAny      *argv[2];
+    cchar       *ex;
+    int         match, paused;
+
+    match = 1;
+
+    if (ejsIs(ejs, matcher, Function)) {
+        argv[0] = ejsCreateStringFromAsc(ejs, path);
+        argv[1] = options;
+        paused = ejsBlockGC(ejs);
+        if (ejsRunFunction(ejs, matcher, thisPath, 2, argv) != ESV(true)) {
+            match = 0;
+        }
+        ejsUnblockGC(ejs, paused);
+    } else {
+        if (!ejsIs(ejs, matcher, RegExp)) {
+            ex = ejsToMulti(ejs, matcher);
+            if (smatch(ex, "directories")) {
+                matcher = ejsParseRegExp(ejs, ejsCreateStringFromAsc(ejs, "/\\/$/"));
+            } else {
+                matcher = ejsParseRegExp(ejs, ejsToString(ejs, matcher));
+            }
+        }
+        re = matcher;
+        assert(re->compiled);
+        if (pcre_exec(re->compiled, NULL, path, (int) slen(path), 0, 0, NULL, 0) < 0) {
+            match = 0;
+        }
+    }
+    return match;
+}
+
+
+/*
     Get the files matching a pattern. This recurses down the directory tree.
 
     base        Base directory for the glob. Resultant files have this prepended unless relative.
@@ -42284,12 +42309,13 @@ static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsArray *results, EjsPath *
     pattern     Glob pattern.
  */
 static EjsArray *getFiles(Ejs *ejs, EjsArray *results, EjsPath *thisPath, cchar *base, cchar *dir, cchar *pattern, 
-    MprList *negate, EjsRegExp *exclude, EjsRegExp *include, EjsFunction *filter, EjsObj *options, int flags)
+    MprList *negate, EjsRegExp *exclude, EjsRegExp *include, EjsObj *options, int flags)
 {
     MprFileSystem   *fs;
     MprDirEntry     *dp;
     MprList         *list;
     EjsAny          *argv[2];
+    EjsRegExp       *re;
     cchar           *filename, *fullname, *name, *nextPartPattern, *matchFile, *npat;
     int             add, next, paused, i;
 
@@ -42313,17 +42339,17 @@ static EjsArray *getFiles(Ejs *ejs, EjsArray *results, EjsPath *thisPath, cchar 
             add = 0;
         }
         filename = mprJoinPath(base, dp->name);
-        fullname = mprJoinPath(dir, dp->name);
 
-        if (add && (exclude || filter || include || negate)) {
-            matchFile = (dp->isDir && !dp->isLink) ? sjoin(filename, "/", NULL) : filename;
-            if (include && pcre_exec(include->compiled, NULL, matchFile, (int) slen(matchFile), 0, 0, NULL, 0) < 0) {
-                add = 0;
+        if (add && (exclude || include || negate)) {
+            if (include) {
+                matchFile = (dp->isDir && !dp->isLink) ? sjoin(filename, "/", NULL) : filename;
+                add = matchPath(ejs, thisPath, include, matchFile, options);
             }
-            if (exclude && pcre_exec(exclude->compiled, NULL, matchFile, (int) slen(matchFile), 0, 0, NULL, 0) >= 0) {
-                add = 0;
+            if (add && exclude) {
+                matchFile = (dp->isDir && !dp->isLink) ? sjoin(filename, "/", NULL) : filename;
+                add = !matchPath(ejs, thisPath, exclude, matchFile, options);
             }
-            if (negate) {
+            if (add && negate) {
                 for (ITERATE_ITEMS(negate, npat, i)) {
                     if (mprMatchPath(filename, npat)) {
                         add = 0;
@@ -42331,24 +42357,14 @@ static EjsArray *getFiles(Ejs *ejs, EjsArray *results, EjsPath *thisPath, cchar 
                     }
                 }
             }
-            if (filter) {
-                argv[0] = ejsCreateStringFromAsc(ejs, mprJoinPath(dir, dp->name));
-                argv[1] = options;
-                paused = ejsBlockGC(ejs);
-                if (ejsRunFunction(ejs, filter, thisPath, 2, argv) != ESV(true)) {
-                    add = 0;
-                }
-                ejsUnblockGC(ejs, paused);
-            }
         }
+        fullname = mprJoinPath(dir, dp->name);
         name = (flags & MPR_PATH_RELATIVE) ? filename : fullname;
         if (!(flags & FILES_DEPTH_FIRST) && add) {
-            /* Exclude mid-pattern directories and terminal directories if only "files" */
             ejsSetProperty(ejs, results, -1, ejsCreatePathFromAsc(ejs, name));
         }
         if (dp->isDir && nextPartPattern) {
-            getFiles(ejs, results, thisPath, filename, fullname, nextPartPattern, negate, exclude, include, filter, 
-                options, flags);
+            getFiles(ejs, results, thisPath, filename, fullname, nextPartPattern, negate, exclude, include, options, flags);
         }
         if ((flags & FILES_DEPTH_FIRST) && add) {
             ejsSetProperty(ejs, results, -1, ejsCreatePathFromAsc(ejs, name));
@@ -45953,6 +45969,9 @@ static EjsString *expandString(Ejs *ejs, EjsString *sp, int argc, EjsObj **argv)
     EjsString   *join;
     char        *src, *cp, *tok, *fill;
 
+    if (!ejsIs(ejs, sp, String)) {
+        sp = ejsToString(ejs, sp);
+    }
     fill = 0;
     join = ejsCreateStringFromAsc(ejs, " ");
     if (argc < 1) {
@@ -63244,9 +63263,11 @@ EjsAny *ejsRunFunction(Ejs *ejs, EjsFunction *fun, EjsAny *thisObj, int argc, vo
     assert(ejs);
     assert(fun);
     assert(ejsIsFunction(ejs, fun));
+#if UNUSED
     if (ejs->exception) {
         mprDebug("ejs vm", 0, "STOP");
     }
+#endif
     assert(ejs->exception == 0);
 
     if (ejs->exception) {

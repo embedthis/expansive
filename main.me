@@ -86,8 +86,8 @@ Me.load({
             build: `
                 run('${LBIN}/ejsc --debug --out ${BIN}/exp.mod --optimize 9 ${FILES}')
             `,
-            message: [ 'Compile', 'exp.mod'],
-            depends: [ 'ejsc' ],
+            message: 'Compile: exp.mod',
+            depends: [ 'ejs.mod' ],
         },
         'exp': {
             type: 'exe',

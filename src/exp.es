@@ -1047,16 +1047,14 @@ public class Expansive {
             }
         }
         if (updated) {
-            let path = CONFIG
-            let plist = path.readJSON().control.plugins || []
+            let plist = control.plugins || []
             savePlugins((plist + plugins).unique())
         }
     }
 
     function uninstall(plugins, meta) {
         plugins = plugins.map(function(e) e.trimStart('exp-'))
-        let path = CONFIG
-        let plist = path.readJSON().control.plugins || []
+        let plist = control.plugins || []
         for each (pak in plugins) {
             if (plugins.contains(pak)) {
                 trace('Uninstalled', 'Plugin ' + pak)

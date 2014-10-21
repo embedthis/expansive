@@ -192,7 +192,7 @@
     #define ME_ETC_PREFIX "${prefixes.data}/etc/exp"
 #endif
 #ifndef ME_WEB_PREFIX
-    #define ME_WEB_PREFIX "${prefixes.state}/www/exp-default"
+    #define ME_WEB_PREFIX "${prefixes.state}/www/exp"
 #endif
 #ifndef ME_LOG_PREFIX
     #define ME_LOG_PREFIX "${prefixes.state}/log/exp"

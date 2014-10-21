@@ -158,6 +158,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exp.mod", "exp-windows-defa
 		{75A3C39B-7CD5-473D-8AA0-E3C369AB6B33} = {75A3C39B-7CD5-473D-8AA0-E3C369AB6B33}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
+		{58ABBB3C-AF93-4C4C-B6FA-A27E1603A1C9} = {58ABBB3C-AF93-4C4C-B6FA-A27E1603A1C9}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
 		{5064444E-641A-4728-8008-9B738E56D9DA} = {5064444E-641A-4728-8008-9B738E56D9DA}
 	EndProjectSection
 EndProject
@@ -182,6 +185,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exp", "exp-windows-default\
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{75A3C39B-7CD5-473D-8AA0-E3C369AB6B33} = {75A3C39B-7CD5-473D-8AA0-E3C369AB6B33}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{58ABBB3C-AF93-4C4C-B6FA-A27E1603A1C9} = {58ABBB3C-AF93-4C4C-B6FA-A27E1603A1C9}
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{5064444E-641A-4728-8008-9B738E56D9DA} = {5064444E-641A-4728-8008-9B738E56D9DA}

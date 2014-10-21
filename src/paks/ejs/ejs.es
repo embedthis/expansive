@@ -3,6 +3,11 @@
  */
 
 
+
+
+/********* Start of file src/core/App.es ************/
+
+
 /*
     App.es -- Application configuration and control.
 
@@ -489,6 +494,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Args.es ************/
+
+
 /*
     Args.es - Command line argument parsing
     Copyright (c) All Rights Reserved. See details at the end of the file.
@@ -743,6 +753,11 @@ for each (file in args.rest) {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Array.es ************/
+
 
 /**
     Array.es - Array class
@@ -1094,6 +1109,7 @@ module ejs {
             splice(start, end - start + 1)
         }
 
+        //  MOB - should return array to permit chaining
         /**
             Remove specified elements from the array. The elements are removed and not just set 
             to undefined as the delete operator will do. Indicies are renumbered. 
@@ -1287,6 +1303,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/BinaryStream.es ************/
+
 
 /*
     BinaryStream.es -- BinaryStream class. This class is a filter or endpoint stream to encode and decode binary types.
@@ -1610,6 +1631,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Block.es ************/
+
+
 /*
     Block.es -- Block scope class used internally by the VM.
 
@@ -1648,6 +1674,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Boolean.es ************/
+
 
 /*
     Boolean.es -- Boolean class
@@ -1692,6 +1723,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/ByteArray.es ************/
+
 
 /*
     ByteArray.es - ByteArray class
@@ -2145,6 +2181,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Cache.es ************/
+
+
 /*
     Cache.es -- Cache class providing key/value storage.
 
@@ -2364,6 +2405,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Cmd.es ************/
+
 
 /*
     Cmd.es - Cmd class
@@ -2834,6 +2880,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Compat.es ************/
+
+
 /*
     Compat.es -- Compatibility with other JS engines
 
@@ -2937,6 +2988,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Config.es ************/
+
+
 /*
     Config.es - Configuration settings from ./configure
  
@@ -3038,6 +3094,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Date.es ************/
+
 
 /*
     Date.es -- Date class
@@ -3703,6 +3764,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Debug.es ************/
+
+
 /*
     Debug.es -- Debug class
 
@@ -3766,6 +3832,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Emitter.es ************/
+
 
 /*
     Emitter.es -- Event emitter.
@@ -3986,6 +4057,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Error.es ************/
+
 
 /*
     Error.es -- Error exception classes
@@ -4312,6 +4388,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/File.es ************/
+
+
 /*
     File.es -- File I/O class. Do file I/O and manage files.
 
@@ -4559,6 +4640,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/FileSystem.es ************/
+
+
 /*
     FileSystem.es -- FileSystem class
 
@@ -4674,6 +4760,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Frame.es ************/
+
+
 /*
     Frame.es -- Frame class
  *
@@ -4710,6 +4801,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Function.es ************/
+
 
 /*
     Function.es -- Function class
@@ -4815,6 +4911,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/GC.es ************/
+
+
 /*
     GC.es -- Garbage collector class
  *
@@ -4884,6 +4985,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Global.es ************/
+
 
 /*
     Global.es -- Global variables, namespaces and functions.
@@ -5231,6 +5337,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Http.es ************/
+
 
 /**
     Http.es -- HTTP client side communications
@@ -6159,6 +6270,11 @@ FUTURE & KEEP
     @end
  */
 
+
+
+/********* Start of file src/core/Inflector.es ************/
+
+
 /**
     Inflector.es -- Mangage word transformations
  */
@@ -6393,6 +6509,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Iterator.es ************/
+
+
 /**
     Iterator.es -- Iteration support via the Iterable interface and Iterator class. 
 
@@ -6467,6 +6588,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/JSON.es ************/
+
 
 /*
     JSON.es -- JSON class
@@ -6584,6 +6710,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Loader.es ************/
+
 
 /**
     Loader.es - CommonJS module loader with require() support.
@@ -6802,6 +6933,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/LocalCache.es ************/
+
+
 /*
     LocalCache.es -- Local in-memory key/value cache class 
  */
@@ -6940,6 +7076,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Locale.es ************/
+
+
 /*
     Locale.es - Locale specific defaults and control
 
@@ -7002,6 +7143,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Logger.es ************/
+
 
 /*
     Logger.es - Log file control class
@@ -7348,6 +7494,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Math.es ************/
+
+
 /*
     Math.es -- Math class 
 
@@ -7565,6 +7716,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Memory.es ************/
+
+
 /*
     Memory.es -- Memory statistics
  *
@@ -7672,6 +7828,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/MprLog.es ************/
+
 
 /*
     MprLog.es - Application Log File class
@@ -7795,6 +7956,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Name.es ************/
+
+
 /*
     Name.es -- Name class
 
@@ -7838,6 +8004,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Namespace.es ************/
+
+
 /*
     Namespace.es -- Namespace class
 
@@ -7875,6 +8046,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Null.es ************/
+
 
 /*
     Null.es -- Null class used for the null value.
@@ -7926,6 +8102,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Number.es ************/
+
 
 /*
     Number.es - Number class
@@ -8169,6 +8350,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Object.es ************/
+
 
 /*
     Object.es -- Object class. Base class for all types.
@@ -8483,6 +8669,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Path.es ************/
+
 
 /*
     Path.es --  Path class. Path's represent files in a file system. The file may or may not exist.  
@@ -9357,7 +9548,7 @@ module ejs {
             if (expand) {
                 if (!(expand is Function)) {
                     let obj = expand
-                    expand = function(str, obj) str.expand(obj, {fill: '${}'})
+                    expand = function(str, obj) str.expand(obj, {missing: true})
                 }
             } else {
                 expand = function(str, obj) str
@@ -9576,6 +9767,7 @@ module ejs {
                     for each (item in commands) {
                         let src = this.join(item.from)
                         let dest = item.to
+                        let att = dest.attributes
                         if (options.patch) {
                             dest.write(expand(dest.readString(), item))
                         }
@@ -9599,6 +9791,9 @@ module ejs {
                             }
                             dest.relativeTo(symlink.dirname).link(symlink)
                             item.to = symlink
+                        }
+                        if (att && att.permissions) {
+                            dest.setAttributes({permissions: att.permissions})
                         }
                         if (options.postPerform) {
                             options.postPerform.call(this, src, dest, options)
@@ -9703,6 +9898,7 @@ module ejs {
         function makeTemp(): Path
             temp()
 
+        //  MOB - much better if this had no arg and was a getter.
         /**
             Return a compact representation of the path
             This returns a relative path if the path is under the given home directory. Otherwise it returns an 
@@ -9737,6 +9933,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Promise.es ************/
+
 
 /*
     Promise.es -- Promise keeper for deferred execution of async APIs.
@@ -9984,6 +10185,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/RegExp.es ************/
+
+
 /*
     Regex.es -- Regular expression class.
 
@@ -10173,6 +10379,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Socket.es ************/
+
+
 /*
     Socket.es -- Socket I/O class
     Copyright (c) All Rights Reserved. See details at the end of the file.
@@ -10311,6 +10522,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Stream.es ************/
+
 
 /*
     Stream.es -- Stream interface.
@@ -10457,6 +10673,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/String.es ************/
+
+
 /*
     String.es -- String class
  *
@@ -10544,9 +10765,10 @@ module ejs {
             To preserve an ${token} unmodified, preceed the token with an extra '$'. For example: $${token}.
             @param obj containing tokens to expand
             @param options Options hash
-            @option fill Set to a string to use for missing properties. Set to undefined or omit the fill option to 
-                throw an exception for missing properties. Set fill to '${}' to preserve undefined tokens as-is. 
-                This permits multi-pass expansions. Default is to throw an exception (undefined).
+            @option fill Set to a string to use for missing properties. Set to undefined, null or omit the fill option to 
+                throw an exception for missing properties. Set fill to true to preserve undefined tokens as-is. 
+                This permits multi-pass expansions. Set to false to remove the token. Otherwise set to any string
+                to replace the token with the string value. Default is to throw an exception (undefined).
             @option join Character to use to join array elements. Defaults to space.
             @return Expanded string
          */ 
@@ -11018,6 +11240,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/System.es ************/
+
+
 /*
     System.es - System class
 
@@ -11080,6 +11307,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/TextStream.es ************/
+
 
 /*
     TextStream.es -- TextStream class
@@ -11381,6 +11613,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Timer.es ************/
+
+
 /*
     Timer.es -- Timer Services
 
@@ -11538,6 +11775,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Type.es ************/
+
+
 /*
     Type.es -- Type class. Base class for all type objects.
 
@@ -11580,6 +11822,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Uri.es ************/
+
 
 /*
     Uri.es -- Uri parsing and management class
@@ -12070,6 +12317,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/Void.es ************/
+
+
 /*
     Void.es -- Void class used for undefined value.
 
@@ -12122,6 +12374,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/WebSocket.es ************/
+
 
 /**
     WebSocket.es -- WebSockets class
@@ -12353,6 +12610,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/Worker.es ************/
+
 
 /*
     Worker -- Worker classes
@@ -12594,6 +12856,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/XML.es ************/
+
 
 /*
     XML.es - XML class
@@ -13009,6 +13276,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/core/XMLHttp.es ************/
+
+
 /**
     XMLHttp.es -- XMLHttp class
 
@@ -13227,6 +13499,11 @@ module ejs {
 
     @end
  */
+
+
+
+/********* Start of file src/core/XMLList.es ************/
+
 
 /*
     XMLList.es - XMLList class
@@ -13625,6 +13902,11 @@ module ejs {
     @end
  */
 
+
+
+/********* Start of file src/ejs.db/Database.es ************/
+
+
 /**
     Database.es -- Database class
 
@@ -13993,6 +14275,11 @@ module ejs.db {
     @end
  */
 
+
+
+/********* Start of file src/ejs.db/DatabaseConnector.es ************/
+
+
 /*
     DatabaseConnector.es -- Database Connector interface
 
@@ -14108,6 +14395,11 @@ module ejs.db {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.db.mapper/Record.es ************/
+
 
 /**
     Record.es -- Record class
@@ -15399,6 +15691,11 @@ module ejs.db.mapper {
     @end
  */
 
+
+
+/********* Start of file src/ejs.db.sqlite/Sqlite.es ************/
+
+
 /**
     Sqlite.es -- SQLite Database class
 
@@ -15729,6 +16026,11 @@ module ejs.db.sqlite {
     @end
  */
 
+
+
+/********* Start of file src/ejs.mail/Mail.es ************/
+
+
 /*
    Mail.es -- Simple mail using sendmail
  */
@@ -15819,6 +16121,11 @@ module ejs.mail {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.tar/Tar.es ************/
+
 
 /**
     Tar.es -- Tar archive management
@@ -16246,6 +16553,11 @@ module ejs.tar {
     @end
  */
 
+
+
+/********* Start of file src/ejs.template/TemplateParser.es ************/
+
+
 /*
     TemplateParser.es -- Ejscript web templating parser. 
  */
@@ -16584,6 +16896,11 @@ module ejs.template  {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.unix/Unix.es ************/
+
 
 /*
     Unix.es -- Unix compatibility functions
@@ -16947,6 +17264,11 @@ module ejs.unix {
     @end
  */
 
+
+
+/********* Start of file src/ejs.web/Cascade.es ************/
+
+
 /*
     Cascade slices and return the response from the first non-404 slice
     Usage:
@@ -16997,6 +17319,11 @@ module ejs.web {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.web/CommonLog.es ************/
+
 
 /*
     CommonLog.es -- Common Log Format logger.
@@ -17077,6 +17404,11 @@ module ejs.web {
     @end
  */
 
+
+
+/********* Start of file src/ejs.web/ContentType.es ************/
+
+
 /*
     ContentType.es -- Define Content-Type headers
  */
@@ -17135,6 +17467,11 @@ module ejs.web {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.web/Controller.es ************/
+
 
 /*
     Controller.es -- MVC Controller class.
@@ -18088,6 +18425,11 @@ module ejs.web {
     @end
  */
 
+
+
+/********* Start of file src/ejs.web/Dir.es ************/
+
+
 /*
     Dir.es - Directory redirection handler
  */
@@ -18163,6 +18505,11 @@ module ejs.web {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.web/Google.es ************/
+
 
 /**
    GoogleConnector.es -- View connector for the Google Visualization library
@@ -18372,6 +18719,11 @@ module ejs.web {
     @end
  */
 
+
+
+/********* Start of file src/ejs.web/Head.es ************/
+
+
 /**
     Head.es - Respond to HEAD requesets and Return just the headers and omit the body.
     NOTE: This is typically done by good web servers anyway.
@@ -18426,6 +18778,11 @@ module ejs.web {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.web/Html.es ************/
+
 
 /**
    Html.es -- HtmlViewConnector. This provides HTML view support.
@@ -19156,6 +19513,11 @@ module ejs.web {
     @end
  */
 
+
+
+/********* Start of file src/ejs.web/HttpServer.es ************/
+
+
 /*
     HttpServer.es -- Http Server class.
   
@@ -19864,6 +20226,11 @@ server.listen("127.0.0.1:7777")
     @end
  */
 
+
+
+/********* Start of file src/ejs.web/MethodOverride.es ************/
+
+
 /*
     MethodOverride.es - Override the method type based on the Method-Override header
  */
@@ -19913,6 +20280,11 @@ module ejs.web {
     @end
  */
 
+
+
+/********* Start of file src/ejs.web/Middleware.es ************/
+
+
 /*
     Middleware.es - Wrap a web app with defined middleware
  */
@@ -19956,6 +20328,11 @@ module ejs.web {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.web/Mvc.es ************/
+
 
 /**
     Mvc.es -- Model View Controller (MVC) web app management
@@ -20227,6 +20604,11 @@ module ejs.web {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.web/Request.es ************/
+
 
 /**
     Request.es -- Ejscript web request object. The Request object respresents a single HTTP request and provides
@@ -21436,6 +21818,11 @@ TODO - DEBUG
     @end
  */
 
+
+
+/********* Start of file src/ejs.web/Router.es ************/
+
+
 /**
     Router.es - Web Request router. Route incoming client HTTP requests.
  */
@@ -22507,6 +22894,11 @@ module ejs.web {
     @end
  */
 
+
+
+/********* Start of file src/ejs.web/Script.es ************/
+
+
 /*
     Script.es -- Ejscript templated web content handler
  */
@@ -22571,6 +22963,11 @@ module ejs.web {
     @end
  */
 
+
+
+/********* Start of file src/ejs.web/Session.es ************/
+
+
 /**
     Session.es -- Session state management
  */
@@ -22633,6 +23030,11 @@ module ejs.web {
     @end
  */
 
+
+
+/********* Start of file src/ejs.web/ShowExceptions.es ************/
+
+
 /*
     Show exceptions to the client 
  */
@@ -22678,6 +23080,11 @@ module ejs.web {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.web/Static.es ************/
+
 
 /*
     Static.es - Static content handler
@@ -22896,6 +23303,11 @@ module ejs.web {
     @end
  */
 
+
+
+/********* Start of file src/ejs.web/Template.es ************/
+
+
 /*
     Template.es -- Ejscript templated web content handler
  */
@@ -22990,6 +23402,11 @@ module ejs.web {
     @end
  */
 
+
+
+/********* Start of file src/ejs.web/UploadFile.es ************/
+
+
 /**
     uploadedFile.es - Description of an uploaded file. Instances are created and stored in Request.files.
  */
@@ -23054,6 +23471,11 @@ module ejs.web {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.web/UrlMap.es ************/
+
 
 /*
     UrlMap.es - Simple Url Router
@@ -23140,6 +23562,11 @@ module ejs.web {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.web/Utils.es ************/
+
 
 /**
     Utils.es -- Utility routines for the web framework.
@@ -23275,6 +23702,11 @@ module ejs.web {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.web/View.es ************/
+
 
 /**
     View.es -- View class 
@@ -24291,6 +24723,11 @@ TODO -- much more doc here
     @end
  */
 
+
+
+/********* Start of file src/ejs.zip/Zip.es ************/
+
+
 /**
     Zip.es -- Zip class
     @hide
@@ -24356,6 +24793,11 @@ module ejs.tar {
 
     @end
  */
+
+
+
+/********* Start of file src/ejs.zlib/Zlib.es ************/
+
 
 /**
     Zlib.es -- Zlib compression class

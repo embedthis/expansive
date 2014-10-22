@@ -604,7 +604,7 @@ public class Expansive {
             }
             return false
         }
-        if (file.modified.time < lastGen.time) {
+        if (file.modified && file.modified.time < lastGen.time) {
             return false
         }
         vtrace('Modified', file)

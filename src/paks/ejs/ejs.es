@@ -8907,10 +8907,12 @@ module ejs {
                 The file argument is the filename being considered, it include the Path value.
                 The value of "this" is set to the Path value.
 
-            @option missing String Determine what happens if patterns do not match any files.
+            @option missing String Determine what happens if a pattern does not match any files.
                 Set to undefined to report patterns that don't resolve by throwing an exception. 
-                Set to any non-null value to be used in the results when there are no matching files or directories. 
-                Set to the empty string to use the patterns in the results and set to null to do nothing.
+                Set to any non-null value to be used in the results in place of the pattern when there are no matching 
+                    files or directories. 
+                Set to the empty string to use the pattern itself in the results.
+                Set to null to do nothing and omit the pattern.
                 Default is null.
 
             @option noneg Boolean Do not process negated file patterns.

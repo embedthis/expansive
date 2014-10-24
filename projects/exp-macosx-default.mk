@@ -715,8 +715,6 @@ $(BUILD)/bin/expansive.sample: $(DEPS_45)
 #
 
 installBinary: $(DEPS_46)
-	( \
-	cd ../../.paks/me-package/0.8.4; \
 	mkdir -p "$(ME_APP_PREFIX)" ; \
 	rm -f "$(ME_APP_PREFIX)/latest" ; \
 	ln -s "0.4.1" "$(ME_APP_PREFIX)/latest" ; \
@@ -750,8 +748,7 @@ installBinary: $(DEPS_46)
 	cp doc/documents/man/exp.1 $(ME_VAPP_PREFIX)/doc/man/man1/exp.1 ; \
 	mkdir -p "$(ME_MAN_PREFIX)/man1" ; \
 	rm -f "$(ME_MAN_PREFIX)/man1/exp.1" ; \
-	ln -s "$(ME_VAPP_PREFIX)/doc/man/man1/exp.1" "$(ME_MAN_PREFIX)/man1/exp.1" ; \
-	)
+	ln -s "$(ME_VAPP_PREFIX)/doc/man/man1/exp.1" "$(ME_MAN_PREFIX)/man1/exp.1"
 
 
 #
@@ -769,12 +766,9 @@ install: $(DEPS_47)
 DEPS_48 += stop
 
 uninstall: $(DEPS_48)
-	( \
-	cd ../../.paks/me-package/0.8.4; \
 	rm -fr "$(ME_VAPP_PREFIX)" ; \
 	rm -f "$(ME_APP_PREFIX)/latest" ; \
-	rmdir -p "$(ME_APP_PREFIX)" 2>/dev/null ; true ; \
-	)
+	rmdir -p "$(ME_APP_PREFIX)" 2>/dev/null ; true
 
 #
 #   version

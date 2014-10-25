@@ -1092,10 +1092,11 @@ public class Expansive {
         fp.write('<?xml version="1.0" encoding="UTF-8"?>\n' +
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         let list = directories.public.files(sm.files || '**.html', {exclude: 'directories', relative: true})
+        let url = topMeta.url.trimEnd('/')
         for each (file in list) {
             let filename = file.name.trimEnd('.gz') 
             fp.write('    <url>\n' +
-                '        <loc>' + topMeta.url + '/' + filename + '</loc>\n' +
+                '        <loc>' + url + '/' + filename + '</loc>\n' +
                 '        <lastmod>' + directories.public.join(file).modified.format('%F') + '</lastmod>\n' +
                 '        <changefreq>weekly</changefreq>\n' +
                 '        <priority>0.5</priority>\n' +

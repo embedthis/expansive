@@ -525,7 +525,7 @@ LIBS_27 = $(LIBS_27) libzlib.lib
 
 build\$(CONFIG)\bin\ejsc.exe: $(DEPS_27)
 	@echo ..... [Link] build\$(CONFIG)\bin\ejsc.exe
-	"$(LD)" -out:$(BUILD)\bin\ejsc.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\ejsc.obj" $(LIBPATHS_27) $(LIBS_27) $(LIBS_27) $(LIBS)  $(LOG)
+	"$(LD)" -nologo -out:$(BUILD)\bin\ejsc.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\ejsc.obj" $(LIBPATHS_27) $(LIBS_27) $(LIBS_27) $(LIBS)  $(LOG)
 !ENDIF
 
 !IF "$(ME_COM_EJS)" == "1"
@@ -573,7 +573,7 @@ LIBS_30 = $(LIBS_30) libzlib.lib
 
 build\$(CONFIG)\bin\ejs.exe: $(DEPS_30)
 	@echo ..... [Link] build\$(CONFIG)\bin\ejs.exe
-	"$(LD)" -out:$(BUILD)\bin\ejs.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\ejs.obj" $(LIBPATHS_30) $(LIBS_30) $(LIBS_30) $(LIBS)  $(LOG)
+	"$(LD)" -nologo -out:$(BUILD)\bin\ejs.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\ejs.obj" $(LIBPATHS_30) $(LIBS_30) $(LIBS_30) $(LIBS)  $(LOG)
 !ENDIF
 
 #
@@ -648,7 +648,7 @@ LIBS_35 = $(LIBS_35) libzlib.lib
 
 build\$(CONFIG)\bin\exp.exe: $(DEPS_35)
 	@echo ..... [Link] build\$(CONFIG)\bin\exp.exe
-	"$(LD)" -out:$(BUILD)\bin\exp.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\exp.obj" "$(BUILD)\obj\expTemplate.obj" $(LIBPATHS_35) $(LIBS_35) $(LIBS_35) $(LIBS)  $(LOG)
+	"$(LD)" -nologo -out:$(BUILD)\bin\exp.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\exp.obj" "$(BUILD)\obj\expTemplate.obj" $(LIBPATHS_35) $(LIBS_35) $(LIBS_35) $(LIBS)  $(LOG)
 
 #
 #   http-ca-crt
@@ -685,7 +685,7 @@ LIBS_38 = $(LIBS_38) libpcre.lib
 
 build\$(CONFIG)\bin\http.exe: $(DEPS_38)
 	@echo ..... [Link] build\$(CONFIG)\bin\http.exe
-	"$(LD)" -out:$(BUILD)\bin\http.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\http.obj" $(LIBPATHS_38) $(LIBS_38) $(LIBS_38) $(LIBS)  $(LOG)
+	"$(LD)" -nologo -out:$(BUILD)\bin\http.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\http.obj" $(LIBPATHS_38) $(LIBS_38) $(LIBS_38) $(LIBS)  $(LOG)
 !ENDIF
 
 #
@@ -781,7 +781,7 @@ DEPS_46 = $(DEPS_46) build\$(CONFIG)\obj\removeFiles.obj
 
 build\$(CONFIG)\bin\removeFiles.exe: $(DEPS_46)
 	@echo ..... [Link] build\$(CONFIG)\bin\removeFiles.exe
-	"$(LD)" -out:$(BUILD)\bin\removeFiles.exe -entry:WinMainCRTStartup -subsystem:windows "$(BUILD)\obj\removeFiles.obj"   $(LOG)
+	"$(LD)" -nologo -out:$(BUILD)\bin\removeFiles.exe -entry:WinMainCRTStartup -subsystem:windows "$(BUILD)\obj\removeFiles.obj"   $(LOG)
 
 #
 #   sample

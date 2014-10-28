@@ -117,7 +117,6 @@ TARGETS               = $(TARGETS) build\$(CONFIG)\bin\http.exe
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\libest.dll
 !ENDIF
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\libmprssl.dll
-TARGETS               = $(TARGETS) build\$(CONFIG)\bin\removeFiles.exe
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\expansive.sample
 
 !IFNDEF SHOW
@@ -208,10 +207,6 @@ clean:
 	if exist "build\$(CONFIG)\bin\libzlib.lib" del /Q "build\$(CONFIG)\bin\libzlib.lib"
 	if exist "build\$(CONFIG)\bin\libzlib.pdb" del /Q "build\$(CONFIG)\bin\libzlib.pdb"
 	if exist "build\$(CONFIG)\bin\libzlib.exp" del /Q "build\$(CONFIG)\bin\libzlib.exp"
-	if exist "build\$(CONFIG)\bin\removeFiles.exe" del /Q "build\$(CONFIG)\bin\removeFiles.exe"
-	if exist "build\$(CONFIG)\bin\removeFiles.lib" del /Q "build\$(CONFIG)\bin\removeFiles.lib"
-	if exist "build\$(CONFIG)\bin\removeFiles.pdb" del /Q "build\$(CONFIG)\bin\removeFiles.pdb"
-	if exist "build\$(CONFIG)\bin\removeFiles.exp" del /Q "build\$(CONFIG)\bin\removeFiles.exp"
 	if exist "build\$(CONFIG)\bin\expansive.sample" del /Q "build\$(CONFIG)\bin\expansive.sample"
 
 #
@@ -775,20 +770,11 @@ build\$(CONFIG)\obj\removeFiles.obj: \
 	"$(CC)" -c -Fo$(BUILD)\obj\removeFiles.obj -Fd$(BUILD)\obj\removeFiles.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) package\windows\removeFiles.c $(LOG)
 
 #
-#   removeFiles
-#
-DEPS_46 = $(DEPS_46) build\$(CONFIG)\obj\removeFiles.obj
-
-build\$(CONFIG)\bin\removeFiles.exe: $(DEPS_46)
-	@echo ..... [Link] build\$(CONFIG)\bin\removeFiles.exe
-	"$(LD)" -nologo -out:$(BUILD)\bin\removeFiles.exe -entry:WinMainCRTStartup -subsystem:windows "$(BUILD)\obj\removeFiles.obj"   $(LOG)
-
-#
 #   sample
 #
-DEPS_47 = $(DEPS_47) src\expansive.sample
+DEPS_46 = $(DEPS_46) src\expansive.sample
 
-build\$(CONFIG)\bin\expansive.sample: $(DEPS_47)
+build\$(CONFIG)\bin\expansive.sample: $(DEPS_46)
 	@echo ..... [Copy] build\$(CONFIG)\bin\expansive.sample
 	if not exist "build\$(CONFIG)\bin" md "build\$(CONFIG)\bin"
 	copy /Y /B src\expansive.sample+modified build\$(CONFIG)\bin\expansive.sample $(LOG)

@@ -725,7 +725,6 @@ build\$(CONFIG)\bin\libest.dll: $(DEPS_42)
 #
 #   mprSsl.obj
 #
-DEPS_43 = $(DEPS_43) build\$(CONFIG)\inc\me.h
 DEPS_43 = $(DEPS_43) src\paks\mpr\mpr.h
 
 build\$(CONFIG)\obj\mprSsl.obj: \

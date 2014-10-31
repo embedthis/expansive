@@ -708,12 +708,17 @@ $(BUILD)/bin/expansive.sample: $(DEPS_45)
 	mkdir -p "$(BUILD)/bin"
 	cp src/expansive.sample $(BUILD)/bin/expansive.sample
 
+#
+#   stop
+#
+
+stop: $(DEPS_46)
 
 #
 #   installBinary
 #
 
-installBinary: $(DEPS_46)
+installBinary: $(DEPS_47)
 	mkdir -p "$(ME_APP_PREFIX)" ; \
 	rm -f "$(ME_APP_PREFIX)/latest" ; \
 	ln -s "0.4.1" "$(ME_APP_PREFIX)/latest" ; \
@@ -749,22 +754,27 @@ installBinary: $(DEPS_46)
 	rm -f "$(ME_MAN_PREFIX)/man1/exp.1" ; \
 	ln -s "$(ME_VAPP_PREFIX)/doc/man/man1/exp.1" "$(ME_MAN_PREFIX)/man1/exp.1"
 
+#
+#   start
+#
+
+start: $(DEPS_48)
 
 #
 #   install
 #
-DEPS_47 += stop
-DEPS_47 += installBinary
-DEPS_47 += start
+DEPS_49 += stop
+DEPS_49 += installBinary
+DEPS_49 += start
 
-install: $(DEPS_47)
+install: $(DEPS_49)
 
 #
 #   uninstall
 #
-DEPS_48 += stop
+DEPS_50 += stop
 
-uninstall: $(DEPS_48)
+uninstall: $(DEPS_50)
 	rm -fr "$(ME_VAPP_PREFIX)" ; \
 	rm -f "$(ME_APP_PREFIX)/latest" ; \
 	rmdir -p "$(ME_APP_PREFIX)" 2>/dev/null ; true
@@ -773,6 +783,6 @@ uninstall: $(DEPS_48)
 #   version
 #
 
-version: $(DEPS_49)
+version: $(DEPS_51)
 	echo 0.4.1
 

@@ -208,6 +208,7 @@ public class Expansive {
                 fatal('Script error in "' + path + '"\n' + e)
             }
         }
+        directories = control.directories
         for (let [key, value] in directories) {
             directories[key] = Path(value)
         }
@@ -304,7 +305,7 @@ public class Expansive {
         let package = Path('package.json')
         if (package.exists) {
             package = package.readJSON()
-            blend(package, { directories: { paks: 'paks' } }, { overwrite: false })
+            blend(package, { directories: { paks: Path('paks') } }, { overwrite: false })
             directories.paks = Path(package.directories.paks)
         }
         let pakcache = App.home.join('.paks')

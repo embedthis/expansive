@@ -67,8 +67,9 @@ Expansive.load({
         /*
             List of plugins to load. These are installed via 'exp install name'.
             These names should not have the 'exp-' prefix.
+            plugins: [ 'less', 'css', 'analytics', 'gzip' ],
          */
-        plugins: [ 'less', 'css', 'analytics', 'gzip' ],
+        plugins: [ ],
 
         /*
             Run this script before at launch before rendering

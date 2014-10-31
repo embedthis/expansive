@@ -11,6 +11,7 @@ require ejs.version
 require exp.template
 
 const CONFIG: Path = Path('expansive.es')
+const HOME = Path(App.getenv('HOME') || App.getenv('USERPROFILE') || '.')
 const VERSION = '0.1.0'
 const LISTEN = '127.0.0.1:4000'
 
@@ -137,6 +138,7 @@ public class Expansive {
                 layouts:   Path('layouts'),
                 partials:  Path('partials'),
                 public:    Path('public'),
+                paks:      Path('paks'),
             },
             listen: options.listen || LISTEN
             plugins: [],
@@ -302,7 +304,7 @@ public class Expansive {
         let package = Path('package.json')
         if (package.exists) {
             package = package.readJSON()
-            blend(package, { directories: { paks: 'paks' } }, false)
+            blend(package, { directories: { paks: 'paks' } }, { overwrite: false })
             directories.paks = Path(package.directories.paks)
         }
         let pakcache = App.home.join('.paks')

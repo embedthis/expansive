@@ -3,7 +3,7 @@
 #
 
 NAME                  = exp
-VERSION               = 0.4.1
+VERSION               = 0.4.2
 
 OS                    = windows
 PA                    = $(PROCESSOR_ARCHITECTURE)

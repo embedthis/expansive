@@ -127,6 +127,7 @@ public class Expansive {
     function setup() {
         topMeta = {
             layout: 'default',
+            expansive: {},
         }
         /*
             Updated with expansive {} properties from expansive.es files
@@ -155,7 +156,6 @@ public class Expansive {
         }
         global.meta = topMeta
         loadConfig(CONFIG, topMeta)
-        control = control
         directories = control.directories
         loadPlugins()
         setupEjsTransformer()
@@ -172,7 +172,7 @@ public class Expansive {
         expansive.currentConfig = obj
     }
 
-    function loadConfig(path: Path, meta): Object {
+    function loadConfig(path: Path, meta = {}): Object {
         let priorMeta = global.meta
         global.meta = meta
         currentConfigPath = path
@@ -183,14 +183,11 @@ public class Expansive {
             fatal('Syntax error in "' + path + '"' + '\n' + e)
         }
         let config = currentConfig
-        if (config.control) {
-            trace('Warn', 'Config ' + currentConfig + ' using property "control". Rename to "expansive"')
-            config.expansive = config.control
-        }
+
         blend(control, config.expansive)
         blend(services, config.services)
-        let meta = global.meta
         meta.expansive = control
+
         blend(meta, config.meta)
         let mode = config[config.mode]
         if (mode) {
@@ -480,7 +477,6 @@ public class Expansive {
         }
         renderDocuments()
         postclean()
-        sitemap()
         if (options.benchmark) {
             trace('Debug', '\n' + serialize(stats, {pretty: true, indent: 4, quotes: false}))
             let total = 0
@@ -562,9 +558,30 @@ public class Expansive {
         return false
     }
 
+    let metaCache = {}
+
+    /*
+        Load expansive.es files and inherit upper definitions
+     */
+    function buildMetaCache() {
+        let dirs = [ Path('.'), directories.documents ] + directories.documents.files('**', {include: /\/$/})
+        for each (dir in dirs) {
+            let config = dir.join(CONFIG)
+            if (config.exists) {
+                metaCache[dir] = loadConfig(dir.join(CONFIG), metaCache[dir.parent] || topMeta)
+                if (metaCache[dir].expansive.sitemap) {
+                    sitemap(dir == '.' ? directories.documents : dir, metaCache[dir])
+                    delete metaCache[dir].expansive.sitemap
+                }
+        
+            } else {
+                metaCache[dir] = metaCache[dir.parent] || metaCache['.']
+            }
+        }
+    }
+
     function renderDocuments() {
-        let metas = {}
-        let docMeta metas[directories.documents] = topMeta.clone(true)
+        buildMetaCache()
         for each (file in directories.documents.files(control.documents || '**', {exclude: 'directories'})) {
             if (filters) {
                 let match
@@ -579,15 +596,7 @@ public class Expansive {
                     continue
                 }
             }
-            let dir = file.dirname
-            while (!(meta = metas[dir])) {
-                let config = dir.join(CONFIG)
-                if (config.exists) {
-                    meta = metas[dir] = loadConfig(config, meta.clone(true))
-                    break
-                }
-                dir = dir.dirname
-            }
+            let meta = metaCache[file.dirname]
             if (copy[file]) {
                 copyFile(file, meta)
             } else if (renderAll || filters || mastersModified || checkModified(file, meta)) {
@@ -1084,23 +1093,27 @@ public class Expansive {
         }
     }
 
-    function sitemap() {
-        let sm = control.sitemap
-        if (!sm || !(renderAll || mastersModified)) {
+    function sitemap(dir: Path, meta) {
+        if (!(meta && meta.expansive && meta.expansive.sitemap)) {
             return
         }
-        let path = directories.public.join('Sitemap.xml')
+        if (!(renderAll || mastersModified)) {
+            return
+        }
+        let sitemap = meta.expansive.sitemap
+        let path = dir.join('Sitemap.xml')
         path.dirname.makeDir()
         let fp = new File(path, 'w')
         fp.write('<?xml version="1.0" encoding="UTF-8"?>\n' +
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
-        let list = directories.public.files(sm.files || '**.html', {exclude: 'directories', relative: true})
-        let url = topMeta.url.trimEnd('/')
+        let list = dir.files(sitemap.files || '**.html', {exclude: 'directories', relative: true})
+        let url = meta.url.trimEnd('/')
+        let base = dir.trimStart(directories.documents).trimStart('/')
         for each (file in list) {
-            let filename = file.name.trimEnd('.gz') 
+            let filename = base.join(file.name).trimEnd('.gz')
             fp.write('    <url>\n' +
                 '        <loc>' + url + '/' + filename + '</loc>\n' +
-                '        <lastmod>' + directories.public.join(file).modified.format('%F') + '</lastmod>\n' +
+                '        <lastmod>' + dir.join(file).modified.format('%F') + '</lastmod>\n' +
                 '        <changefreq>weekly</changefreq>\n' +
                 '        <priority>0.5</priority>\n' +
                 '    </url>\n')

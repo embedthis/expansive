@@ -101,7 +101,7 @@
   
       <ItemGroup>
     <ClCompile Include="..\..\src\exp.c" />
-    <ClCompile Include="..\..\src\expTemplate.c" />
+    <ClCompile Include="..\..\src\expParser.c" />
   </ItemGroup>
 
       <ItemDefinitionGroup>

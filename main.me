@@ -84,7 +84,7 @@ Me.load({
     targets: {
         'exp.mod': {
             path: '${BIN}/exp.mod',
-            files: [ 'src/exp.es', 'src/ExpTemplate.es', 'src/paks/ejs-version/Version.es' ],
+            files: [ 'src/exp.es', 'src/ExpParser.es', 'src/paks/ejs-version/Version.es' ],
             build: `
                 run('${LBIN}/ejsc --debug --out ${BIN}/exp.mod --optimize 9 ${FILES}')
             `,

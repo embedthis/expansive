@@ -124,7 +124,7 @@ clean:
 	rm -f "$(BUILD)/obj/ejsc.o"
 	rm -f "$(BUILD)/obj/estLib.o"
 	rm -f "$(BUILD)/obj/exp.o"
-	rm -f "$(BUILD)/obj/expTemplate.o"
+	rm -f "$(BUILD)/obj/expParser.o"
 	rm -f "$(BUILD)/obj/http.o"
 	rm -f "$(BUILD)/obj/httpLib.o"
 	rm -f "$(BUILD)/obj/mprLib.o"
@@ -335,15 +335,15 @@ $(BUILD)/obj/exp.o: \
 	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/exp.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/exp.c
 
 #
-#   expTemplate.o
+#   expParser.o
 #
 DEPS_20 += $(BUILD)/inc/ejs.h
 DEPS_20 += $(BUILD)/inc/exp.h
 
-$(BUILD)/obj/expTemplate.o: \
-    src/expTemplate.c $(DEPS_20)
-	@echo '   [Compile] $(BUILD)/obj/expTemplate.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/expTemplate.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/expTemplate.c
+$(BUILD)/obj/expParser.o: \
+    src/expParser.c $(DEPS_20)
+	@echo '   [Compile] $(BUILD)/obj/expParser.o'
+	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/expParser.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/expParser.c
 
 #
 #   http.h
@@ -589,7 +589,7 @@ endif
 #   exp.mod
 #
 DEPS_39 += src/exp.es
-DEPS_39 += src/ExpTemplate.es
+DEPS_39 += src/ExpParser.es
 DEPS_39 += src/paks/ejs-version/Version.es
 ifeq ($(ME_COM_EJS),1)
     DEPS_39 += $(BUILD)/bin/ejs.mod
@@ -597,7 +597,7 @@ endif
 
 $(BUILD)/bin/exp.mod: $(DEPS_39)
 	echo '   [Compile] exp.mod' ; \
-	./$(BUILD)/bin/ejsc --debug --out ./$(BUILD)/bin/exp.mod --optimize 9 src/exp.es src/ExpTemplate.es src/paks/ejs-version/Version.es
+	./$(BUILD)/bin/ejsc --debug --out ./$(BUILD)/bin/exp.mod --optimize 9 src/exp.es src/ExpParser.es src/paks/ejs-version/Version.es
 
 #
 #   exp
@@ -611,7 +611,7 @@ ifeq ($(ME_COM_EJS),1)
 endif
 DEPS_40 += $(BUILD)/bin/exp.mod
 DEPS_40 += $(BUILD)/obj/exp.o
-DEPS_40 += $(BUILD)/obj/expTemplate.o
+DEPS_40 += $(BUILD)/obj/expParser.o
 
 LIBS_40 += -lmpr
 ifeq ($(ME_COM_HTTP),1)
@@ -629,7 +629,7 @@ endif
 
 $(BUILD)/bin/exp: $(DEPS_40)
 	@echo '      [Link] $(BUILD)/bin/exp'
-	$(CC) -o $(BUILD)/bin/exp -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/exp.o" "$(BUILD)/obj/expTemplate.o" $(LIBPATHS_40) $(LIBS_40) $(LIBS_40) $(LIBS) 
+	$(CC) -o $(BUILD)/bin/exp -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/exp.o" "$(BUILD)/obj/expParser.o" $(LIBPATHS_40) $(LIBS_40) $(LIBS_40) $(LIBS) 
 
 #
 #   http-ca-crt

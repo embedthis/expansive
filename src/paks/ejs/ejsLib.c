@@ -42212,7 +42212,11 @@ static EjsArray *getFilesWithInstructions(Ejs *ejs, EjsPath *fp, EjsObj *instruc
                 negate = mprCreateList(0, 0);
             }
             pat = ejsToMulti(ejs, pattern);
-            mprAddItem(negate, mprJoinPath(fp->value, &pat[1]));
+            if (flags & FILES_RELATIVE) {
+                mprAddItem(negate, &pat[1]);
+            } else {
+                mprAddItem(negate, mprJoinPath(fp->value, &pat[1]));
+            }
         }
     }
     for (i = 0; i < patterns->length; i++) {
@@ -42294,17 +42298,28 @@ static EjsArray *getFiles(Ejs *ejs, EjsArray *results, EjsPath *thisPath, cchar 
     for (ITERATE_ITEMS(list, path, index)) {
         add = 1;
         if (include) {
-            mprGetPathInfo(path, &info);
+            if (flags & MPR_PATH_RELATIVE) {
+                mprGetPathInfo(mprJoinPath(thisPath->value, path), &info);
+            } else {
+                mprGetPathInfo(path, &info);
+            }
             matchFile = (info.isDir && !info.isLink) ? sjoin(path, "/", NULL) : path;
             add = matchPath(ejs, thisPath, include, matchFile, options);
         }
         if (add && exclude) {
-            mprGetPathInfo(path, &info);
+            if (flags & MPR_PATH_RELATIVE) {
+                mprGetPathInfo(mprJoinPath(thisPath->value, path), &info);
+            } else {
+                mprGetPathInfo(path, &info);
+            }
             matchFile = (info.isDir && !info.isLink) ? sjoin(path, "/", NULL) : path;
             add = !matchPath(ejs, thisPath, exclude, matchFile, options);
         }
         if (add) {
             for (ITERATE_ITEMS(negate, npat, i)) {
+                if (sstarts(path, "goahead/")) {
+                    mprBreakpoint();
+                }
                 if (mprMatchPath(path, npat)) {
                     add = 0;
                     break;

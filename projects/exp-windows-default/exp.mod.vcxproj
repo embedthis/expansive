@@ -96,7 +96,7 @@
 
       <CustomBuildStep>
         <Command>cd ..\..
-.\build\windows-x86-default\bin\ejsc --debug --out ./build/windows-x86-default/bin/exp.mod --optimize 9 src/exp.es src/ExpTemplate.es src/paks/ejs-version/Version.es
+.\build\windows-x86-default\bin\ejsc --debug --out ./build/windows-x86-default/bin/exp.mod --optimize 9 src/exp.es src/ExpParser.es src/paks/ejs-version/Version.es
 cd projects\exp-windows-default</Command>
         <Outputs>$(BinDir)\exp.mod</Outputs>
       </CustomBuildStep>

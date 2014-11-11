@@ -263,10 +263,9 @@ static int getToken(ExpState *state)
             if (c == '\n') {
                 state->lineNumber++;
             }
-            if (c == '\\' && &next[1] < end) {
+            if (c == '\\' && next[1] == '@' && next[2] == '@') {
                 c = *++next;
-            }
-            if (c == '\"') {
+            } else if (c == '\"' || c == '\\') {
                 if (!addChar(state, '\\')) {
                     return EXP_TOK_ERR;
                 }

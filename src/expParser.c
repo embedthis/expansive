@@ -253,13 +253,20 @@ static int getToken(ExpState *state)
                     }
                     done++;
                 }
+            } else {
+                if (!addChar(state, c)) {
+                    return EXP_TOK_ERR;
+                }
             }
 
         } else {
             if (c == '\n') {
                 state->lineNumber++;
             }
-            if (c == '\"' || c == '\\') {
+            if (c == '\\' && &next[1] < end) {
+                c = *++next;
+            }
+            if (c == '\"') {
                 if (!addChar(state, '\\')) {
                     return EXP_TOK_ERR;
                 }

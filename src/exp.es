@@ -60,6 +60,7 @@ public class Expansive {
     var options: Object
     var paks: Path
     var services: Object = {}
+    var sitemaps: Array = []
     var stats: Object
     var topMeta: Object
     var transforms: Object = {}
@@ -476,6 +477,7 @@ public class Expansive {
             renderFiles(topMeta)
         }
         renderDocuments()
+        renderSitemaps()
         postclean()
         if (options.benchmark) {
             trace('Debug', '\n' + serialize(stats, {pretty: true, indent: 4, quotes: false}))
@@ -568,10 +570,12 @@ public class Expansive {
         for each (dir in dirs) {
             let config = dir.join(CONFIG)
             if (config.exists) {
-                metaCache[dir] = loadConfig(dir.join(CONFIG), metaCache[dir.parent] || topMeta)
-                if (metaCache[dir].expansive.sitemap) {
-                    sitemap(dir == '.' ? directories.documents : dir, metaCache[dir])
-                    delete metaCache[dir].expansive.sitemap
+                let meta = metaCache[dir] = loadConfig(dir.join(CONFIG), metaCache[dir.parent] || topMeta)
+                if (meta.expansive.sitemap) {
+                    let pubdir = rebase(dir, directories.documents)
+                    pubdir = directories.public.join(pubdir)
+                    sitemaps.push({dir: pubdir, meta: meta, sitemap: meta.expansive.sitemap})
+                    delete meta.expansive.sitemap
                 }
         
             } else {
@@ -602,6 +606,12 @@ public class Expansive {
             } else if (renderAll || filters || mastersModified || checkModified(file, meta)) {
                 renderDocument(file, meta)
             }
+        }
+    }
+
+    function renderSitemaps() {
+        for each (map in sitemaps) {
+            sitemap(map)
         }
     }
 
@@ -817,7 +827,7 @@ public class Expansive {
             stat.run += mark.elapsed
         } catch (e) {
             trace('Error', 'Error when processing ' + meta.file)
-            print("CODE @@@@@\n" + code + '\n@@@')
+            print("CODE \n" + code + '\n')
             fatal(e)
         }
         let results = obuf.toString()
@@ -884,20 +894,24 @@ public class Expansive {
 
     function blendLayout(contents, meta) {
         meta = meta.clone(true)
-        while (meta.layout) {
-            let layout = findFile(directories.layouts, meta.layout, meta)
-            if (!layout) {
-                fatal('Cannot find layout "' + meta.layout + '"')
-            }
-            meta.layout = ''
-            let layoutContents
-            [meta, layoutContents] = getCached(layout, meta)
-            meta.file = layout
-            meta.isLayout = true
-            contents = contents.replace(/\$/mg, '$$$$')
-            contents = layoutContents.replace(/ *<@ *content *@> */, contents)
-            vtrace('Blend', layout + ' + ' + meta.document)
+        if (!meta.layout) {
             contents = transformContents(contents, meta)
+        } else {
+            while (meta.layout) {
+                let layout = findFile(directories.layouts, meta.layout, meta)
+                if (!layout) {
+                    fatal('Cannot find layout "' + meta.layout + '"')
+                }
+                meta.layout = ''
+                let layoutContents
+                [meta, layoutContents] = getCached(layout, meta)
+                meta.file = layout
+                meta.isLayout = true
+                contents = contents.replace(/\$/mg, '$$$$')
+                contents = layoutContents.replace(/ *<@ *content *@> */, contents)
+                vtrace('Blend', layout + ' + ' + meta.document)
+                contents = transformContents(contents, meta)
+            }
         }
         return contents
     }
@@ -1093,14 +1107,13 @@ public class Expansive {
         }
     }
 
-    function sitemap(dir: Path, meta) {
-        if (!(meta && meta.expansive && meta.expansive.sitemap)) {
-            return
-        }
+    function sitemap(map) {
+        let dir = map.dir
+        let meta = map.meta
+        let sitemap = map.sitemap
         if (!(renderAll || mastersModified)) {
             return
         }
-        let sitemap = meta.expansive.sitemap
         let path = dir.join('Sitemap.xml')
         path.dirname.makeDir()
         let fp = new File(path, 'w')

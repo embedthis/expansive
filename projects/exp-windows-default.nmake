@@ -149,12 +149,12 @@ LOG = >nul
 !ENDIF
 
 clean:
+	if exist "build\$(CONFIG)\obj\ExpParser.obj" del /Q "build\$(CONFIG)\obj\ExpParser.obj"
 	if exist "build\$(CONFIG)\obj\ejs.obj" del /Q "build\$(CONFIG)\obj\ejs.obj"
 	if exist "build\$(CONFIG)\obj\ejsLib.obj" del /Q "build\$(CONFIG)\obj\ejsLib.obj"
 	if exist "build\$(CONFIG)\obj\ejsc.obj" del /Q "build\$(CONFIG)\obj\ejsc.obj"
 	if exist "build\$(CONFIG)\obj\estLib.obj" del /Q "build\$(CONFIG)\obj\estLib.obj"
 	if exist "build\$(CONFIG)\obj\exp.obj" del /Q "build\$(CONFIG)\obj\exp.obj"
-	if exist "build\$(CONFIG)\obj\expParser.obj" del /Q "build\$(CONFIG)\obj\expParser.obj"
 	if exist "build\$(CONFIG)\obj\http.obj" del /Q "build\$(CONFIG)\obj\http.obj"
 	if exist "build\$(CONFIG)\obj\httpLib.obj" del /Q "build\$(CONFIG)\obj\httpLib.obj"
 	if exist "build\$(CONFIG)\obj\mprLib.obj" del /Q "build\$(CONFIG)\obj\mprLib.obj"
@@ -603,15 +603,15 @@ build\$(CONFIG)\obj\exp.obj: \
 	"$(CC)" -c -Fo$(BUILD)\obj\exp.obj -Fd$(BUILD)\obj\exp.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\exp.c $(LOG)
 
 #
-#   expParser.obj
+#   ExpParser.obj
 #
 DEPS_34 = $(DEPS_34) build\$(CONFIG)\inc\ejs.h
 DEPS_34 = $(DEPS_34) build\$(CONFIG)\inc\exp.h
 
-build\$(CONFIG)\obj\expParser.obj: \
-    src\expParser.c $(DEPS_34)
-	@echo .. [Compile] build\$(CONFIG)\obj\expParser.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\expParser.obj -Fd$(BUILD)\obj\expParser.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\expParser.c $(LOG)
+build\$(CONFIG)\obj\ExpParser.obj: \
+    src\ExpParser.c $(DEPS_34)
+	@echo .. [Compile] build\$(CONFIG)\obj\ExpParser.obj
+	"$(CC)" -c -Fo$(BUILD)\obj\ExpParser.obj -Fd$(BUILD)\obj\ExpParser.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\ExpParser.c $(LOG)
 
 #
 #   exp
@@ -625,7 +625,7 @@ DEPS_35 = $(DEPS_35) build\$(CONFIG)\bin\libejs.dll
 !ENDIF
 DEPS_35 = $(DEPS_35) build\$(CONFIG)\bin\exp.mod
 DEPS_35 = $(DEPS_35) build\$(CONFIG)\obj\exp.obj
-DEPS_35 = $(DEPS_35) build\$(CONFIG)\obj\expParser.obj
+DEPS_35 = $(DEPS_35) build\$(CONFIG)\obj\ExpParser.obj
 
 LIBS_35 = $(LIBS_35) libmpr.lib
 !IF "$(ME_COM_HTTP)" == "1"
@@ -643,7 +643,7 @@ LIBS_35 = $(LIBS_35) libzlib.lib
 
 build\$(CONFIG)\bin\exp.exe: $(DEPS_35)
 	@echo ..... [Link] build\$(CONFIG)\bin\exp.exe
-	"$(LD)" -nologo -out:$(BUILD)\bin\exp.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\exp.obj" "$(BUILD)\obj\expParser.obj" $(LIBPATHS_35) $(LIBS_35) $(LIBS_35) $(LIBS)  $(LOG)
+	"$(LD)" -nologo -out:$(BUILD)\bin\exp.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\exp.obj" "$(BUILD)\obj\ExpParser.obj" $(LIBPATHS_35) $(LIBS_35) $(LIBS_35) $(LIBS)  $(LOG)
 
 #
 #   http-ca-crt

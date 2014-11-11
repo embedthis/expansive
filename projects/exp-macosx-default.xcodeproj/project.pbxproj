@@ -102,7 +102,7 @@
 		EFDF7BA2EFDF8D0C0000002D /* ejsc.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDF7BA2EFDF8D0C0000002E /* ejsc.c */; };
 		EFDF7BA2EFDF8D0C0000002F /* ejs.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDF7BA2EFDF8D0C00000030 /* ejs.c */; };
 		EFDF7BA2EFDF8D0C00000031 /* exp.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDF7BA2EFDF8D0C00000032 /* exp.c */; };
-		EFDF7BA2EFDF8D0C00000033 /* expParser.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDF7BA2EFDF8D0C00000034 /* expParser.c */; };
+		EFDF7BA2EFDF8D0C00000033 /* ExpParser.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDF7BA2EFDF8D0C00000034 /* ExpParser.c */; };
 		EFDF7BA2EFDF8D0C00000035 /* http.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDF7BA2EFDF8D0C00000036 /* http.c */; };
 		EFDF7BA2EFDF8D0C00000037 /* ejsLib.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDF7BA2EFDF8D0C00000038 /* ejsLib.c */; };
 		EFDF7BA2EFDF8D0C00000039 /* estLib.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDF7BA2EFDF8D0C0000003A /* estLib.c */; };
@@ -662,7 +662,7 @@
 		EFDF7BA2EFDF8D0C00000032 /* exp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exp.c; path = src/exp.c; sourceTree = "<group>"; };
 		EFDF7BA2EFDF8D0C000000BC /* ejs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ejs.h; path = build/macosx-x64-default/inc/ejs.h; sourceTree = "<group>"; };
 		EFDF7BA2EFDF8D0C000000BD /* exp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exp.h; path = build/macosx-x64-default/inc/exp.h; sourceTree = "<group>"; };
-		EFDF7BA2EFDF8D0C00000034 /* expParser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = expParser.c; path = src/expParser.c; sourceTree = "<group>"; };
+		EFDF7BA2EFDF8D0C00000034 /* ExpParser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ExpParser.c; path = src/ExpParser.c; sourceTree = "<group>"; };
 		EFDF7BA2EFDF8D0C000000BE /* exp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = exp; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFDF7BA2EFDF8D0C00000036 /* http.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = http.c; path = src/paks/http/http.c; sourceTree = "<group>"; };
 		EFDF7BA2EFDF8D0C000000BF /* http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = http.h; path = src/paks/http/http.h; sourceTree = "<group>"; };
@@ -845,7 +845,7 @@
 				EFDF7BA2EFDF8D0C000000BC /* ejs.h */,
 				EFDF7BA2EFDF8D0C000000BD /* exp.h */,
 				EFDF7BA2EFDF8D0C00000032 /* exp.c */,
-				EFDF7BA2EFDF8D0C00000034 /* expParser.c */,
+				EFDF7BA2EFDF8D0C00000034 /* ExpParser.c */,
 			);
                 name = "exp";
                 path = ..;
@@ -1390,7 +1390,7 @@ fi";
     			buildActionMask = 2147483647;
     			files = (
     				EFDF7BA2EFDF8D0C00000031 /* exp.c in Sources */,
-				EFDF7BA2EFDF8D0C00000033 /* expParser.c in Sources */,
+				EFDF7BA2EFDF8D0C00000033 /* ExpParser.c in Sources */,
     			);
     			runOnlyForDeploymentPostprocessing = 0;
     		};

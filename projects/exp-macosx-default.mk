@@ -119,12 +119,12 @@ prep:
 	@echo "$(MAKEFLAGS)" >$(BUILD)/.makeflags
 
 clean:
+	rm -f "$(BUILD)/obj/ExpParser.o"
 	rm -f "$(BUILD)/obj/ejs.o"
 	rm -f "$(BUILD)/obj/ejsLib.o"
 	rm -f "$(BUILD)/obj/ejsc.o"
 	rm -f "$(BUILD)/obj/estLib.o"
 	rm -f "$(BUILD)/obj/exp.o"
-	rm -f "$(BUILD)/obj/expParser.o"
 	rm -f "$(BUILD)/obj/http.o"
 	rm -f "$(BUILD)/obj/httpLib.o"
 	rm -f "$(BUILD)/obj/mprLib.o"
@@ -269,41 +269,52 @@ $(BUILD)/inc/est.h: $(DEPS_11)
 $(BUILD)/inc/exp.h: $(DEPS_12)
 
 #
+#   ExpParser.o
+#
+DEPS_13 += $(BUILD)/inc/ejs.h
+DEPS_13 += $(BUILD)/inc/exp.h
+
+$(BUILD)/obj/ExpParser.o: \
+    src/ExpParser.c $(DEPS_13)
+	@echo '   [Compile] $(BUILD)/obj/ExpParser.o'
+	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/ExpParser.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/ExpParser.c
+
+#
 #   ejs.h
 #
 
-src/paks/ejs/ejs.h: $(DEPS_13)
+src/paks/ejs/ejs.h: $(DEPS_14)
 
 #
 #   ejs.o
 #
-DEPS_14 += src/paks/ejs/ejs.h
+DEPS_15 += src/paks/ejs/ejs.h
 
 $(BUILD)/obj/ejs.o: \
-    src/paks/ejs/ejs.c $(DEPS_14)
+    src/paks/ejs/ejs.c $(DEPS_15)
 	@echo '   [Compile] $(BUILD)/obj/ejs.o'
 	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/ejs.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/paks/ejs/ejs.c
 
 #
 #   ejsLib.o
 #
-DEPS_15 += src/paks/ejs/ejs.h
-DEPS_15 += $(BUILD)/inc/mpr.h
-DEPS_15 += $(BUILD)/inc/pcre.h
-DEPS_15 += $(BUILD)/inc/me.h
+DEPS_16 += src/paks/ejs/ejs.h
+DEPS_16 += $(BUILD)/inc/mpr.h
+DEPS_16 += $(BUILD)/inc/pcre.h
+DEPS_16 += $(BUILD)/inc/me.h
 
 $(BUILD)/obj/ejsLib.o: \
-    src/paks/ejs/ejsLib.c $(DEPS_15)
+    src/paks/ejs/ejsLib.c $(DEPS_16)
 	@echo '   [Compile] $(BUILD)/obj/ejsLib.o'
 	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/ejsLib.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/paks/ejs/ejsLib.c
 
 #
 #   ejsc.o
 #
-DEPS_16 += src/paks/ejs/ejs.h
+DEPS_17 += src/paks/ejs/ejs.h
 
 $(BUILD)/obj/ejsc.o: \
-    src/paks/ejs/ejsc.c $(DEPS_16)
+    src/paks/ejs/ejsc.c $(DEPS_17)
 	@echo '   [Compile] $(BUILD)/obj/ejsc.o'
 	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/ejsc.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/paks/ejs/ejsc.c
 
@@ -311,39 +322,28 @@ $(BUILD)/obj/ejsc.o: \
 #   est.h
 #
 
-src/paks/est/est.h: $(DEPS_17)
+src/paks/est/est.h: $(DEPS_18)
 
 #
 #   estLib.o
 #
-DEPS_18 += src/paks/est/est.h
+DEPS_19 += src/paks/est/est.h
 
 $(BUILD)/obj/estLib.o: \
-    src/paks/est/estLib.c $(DEPS_18)
+    src/paks/est/estLib.c $(DEPS_19)
 	@echo '   [Compile] $(BUILD)/obj/estLib.o'
 	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/estLib.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/paks/est/estLib.c
 
 #
 #   exp.o
 #
-DEPS_19 += $(BUILD)/inc/ejs.h
-DEPS_19 += $(BUILD)/inc/exp.h
-
-$(BUILD)/obj/exp.o: \
-    src/exp.c $(DEPS_19)
-	@echo '   [Compile] $(BUILD)/obj/exp.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/exp.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/exp.c
-
-#
-#   expParser.o
-#
 DEPS_20 += $(BUILD)/inc/ejs.h
 DEPS_20 += $(BUILD)/inc/exp.h
 
-$(BUILD)/obj/expParser.o: \
-    src/expParser.c $(DEPS_20)
-	@echo '   [Compile] $(BUILD)/obj/expParser.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/expParser.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/expParser.c
+$(BUILD)/obj/exp.o: \
+    src/exp.c $(DEPS_20)
+	@echo '   [Compile] $(BUILD)/obj/exp.o'
+	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/exp.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/exp.c
 
 #
 #   http.h
@@ -611,7 +611,7 @@ ifeq ($(ME_COM_EJS),1)
 endif
 DEPS_40 += $(BUILD)/bin/exp.mod
 DEPS_40 += $(BUILD)/obj/exp.o
-DEPS_40 += $(BUILD)/obj/expParser.o
+DEPS_40 += $(BUILD)/obj/ExpParser.o
 
 LIBS_40 += -lmpr
 ifeq ($(ME_COM_HTTP),1)
@@ -629,7 +629,7 @@ endif
 
 $(BUILD)/bin/exp: $(DEPS_40)
 	@echo '      [Link] $(BUILD)/bin/exp'
-	$(CC) -o $(BUILD)/bin/exp -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/exp.o" "$(BUILD)/obj/expParser.o" $(LIBPATHS_40) $(LIBS_40) $(LIBS_40) $(LIBS) 
+	$(CC) -o $(BUILD)/bin/exp -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/exp.o" "$(BUILD)/obj/ExpParser.o" $(LIBPATHS_40) $(LIBS_40) $(LIBS_40) $(LIBS) 
 
 #
 #   http-ca-crt

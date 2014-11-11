@@ -42317,9 +42317,6 @@ static EjsArray *getFiles(Ejs *ejs, EjsArray *results, EjsPath *thisPath, cchar 
         }
         if (add) {
             for (ITERATE_ITEMS(negate, npat, i)) {
-                if (sstarts(path, "goahead/")) {
-                    mprBreakpoint();
-                }
                 if (mprMatchPath(path, npat)) {
                     add = 0;
                     break;

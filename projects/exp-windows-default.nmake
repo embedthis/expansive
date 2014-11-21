@@ -37,7 +37,7 @@ ME_COM_COMPILER       = 1
 ME_COM_EJS            = 1
 !ENDIF
 !IF "$(ME_COM_EST)" == ""
-ME_COM_EST            = 0
+ME_COM_EST            = 1
 !ENDIF
 !IF "$(ME_COM_HTTP)" == ""
 ME_COM_HTTP           = 1
@@ -52,7 +52,7 @@ ME_COM_LINK           = 1
 ME_COM_MPR            = 1
 !ENDIF
 !IF "$(ME_COM_OPENSSL)" == ""
-ME_COM_OPENSSL        = 1
+ME_COM_OPENSSL        = 0
 !ENDIF
 !IF "$(ME_COM_OSDEP)" == ""
 ME_COM_OSDEP          = 1
@@ -147,6 +147,9 @@ TARGETS               = $(TARGETS) build\$(CONFIG)\bin\ca.crt
 !IF "$(ME_COM_HTTP)" == "1"
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\http.exe
 !ENDIF
+!IF "$(ME_COM_EST)" == "1"
+TARGETS               = $(TARGETS) build\$(CONFIG)\bin\libest.dll
+!ENDIF
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\libmprssl.dll
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\expansive.sample
 
@@ -184,6 +187,7 @@ clean:
 	if exist "build\$(CONFIG)\obj\ejs.obj" del /Q "build\$(CONFIG)\obj\ejs.obj"
 	if exist "build\$(CONFIG)\obj\ejsLib.obj" del /Q "build\$(CONFIG)\obj\ejsLib.obj"
 	if exist "build\$(CONFIG)\obj\ejsc.obj" del /Q "build\$(CONFIG)\obj\ejsc.obj"
+	if exist "build\$(CONFIG)\obj\estLib.obj" del /Q "build\$(CONFIG)\obj\estLib.obj"
 	if exist "build\$(CONFIG)\obj\exp.obj" del /Q "build\$(CONFIG)\obj\exp.obj"
 	if exist "build\$(CONFIG)\obj\http.obj" del /Q "build\$(CONFIG)\obj\http.obj"
 	if exist "build\$(CONFIG)\obj\httpLib.obj" del /Q "build\$(CONFIG)\obj\httpLib.obj"
@@ -213,6 +217,10 @@ clean:
 	if exist "build\$(CONFIG)\bin\libejs.lib" del /Q "build\$(CONFIG)\bin\libejs.lib"
 	if exist "build\$(CONFIG)\bin\libejs.pdb" del /Q "build\$(CONFIG)\bin\libejs.pdb"
 	if exist "build\$(CONFIG)\bin\libejs.exp" del /Q "build\$(CONFIG)\bin\libejs.exp"
+	if exist "build\$(CONFIG)\bin\libest.dll" del /Q "build\$(CONFIG)\bin\libest.dll"
+	if exist "build\$(CONFIG)\bin\libest.lib" del /Q "build\$(CONFIG)\bin\libest.lib"
+	if exist "build\$(CONFIG)\bin\libest.pdb" del /Q "build\$(CONFIG)\bin\libest.pdb"
+	if exist "build\$(CONFIG)\bin\libest.exp" del /Q "build\$(CONFIG)\bin\libest.exp"
 	if exist "build\$(CONFIG)\bin\libhttp.dll" del /Q "build\$(CONFIG)\bin\libhttp.dll"
 	if exist "build\$(CONFIG)\bin\libhttp.lib" del /Q "build\$(CONFIG)\bin\libhttp.lib"
 	if exist "build\$(CONFIG)\bin\libhttp.pdb" del /Q "build\$(CONFIG)\bin\libhttp.pdb"
@@ -710,56 +718,98 @@ build\$(CONFIG)\bin\http.exe: $(DEPS_38)
 !ENDIF
 
 #
+#   est.h
+#
+DEPS_39 = $(DEPS_39) src\paks\est\est.h
+
+build\$(CONFIG)\inc\est.h: $(DEPS_39)
+	@echo ..... [Copy] build\$(CONFIG)\inc\est.h
+	if not exist "build\$(CONFIG)\inc" md "build\$(CONFIG)\inc"
+	copy /Y /B src\paks\est\est.h+modified build\$(CONFIG)\inc\est.h $(LOG)
+
+#
+#   est.h
+#
+
+src\paks\est\est.h: $(DEPS_40)
+
+#
+#   estLib.obj
+#
+DEPS_41 = $(DEPS_41) src\paks\est\est.h
+
+build\$(CONFIG)\obj\estLib.obj: \
+    src\paks\est\estLib.c $(DEPS_41)
+	@echo .. [Compile] build\$(CONFIG)\obj\estLib.obj
+	"$(CC)" -c -Fo$(BUILD)\obj\estLib.obj -Fd$(BUILD)\obj\estLib.pdb -nologo -GR- -Zi -Od -MDd $(DFLAGS) $(IFLAGS) src\paks\est\estLib.c $(LOG)
+
+!IF "$(ME_COM_EST)" == "1"
+#
+#   libest
+#
+DEPS_42 = $(DEPS_42) build\$(CONFIG)\inc\osdep.h
+DEPS_42 = $(DEPS_42) build\$(CONFIG)\inc\est.h
+DEPS_42 = $(DEPS_42) build\$(CONFIG)\obj\estLib.obj
+
+build\$(CONFIG)\bin\libest.dll: $(DEPS_42)
+	@echo ..... [Link] build\$(CONFIG)\bin\libest.dll
+	"$(LD)" -dll -out:$(BUILD)\bin\libest.dll -entry:$(ENTRY) $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\estLib.obj" $(LIBS)  $(LOG)
+!ENDIF
+
+#
 #   mprSsl.obj
 #
-DEPS_39 = $(DEPS_39) src\paks\mpr\mpr.h
+DEPS_43 = $(DEPS_43) src\paks\mpr\mpr.h
 
 build\$(CONFIG)\obj\mprSsl.obj: \
-    src\paks\mpr\mprSsl.c $(DEPS_39)
+    src\paks\mpr\mprSsl.c $(DEPS_43)
 	@echo .. [Compile] build\$(CONFIG)\obj\mprSsl.obj
 	"$(CC)" -c -Fo$(BUILD)\obj\mprSsl.obj -Fd$(BUILD)\obj\mprSsl.pdb $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH="$(ME_COM_OPENSSL_PATH)" $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)\include" src\paks\mpr\mprSsl.c $(LOG)
 
 #
 #   libmprssl
 #
-DEPS_40 = $(DEPS_40) build\$(CONFIG)\bin\libmpr.dll
-DEPS_40 = $(DEPS_40) build\$(CONFIG)\obj\mprSsl.obj
+DEPS_44 = $(DEPS_44) build\$(CONFIG)\bin\libmpr.dll
+!IF "$(ME_COM_EST)" == "1"
+DEPS_44 = $(DEPS_44) build\$(CONFIG)\bin\libest.dll
+!ENDIF
+DEPS_44 = $(DEPS_44) build\$(CONFIG)\obj\mprSsl.obj
 
-LIBS_40 = $(LIBS_40) libmpr.lib
+LIBS_44 = $(LIBS_44) libmpr.lib
 !IF "$(ME_COM_OPENSSL)" == "1"
-LIBS_40 = $(LIBS_40) libeay32.lib
-LIBPATHS_40 = $(LIBPATHS_40) -libpath:$(ME_COM_OPENSSL_PATH)/lib
-LIBPATHS_40 = $(LIBPATHS_40) -libpath:$(ME_COM_OPENSSL_PATH)
+LIBS_44 = $(LIBS_44) libeay32.lib
+LIBPATHS_44 = $(LIBPATHS_44) -libpath:$(ME_COM_OPENSSL_PATH)/lib
+LIBPATHS_44 = $(LIBPATHS_44) -libpath:$(ME_COM_OPENSSL_PATH)
 !ENDIF
 !IF "$(ME_COM_OPENSSL)" == "1"
-LIBS_40 = $(LIBS_40) libssleay32.lib
-LIBPATHS_40 = $(LIBPATHS_40) -libpath:$(ME_COM_OPENSSL_PATH)/lib
-LIBPATHS_40 = $(LIBPATHS_40) -libpath:$(ME_COM_OPENSSL_PATH)
+LIBS_44 = $(LIBS_44) libssleay32.lib
+LIBPATHS_44 = $(LIBPATHS_44) -libpath:$(ME_COM_OPENSSL_PATH)/lib
+LIBPATHS_44 = $(LIBPATHS_44) -libpath:$(ME_COM_OPENSSL_PATH)
 !ENDIF
 !IF "$(ME_COM_EST)" == "1"
-LIBS_40 = $(LIBS_40) libest.lib
+LIBS_44 = $(LIBS_44) libest.lib
 !ENDIF
 
-build\$(CONFIG)\bin\libmprssl.dll: $(DEPS_40)
+build\$(CONFIG)\bin\libmprssl.dll: $(DEPS_44)
 	@echo ..... [Link] build\$(CONFIG)\bin\libmprssl.dll
-	"$(LD)" -dll -out:$(BUILD)\bin\libmprssl.dll -entry:$(ENTRY) $(LDFLAGS) $(LIBPATHS)   "$(BUILD)\obj\mprSsl.obj" $(LIBPATHS_40) $(LIBS_40) $(LIBS_40) $(LIBS)  $(LOG)
+	"$(LD)" -dll -out:$(BUILD)\bin\libmprssl.dll -entry:$(ENTRY) $(LDFLAGS) $(LIBPATHS)   "$(BUILD)\obj\mprSsl.obj" $(LIBPATHS_44) $(LIBS_44) $(LIBS_44) $(LIBS)  $(LOG)
 
 #
 #   removeFiles.obj
 #
-DEPS_41 = $(DEPS_41) build\$(CONFIG)\inc\me.h
+DEPS_45 = $(DEPS_45) build\$(CONFIG)\inc\me.h
 
 build\$(CONFIG)\obj\removeFiles.obj: \
-    package\windows\removeFiles.c $(DEPS_41)
+    package\windows\removeFiles.c $(DEPS_45)
 	@echo .. [Compile] build\$(CONFIG)\obj\removeFiles.obj
 	"$(CC)" -c -Fo$(BUILD)\obj\removeFiles.obj -Fd$(BUILD)\obj\removeFiles.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) package\windows\removeFiles.c $(LOG)
 
 #
 #   sample
 #
-DEPS_42 = $(DEPS_42) src\expansive.sample
+DEPS_46 = $(DEPS_46) src\expansive.sample
 
-build\$(CONFIG)\bin\expansive.sample: $(DEPS_42)
+build\$(CONFIG)\bin\expansive.sample: $(DEPS_46)
 	@echo ..... [Copy] build\$(CONFIG)\bin\expansive.sample
 	if not exist "build\$(CONFIG)\bin" md "build\$(CONFIG)\bin"
 	copy /Y /B src\expansive.sample+modified build\$(CONFIG)\bin\expansive.sample $(LOG)

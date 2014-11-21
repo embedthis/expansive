@@ -1121,7 +1121,7 @@ public class Expansive {
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         let list = dir.files(sitemap.files || '**.html', {exclude: 'directories', relative: true})
         let url = meta.url.trimEnd('/')
-        let base = dir.trimStart(directories.documents).trimStart('/')
+        let base = dir.trimStart(directories.public).trimStart('/')
         for each (file in list) {
             let filename = base.join(file.name).trimEnd('.gz')
             fp.write('    <url>\n' +

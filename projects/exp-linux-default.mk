@@ -3,7 +3,7 @@
 #
 
 NAME                  := exp
-VERSION               := 0.4.2
+VERSION               := 0.4.3
 PROFILE               ?= default
 ARCH                  ?= $(shell uname -m | sed 's/i.86/x86/;s/x86_64/x64/;s/arm.*/arm/;s/mips.*/mips/')
 CC_ARCH               ?= $(shell echo $(ARCH) | sed 's/x86/i686/;s/x64/x86_64/')
@@ -124,11 +124,11 @@ prep:
 	@echo "$(MAKEFLAGS)" >$(BUILD)/.makeflags
 
 clean:
-	rm -f "$(BUILD)/obj/ExpParser.o"
 	rm -f "$(BUILD)/obj/ejs.o"
 	rm -f "$(BUILD)/obj/ejsLib.o"
 	rm -f "$(BUILD)/obj/ejsc.o"
 	rm -f "$(BUILD)/obj/exp.o"
+	rm -f "$(BUILD)/obj/expParser.o"
 	rm -f "$(BUILD)/obj/http.o"
 	rm -f "$(BUILD)/obj/httpLib.o"
 	rm -f "$(BUILD)/obj/mprLib.o"
@@ -262,65 +262,65 @@ $(BUILD)/inc/ejsByteGoto.h: $(DEPS_10)
 $(BUILD)/inc/exp.h: $(DEPS_11)
 
 #
-#   ExpParser.o
-#
-DEPS_12 += $(BUILD)/inc/ejs.h
-DEPS_12 += $(BUILD)/inc/exp.h
-
-$(BUILD)/obj/ExpParser.o: \
-    src/ExpParser.c $(DEPS_12)
-	@echo '   [Compile] $(BUILD)/obj/ExpParser.o'
-	$(CC) -c -o $(BUILD)/obj/ExpParser.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/ExpParser.c
-
-#
 #   ejs.h
 #
 
-src/paks/ejs/ejs.h: $(DEPS_13)
+src/paks/ejs/ejs.h: $(DEPS_12)
 
 #
 #   ejs.o
 #
-DEPS_14 += src/paks/ejs/ejs.h
+DEPS_13 += src/paks/ejs/ejs.h
 
 $(BUILD)/obj/ejs.o: \
-    src/paks/ejs/ejs.c $(DEPS_14)
+    src/paks/ejs/ejs.c $(DEPS_13)
 	@echo '   [Compile] $(BUILD)/obj/ejs.o'
 	$(CC) -c -o $(BUILD)/obj/ejs.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/ejs/ejs.c
 
 #
 #   ejsLib.o
 #
-DEPS_15 += src/paks/ejs/ejs.h
-DEPS_15 += $(BUILD)/inc/mpr.h
-DEPS_15 += $(BUILD)/inc/pcre.h
-DEPS_15 += $(BUILD)/inc/me.h
+DEPS_14 += src/paks/ejs/ejs.h
+DEPS_14 += $(BUILD)/inc/mpr.h
+DEPS_14 += $(BUILD)/inc/pcre.h
+DEPS_14 += $(BUILD)/inc/me.h
 
 $(BUILD)/obj/ejsLib.o: \
-    src/paks/ejs/ejsLib.c $(DEPS_15)
+    src/paks/ejs/ejsLib.c $(DEPS_14)
 	@echo '   [Compile] $(BUILD)/obj/ejsLib.o'
 	$(CC) -c -o $(BUILD)/obj/ejsLib.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/ejs/ejsLib.c
 
 #
 #   ejsc.o
 #
-DEPS_16 += src/paks/ejs/ejs.h
+DEPS_15 += src/paks/ejs/ejs.h
 
 $(BUILD)/obj/ejsc.o: \
-    src/paks/ejs/ejsc.c $(DEPS_16)
+    src/paks/ejs/ejsc.c $(DEPS_15)
 	@echo '   [Compile] $(BUILD)/obj/ejsc.o'
 	$(CC) -c -o $(BUILD)/obj/ejsc.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/ejs/ejsc.c
 
 #
 #   exp.o
 #
+DEPS_16 += $(BUILD)/inc/ejs.h
+DEPS_16 += $(BUILD)/inc/exp.h
+
+$(BUILD)/obj/exp.o: \
+    src/exp.c $(DEPS_16)
+	@echo '   [Compile] $(BUILD)/obj/exp.o'
+	$(CC) -c -o $(BUILD)/obj/exp.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/exp.c
+
+#
+#   expParser.o
+#
 DEPS_17 += $(BUILD)/inc/ejs.h
 DEPS_17 += $(BUILD)/inc/exp.h
 
-$(BUILD)/obj/exp.o: \
-    src/exp.c $(DEPS_17)
-	@echo '   [Compile] $(BUILD)/obj/exp.o'
-	$(CC) -c -o $(BUILD)/obj/exp.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/exp.c
+$(BUILD)/obj/expParser.o: \
+    src/expParser.c $(DEPS_17)
+	@echo '   [Compile] $(BUILD)/obj/expParser.o'
+	$(CC) -c -o $(BUILD)/obj/expParser.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/expParser.c
 
 #
 #   http.h
@@ -588,7 +588,7 @@ ifeq ($(ME_COM_EJS),1)
 endif
 DEPS_37 += $(BUILD)/bin/exp.mod
 DEPS_37 += $(BUILD)/obj/exp.o
-DEPS_37 += $(BUILD)/obj/ExpParser.o
+DEPS_37 += $(BUILD)/obj/expParser.o
 
 LIBS_37 += -lmpr
 ifeq ($(ME_COM_HTTP),1)
@@ -606,7 +606,7 @@ endif
 
 $(BUILD)/bin/exp: $(DEPS_37)
 	@echo '      [Link] $(BUILD)/bin/exp'
-	$(CC) -o $(BUILD)/bin/exp $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/exp.o" "$(BUILD)/obj/ExpParser.o" $(LIBPATHS_37) $(LIBS_37) $(LIBS_37) $(LIBS) $(LIBS) 
+	$(CC) -o $(BUILD)/bin/exp $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/exp.o" "$(BUILD)/obj/expParser.o" $(LIBPATHS_37) $(LIBS_37) $(LIBS_37) $(LIBS) $(LIBS) 
 
 #
 #   http-ca-crt
@@ -694,7 +694,7 @@ stop: $(DEPS_43)
 installBinary: $(DEPS_44)
 	mkdir -p "$(ME_APP_PREFIX)" ; \
 	rm -f "$(ME_APP_PREFIX)/latest" ; \
-	ln -s "0.4.2" "$(ME_APP_PREFIX)/latest" ; \
+	ln -s "0.4.3" "$(ME_APP_PREFIX)/latest" ; \
 	mkdir -p "$(ME_VAPP_PREFIX)/bin" ; \
 	cp $(BUILD)/bin/exp $(ME_VAPP_PREFIX)/bin/exp ; \
 	mkdir -p "$(ME_BIN_PREFIX)" ; \
@@ -753,5 +753,5 @@ uninstall: $(DEPS_47)
 #
 
 version: $(DEPS_48)
-	echo 0.4.2
+	echo 0.4.3
 

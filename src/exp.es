@@ -570,7 +570,8 @@ public class Expansive {
         for each (dir in dirs) {
             let config = dir.join(CONFIG)
             if (config.exists) {
-                let meta = metaCache[dir] = loadConfig(dir.join(CONFIG), metaCache[dir.parent] || topMeta)
+                let meta = metaCache[dir.parent] || topMeta
+                let meta = metaCache[dir] = loadConfig(dir.join(CONFIG), meta.clone(true))
                 if (meta.expansive.sitemap) {
                     let pubdir = rebase(dir, directories.documents)
                     pubdir = directories.public.join(pubdir)

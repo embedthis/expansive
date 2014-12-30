@@ -83,26 +83,26 @@ Me.load({
     },
 
     targets: {
-        'exp.mod': {
-            path: '${BIN}/exp.mod',
-            files: [ 'src/exp.es', 'src/ExpParser.es', 'src/paks/ejs-version/Version.es' ],
+        'expansive.mod': {
+            path: '${BIN}/expansive.mod',
+            files: [ 'src/expansive.es', 'src/ExpParser.es', 'src/paks/ejs-version/Version.es' ],
             build: `
-                run('${LBIN}/ejsc --debug --out ${BIN}/exp.mod --optimize 9 ${FILES}')
+                run('${LBIN}/ejsc --debug --out ${BIN}/expansive.mod --optimize 9 ${FILES}')
             `,
-            message: 'Compile: exp.mod',
+            message: 'Compile: expansive.mod',
             depends: [ 'ejs.mod' ],
         },
-        'exp': {
+        'expansive': {
             type: 'exe',
-            path: '${BIN}/exp${EXE}',
+            path: '${BIN}/expansive${EXE}',
             sources: [ 'src/*.c' ],
             static: false,
-            depends: [ 'libmpr', 'libhttp', 'libejs', 'exp.mod' ],
+            depends: [ 'libmpr', 'libhttp', 'libejs', 'expansive.mod' ],
         },
 
         sample: {
-            path: [ '${BIN}/expansive.sample' ],
-            files: [ 'src/expansive.sample' ],
+            path: [ '${BIN}/sample.json' ],
+            files: [ 'src/sample.json' ],
             type: 'file',
         }
 

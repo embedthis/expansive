@@ -1,11 +1,11 @@
 {
-    "name": "exp",
+    "name": "expansive",
     "description": "Embedthis Expansive",
     "version": "0.4.3",
     "keywords": [
         "expansive"
     ],
-    "homepage": "http://embedthis.com/products/exp/",
+    "homepage": "http://embedthis.com/products/expansive/",
     "author": {
         "name": "Embedthis Software",
         "email": "dev@embedthis.com",
@@ -13,11 +13,11 @@
     },
     "repository": {
         "type": "git",
-        "url": "git://github.com/embedthis/exp.git"
+        "url": "git://github.com/embedthis/expansive.git"
     },
     "bugs": {
         "email": "dev@embedthis.com",
-        "url": "http://github.com/embedthis/exp/issues"
+        "url": "http://github.com/embedthis/expansive/issues"
     },
     "licenses": [
         {
@@ -34,24 +34,21 @@
         "ejs-version": "~0.8",
         "est": "~0.6",
         "http": "~6.0",
-        "me-docstyle": "~0.8",
         "mpr": "~6.0",
         "osdep": "~0.8",
         "pcre": "~1.0",
         "ssl": "~0.8",
         "zlib": "~1.0"
     },
-    "optionalDependencies": {
-    },
     "directories": {
         "paks": "src/paks"
     },
-    "import": true,
-    "paks": {
+    "app": {
         "*": {
             "ignore": [
                 "doc"
-            ]
+            ],
+            "noblend": true
         }
     }
 }

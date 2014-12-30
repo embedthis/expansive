@@ -35,7 +35,7 @@ Me.load({
         sets: {
             core: [
                 {   
-                    from:       'exp${EXE}',
+                    from:       'expansive${EXE}',
                     to:         '${abin}/',
                     symlink:    '${bin}/',
 
@@ -61,8 +61,8 @@ Me.load({
                     from: [
                                 'ca.crt',
                                 'ejs.mod',
-                                'exp.mod',
-                                'expansive.sample',
+                                'expansive.mod',
+                                'sample.json',
                     ],
                     to:         '${abin}/',
 
@@ -70,7 +70,7 @@ Me.load({
                     home:       '${SRC}/src',
                     from:       '**',
                     to:         '${abin}/',
-                    exclude:    /src\/exp.c|src\/paks|\/$/,
+                    exclude:    /src\/expansive.c|src\/paks|\/$/,
                     enable:     false,
                 }
             ],
@@ -95,7 +95,7 @@ Me.load({
             ],
             doc: [
                 { 
-                    from:       '${SRC}/doc/documents/man/exp.1',
+                    from:       '${SRC}/doc/documents/man/expansive.1',
                     to:         '${adoc}/man/man1/',
                     symlink:    '${man}/man1/',
                     enable:     "me.platform.like == 'unix'",

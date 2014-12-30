@@ -1,9 +1,9 @@
 /*
-    ExpParser.es -- Expansive templates parser.
+    ExpansiveParser.es -- Expansive templates parser.
  */
 
-module exp.template {
-    class ExpParser {
+module expansive.template {
+    class ExpansiveParser {
         native public function parse(script: String): String
     }
 }

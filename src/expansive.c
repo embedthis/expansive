@@ -1,5 +1,5 @@
 /**
-    exp.c - Run the exp.es|exp.mod script.
+    expansive.c - Run the expansive.es|expansive.mod script.
 
     This program runs a script of the same name as this script.
 
@@ -9,7 +9,7 @@
 /********************************** Includes **********************************/
 
 #include    "ejs.h"
-#include    "exp.h"
+#include    "expansive.h"
 
 /*********************************** Locals ***********************************/
 
@@ -20,7 +20,7 @@ typedef struct App {
 
 static App *app;
 
-static cchar *findExp();
+static cchar *findExpansive();
 static void manageApp(App *app, int flags);
 
 /************************************ Code ************************************/
@@ -42,7 +42,7 @@ MAIN(ejsMain, int argc, char **argv, char **envp)
     mprAddStandardSignals();
 
     if (mprStart(mpr) < 0) {
-        mprLog("exp", 0, "Cannot start mpr services");
+        mprLog("expansive", 0, "Cannot start mpr services");
         return EJS_ERR;
     }
     err = 0;
@@ -63,7 +63,7 @@ MAIN(ejsMain, int argc, char **argv, char **envp)
             } else {
                 homeDir = argv[++nextArg];
                 if (chdir((char*) homeDir) < 0) {
-                    mprLog("exp", 0, "Cannot change directory to %s", homeDir);
+                    mprLog("expansive", 0, "Cannot change directory to %s", homeDir);
                 }
             }
 
@@ -122,15 +122,15 @@ MAIN(ejsMain, int argc, char **argv, char **envp)
         httpCreate(HTTP_CLIENT_SIDE | HTTP_SERVER_SIDE);
         httpStartTracing(traceSpec);
     }
-    if ((app->script = findExp()) == 0) {
-        mprLog("exp", 0, "Cannot find exp.es or exp.mod");
+    if ((app->script = findExpansive()) == 0) {
+        mprLog("expansive", 0, "Cannot find expansive.es or expansive.mod");
         return MPR_ERR_CANT_FIND;
     }
     argv[0] = (char*) app->script;
     if ((ejs = ejsCreateVM(argc, (cchar**) &argv[0], 0)) == 0) {
         return MPR_ERR_MEMORY;
     }
-    ejsAddNativeModule(ejs, "exp.template", expConfigureTemplateType, 0, EJS_LOADER_ETERNAL);
+    ejsAddNativeModule(ejs, "expansive.template", expansiveConfigureTemplateType, 0, EJS_LOADER_ETERNAL);
 
     mprStartDispatcher(ejs->dispatcher);
     app->ejs = ejs;
@@ -177,20 +177,21 @@ static void manageApp(App *app, int flags)
 }
 
 
-static cchar *findExp()
+static cchar *findExpansive()
 {
     cchar    *path;
 
-    path = mprJoinPath(mprGetAppDir(), "exp.mod"); 
+    path = mprJoinPath(mprGetAppDir(), "expansive.mod"); 
     if (mprPathExists(path, R_OK)) {
         return path;
     }
-    path = mprJoinPath(mprGetAppDir(), "exp.es"); 
+    path = mprJoinPath(mprGetAppDir(), "expansive.es"); 
     if (mprPathExists(path, R_OK)) {
         return path;
     }
     return 0;
 }
+
 
 /*
     @copy   default

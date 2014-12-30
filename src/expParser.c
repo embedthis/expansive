@@ -18,7 +18,7 @@
 /********************************** Includes **********************************/
 
 #include    "ejs.h"
-#include    "exp.h"
+#include    "expansive.h"
 
 /*
       EXP lexical analyser tokens
@@ -47,10 +47,10 @@ typedef struct ExpState {
 /************************************ Forwards ********************************/
 
 static bool addChar(ExpState *state, int c);
-static char *buildScript(cchar *contents, cchar *delims);
+static char *buildScript(Ejs *ejs, cchar *contents, cchar *delims);
 static char *eatNewLine(ExpState *parse, char *next);
 static char *eatSpace(ExpState *state, char *next);
-static int  getToken(ExpState *state);
+static int  getToken(Ejs *ejs, ExpState *state);
 
 /************************************* Code ***********************************/
 /*
@@ -69,12 +69,16 @@ static EjsString *parse(Ejs *ejs, EjsObj *template, int argc, EjsObj **argv)
             delims = dp->value;
         }
     }
-    code = buildScript(sp->value, delims);
+    if ((code = buildScript(ejs, sp->value, delims)) == 0) {
+        if (!ejs->exception) {
+            ejsThrowError(ejs, "Cannot parse script");
+        }
+    }
     return ejsCreateStringFromAsc(ejs, code);
 }
 
 
-static char *buildScript(cchar *contents, cchar *delims)
+static char *buildScript(Ejs *ejs, cchar *contents, cchar *delims)
 {
     ExpState    state;
     MprBuf      *body;
@@ -87,7 +91,7 @@ static char *buildScript(cchar *contents, cchar *delims)
     state.lineNumber = 0;
     state.token = mprCreateBuf(0, 0);
     state.delims = delims;
-    tid = getToken(&state);
+    tid = getToken(ejs, &state);
 
     mprPutStringToBuf(body, "global._export_ = function() { ");
 
@@ -128,7 +132,7 @@ static char *buildScript(cchar *contents, cchar *delims)
         default:
             return 0;
         }
-        tid = getToken(&state);
+        tid = getToken(ejs, &state);
     }
     mprPutStringToBuf(body, "}\n");
     mprAddNullToBuf(body);
@@ -140,7 +144,7 @@ static char *buildScript(cchar *contents, cchar *delims)
     Get the next EXP input token. input points to the next input token.
     state->token will hold the parsed token. The function returns the token id.
  */
-static int getToken(ExpState *state)
+static int getToken(Ejs *ejs, ExpState *state)
 {
     char    *start, *end, *next;
     int     tid, done, c, t;
@@ -213,8 +217,12 @@ static int getToken(ExpState *state)
                     }
                     done++;
 
-                } else if (t == state->delims[1]) {
-                    /* @@var */
+                } else if (t == state->delims[1] || t == '=') {
+                    if (t == state->delims[1]) {
+                        ejsThrowError(ejs, "Using old-style '@@', replace with '@='");
+                        return EXP_TOK_ERR;
+                    }
+                    /* @=var */
                     next += 2;
                     if (mprGetBufLength(state->token) > 0) {
                         /* Prior literal */
@@ -317,7 +325,7 @@ static char *eatNewLine(ExpState *state, char *next)
 }
 
 
-PUBLIC int expConfigureTemplateType(Ejs *ejs)
+PUBLIC int expansiveConfigureTemplateType(Ejs *ejs)
 {
     EjsType     *type;
     EjsPot      *prototype;
@@ -325,12 +333,12 @@ PUBLIC int expConfigureTemplateType(Ejs *ejs)
     /*
         Get the Square class object. This will be created from the mod file for us.
      */
-    if ((type = ejsGetTypeByName(ejs, N("exp.template", "ExpParser"))) == 0) {
-        mprError("Cannot find type ExpParser");
+    if ((type = ejsGetTypeByName(ejs, N("expansive.template", "ExpansiveParser"))) == 0) {
+        mprError("Cannot find type ExpansiveParser");
         return MPR_ERR;
     }
     prototype = type->prototype;
-    ejsBindMethod(ejs, prototype, ES_ExpParser_parse, parse);
+    ejsBindMethod(ejs, prototype, ES_ExpansiveParser_parse, parse);
     return 0;
 }
 

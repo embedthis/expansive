@@ -1,0 +1,154 @@
+/*
+    sample.json - Sample Expansive Configuration
+
+    This file includes all configuration propertis. Most of these have intelligent defaults and so a minimal 
+    expansive.json may be much smaller.
+
+    Expansive configuration files are enhanced JSON files that more closely resemble Javascript syntax. 
+    The following enhancements are permitted:
+        - Comments
+        - Property key names without quotes
+        - Strings with single quotes
+ */
+{
+    /*
+        Document meta information
+     */
+    meta: {
+        description: 'Meta data description. Value read from package.json by default',
+        title:       'Home page title. Value read from package.json by default',
+        url:         'Home page URL',
+
+    /*
+        Internal meta properties
+
+        basename    Basename portion of the public document filename.
+        control     Control collection specified in exp.json.
+        date        Generation date of the document.
+        document    Name of the document in 'documents' that is being processed.
+        extension   The extension of the public document filename.
+        extensions  The set of extensions on the original input document.
+        file        Filename of the document or partial being processed.
+        from        The filename extension being processed by the current transformation.
+        isLayout    True if a layout is being processed.
+        isPartial   True if a partial page is being processed.
+        layout      Layout page in use. Set to '' if no layout being used.
+
+        sitemap: {  // Generate a site map
+            files: [ '**.html' ],
+        }
+     */
+    },
+
+    /*
+        Expansive control section
+     */
+    control: {
+        /*
+            Copy these directories from documents without rending. Not set by default.
+         */
+        copy: [ 'images' ],
+
+        /*
+            Dependency relationships. Used to detect when a document must be rendered due to
+            changes in files that it depends upon. 
+
+            The hash key is the document path and the value is a set of files that if modified,
+            cause the document to be rendered. The document and files are relative to the 
+            documents directory. The set of files can be a string or an array of files. Each 
+            value file may contain '*' or '**'.
+    
+            The exp-less plugin contains the default rule:
+            dependencies: { 'css/all.css.less': '**.less' },
+         */
+
+        /*
+            Directory mappings. These are the default directory settings.
+         */
+        directories: {
+            documents:  'documents',
+            files:      'files',
+            layouts:    'layouts',
+            lib:        'lib',
+            paks:       'paks',
+            partials:   'partials',
+            public:     'public',
+        },
+
+        /*
+            Documents to process under directories.documents
+         */
+        documents: [ '**' ],
+
+        /*
+            Files to copy outside of the documents directory. This defaults to [ documents.files ] if unset.
+            Expansive copies files/** to public/.
+         */
+        files: [ 'files' ],
+
+        /*
+            Address on which to listen. Format is: 'IP:PORT', but may be just a port number. Defaults to 4000.
+         */
+        listen: '4000',
+
+        /*
+            List of plugins to load. These are installed via 'exp install name'.
+            These names should not have the 'exp-' prefix.
+
+            plugins: [ 'ng', 'js', 'less', 'css', 'esp', 'gzip' ]
+         */
+        plugins: [ ],
+
+        /*
+            Scripts to inject into the global space
+         */
+        script: `
+            function menu(item) meta.menu == item ? 'active' : ''
+        `,
+
+        /*
+            Generate a sitemap
+
+            sitemap: {
+                files: [ '**.html' ],
+            },
+         */
+
+        /*
+            Explict transformation pipeline. This is normally built automatically by plugins based
+            on the order of the plugins in the 'plugins' property. However, it may be explicitly 
+            overridden here. The pipeline values are the plugin service names.
+
+            transforms: {
+                'less -> css': [ 'compile-less', 'prefix-css', 'minify-css', 'gzip' ]
+            }
+         */
+
+        /*
+            Time period in milliseconds to wait when watching for changes. Must be > 1000 (1 sec)
+         */
+        watch: 1000,
+    },
+
+    /*
+        Set of per-mode properties. Depending on the value of 'mode' in package.json, the
+        selected collection it made active by copying the properties up one level.
+     */
+    debug: {
+    },
+
+    /*
+        Sample release configuration
+     */
+    release: {
+        control: {
+            // plugins: [ 'ng', 'js', 'less', 'css', 'esp', 'gzip' ],
+        },
+        services: {
+            //  Per-service configuration
+            'compile-ng-js': {
+                // files: [ 'lib/angular*/**.js', 'lib/esp*/**.js', 'app/**.js' ]
+            }
+        }
+    }
+}

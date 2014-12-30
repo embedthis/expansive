@@ -18,33 +18,36 @@ exp \- Embedthis Expansive -- Fast, Flexible Static Web Site Generator
 .SH ""
 .B Commands:
     clean
-    init
-    install
-    render
     filters ...
-    upgrade
-    uninstall
+    init
+    install plugins
+    list 
+    mode [debug|release|...]
+    render
+    uninstall plugins
+    upgrade plugins
     watch
     <CR>
 .RE
 .SH DESCRIPTION
-\fBExpansive\fR is a fast and flexible static web site generator using Ejscript.
+\fBExpansive\fR is a fast and flexible static web site generator.
 It quickly creates HTML pages from layouts, partials and content pages.
+Expansive brings dynamic content to static web sites.
 
 .PP
 .SH WHY EXPANSIVE?
-There are many web site site generators, why another one?  Existing site generators are often slow, very slow, painfully slow.
+There are many web site site generators, why another one? Existing site generators are slow, very slow, 
+often painfully slow.
 When creating or managing a web site, you need tools that do not delay the creative design process. They need to be as fast
-as possible. Expansive is fast, pure and simple.
+as possible. Expansive is designed to be fast, without sacrificing features.
 .PP
-Other site generators frequently provide poor diagnostics. Fine when everything works, but when a page fails to render due
-to a scripting error -- debugging can be a nightmare. Expansive shows exactly where errors occur.
+Futher, other site generators frequently provide poor diagnostics. Fine when everything works, but when a page fails 
+to render due to a scripting error -- debugging can be a nightmare. Expansive shows exactly where errors occur.
 
 .SH FEATURES
-Expansive is implemented primarily as a single script of some 1.5K lines of Ejscript and is very hackable.  It has the
-following major features:
+Expansive generates static web sites from pages, layouts, partials and scripts. It
+has the following major features:
 
-    . Generate static web sites from pages, layouts, partials and scripts
     . Ejscript templates for dynamic content
     . Layout pages to define the look and feel of site
     . Partial pages to include replicated content
@@ -68,7 +71,7 @@ While Expansive has a strong feature set, there are some characteristics that ma
 .PP
 .SH BASIC USAGE
 .PP
-To prepare a directory for expansive and create an expansive.es configuration file:
+To prepare a directory for expansive and create an expansive.json configuration file:
     exp init
 
 To install new plugins to transform content. The exp-less compiles *.less into css. 
@@ -108,23 +111,22 @@ and includes partial pages from the 'partials' directory. Raw files may be copie
 rendered to the 'public' output directory.
 
 .SH CONFIGURATION
-Expansive is controlled by an 'expansive.es' configuration file. This defines top level configuration for the site and 
-controls how Expansive renders the site. An expansive.es file must be present for Expansive to render content.
+Expansive is controlled by an 'expansive.json' configuration file. This defines top level configuration for the site and 
+controls how Expansive renders the site. An expansive.json file must be present for Expansive to render content.
 .PP
 To prepare a new site to use Expansive, run:
 
     exp init
 
 .PP
-This creates an expansive.es file. Here is a cut-down portion:
+This creates an expansive.json file. Here is a cut-down portion:
 .PP
 .RS 5
-Expansive.load({
+{
     meta: {
         title: 'Home page title',
         url: 'Home page url',
         description: 'Meta data description (optional)',
-        keywords: 'Meta data keywords (optional)',
     },
     expansive: {
         copy: [ '**.tags', 'images' ],
@@ -138,10 +140,11 @@ Expansive.load({
     services: {
         /* Configuration for plugins */
     }
- })
+ }
 .RE
 .PP
-The 'meta' contents of the expansive.es file are added to the Expansive meta data collection that is provided to every page, 
+Expansive uses a "liberal" json format that permits comments, unquoted property keys and use of multi-line quotes. The 
+'meta' contents of the expansive.json file are added to the Expansive meta data collection that is provided to every page, 
 layout and partial page. The 'expansive' collection has properties that control the operation of Expansive. These values
 are made available to web pages via the 'meta.expansive' property.
 
@@ -167,9 +170,9 @@ expression, HTML escapse the data and then write it. For example:
 
  <p>Today is <@= Date() @>
 
-Even simpler, you can use an abbreviated @@variable to emit the value of a Javascript variable. For example:
+Even simpler, you can use an abbreviated @= variable to emit the value of a Javascript variable. For example:
 
- <p>Site URL is @@{meta.url}</p>
+ <p>Site URL is @={meta.url}</p>
 
 The top URL of the site may be abbreviated as '@~'.
 
@@ -201,7 +204,7 @@ exp-bash
 Run shell scripts and capture the output
 .TP 10
 exp-css
-Process CSS files to add browser specific prefixs and minify the output. Requires 'autoprefixer' and 'recess' to be installed.
+Process CSS files to add browser specific prefixes and minify the output. Requires 'autoprefixer' and 'recess' to be installed.
 .TP 10
 exp-esp
 Compile ESP web pages and applications.
@@ -231,7 +234,7 @@ Process SASS files into CSS. Requires "sass" to be installed.
 exp-uglifyjs
 Install Uglify-js. Use with the exp-js plugin to mangle and minify Javascripts.
 .PP
-Many plugins can be customized by passing configuration to the plugin via expansive.es file. For example:
+Many plugins can be customized by passing configuration to the plugin via expansive.json file. For example:
 To request that all Javascript files be minified, use a '.min.js' extension, and be compressed but not managed:
 .PP
 {
@@ -298,12 +301,12 @@ the Ejscript execution context for each page, layout and partial where scripts c
  <h1>Page Header</h1>
 
 .RE
-The meta data is added to the current meta data collection from the expansive.es file and passed to the layout page, 
+The meta data is added to the current meta data collection from the expansive.json file and passed to the layout page, 
 partials pages and content pages. The meta data can be accessed via the global 'meta' Javascript variable.
 
 .PP
 Meta data is inherited and aggregated as Expansive processes a web site directory. In each directory, a site may 
-define an 'expansive.es' file that provides additional meta data for that directory level. The meta data from 
+define an 'expansive.json' file that provides additional meta data for that directory level. The meta data from 
 upper directories is passed down to lower directories. In this manner upper levels can define the parameters for 
 subdirectories in the site. Meta data is never passed back up the tree.
 
@@ -342,6 +345,7 @@ Layout page in use. Set to '' if no layout being used.
 .TP 12
 mode
 Index in the modes property. The selected property collection is copied up to the top level of the meta data.
+This may be used to select a "debug" or "release" configuration.
 .TP 12
 partial
 Name of the partial page being processed.
@@ -366,7 +370,7 @@ URL for the current page.
 
 .SH EXPANSIVE CONTROL
 Expansive defines a set of control properites in the meta.expansive property. These are originally sourced from the
-'expansive' property in the 'expansive.es' file.
+'expansive' property in the 'expansive.json' file.
 .TP 12
 copy
 Array of patterns to copy without processing. The patterns may include "*" or "**". If a directory is specifed, all files
@@ -417,16 +421,16 @@ Time in milliseconds to wait between checking for rendering.
 
 .SH CREATING PLUGINS
 Expansive plugins are created using the Pak utility (https://embedthis.com/pak) and published to the Pak Catalog at
-(https://embedthis.com/catalog/). The plugin contains an expansive.es file that includes transforms relevant to the plugin.
+(https://embedthis.com/catalog/). The plugin contains an expansive.json file that includes transforms relevant to the plugin.
 For example:
 
  {
     expansive: {
         transforms: {
-            name:       'my-transform',
-            input:      'ext1',
-            output:         'ext2',
-            script:     '
+            name:   'my-transform',
+            input:  'ext1',
+            output: 'ext2',
+            script: '
                 function transform(contents, meta, service) {
                     return transformed data
                 }
@@ -491,16 +495,19 @@ clean
 Remove rendered content from the 'public' output directory.
 .TP
 init
-Initialize a directory by creating an 'expansive.es' configuration file.
+Initialize a directory by creating an 'expansive.json' configuration file.
 .TP
 install
 Install a plugin from the Pak catalog.
+.TP
+list
+List the installed and uninstalled plugins and packages. 
 .TP
 render
 Render the site by processing files from 'documents', 'layouts', 'partials' and 'files' into the 'public' output directory.
 .TP
 uninstall
-Uninstall a plugin from the expansive.es plugin list. The plugin remains in the local Pak cache.
+Uninstall a plugin from the expansive.json plugin list. The plugin remains in the local Pak cache.
 .TP
 upgrade
 Upgrade a plugin version in the local Pak cache.

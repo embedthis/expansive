@@ -1,4 +1,4 @@
-Expansive.load({
+{
     meta: {
         title:       'Embedthis Expansive Documentation',
         url:         'https://embedthis.com/esp/doc/',
@@ -7,8 +7,8 @@ Expansive.load({
     },
     expansive: {
         copy: [ 'images' ],
-        dependencies: { 'css/all.css.less': 'css/*.inc.less' },
-        documents: [ '**', '!css/*.inc.less' ],
-        plugins: [ 'less' ],
+        dependencies: { 'css/all.css.less': '**.less' },
+        documents: [ '**', '!**.less', '**.css.less' ],
+        plugins: [ 'less' ]
     }
-})
+}

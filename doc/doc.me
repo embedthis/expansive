@@ -10,11 +10,11 @@ Me.load({
                 for each (f in Path('public').files('**/*.html')) {
                     let data = f.readString()
                     data = data.replace('700|Open', '').
-                        replace(/exp.download.html/g, 'download/exp.html').
+                        replace(/expansive.download.html/g, 'download/expansive.html').
                         replace(/pak.download.html/g, 'download/pak.html').
                         replace(/developers.contributors.html/g, 'scripts/contributors.esp').
                         replace(/nowrap="nowrap"/g, '').
-                        replace(/https:..embedthis.com.exp.licensing.html/g, 'https://embedthis.com/').
+                        replace(/https:..embedthis.com.expansive.licensing.html/g, 'https://embedthis.com/').
                         replace(/https:..embedthis.com.me.doc.guide.me.source.building.htm/g, 'https://embedthis.com/').
                         replace(/https:..embedthis.com.me.doc.source.building.htm/g, 'https://embedthis.com/').
                         replace(/https:..embedthis.com.me.doc.source/g, 'https://embedthis.com/').
@@ -27,8 +27,8 @@ Me.load({
                 for each (f in Path('public/man').files('*.html')) {
                     f.write(f.readString().toLowerCase())
                 }
-                trace('Listen', 'exp --nowatch')
-                Cmd.run('exp --nowatch')
+                trace('Listen', 'expansive --nowatch')
+                Cmd.run('expansive --nowatch')
             `
         },
     },

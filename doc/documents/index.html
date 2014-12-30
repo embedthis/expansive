@@ -4,53 +4,44 @@
 }
 
         <h1>Embedthis Expansive&trade; Overview</h1>
-        <p>Expansive is a blazing fast and compact embedded web server for the efficient and secure hosting of embedded web 
-        applications. Expansive dramatically cuts the time and cost of developing web applications by including the 
-        <a href="https://embedthis.com/esp/">ESP web framework</a> and an extensive set of features.</p>
+        <p>Expansive is a fast and flexible static web site generator. It quickly creates HTML pages from layouts, partials
+        and contents pages. Expansive brings dynamic content to static web sites.</p>
 
-        <h2>Highly Optimized</h2>
-        <p>Expansive is optimized for hosting dynamic embedded web applications via an event driven, multi-threaded core to
-        deliver exceptional throughput and effective memory utilization. It is compact and will embed using as
-        little as 1MB of memory (typical 2MB). It is especially effective in reducing the per-request memory 
-        overhead for web applications.</p>
+        <h2>Why Expansive?</h2>
+        <p>There are two key reasons we created Expansive.</p>
+        <ul>
+            <li>There are many web site site generators, why create another one? The problem is that most existing site 
+            generators are slow, very slow, often painfully slow. When creating or managing a web site, you need tools 
+            that do not delay the creative design process. They need to be as fast as possible. Expansive is designed 
+            to be fast, without sacrificing features.</li>
+            <li>Other site generators frequently provide poor diagnostics. This may be fine when everything works, 
+            but when a page fails to render due to a scripting error -- debugging can be a nightmare.</li>
+        </ul>
+        <p>Expansive addresses these two flaws: Expansive is very fast to generate and update site contents and if you have made a script error, it shows exactly where the error is.</p>
+        <p>However, Expansive has now gone beyond its original goals and now offers a powerful, flexible environment for creating web sites.</p>
 
         <h2>Extensive Features</h2>
-        <p>Expansive has a strong set of features including: SSL/TLS, basic and digest authentication, virtual hosting,
-        loadable modules, Apache style configuration file, CGI, ESP, PHP, sandbox resource limits, 
-        logging, request tracing, monitoring, defensive counter-measures, service manager, and 
-        extensive conditional configuration and compilation controls.</p>
-
-        <p>With these features, Expansive is designed to make hosting and embedding web applications painless. 
-        Expansive is the perfect server to host your web application.</p>
-
-        <h2>Deployed Widely</h2>
-        <p>As one of the most widely deployed embedded web servers, Expansive is being used in networking equipment,
-        telephony, mobile devices, consumer and office equipment as well as hosting for enterprise web applications
-        and frameworks. It runs equally well stand-alone or in a farm behind a reverse proxy such as Apache. Expansive
-        provides both Open-Source and commercial licenses and comes with full source code.</p><a id="components"></a>
-
-        <h2>Components</h2>
-        <p>Expansive provides the following components:</p>
+        <p>Expansive will generate static web sites from pages, layouts, partials and scripts. It has 
+            the following major features:</p>
         <ul>
-            <li>HTTP web server program and library</li>
-            <li>HTTP client program and library</li>
-            <li>Manager and monitor processes</li>
-            <li>ESP web framework</li>
-            <li>Loadable modules for CGI, Ejscript, ESP, and PHP</li>
-            <li>Secure Socket Layer (SSL/TLS)</li>
-            <li>Support for other web frameworks: PHP and Ejscript</li>
-            <li>Complete documentation with samples</li>
-            <li>Full source code</li>
+        <li>Ejscript templates for dynamic content</li>
+        <li>Layout pages to define the look and feel of site</li>
+        <li>Partial pages to include replicated content</li>
+        <li>Per-page meta data to control layouts and partials</li>
+        <li>Integrated web server to serve content</li>
+        <li>Watch for changes and automatically render site</li>
+        <li>Scripting support via change events</li>
+        <li>Automatic sitemap creation</li>
+        <li>Content transition pipeline</li>
+        <li>Open plugin architecture</li>
         </ul>
-        <a id="more"></a>
-        <h2>Want More?</h2>
-        <p>To learn more about Expansive, please read:</p>
+
+        <h2>Nice Parts</h2>
+        <p>While Expansive has a strong feature set, there are some characteristics that make Expansive particularly sweet.</p>
         <ul>
-            <li><a href="users/goals.html">Expansive Design Goals</a></li>
-            <li><a href="users/uses.html">Expansive Target Uses</a></li>
-            <li><a href="users/internals.html">Expansive Internals</a></li>
-            <li><a href="ref/architecture.html">Expansive Architecture</a></li>
-            <li><a href="https://embedthis.com/exp/">Expansive Web Site</a></li>
-            <li><a href="https://embedthis.com/exp/download.html">Expansive Download</a></li>
-            <li><a href="https://embedthis.com">Embedthis Web Site</a></li>
+            <li>fast, fast</li>
+            <li> power of Ejscript in every page</li>
+            <li> simple code. By leveraging Ejscript, the code is simple and clean</li>
+            <li> to create and install new plugins</li>
+            <li> diagnostics when things go wrong</li>
         </ul>

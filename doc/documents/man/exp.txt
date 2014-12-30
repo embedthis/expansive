@@ -33,32 +33,29 @@ SYNOPSIS
            <CR>
 
 DESCRIPTION
-       Expansive  is  a  fast  and  flexible  static  web site generator using
-       Ejscript.  It quickly creates HTML pages  from  layouts,  partials  and
-       content pages.
+       Expansive is a fast and flexible static web site generator.  It quickly
+       creates HTML pages from layouts, partials and content pages.  Expansive
+       brings dynamic content to static web sites.
 
 
 
 WHY EXPANSIVE?
-       There  are  many  web  site site generators, why another one?  Existing
-       site generators are often slow, very slow, painfully slow.  When creat-
-       ing  or  managing a web site, you need tools that do not delay the cre-
-       ative design process. They need to be as fast as possible. Expansive is
-       fast, pure and simple.
+       There are many web site site generators, why another one? Existing site
+       generators are slow, very slow, often painfully slow.  When creating or
+       managing  a  web  site,  you  need tools that do not delay the creative
+       design process. They need to be  as  fast  as  possible.  Expansive  is
+       designed to be fast, without sacrificing features.
 
-       Other  site  generators  frequently provide poor diagnostics. Fine when
-       everything works, but when a page fails to render due  to  a  scripting
-       error  --  debugging  can be a nightmare. Expansive shows exactly where
-       errors occur.
+       Futher, other site generators frequently provide poor diagnostics. Fine
+       when everything works, but when a page fails to render due to a script-
+       ing  error  --  debugging  can  be a nightmare. Expansive shows exactly
+       where errors occur.
 
 
 FEATURES
-       Expansive is implemented primarily as a  single  script  of  some  1.5K
-       lines  of  Ejscript  and  is very hackable.  It has the following major
-       features:
+       Expansive generates static web sites from pages, layouts, partials  and
+       scripts. It has the following major features:
 
-           . Generate static web  sites  from  pages,  layouts,  partials  and
-       scripts
            . Ejscript templates for dynamic content
            . Layout pages to define the look and feel of site
            . Partial pages to include replicated content
@@ -247,7 +244,7 @@ USEFUL PLUGINS
 
        exp-bash  Run shell scripts and capture the output
 
-       exp-css   Process CSS files to add browser specific prefixs and  minify
+       exp-css   Process CSS files to add browser specific prefixes and minify
                  the  output.  Requires  'autoprefixer'  and  'recess'  to  be
                  installed.
 

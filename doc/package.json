@@ -4,17 +4,11 @@
         "jquery": "~1.11",
         "semantic": "~0.50"
     },
-    "directories": {
-        "lib": "files/lib"
-    },
-    "import": true,
-    "optionalDependencies": {
-    },
     "app": {
-        "client": {
-            "scripts": [
-                "files/lib/jquery/jquery.js"
-            ]
+        "jquery": {
+            "interface": {
+                "js": "jquery.js"
+            }
         }
     }
 }

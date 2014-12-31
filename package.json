@@ -46,7 +46,7 @@
     "app": {
         "*": {
             "ignore": [
-                "doc"
+                "doc/**"
             ],
             "noblend": true
         }

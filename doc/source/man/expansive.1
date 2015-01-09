@@ -77,7 +77,7 @@ To prepare a directory for expansive and create an expansive.json configuration 
 To install new plugins to transform content. The exp-less compiles *.less into css. 
     exp install exp-less
 
-To render a site from 'documents' into 'public'
+To render a site from 'source' into 'documents'
     exp render
 
 To serve content and watch for changes
@@ -86,9 +86,9 @@ To serve content and watch for changes
 To watch for changes but not serve
     exp watch
 
-To render a matching set of documents
-    exp documents/index.html
-    exp documents/manual
+To render a matching set of files
+    exp source/index.html
+    exp source/manual
 
 To clean the rendered site under 'public'
     exp clean
@@ -97,16 +97,16 @@ To clean the rendered site under 'public'
 .SH DIRECTORIES
 Expansive uses the following directories:
 
-    documents   Input web pages to be processed
+    documents   Final output directory containing the rendered documents
     files       Files to be copied and not processed
     layouts     For master page layouts
-    public      Final output directory containing the rendered web site
     partials    For partial web pages that can be included by other pages
+    source      Input web pages to be processed
 
 These directories can be modified via meta 'expansive.directories' collection.
 
 .SH PROCESSING
-Expansive operates by processing web pages from the 'documents' directory. It uses layout pages from the 'layouts' directory
+Expansive operates by processing web pages from the 'source' directory. It uses layout pages from the 'layouts' directory
 and includes partial pages from the 'partials' directory. Raw files may be copied from the 'files' directory.  Content is
 rendered to the 'public' output directory.
 
@@ -151,7 +151,7 @@ are made available to web pages via the 'meta.expansive' property.
 .PP
 In the expansive section, the 'documents' array defines the set of patterns to select documents for processing. 
 The 'copy' array defines a set of patterns to select files to copy without processing. The copy patterns are 
-relative to the 'documents' directory. The 'script' string defines an optional global script to inject code into 
+relative to the 'source' directory. The 'script' string defines an optional global script to inject code into 
 the Ejscript execution context. The 'sitemap' collection defines what documents to include in the created sitemap XML file.
 
 .SH DYNAMIC CONTENT
@@ -313,14 +313,11 @@ subdirectories in the site. Meta data is never passed back up the tree.
 .SH META PROPERTIES
 Expansive defines a rich set of meta properties for you to use in your pages:
 .TP 12
-basename
-Basename portion of the public document filename.
-.TP 12
 date
 Generation date of the document.
 .TP 12
 document
-Name of the document in 'documents' that is being processed.
+Final name of the rendered document in 'documents'.
 .TP 12
 extension
 The extension of the public document filename.
@@ -353,11 +350,11 @@ Name of the partial page being processed.
 path
 Input filename of the document.
 .TP 12
-public
-Final public filename for the document.
-.TP 12
 service
 Name of the transformation service being run.
+.TP 12
+source
+Input source file in 'source' that is being processed.
 .TP 12
 to
 The destination filename extension after processing by the current transformation.

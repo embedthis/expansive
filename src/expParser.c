@@ -7,8 +7,8 @@
 
         <@ @>               Begin inline Ejscript code
         <@= @>              Begin inline C expression
-        @@expr, @@{expr}    Expression
-        @~                  @@top
+        @=expr, @={expr}    Expression
+        @~                  Home
 
         Other alternatives <$ $>, <# #>
 
@@ -26,7 +26,7 @@
 #define EXP_TOK_ERR            -1            /* Any input error */
 #define EXP_TOK_EOF             0            /* End of file */
 #define EXP_TOK_CODE            1            /* <@ text @> */
-#define EXP_TOK_VAR             2            /* @@var */
+#define EXP_TOK_VAR             2            /* @=var */
 #define EXP_TOK_HOME            3            /* @~ */
 #define EXP_TOK_LITERAL         4            /* literal HTML */
 #define EXP_TOK_EXPR            5            /* <@= expression @> */
@@ -114,7 +114,7 @@ static char *buildScript(Ejs *ejs, cchar *contents, cchar *delims)
             break;
 
         case EXP_TOK_VAR:
-            /* @@var -- string variable */
+            /* @=expression -- string variable */
             token = strim(token, " \t\r\n;", MPR_TRIM_BOTH);
             mprPutToBuf(body, "  write('' + (%s));\n", token);
             break;
@@ -157,7 +157,7 @@ static int getToken(Ejs *ejs, ExpState *state)
     for (done = 0; !done && next < end; next++) {
         c = *next;
         if (c == state->delims[0]) {
-            if (next[1] == state->delims[1] && ((next == start) || next[-1] != '\\')) {
+            if (next[1] == state->delims[1] && ((next == start) || next[-1] != '\\' || next[-1] == '@')) {
                 next += 2;
                 if (mprGetBufLength(state->token) > 0) {
                     next -= 3;
@@ -217,11 +217,7 @@ static int getToken(Ejs *ejs, ExpState *state)
                     }
                     done++;
 
-                } else if (t == state->delims[1] || t == '=') {
-                    if (t == state->delims[1]) {
-                        ejsThrowError(ejs, "Using old-style '@@', replace with '@='");
-                        return EXP_TOK_ERR;
-                    }
+                } else if (t == '=') {
                     /* @=var */
                     next += 2;
                     if (mprGetBufLength(state->token) > 0) {

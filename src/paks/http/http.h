@@ -182,13 +182,6 @@ struct HttpWebSocket;
 #ifndef ME_MAX_PING_DURATION
     #define ME_MAX_PING_DURATION   (30 * 1000)         /**< WSS ping defeat Keep-Alive timeouts (30 sec) */
 #endif
-
-#if DEPRECATE || 1
-#ifndef ME_SERVER_PREFIX_CHAR
-    #define ME_SERVER_PREFIX_CHAR '|'                  /**< URI prefix character for server prefix */
-#endif
-#endif
-
 #ifndef ME_XSRF_COOKIE
     #define ME_XSRF_COOKIE        "XSRF-TOKEN"         /**< CSRF token cookie name */
 #endif
@@ -4895,13 +4888,13 @@ PUBLIC int httpAddRouteUpdate(HttpRoute *route, cchar *name, cchar *details, int
 
 /**
     Add a route using the WebSockets filter
-    @param parent Parent route from which to inherit configuration.
-    @param name Action to invoke on the controller.
+    @param route Parent route from which to inherit configuration.
+    @param action Name of the action to invoke on the route
     @return The new route object.
     @ingroup HttpRoute
     @stability Evolving
  */
-PUBLIC HttpRoute *httpAddWebSocketsRoute(HttpRoute *parent, cchar *action);
+PUBLIC HttpRoute *httpAddWebSocketsRoute(HttpRoute *route, cchar *action);
 
 
 /**
@@ -7072,10 +7065,11 @@ PUBLIC void httpSetEntityLength(HttpConn *conn, MprOff len);
     @param filename Tx filename to define. Set to NULL to reset the filename.
     @param flags Flags word. Or together the desired flags. Include to HTTP_TX_NO_CHECK to bypass checking if the
         filename resides inside the route documents directory.
+    @return True if the filename exists and is readable.
     @ingroup HttpTx
     @stability Evolving
  */
-PUBLIC void httpSetFilename(HttpConn *conn, cchar *filename, int flags);
+PUBLIC bool httpSetFilename(HttpConn *conn, cchar *filename, int flags);
 
 /**
     Set the handler for this request

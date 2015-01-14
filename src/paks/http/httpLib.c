@@ -2816,10 +2816,11 @@ static int matchChunk(HttpConn *conn, HttpRoute *route, int dir)
     }
     if (dir & HTTP_STAGE_TX) {
         /* 
-            If content length is defined, don't need chunking. Also disable chunking if explicitly turned off vi 
-            the X_APPWEB_CHUNK_SIZE header which may set the chunk size to zero.
+            If content length is defined, don't need chunking - but only if chunking not explicitly asked for. 
+            Disable chunking if explicitly turned off via the X_APPWEB_CHUNK_SIZE header which may set the 
+            chunk size to zero.
          */
-        if (tx->length >= 0 || tx->chunkSize == 0) {
+        if ((tx->length >= 0 && tx->chunkSize < 0) || tx->chunkSize == 0) {
             return HTTP_ROUTE_OMIT_FILTER;
         }
     }
@@ -2941,7 +2942,7 @@ static void outgoingChunkService(HttpQueue *q)
 
     if (!(q->flags & HTTP_QUEUE_SERVICED)) {
         /*
-            If we don't know the content length (tx->length < 0) and if the last packet is the end packet. Then
+            If we don't know the content length yet (tx->length < 0) and if the last packet is the end packet. Then
             we have all the data. Thus we can determine the actual content length and can bypass the chunk handler.
          */
         if (tx->length < 0 && (value = mprLookupKey(tx->headers, "Content-Length")) != 0) {
@@ -3727,6 +3728,19 @@ PUBLIC int parseFile(HttpRoute *route, cchar *path)
         mprLog("error http config", 0, "Cannot parse %s: error %s", path, errorMsg);
         return MPR_ERR_CANT_READ;
     }
+#if DEPRECATE || 1
+{
+    MprJson *obj;
+    if ((obj = mprGetJsonObj(config, "app.http")) != 0) {
+        mprRemoveJson(config, "app.http");
+        mprSetJsonObj(config, "http", obj);
+    }
+    if ((obj = mprGetJsonObj(config, "app.esp")) != 0) {
+        mprRemoveJson(config, "app.esp");
+        mprSetJsonObj(config, "esp", obj);
+    }
+}
+#endif
     blendMode(route, config);
     if (route->config) {
         mprBlendJson(route->config, config, MPR_JSON_COMBINE);
@@ -3779,10 +3793,17 @@ PUBLIC int httpFinalizeConfig(HttpRoute *route)
     /*
         Create a subset, optimized configuration to send to the client
      */
-    if ((obj = mprGetJsonObj(route->config, "http.mappings")) != 0) {
+    if ((obj = mprGetJsonObj(route->config, "http.client.mappings")) == 0) {
+#if DEPRECATED || 1
+        if ((obj = mprGetJsonObj(route->config, "http.mappings")) != 0) {
+            mprLog("warn http", 0, "Using deprecated http.mappings. use http.client.mappings instead");
+        }
+#endif
+    }
+    if (obj) {
         mappings = mprCreateJson(MPR_JSON_OBJ);
         copyMappings(route, mappings, obj);
-        mprWriteJson(mappings, "prefix", route->prefix);
+        mprWriteJson(mappings, "prefix", route->prefix, 0);
         route->clientConfig = mprJsonToString(mappings, MPR_JSON_QUOTES);
     }
     httpAddHostToEndpoints(route->host);
@@ -3828,7 +3849,7 @@ static void copyMappings(HttpRoute *route, MprJson *dest, MprJson *obj)
             if (sends(key, "|time")) {
                 key = ssplit(sclone(key), " \t|", NULL);
                 if ((value = mprGetJson(route->config, key)) != 0) {
-                    mprSetJson(dest, child->name, itos(httpGetTicks(value)));
+                    mprSetJson(dest, child->name, itos(httpGetTicks(value)), MPR_JSON_NUMBER);
                 }
             } else {
                 if ((jvalue = mprGetJsonObj(route->config, key)) != 0) {
@@ -3924,7 +3945,7 @@ static void parseAuthAutoRoles(HttpRoute *route, cchar *key, MprJson *prop)
     if (mprGetHashLength(abilities) > 0) {
         job = mprCreateJson(MPR_JSON_ARRAY);
         for (ITERATE_KEYS(abilities, kp)) {
-            mprSetJson(job, "$", kp->key);
+            mprSetJson(job, "$", kp->key, 0);
         }
         mprSetJsonObj(route->config, "http.auth.auto.abilities", job);
     }
@@ -4710,6 +4731,9 @@ static void parseServerChroot(HttpRoute *route, cchar *key, MprJson *prop)
 #if ME_UNIX_LIKE
     char        *home;
 
+    if (!prop->value && !*prop->value) {
+        return;
+    }
     home = httpMakePath(route, 0, prop->value);
     if (chdir(home) < 0) {
         httpParseError(route, "Cannot change working directory to %s", home);
@@ -8092,12 +8116,12 @@ static int rewriteFileHandler(HttpConn *conn)
     if (info->isDir) {
         return httpHandleDirectory(conn);
     }
-    if (rx->flags & (HTTP_GET | HTTP_HEAD | HTTP_POST) && info->valid && tx->length < 0) {
+    if (rx->flags & (HTTP_GET | HTTP_HEAD | HTTP_POST) && info->valid) {
         /*
             The sendFile connector is optimized on some platforms to use the sendfile() system call.
             Set the entity length for the sendFile connector to utilize.
          */
-        httpSetEntityLength(conn, tx->fileInfo.size);
+        tx->entityLength = tx->fileInfo.size;
     }
     return HTTP_ROUTE_OK;
 }
@@ -8144,7 +8168,6 @@ static int openFileHandler(HttpQueue *q)
         if (httpContentNotModified(conn)) {
             httpSetStatus(conn, HTTP_CODE_NOT_MODIFIED);
             httpOmitBody(conn);
-            tx->length = -1;
         }
         if (!tx->fileInfo.isReg && !tx->fileInfo.isLink) {
             httpTrace(conn, "request.document.error", "error", "msg:'Document is not a regular file',filename:'%s'", 
@@ -8221,14 +8244,16 @@ static void startFileHandler(HttpQueue *q)
         httpHandleOptions(q->conn);
         
     } else if (!(tx->flags & HTTP_TX_NO_BODY)) {
-        /* Create a single data packet based on the entity length */
-        packet = httpCreateEntityPacket(0, tx->entityLength, readFileData);
-        if (!tx->outputRanges) {
-            /* Can set a content length */
-            tx->length = tx->entityLength;
+        if (tx->entityLength >= 0) {
+            /* 
+                Create a single data packet based on the actual entity (file) length 
+             */
+            packet = httpCreateEntityPacket(0, tx->entityLength, readFileData);
+            if (!tx->outputRanges && tx->chunkSize < 0) {
+                tx->length = tx->entityLength;
+            }
+            httpPutForService(q, packet, 0);
         }
-        /* Add to the output service queue */
-        httpPutForService(q, packet, 0);
     }
 }
 
@@ -8493,6 +8518,10 @@ PUBLIC int httpHandleDirectory(HttpConn *conn)
         pathInfo = sjoin(req->path, "/", NULL);
         uri = httpFormatUri(req->scheme, req->host, req->port, pathInfo, req->reference, req->query, 0);
         httpRedirect(conn, HTTP_CODE_MOVED_PERMANENTLY, uri);
+        if (tx->finalized) {
+            /* This allows handlers to call httpHandleDirectory after routing (esp does this) */
+            tx->handler = conn->http->passHandler;
+        }
         return HTTP_ROUTE_OK;
     }
     if (route->indexes) {
@@ -9867,7 +9896,7 @@ static MprOff buildNetVec(HttpQueue *q)
     for (packet = prev = q->first; packet && !(packet->flags & HTTP_PACKET_END); packet = packet->next) {
         if (packet->flags & HTTP_PACKET_HEADER) {
             if (tx->chunkSize <= 0 && q->count > 0 && tx->length < 0) {
-                /* Incase no chunking filter and we've not seen all the data yet */
+                /* No content length, but not chunking. So have to close the connection to signify the content end */
                 conn->keepAliveCount = 0;
             }
             httpWriteHeaders(q, packet);
@@ -10336,11 +10365,10 @@ PUBLIC void httpJoinPackets(HttpQueue *q, ssize size)
         /*
             Copy the data and free all other packets
          */
-        for (p = packet->next; p && size > 0; p = p->next) {
-            if (p->content == 0 || (len = httpGetPacketLength(p)) == 0) {
-                break;
+        for (p = packet->next; p && (p->flags & HTTP_PACKET_DATA); p = p->next) {
+            if ((len = httpGetPacketLength(p)) > 0) {
+                httpJoinPacket(packet, p);
             }
-            httpJoinPacket(packet, p);
             /* Unlink the packet */
             packet->next = p->next;
             if (q->last == p) {
@@ -11099,6 +11127,9 @@ PUBLIC void httpSetSendConnector(HttpConn *conn, cchar *path)
 }
 
 
+/*
+    Set the fileHandler as the selected handler for the request
+ */
 PUBLIC void httpSetFileHandler(HttpConn *conn, cchar *path)
 {
     HttpStage   *fp;
@@ -11109,14 +11140,12 @@ PUBLIC void httpSetFileHandler(HttpConn *conn, cchar *path)
     if (path && path != tx->filename) {
         httpSetFilename(conn, path, 0);
     }
-    fp = tx->handler = HTTP->fileHandler;
-//  MOB TEMP - can only do this if only the chunk filter has been added
-    tx->flags &= ~HTTP_TX_HAS_FILTERS;
     if ((conn->rx->flags & HTTP_GET) && !(tx->flags & HTTP_TX_HAS_FILTERS) && !conn->secure && !httpTracing(conn)) {
         tx->flags |= HTTP_TX_SENDFILE;
         tx->connector = HTTP->sendConnector;
     }
-    httpSetEntityLength(conn, tx->fileInfo.size);
+    tx->entityLength = tx->fileInfo.size;
+    fp = tx->handler = HTTP->fileHandler;
     fp->open(conn->writeq);
     fp->start(conn->writeq);
     conn->writeq->service = fp->outgoingService;
@@ -11883,7 +11912,7 @@ static void startRange(HttpQueue *q)
     /*
         The httpContentNotModified routine can set outputRanges to zero if returning not-modified.
      */
-    if (tx->outputRanges == 0 || tx->status != HTTP_CODE_OK || !fixRangeLength(conn)) {
+    if (tx->outputRanges == 0 || tx->status != HTTP_CODE_OK) {
         httpRemoveQueue(q);
         tx->outputRanges = 0;
     } else {
@@ -11904,6 +11933,15 @@ static void outgoingRangeService(HttpQueue *q)
     conn = q->conn;
     tx = conn->tx;
 
+    if (!(q->flags & HTTP_QUEUE_SERVICED)) {
+        /*
+            The httpContentNotModified routine can set outputRanges to zero if returning not-modified.
+         */
+        if (!fixRangeLength(conn)) {
+            httpRemoveQueue(q);
+            tx->outputRanges = 0;
+        }
+    }
     for (packet = httpGetPacket(q); packet; packet = httpGetPacket(q)) {
         if (packet->flags & HTTP_PACKET_DATA) {
             if (!applyRange(q, packet)) {
@@ -14070,11 +14108,10 @@ PUBLIC char *httpTemplate(HttpConn *conn, cchar *template, MprHash *options)
             mprPutStringToBuf(buf, route->prefix);
 
 #if DEPRECATE || 1
-        } else if (cp == template && *cp == ME_SERVER_PREFIX_CHAR) {
+        } else if (cp == template && *cp == '|') {
             mprPutStringToBuf(buf, route->prefix);
             //  DEPRECATE in version 6
             mprPutStringToBuf(buf, route->serverPrefix);
-            assert(*cp != ME_SERVER_PREFIX_CHAR);
 #endif
 
         } else if (*cp == '$' && cp[1] == '{' && (cp == template || cp[-1] != '\\')) {
@@ -19710,7 +19747,9 @@ PUBLIC void httpSetContentLength(HttpConn *conn, MprOff length)
         return;
     }
     tx->length = length;
+#if UNUSED
     httpSetHeader(conn, "Content-Length", "%lld", tx->length);
+#endif
 }
 
 
@@ -19857,7 +19896,7 @@ static void setHeaders(HttpConn *conn, HttpPacket *packet)
             httpAddHeader(conn, "Content-Length", "%lld", length);
         }
 
-    } else if (tx->length < 0 && tx->chunkSize > 0) {
+    } else if (tx->chunkSize > 0) {
         httpSetHeaderString(conn, "Transfer-Encoding", "chunked");
 
     } else if (httpServerConn(conn)) {
@@ -19941,7 +19980,7 @@ PUBLIC void httpSetEntityLength(HttpConn *conn, int64 len)
     must take care if the HTTP_TX_NO_CHECK flag is used.  This will update HttpTx.ext and HttpTx.fileInfo.
     This does not implement per-language directories. For that, see httpMapFile.
  */
-PUBLIC void httpSetFilename(HttpConn *conn, cchar *filename, int flags)
+PUBLIC bool httpSetFilename(HttpConn *conn, cchar *filename, int flags)
 {
     HttpTx      *tx;
     MprPath     *info;
@@ -19957,14 +19996,14 @@ PUBLIC void httpSetFilename(HttpConn *conn, cchar *filename, int flags)
         tx->filename = 0;
         tx->ext = 0;
         info->checked = info->valid = 0;
-        return;
+        return 0;
     }
     if (!(tx->flags & HTTP_TX_NO_CHECK)) {
         if (!mprIsAbsPathContained(filename, conn->rx->route->documents)) {
             info->checked = 1;
             info->valid = 0;
             httpError(conn, HTTP_CODE_BAD_REQUEST, "Filename outside published documents");
-            return;
+            return 0;
         }
     }
     if (!tx->ext || tx->ext[0] == '\0') {
@@ -19972,8 +20011,7 @@ PUBLIC void httpSetFilename(HttpConn *conn, cchar *filename, int flags)
     }
     mprGetPathInfo(filename, info);
     if (info->valid) {
-        //  OPT - using inodes mean this is harder to cache when served from multiple servers.
-        tx->etag = sfmt("\"%llx-%llx-%llx\"", (int64) info->inode, (int64) info->size, (int64) info->mtime);
+        tx->etag = sfmt("\"%llx\"", (int64) info->inode + (int64) info->size + (int64) info->mtime);
     }
     tx->filename = sclone(filename);
 
@@ -19981,6 +20019,7 @@ PUBLIC void httpSetFilename(HttpConn *conn, cchar *filename, int flags)
         /* Filename being revised after pipeline created */
         httpTrace(conn, "request.document", "context", "filename:'%s'", tx->filename);
     }
+    return info->valid;
 }
 
 
@@ -20088,7 +20127,7 @@ PUBLIC void httpWriteHeaders(HttpQueue *q, HttpPacket *packet)
     /*
         By omitting the "\r\n" delimiter after the headers, chunks can emit "\r\nSize\r\n" as a single chunk delimiter
      */
-    if (tx->length >= 0 || tx->chunkSize <= 0) {
+    if (tx->chunkSize <= 0) {
         mprPutStringToBuf(buf, "\r\n");
     }
     tx->headerSize = mprGetBufLength(buf);
@@ -21811,8 +21850,8 @@ static cchar *expandRouteName(HttpConn *conn, cchar *routeName)
     }
 #if DEPRECATE || 1
     //  DEPRECATE in version 6
-    if (routeName[0] == ME_SERVER_PREFIX_CHAR) {
-        assert(routeName[0] != ME_SERVER_PREFIX_CHAR);
+    if (routeName[0] == '|') {
+        assert(routeName[0] != '|');
         return sjoin(route->prefix, &routeName[1], NULL);
     }
 #endif
@@ -22193,11 +22232,11 @@ PUBLIC void httpCreateCGIParams(HttpConn *conn)
         params = httpGetParams(conn);
         assert(params);
         for (ITERATE_ITEMS(rx->files, file, index)) {
-            mprWriteJson(params, sfmt("FILE_%d_FILENAME", index), file->filename);
-            mprWriteJson(params, sfmt("FILE_%d_CLIENT_FILENAME", index), file->clientFilename);
-            mprWriteJson(params, sfmt("FILE_%d_CONTENT_TYPE", index), file->contentType);
-            mprWriteJson(params, sfmt("FILE_%d_NAME", index), file->name);
-            mprWriteJson(params, sfmt("FILE_%d_SIZE", index), sfmt("%zd", file->size));
+            mprWriteJson(params, sfmt("FILE_%d_FILENAME", index), file->filename, MPR_JSON_STRING);
+            mprWriteJson(params, sfmt("FILE_%d_CLIENT_FILENAME", index), file->clientFilename, MPR_JSON_STRING);
+            mprWriteJson(params, sfmt("FILE_%d_CONTENT_TYPE", index), file->contentType, MPR_JSON_STRING);
+            mprWriteJson(params, sfmt("FILE_%d_NAME", index), file->name, MPR_JSON_STRING);
+            mprWriteJson(params, sfmt("FILE_%d_SIZE", index), sfmt("%zd", file->size), MPR_JSON_NUMBER);
         }
     }
     if (conn->http->envCallback) {
@@ -22243,19 +22282,19 @@ static void addParamsFromBuf(HttpConn *conn, cchar *buf, ssize len)
             if (prior && prior->type == MPR_JSON_VALUE) {
                 if (*value) {
                     newValue = sjoin(prior->value, " ", value, NULL);
-                    mprSetJson(params, keyword, newValue);
+                    mprSetJson(params, keyword, newValue, MPR_JSON_STRING);
                 }
             } else {
-                mprSetJson(params, keyword, value);
+                mprSetJson(params, keyword, value, MPR_JSON_STRING);
             }
 #else
             if (prior && prior->type == MPR_JSON_VALUE) {
                 if (*value) {
                     newValue = sjoin(prior->value, " ", value, NULL);
-                    mprWriteJson(params, keyword, newValue);
+                    mprWriteJson(params, keyword, newValue, MPR_JSON_STRING);
                 }
             } else {
-                mprWriteJson(params, keyword, value);
+                mprWriteJson(params, keyword, value, MPR_JSON_STRING);
             }
 #endif
         }
@@ -22411,13 +22450,13 @@ PUBLIC void httpRemoveParam(HttpConn *conn, cchar *var)
 
 PUBLIC void httpSetParam(HttpConn *conn, cchar *var, cchar *value) 
 {
-    mprWriteJson(httpGetParams(conn), var, value);
+    mprWriteJson(httpGetParams(conn), var, value, 0);
 }
 
 
 PUBLIC void httpSetIntParam(HttpConn *conn, cchar *var, int value) 
 {
-    mprWriteJson(httpGetParams(conn), var, sfmt("%d", value));
+    mprWriteJson(httpGetParams(conn), var, sfmt("%d", value), MPR_JSON_NUMBER);
 }
 
 

@@ -180,9 +180,6 @@ public class Expansive {
             print(VERSION)
             App.exit(0)
         }
-        if (options.chdir) {
-            App.chdir(options.chdir)
-        }
         if (options.verbose) {
             verbosity++
         }

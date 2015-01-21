@@ -42,13 +42,6 @@ const USAGE = 'Expansive Web Site Generator
     <CR>                 # Serve and watches for changes
 '
 
-/* KEEP
-    install plugins      # Install plugins
-    list                 # List plugings
-    uninstall plugins    # Uninstall plugins
-    upgrade plugins      # Upgrade plugins
- */
-
 public class Expansive {
     var args: Args
     var cache: Object
@@ -445,16 +438,6 @@ public class Expansive {
             edit(rest, meta)
             break
 
-/* KEEP
-        case 'install':
-            install(rest, meta)
-            break
-
-        case 'list':
-            list()
-            break
-*/
-
         case 'mode':
             mode(rest)
             break
@@ -468,23 +451,6 @@ public class Expansive {
             preclean()
             render()
             break
-
-/* KEEP
-        case 'uninstall':
-            //  MOB - should support 'exp uninstall' to uninstall all deps
-            if (rest.length == 0) {
-                usage()
-            }
-            uninstall(rest, meta)
-            break
-
-        case 'upgrade':
-            if (rest.length == 0) {
-                usage()
-            }
-            upgrade(rest, meta)
-            break
-*/
 
         case 'watch':
             if (rest.length > 0) {
@@ -1280,147 +1246,6 @@ public class Expansive {
         }
     }
 
-/* KEEP
-    function install(plugins, meta) {
-        let pakcmd = Cmd.locate('pak')
-        if (!pakcmd) {
-            fatal('Cannot find pak. Install from https://embedthis.com/pak')
-        }
-        let pakcache = App.home.join('.paks')
-        if (plugins.length == 0) {
-            // Install all required dependencies
-            try {
-                vtrace('Run', 'pak install ')
-                Cmd.run([pakcmd, 'install'], {stream: true})
-            } catch(e) {
-                fatal('Cannot install required paks\n' + e.message)
-            }
-
-        } else { 
-            for each (name in plugins) {
-                let path = directories.paks.join(name, PACKAGE)
-                if (!path.exists) {
-                    try {
-                        vtrace('Run', 'pak cache', name)
-                        let msg = Cmd.run([pakcmd, 'cache', name])
-                        if (verbosity > 0) log.write(msg)
-                    } catch(e) {
-                        fatal('Cannot cache pak\n' + e.message)
-                    }
-                    if ((path = findPackage(name)) != null) {
-                        let pkg = readPackage(path)
-                        if (pkg.install !== false) {
-                            try {
-                                trace('Run', 'pak install ' + name)
-                                log.write(Cmd.run([pakcmd, 'install', name]))
-                            } catch(e) {
-                                fatal('Cannot locally install', name + '\n' + e.message)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    function getPaks(result, patterns, pak) {
-        for (let [name, requiredVersion] in pak.dependencies) {
-            if (!result[name]) {
-                let path = findPackage(name, requiredVersion)
-                if (path) {
-                    let dep = readPackage(path)
-                    result[name] = dep
-                    getPaks(result, patterns, dep)
-                } else {
-                    result[name] = null
-                }
-            }
-        }
-        return result
-    }
-
-    function list() {
-        let pakcache = App.home.join('.paks')
-        let paks = getPaks({}, '*', package)
-        for (let [name, pak] in paks) {
-            if (pak) {
-                let cached = ''
-                let installed = directories.paks.join(name).exists ? ' installed' : ''
-                if (!installed) {
-                    cached = pakcache.join(name).exists ? ' cached' : ''
-                }
-                let path = findPackage(name, pak.version)
-                if (findConfig(path)) {
-                    print(pak.name, pak.version + ' plugin' + cached + installed)
-                } else {
-                    print(pak.name, pak.version + ' pak' + cached + installed)
-                }
-            } else {
-                print(name, 'uninstalled pak')
-            }
-        }
-    }
-
-    function uninstall(plugins, meta) {
-        let pakcmd = Cmd.locate('pak')
-        if (!pakcmd) {
-            fatal('Cannot find pak. Install from https://embedthis.com/pak')
-        }
-        for each (name in plugins) {
-            let path = directories.paks.join(name, PACKAGE)
-            if (path.exists) {
-                trace('Uninstall', 'Plugin ' + name)
-                try {
-                    trace('Run', 'pak uninstall ' + name)
-                    Cmd.run([pakcmd, 'uninstall', name])
-                } catch(e) {
-                    fatal('Cannot uninstall', name + '\n' + e.message)
-                }
-            } else {
-                if (findPackage(name)) {
-                    trace('Info', name + ' is not installed')
-                } else {
-                    trace('Info', name + ' is not cached or installed')
-                }
-            }
-        }
-    }
-
-    function upgrade(plugins, meta) {
-        let pakcmd = Cmd.locate('pak')
-        if (!pakcmd) {
-            fatal('Cannot find pak. Install from https://embedthis.com/pak')
-        }
-        if (plugins.length == 0) {
-            for (let [name, requiredVersion] in package.dependencies) {
-                try {
-                    vtrace('Run', 'pak update', name)
-                    Cmd.run([pakcmd, 'update', name])
-                    if (directories.paks.join(name).exists) {
-                        Cmd.run([pakcmd, 'upgrade', name])
-                    }
-                    trace('Upgraded', 'name')
-                } catch(e) {
-                    fatal('Cannot update', e.message)
-                }
-            }
-        } else {
-            for each (name in plugins) {
-                try {
-                    trace('Run', 'pak update', name)
-                    Cmd.run([pakcmd, 'update', name])
-                    if (directories.paks.join(name).exists) {
-                        Cmd.run([pakcmd, 'upgrade', name])
-                    }
-                    trace('Upgraded', 'name')
-                } catch(e) {
-                    fatal('Cannot update', e.message)
-                }
-            }
-        }
-    }
-*/
-
     function mode(newMode, meta) {
         if (newMode.length == 0) {
             print(package.mode)
@@ -1565,7 +1390,7 @@ public class Expansive {
                 let def = renderCache[pak] = {}
                 for each (exp in ps.export) {
                     if (exp.type) {
-print('WARN - ' + pak + ' package.json has legacy export defintion')
+                        print('WARN - ' + pak + ' package.json has legacy export defintion')
                         if (!(exp.from is Array)) {
                             exp.from = [exp.from]
                         } 

@@ -33,7 +33,7 @@ const USAGE = 'Expansive Web Site Generator
     --version            # Output version information
   Commands :
     clean                # Clean "documents" output directory
-    edit key[=value]     # Get and set package.json values
+    edit key[=value]     # Get and set expansive.json values
     filters, ...         # Render only matching files
     init                 # Create expansive.json
     mode [debug|release] # Select property mode set
@@ -872,7 +872,7 @@ public class Expansive {
 
     function renderDocument(file, meta) {
         /* Collections reset at the start of each document */
-        collections = control.colllections || {}
+        collections = (control.collections || {}).clone()
         let [fileMeta, contents] = splitMetaContents(file, file.readString())
         meta = blendMeta(meta.clone(true), fileMeta || {})
         initMeta(file, meta)
@@ -1185,9 +1185,9 @@ public class Expansive {
     }
 
     function edit(rest, meta) {
+        let obj = config
         for each (arg in rest) {
             let [key,value] = arg.split('=')
-            let obj = package
             if (value) {
                 let parts = key.split('.')
                 for each (part in parts.slice(0, -1)) { 
@@ -1197,16 +1197,16 @@ public class Expansive {
                     }
                 }
                 obj[parts.pop()] = value
-                PACKAGE.write(serialize(package, {pretty: true, indent: 4}) + '\n')
+                CONFIG.joinExt('.json').write(serialize(config, {pretty: true, indent: 4}) + '\n')
                 trace('Update', key, '=', value)
             } else {
                 for each (part in key.split('.')) { 
-                    obj = obj[part]
-                    if (!obj) {
+                    config = config[part]
+                    if (!config) {
                         fatal('Key ' + key + ' not found')
                     }
                 }
-                print(obj)
+                print(config)
             }
         }
     }

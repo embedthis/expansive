@@ -10,8 +10,6 @@
         @=expr, @={expr}    Expression
         @~                  Home
 
-        Other alternatives <$ $>, <# #>
-
     Copyright (c) All Rights Reserved. See details at the end of the file.
  */
 

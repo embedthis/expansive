@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>User's Guide</title>
-    <!-- Copyright Embedthis Software, LLC, 2003-2014. All Rights Reserved. -->
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Embedthis Expansive Documentation</title>
+    
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="keywords" content="expansive, static site generator, web site generator, docpad" />
-    <meta name="description" content="A fast, powerful web site generator" />
+    <meta name="description" content="Embedthis Expansive Documentation" />
     <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700'
         rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
+    <link href="../images/favicon.ico" rel="shortcut icon" />
+
     <link href="../lib/semantic/css/semantic.css" rel="stylesheet" type="text/css" />
     <link href="../css/all.css" rel="stylesheet" type="text/css" />
-    <link href="../images/favicon.ico" rel="shortcut icon" />
+    
 
 </head>
 <body>
@@ -45,8 +43,7 @@
             <div class="item">
                 <a href="../users/index.html"><b>User's Guide</b></a>
                 <div class="menu">
-                    <a class="item" href="../start/tour.html">Tour of Expansive</a>
-
+                    <a class="item" href="../users/tour.html">Tour</a>
                     <a class="item" href="../users/commands.html">Commands</a>
                     <a class="item" href="../users/skeletons.html">Skeletons</a>
                     <a class="item" href="../users/layouts.html">Layouts</a>
@@ -57,6 +54,7 @@
                     <a class="item" href="../users/assets.html">Assets</a>
                     <a class="item" href="../users/serving.html">Serving Content</a>
                     <a class="item" href="../users/meta.html">Meta Data</a>
+                    <a class="item" href="../users/collections.html">Collections</a>
                     <a class="item" href="../users/configuration.html">Configuration</a>
                     <a class="item" href="../users/scripting.html">Scripting</a>
                     <!-- query engine -->
@@ -112,22 +110,13 @@
             <div class="right menu">
                   
                     <a class="item" href="https://embedthis.com/">Embedthis</a>
-                    <a class="item" href="https://embedthis.com/exp/">Expansive Site</a>
+                    <a class="item" href="https://embedthis.com/expansive/">Expansive Site</a>
                     <a class="item" href="http://goo.gl/dGRDl4">Expansive News</a>
-                    <a class="item" href="https://github.com/embedthis/exp">Repository</a>
+                    <a class="item" href="https://github.com/embedthis/expansive">Repository</a>
                     <a class="item" href="https://embedthis.com/blog/">Blog</a>
                     <a class="item" href="https://twitter.com/mobstream">Twitter</a>
 
             </div>
-        </div>
-        
-        <div class="ui breadcrumb">
-            <a class="section" href="../">Home</a>
-            
-            
-            <div class="divider">/</div>
-            <a class="active section" href="index.html">User's Guide</a>
-            
         </div>
         
         <div class="ui right floated basic segment version">
@@ -148,110 +137,66 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><a href="configuration.html">Configuring Expansive</a></td>
-                        <td>Configuring Expansive via the exp.conf configuration file.</td>
+                        <td><a href="../start/tour.html">Tour of Expansive</a></td>
+                        <td>Quick tour of Expansive features for beginners.</td>
                     </tr>
                     <tr>
-                        <td><a href="configuration.html#directives">Configuration Directives</a></td>
-                        <td>Configuration directives for the exp.conf file.</td>
+                        <td><a href="../users/commands.html">Commands</a></td>
+                        <td>Expansive command line tool commands.</td>
                     </tr>
                     <tr>
-                        <td><a href="ports.html">Ports and Binding</a></td>
-                        <td>Listening on IP addresses.</td>
+                        <td><a href="../users/skeletongs.html">Skeletons</a></td>
+                        <td>Ready-made skeletons to quickly get started.</td>
                     </tr>
                     <tr>
-                        <td><a href="routing.html">Request Routing</a></td>
-                        <td>Configuring and processing request routes.</td>
+                        <td><a href="../users/layouts.html">Layouts</a></td>
+                        <td>Master page layouts and templating.</td>
                     </tr>
                     <tr>
-                        <td><a href="lang.html">Multi-Language Support</a></td>
-                        <td>Configuring and managing multi-language content.</td>
+                        <td><a href="../users/partials.html">Partials</a></td>
+                        <td>Reusing common page segments via partial pagestd>
                     </tr>
                     <tr>
-                        <td><a href="authentication.html">User Authorization</a></td>
-                        <td>Configuring user authentication and authorization.</td>
+                        <td><a href="../users/render.html">Rendering</a></td>
+                        <td>Expansive rendering pipeline.</td>
                     </tr>
                     <tr>
-                        <td><a href="logFiles.html">Log Files</a></td>
-                        <td>Logging accesses and requests.</td>
+                        <td><a href="../users/collections.html">Collections</a></td>
+                        <td>Collections.</td>
                     </tr>
                     <tr>
-                        <td><a href="caching.html">Caching Responses</a></td>
-                        <td>Optimize performance by caching responses.</td>
+                        <td><a href="../users/stylesheets.html">Stylesheets</a></td>
+                        <td>Rendering stylesheet links.</td>
                     </tr>
                     <tr>
-                        <td><a href="vhosts.html">Virtual Hosts</a></td>
-                        <td>Creating virtual and named virtual hosts.</td>
+                        <td><a href="../users/assets.html">Assets</a></td>
+                        <td>Processing images, fonts and media assets.</td>
                     </tr>
                     <tr>
-                        <td><a href="security.html">Security Considerations</a></td>
-                        <td>Maximizing security for your web server.</td>
+                        <td><a href="../users/serving.html">Serving Content</a></td>
+                        <td>Serving content via the built-in web server.</td>
                     </tr>
                     <tr>
-                        <td><a href="monitor.html">Monitoring and Defending</a></td>
-                        <td>Monitoring and defending security attacks.</td>
+                        <td><a href="../users/meta.html">Meta Data</a></td>
+                        <td>Parameterizing and customizing pages via page meta data.</td>
                     </tr>
                     <tr>
-                        <td class="nowrap"><a href="ssl.html">Secure Sockets Layer (SSL)</a></td>
-                        <td>Configuring and securing a site via SSL</td>
+                        <td><a href="../users/configuration.html">Configuration</a></td>
+                        <td>Configuring Expansive.</td>
                     </tr>
                     <tr>
-                        <td><a href="modules.html">Loadable Modules</a></td>
-                        <td>Using loadable modules.</td>
+                        <td class="nowrap"><a href="../users/scripting.html">Scripting</a></td>
+                        <td>Using <a href="https://embedthis.com/ejscript/">Ejscript</a> 
+                            for in-page scripting.</td>
                     </tr>
                     <tr>
-                        <td><a href="stages.html">Pipeline Stages</a></td>
-                        <td>Configuring Expansive Handlers, Filters and Connectors.</td>
+                        <td><a href="../users/sitemaps.html">Sitemaps</a></td>
+                        <td>Generating sitemaps.</td>
                     </tr>
                     <tr>
-                        <td><a href="client.html">HTTP Client</a></td>
-                        <td>Using the Http client utility.</td>
-                    </tr>
-                    <tr>
-                        <td><a href="uploading.html">Uploading</a></td>
-                        <td>Using file upload.</td>
-                    </tr>
-                    <tr>
-                        <td><a href="webSockets.html">WebSockets</a></td>
-                        <td>Using the WebSockets Protocol.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h2><a href="frameworks.html">Web Frameworks</a></h2>
-            <table title="Frameworks" class="ui table segment">
-                <thead>
-                    <tr>
-                        <th class="nowrap">Topic</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td nowrap><a href="frameworks.html">Web Frameworks</a></td>
-                        <td>Choosing a web framework.</td>
-                    </tr>
-                    <tr>
-                        <td><a href="action.html">Action Handler</a></td>
-                        <td>Using the Action handler for web applications.</td>
-                    </tr>
-                    <tr>
-                        <td><a href="https://embedthis.com/esp/">ESP</a></td>
-                        <td>ESP Web Site.</td>
-                    </tr>
-<!-- KEEP
-                    <tr>
-                        <td><a href="ejs.html">Ejscript</a></td>
-                        <td>Using the Ejscript Web Framework for web applications.</td>
-                    </tr>
--->
-                    <tr>
-                        <td><a href="php.html">PHP</a></td>
-                        <td>Using PHP for web applications.</td>
-                    </tr>
-                    <tr>
-                        <td><a href="cgi.html">CGI</a></td>
-                        <td>Using the Common Gateway Interface.</td>
+                        <td class="nowrap"><a href="../users/troubleshoot.html">Trouble 
+                            Shooting</a></td>
+                        <td>Trouble shooting when things go wrong.</td>
                     </tr>
                 </tbody>
             </table>

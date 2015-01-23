@@ -25,8 +25,7 @@
             <div class="item">
                 <a href="@~users/index.html"><b>User's Guide</b></a>
                 <div class="menu">
-                    <a class="item" href="@~start/tour.html">Tour of Expansive</a>
-
+                    <a class="item" href="@~users/tour.html">Tour</a>
                     <a class="item" href="@~users/commands.html">Commands</a>
                     <a class="item" href="@~users/skeletons.html">Skeletons</a>
                     <a class="item" href="@~users/layouts.html">Layouts</a>
@@ -37,6 +36,7 @@
                     <a class="item" href="@~users/assets.html">Assets</a>
                     <a class="item" href="@~users/serving.html">Serving Content</a>
                     <a class="item" href="@~users/meta.html">Meta Data</a>
+                    <a class="item" href="@~users/collections.html">Collections</a>
                     <a class="item" href="@~users/configuration.html">Configuration</a>
                     <a class="item" href="@~users/scripting.html">Scripting</a>
                     <!-- query engine -->

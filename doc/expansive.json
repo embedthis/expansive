@@ -1,14 +1,23 @@
 {
     meta: {
-        title:       'Embedthis Expansive Documentation',
-        url:         'https://embedthis.com/esp/doc/',
-        description: 'A fast, powerful web site generator',
-        keywords:    'expansive, static site generator, web site generator, docpad',
+        url: 'https://embedthis.com/expansive/doc/',
     },
-    expansive: {
-        copy: [ 'images' ],
-        dependencies: { 'css/all.css.less': '**.less' },
-        documents: [ '**', '!**.less', '**.css.less' ],
-        plugins: [ 'less' ]
+    control: {
+        copy: [
+            'images'
+        ],
+        script: `function menu(item) meta.menu == item ? 'active' : ''`,
+        collections: {
+            styles: [
+                'css/all.css',
+            ]
+        }
+    },
+    debug: {
+        services: {
+            'compress': false,
+            'minify-js': false,
+            'minify-css': false
+        }
     }
 }

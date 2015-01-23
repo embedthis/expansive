@@ -13,11 +13,13 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  background-image: -webkit-linear-gradient(45deg, #007a70 0px, #01d3d3 100%);
   background-image: linear-gradient(45deg, #007a70 0px, #01d3d3 100%);
   background-attachment: fixed;
   min-width: 320px;
   text-rendering: optimizeLegibility;
-  transition: none !important;
+  -webkit-transition: none !important;
+          transition: none !important;
 }
 body.show-sidebar {
   margin-left: 240px;
@@ -168,7 +170,8 @@ table.directive td {
 a {
   color: #6080a0;
   text-decoration: none;
-  transition: color 0.3s ease;
+  -webkit-transition: color 0.3s ease;
+          transition: color 0.3s ease;
 }
 a:hover {
   color: #40a0f0;

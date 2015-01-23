@@ -3,10 +3,10 @@
 #   idebuild -- Build a project using the native IDE
 #
 
-PRODUCT=exp
+PRODUCT=expansive
 XCODE=/usr/bin/xcodebuild
 PROFILE=default
-BINARIES="ejs ejsc exp http"
+BINARIES="ejs ejsc expansive http"
 LIBRARIES="libejs libhttp libmpr libmprssl libpcre libzlib"
 
 # Just for VS

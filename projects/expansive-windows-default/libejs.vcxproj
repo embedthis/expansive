@@ -126,7 +126,7 @@
 copy /Y /B ejs.h $(IncDir)
 copy /Y /B ejs.slots.h $(IncDir)
 copy /Y /B ejsByteGoto.h $(IncDir)
-cd ..\..\..\projects\exp-windows-default</Command>
+cd ..\..\..\projects\expansive-windows-default</Command>
         <Outputs>$(BinDir)\libejs.dll</Outputs>
       </CustomBuildStep>
   </ItemDefinitionGroup>

@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
     <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+      <ItemDefinitionGroup>
+        <ClCompile>
+          <AdditionalIncludeDirectories>$(IncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+          <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+          <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+          <SubSystem>Console</SubSystem>
+    </Link>
+      </ItemDefinitionGroup>
+
       <PropertyGroup Label="Globals">
-        <ProjectGuid>{5064444e-641a-4728-8008-9b738e56d9da}</ProjectGuid>
+        <ProjectGuid>{80960947-ac85-4936-ae84-93b0b65b2722}</ProjectGuid>
         <RootNamespace />
         <Keyword>Win32Proj</Keyword>
       </PropertyGroup>
@@ -27,19 +38,19 @@
   </ItemGroup>
     
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-        <ConfigurationType></ConfigurationType>
+        <ConfigurationType>Application</ConfigurationType>
         <CharacterSet>NotSet</CharacterSet>
       </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-        <ConfigurationType></ConfigurationType>
+        <ConfigurationType>Application</ConfigurationType>
         <CharacterSet>NotSet</CharacterSet>
       </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-        <ConfigurationType></ConfigurationType>
+        <ConfigurationType>Application</ConfigurationType>
         <CharacterSet>NotSet</CharacterSet>
       </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-        <ConfigurationType></ConfigurationType>
+        <ConfigurationType>Application</ConfigurationType>
         <CharacterSet>NotSet</CharacterSet>
       </PropertyGroup>
 
@@ -72,35 +83,54 @@
         <_ProjectFileVersion>10</_ProjectFileVersion>
 
         <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(BinDir)\</OutDir>
-        <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ObjDir)\exp.mod\</IntDir>
+        <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ObjDir)\expansive\</IntDir>
         <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PreBuildEvent</CustomBuildBeforeTargets>
 
         <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(BinDir)\</OutDir>
-        <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ObjDir)\exp.mod\</IntDir>
+        <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ObjDir)\expansive\</IntDir>
         <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PreBuildEvent</CustomBuildBeforeTargets>
 
         <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(BinDir)\</OutDir>
-        <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ObjDir)\exp.mod\</IntDir>
+        <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ObjDir)\expansive\</IntDir>
         <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PreBuildEvent</CustomBuildBeforeTargets>
 
         <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(BinDir)\</OutDir>
-        <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ObjDir)\exp.mod\</IntDir>
+        <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ObjDir)\expansive\</IntDir>
         <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PreBuildEvent</CustomBuildBeforeTargets>
   </PropertyGroup>
+  
+      <ItemGroup>
+    <ClCompile Include="..\..\src\expansive.c" />
+    <ClCompile Include="..\..\src\expParser.c" />
+  </ItemGroup>
 
       <ItemDefinitionGroup>
       <Link>
-        <AdditionalDependencies>libejs.lib;libhttp.lib;libmpr.lib;libpcre.lib;libzlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+        <AdditionalDependencies>libmpr.lib;libhttp.lib;libpcre.lib;libejs.lib;libzlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
         <AdditionalLibraryDirectories>$(OutDir);build\$(Cfg)\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       </Link>
-
-      <CustomBuildStep>
-        <Command>cd ..\..
-.\build\windows-x86-default\bin\ejsc --debug --out ./build/windows-x86-default/bin/exp.mod --optimize 9 src/exp.es src/ExpParser.es src/paks/ejs-version/Version.es
-cd projects\exp-windows-default</Command>
-        <Outputs>$(BinDir)\exp.mod</Outputs>
-      </CustomBuildStep>
   </ItemDefinitionGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="libmpr.vcxproj">
+      <Project>02ca7374-d1aa-425d-8f85-9ad8320980e7</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      </ProjectReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="libhttp.vcxproj">
+      <Project>55d3272a-c6b1-45cb-9b3b-7bd1ff9b0ed9</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      </ProjectReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="libejs.vcxproj">
+      <Project>12f2348b-a901-4127-be49-8e456fda9002</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      </ProjectReference>
+    </ItemGroup>
 
   <Import Project="$(VCTargetsPath)Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

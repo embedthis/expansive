@@ -13,7 +13,7 @@
       </ItemDefinitionGroup>
 
       <PropertyGroup Label="Globals">
-        <ProjectGuid>{605236cd-76f6-4979-9a94-d8295a85cc1c}</ProjectGuid>
+        <ProjectGuid>{55d3272a-c6b1-45cb-9b3b-7bd1ff9b0ed9}</ProjectGuid>
         <RootNamespace />
         <Keyword>Win32Proj</Keyword>
       </PropertyGroup>
@@ -38,19 +38,19 @@
   </ItemGroup>
     
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-        <ConfigurationType>Application</ConfigurationType>
+        <ConfigurationType>DynamicLibrary</ConfigurationType>
         <CharacterSet>NotSet</CharacterSet>
       </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-        <ConfigurationType>Application</ConfigurationType>
+        <ConfigurationType>DynamicLibrary</ConfigurationType>
         <CharacterSet>NotSet</CharacterSet>
       </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-        <ConfigurationType>Application</ConfigurationType>
+        <ConfigurationType>DynamicLibrary</ConfigurationType>
         <CharacterSet>NotSet</CharacterSet>
       </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-        <ConfigurationType>Application</ConfigurationType>
+        <ConfigurationType>DynamicLibrary</ConfigurationType>
         <CharacterSet>NotSet</CharacterSet>
       </PropertyGroup>
 
@@ -83,32 +83,42 @@
         <_ProjectFileVersion>10</_ProjectFileVersion>
 
         <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(BinDir)\</OutDir>
-        <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ObjDir)\exp\</IntDir>
+        <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ObjDir)\libhttp\</IntDir>
         <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PreBuildEvent</CustomBuildBeforeTargets>
 
         <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(BinDir)\</OutDir>
-        <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ObjDir)\exp\</IntDir>
+        <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ObjDir)\libhttp\</IntDir>
         <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PreBuildEvent</CustomBuildBeforeTargets>
 
         <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(BinDir)\</OutDir>
-        <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ObjDir)\exp\</IntDir>
+        <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ObjDir)\libhttp\</IntDir>
         <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PreBuildEvent</CustomBuildBeforeTargets>
 
         <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(BinDir)\</OutDir>
-        <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ObjDir)\exp\</IntDir>
+        <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ObjDir)\libhttp\</IntDir>
         <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PreBuildEvent</CustomBuildBeforeTargets>
   </PropertyGroup>
   
       <ItemGroup>
-    <ClCompile Include="..\..\src\exp.c" />
-    <ClCompile Include="..\..\src\expParser.c" />
+    <ClCompile Include="..\..\src\paks\http\httpLib.c" />
+  </ItemGroup>
+
+      <ItemGroup>
+    <ClInclude Include="$(IncDir)\http.h" />
   </ItemGroup>
 
       <ItemDefinitionGroup>
       <Link>
-        <AdditionalDependencies>libmpr.lib;libhttp.lib;libpcre.lib;libejs.lib;libzlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+        <AdditionalDependencies>libmpr.lib;libpcre.lib;%(AdditionalDependencies)</AdditionalDependencies>
         <AdditionalLibraryDirectories>$(OutDir);build\$(Cfg)\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       </Link>
+
+      <CustomBuildStep>
+        <Command>cd ..\..\src\paks\http
+copy /Y /B http.h $(IncDir)
+cd ..\..\..\projects\expansive-windows-default</Command>
+        <Outputs>$(BinDir)\libhttp.dll</Outputs>
+      </CustomBuildStep>
   </ItemDefinitionGroup>
 
     <ItemGroup>
@@ -119,15 +129,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="libhttp.vcxproj">
-      <Project>55d3272a-c6b1-45cb-9b3b-7bd1ff9b0ed9</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      </ProjectReference>
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="libejs.vcxproj">
-      <Project>12f2348b-a901-4127-be49-8e456fda9002</Project>
+      <ProjectReference Include="libpcre.vcxproj">
+      <Project>4bdd6f9c-78f4-4f4c-9a4b-9ebd713d1d00</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       </ProjectReference>
     </ItemGroup>

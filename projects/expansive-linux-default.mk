@@ -1,13 +1,13 @@
 #
-#   exp-freebsd-default.mk -- Makefile to build Embedthis Expansive for freebsd
+#   expansive-linux-default.mk -- Makefile to build Embedthis Expansive for linux
 #
 
-NAME                  := exp
+NAME                  := expansive
 VERSION               := 0.4.3
 PROFILE               ?= default
 ARCH                  ?= $(shell uname -m | sed 's/i.86/x86/;s/x86_64/x64/;s/arm.*/arm/;s/mips.*/mips/')
 CC_ARCH               ?= $(shell echo $(ARCH) | sed 's/x86/i686/;s/x64/x86_64/')
-OS                    ?= freebsd
+OS                    ?= linux
 CC                    ?= gcc
 CONFIG                ?= $(OS)-$(ARCH)-$(PROFILE)
 BUILD                 ?= build/$(CONFIG)
@@ -47,9 +47,9 @@ endif
 CFLAGS                += -fPIC -w
 DFLAGS                += -D_REENTRANT -DPIC $(patsubst %,-D%,$(filter ME_%,$(MAKEFLAGS))) -DME_COM_COMPILER=$(ME_COM_COMPILER) -DME_COM_EJS=$(ME_COM_EJS) -DME_COM_EST=$(ME_COM_EST) -DME_COM_HTTP=$(ME_COM_HTTP) -DME_COM_LIB=$(ME_COM_LIB) -DME_COM_MPR=$(ME_COM_MPR) -DME_COM_OPENSSL=$(ME_COM_OPENSSL) -DME_COM_OSDEP=$(ME_COM_OSDEP) -DME_COM_PCRE=$(ME_COM_PCRE) -DME_COM_SQLITE=$(ME_COM_SQLITE) -DME_COM_SSL=$(ME_COM_SSL) -DME_COM_VXWORKS=$(ME_COM_VXWORKS) -DME_COM_WINSDK=$(ME_COM_WINSDK) -DME_COM_ZLIB=$(ME_COM_ZLIB) 
 IFLAGS                += "-I$(BUILD)/inc"
-LDFLAGS               += 
+LDFLAGS               += '-rdynamic' '-Wl,--enable-new-dtags' '-Wl,-rpath,$$ORIGIN/'
 LIBPATHS              += -L$(BUILD)/bin
-LIBS                  += -ldl -lpthread -lm
+LIBS                  += -lrt -ldl -lpthread -lm
 
 DEBUG                 ?= debug
 CFLAGS-debug          ?= -g
@@ -87,13 +87,13 @@ endif
 ifeq ($(ME_COM_EJS),1)
     TARGETS           += $(BUILD)/bin/ejs
 endif
-TARGETS               += $(BUILD)/bin/exp
+TARGETS               += $(BUILD)/bin/expansive
 TARGETS               += $(BUILD)/bin/ca.crt
 ifeq ($(ME_COM_HTTP),1)
     TARGETS           += $(BUILD)/bin/http
 endif
 TARGETS               += $(BUILD)/bin/libmprssl.so
-TARGETS               += $(BUILD)/bin/expansive.sample
+TARGETS               += $(BUILD)/bin/sample.json
 
 unexport CDPATH
 
@@ -112,9 +112,9 @@ prep:
 	@[ ! -x $(BUILD)/bin ] && mkdir -p $(BUILD)/bin; true
 	@[ ! -x $(BUILD)/inc ] && mkdir -p $(BUILD)/inc; true
 	@[ ! -x $(BUILD)/obj ] && mkdir -p $(BUILD)/obj; true
-	@[ ! -f $(BUILD)/inc/me.h ] && cp projects/exp-freebsd-default-me.h $(BUILD)/inc/me.h ; true
-	@if ! diff $(BUILD)/inc/me.h projects/exp-freebsd-default-me.h >/dev/null ; then\
-		cp projects/exp-freebsd-default-me.h $(BUILD)/inc/me.h  ; \
+	@[ ! -f $(BUILD)/inc/me.h ] && cp projects/expansive-linux-default-me.h $(BUILD)/inc/me.h ; true
+	@if ! diff $(BUILD)/inc/me.h projects/expansive-linux-default-me.h >/dev/null ; then\
+		cp projects/expansive-linux-default-me.h $(BUILD)/inc/me.h  ; \
 	fi; true
 	@if [ -f "$(BUILD)/.makeflags" ] ; then \
 		if [ "$(MAKEFLAGS)" != "`cat $(BUILD)/.makeflags`" ] ; then \
@@ -127,8 +127,8 @@ clean:
 	rm -f "$(BUILD)/obj/ejs.o"
 	rm -f "$(BUILD)/obj/ejsLib.o"
 	rm -f "$(BUILD)/obj/ejsc.o"
-	rm -f "$(BUILD)/obj/exp.o"
 	rm -f "$(BUILD)/obj/expParser.o"
+	rm -f "$(BUILD)/obj/expansive.o"
 	rm -f "$(BUILD)/obj/http.o"
 	rm -f "$(BUILD)/obj/httpLib.o"
 	rm -f "$(BUILD)/obj/mprLib.o"
@@ -137,7 +137,7 @@ clean:
 	rm -f "$(BUILD)/obj/zlib.o"
 	rm -f "$(BUILD)/bin/ejsc"
 	rm -f "$(BUILD)/bin/ejs"
-	rm -f "$(BUILD)/bin/exp"
+	rm -f "$(BUILD)/bin/expansive"
 	rm -f "$(BUILD)/bin/ca.crt"
 	rm -f "$(BUILD)/bin/http"
 	rm -f "$(BUILD)/bin/libejs.so"
@@ -146,7 +146,7 @@ clean:
 	rm -f "$(BUILD)/bin/libmprssl.so"
 	rm -f "$(BUILD)/bin/libpcre.so"
 	rm -f "$(BUILD)/bin/libzlib.so"
-	rm -f "$(BUILD)/bin/expansive.sample"
+	rm -f "$(BUILD)/bin/sample.json"
 
 clobber: clean
 	rm -fr ./$(BUILD)
@@ -256,10 +256,10 @@ $(BUILD)/inc/ejsByteGoto.h: $(DEPS_10)
 	cp src/paks/ejs/ejsByteGoto.h $(BUILD)/inc/ejsByteGoto.h
 
 #
-#   exp.h
+#   expansive.h
 #
 
-$(BUILD)/inc/exp.h: $(DEPS_11)
+$(BUILD)/inc/expansive.h: $(DEPS_11)
 
 #
 #   ejs.h
@@ -275,7 +275,7 @@ DEPS_13 += src/paks/ejs/ejs.h
 $(BUILD)/obj/ejs.o: \
     src/paks/ejs/ejs.c $(DEPS_13)
 	@echo '   [Compile] $(BUILD)/obj/ejs.o'
-	$(CC) -c -o $(BUILD)/obj/ejs.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/ejs/ejs.c
+	$(CC) -c -o $(BUILD)/obj/ejs.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/ejs/ejs.c
 
 #
 #   ejsLib.o
@@ -288,7 +288,7 @@ DEPS_14 += $(BUILD)/inc/me.h
 $(BUILD)/obj/ejsLib.o: \
     src/paks/ejs/ejsLib.c $(DEPS_14)
 	@echo '   [Compile] $(BUILD)/obj/ejsLib.o'
-	$(CC) -c -o $(BUILD)/obj/ejsLib.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/ejs/ejsLib.c
+	$(CC) -c -o $(BUILD)/obj/ejsLib.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/ejs/ejsLib.c
 
 #
 #   ejsc.o
@@ -298,29 +298,29 @@ DEPS_15 += src/paks/ejs/ejs.h
 $(BUILD)/obj/ejsc.o: \
     src/paks/ejs/ejsc.c $(DEPS_15)
 	@echo '   [Compile] $(BUILD)/obj/ejsc.o'
-	$(CC) -c -o $(BUILD)/obj/ejsc.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/ejs/ejsc.c
-
-#
-#   exp.o
-#
-DEPS_16 += $(BUILD)/inc/ejs.h
-DEPS_16 += $(BUILD)/inc/exp.h
-
-$(BUILD)/obj/exp.o: \
-    src/exp.c $(DEPS_16)
-	@echo '   [Compile] $(BUILD)/obj/exp.o'
-	$(CC) -c -o $(BUILD)/obj/exp.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/exp.c
+	$(CC) -c -o $(BUILD)/obj/ejsc.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/ejs/ejsc.c
 
 #
 #   expParser.o
 #
-DEPS_17 += $(BUILD)/inc/ejs.h
-DEPS_17 += $(BUILD)/inc/exp.h
+DEPS_16 += $(BUILD)/inc/ejs.h
+DEPS_16 += $(BUILD)/inc/expansive.h
 
 $(BUILD)/obj/expParser.o: \
-    src/expParser.c $(DEPS_17)
+    src/expParser.c $(DEPS_16)
 	@echo '   [Compile] $(BUILD)/obj/expParser.o'
-	$(CC) -c -o $(BUILD)/obj/expParser.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/expParser.c
+	$(CC) -c -o $(BUILD)/obj/expParser.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/expParser.c
+
+#
+#   expansive.o
+#
+DEPS_17 += $(BUILD)/inc/ejs.h
+DEPS_17 += $(BUILD)/inc/expansive.h
+
+$(BUILD)/obj/expansive.o: \
+    src/expansive.c $(DEPS_17)
+	@echo '   [Compile] $(BUILD)/obj/expansive.o'
+	$(CC) -c -o $(BUILD)/obj/expansive.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/expansive.c
 
 #
 #   http.h
@@ -336,7 +336,7 @@ DEPS_19 += src/paks/http/http.h
 $(BUILD)/obj/http.o: \
     src/paks/http/http.c $(DEPS_19)
 	@echo '   [Compile] $(BUILD)/obj/http.o'
-	$(CC) -c -o $(BUILD)/obj/http.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/http/http.c
+	$(CC) -c -o $(BUILD)/obj/http.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/http/http.c
 
 #
 #   httpLib.o
@@ -346,7 +346,7 @@ DEPS_20 += src/paks/http/http.h
 $(BUILD)/obj/httpLib.o: \
     src/paks/http/httpLib.c $(DEPS_20)
 	@echo '   [Compile] $(BUILD)/obj/httpLib.o'
-	$(CC) -c -o $(BUILD)/obj/httpLib.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/http/httpLib.c
+	$(CC) -c -o $(BUILD)/obj/httpLib.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/http/httpLib.c
 
 #
 #   mpr.h
@@ -362,7 +362,7 @@ DEPS_22 += src/paks/mpr/mpr.h
 $(BUILD)/obj/mprLib.o: \
     src/paks/mpr/mprLib.c $(DEPS_22)
 	@echo '   [Compile] $(BUILD)/obj/mprLib.o'
-	$(CC) -c -o $(BUILD)/obj/mprLib.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/mpr/mprLib.c
+	$(CC) -c -o $(BUILD)/obj/mprLib.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/mpr/mprLib.c
 
 #
 #   mprSsl.o
@@ -372,7 +372,7 @@ DEPS_23 += src/paks/mpr/mpr.h
 $(BUILD)/obj/mprSsl.o: \
     src/paks/mpr/mprSsl.c $(DEPS_23)
 	@echo '   [Compile] $(BUILD)/obj/mprSsl.o'
-	$(CC) -c -o $(BUILD)/obj/mprSsl.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH="$(ME_COM_OPENSSL_PATH)" $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)/include" src/paks/mpr/mprSsl.c
+	$(CC) -c -o $(BUILD)/obj/mprSsl.o $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH="$(ME_COM_OPENSSL_PATH)" $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)/include" src/paks/mpr/mprSsl.c
 
 #
 #   pcre.h
@@ -389,7 +389,7 @@ DEPS_25 += src/paks/pcre/pcre.h
 $(BUILD)/obj/pcre.o: \
     src/paks/pcre/pcre.c $(DEPS_25)
 	@echo '   [Compile] $(BUILD)/obj/pcre.o'
-	$(CC) -c -o $(BUILD)/obj/pcre.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/pcre/pcre.c
+	$(CC) -c -o $(BUILD)/obj/pcre.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/pcre/pcre.c
 
 #
 #   zlib.h
@@ -406,7 +406,7 @@ DEPS_27 += src/paks/zlib/zlib.h
 $(BUILD)/obj/zlib.o: \
     src/paks/zlib/zlib.c $(DEPS_27)
 	@echo '   [Compile] $(BUILD)/obj/zlib.o'
-	$(CC) -c -o $(BUILD)/obj/zlib.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/zlib/zlib.c
+	$(CC) -c -o $(BUILD)/obj/zlib.o $(CFLAGS) $(DFLAGS) $(IFLAGS) src/paks/zlib/zlib.c
 
 #
 #   libmpr
@@ -563,21 +563,21 @@ $(BUILD)/bin/ejs: $(DEPS_35)
 endif
 
 #
-#   exp.mod
+#   expansive.mod
 #
-DEPS_36 += src/exp.es
+DEPS_36 += src/expansive.es
 DEPS_36 += src/ExpParser.es
 DEPS_36 += src/paks/ejs-version/Version.es
 ifeq ($(ME_COM_EJS),1)
     DEPS_36 += $(BUILD)/bin/ejs.mod
 endif
 
-$(BUILD)/bin/exp.mod: $(DEPS_36)
-	echo '   [Compile] exp.mod' ; \
-	./$(BUILD)/bin/ejsc --debug --out ./$(BUILD)/bin/exp.mod --optimize 9 src/exp.es src/ExpParser.es src/paks/ejs-version/Version.es
+$(BUILD)/bin/expansive.mod: $(DEPS_36)
+	echo '   [Compile] expansive.mod' ; \
+	./$(BUILD)/bin/ejsc --debug --out ./$(BUILD)/bin/expansive.mod --optimize 9 src/expansive.es src/ExpParser.es src/paks/ejs-version/Version.es
 
 #
-#   exp
+#   expansive
 #
 DEPS_37 += $(BUILD)/bin/libmpr.so
 ifeq ($(ME_COM_HTTP),1)
@@ -586,8 +586,8 @@ endif
 ifeq ($(ME_COM_EJS),1)
     DEPS_37 += $(BUILD)/bin/libejs.so
 endif
-DEPS_37 += $(BUILD)/bin/exp.mod
-DEPS_37 += $(BUILD)/obj/exp.o
+DEPS_37 += $(BUILD)/bin/expansive.mod
+DEPS_37 += $(BUILD)/obj/expansive.o
 DEPS_37 += $(BUILD)/obj/expParser.o
 
 LIBS_37 += -lmpr
@@ -604,9 +604,9 @@ ifeq ($(ME_COM_ZLIB),1)
     LIBS_37 += -lzlib
 endif
 
-$(BUILD)/bin/exp: $(DEPS_37)
-	@echo '      [Link] $(BUILD)/bin/exp'
-	$(CC) -o $(BUILD)/bin/exp $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/exp.o" "$(BUILD)/obj/expParser.o" $(LIBPATHS_37) $(LIBS_37) $(LIBS_37) $(LIBS) $(LIBS) 
+$(BUILD)/bin/expansive: $(DEPS_37)
+	@echo '      [Link] $(BUILD)/bin/expansive'
+	$(CC) -o $(BUILD)/bin/expansive $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/expansive.o" "$(BUILD)/obj/expParser.o" $(LIBPATHS_37) $(LIBS_37) $(LIBS_37) $(LIBS) $(LIBS) 
 
 #
 #   http-ca-crt
@@ -664,12 +664,12 @@ $(BUILD)/bin/libmprssl.so: $(DEPS_40)
 #
 #   sample
 #
-DEPS_41 += src/expansive.sample
+DEPS_41 += src/sample.json
 
-$(BUILD)/bin/expansive.sample: $(DEPS_41)
-	@echo '      [Copy] $(BUILD)/bin/expansive.sample'
+$(BUILD)/bin/sample.json: $(DEPS_41)
+	@echo '      [Copy] $(BUILD)/bin/sample.json'
 	mkdir -p "$(BUILD)/bin"
-	cp src/expansive.sample $(BUILD)/bin/expansive.sample
+	cp src/sample.json $(BUILD)/bin/sample.json
 
 #
 #   installPrep
@@ -696,10 +696,10 @@ installBinary: $(DEPS_44)
 	rm -f "$(ME_APP_PREFIX)/latest" ; \
 	ln -s "0.4.3" "$(ME_APP_PREFIX)/latest" ; \
 	mkdir -p "$(ME_VAPP_PREFIX)/bin" ; \
-	cp $(BUILD)/bin/exp $(ME_VAPP_PREFIX)/bin/exp ; \
+	cp $(BUILD)/bin/expansive $(ME_VAPP_PREFIX)/bin/expansive ; \
 	mkdir -p "$(ME_BIN_PREFIX)" ; \
-	rm -f "$(ME_BIN_PREFIX)/exp" ; \
-	ln -s "$(ME_VAPP_PREFIX)/bin/exp" "$(ME_BIN_PREFIX)/exp" ; \
+	rm -f "$(ME_BIN_PREFIX)/expansive" ; \
+	ln -s "$(ME_VAPP_PREFIX)/bin/expansive" "$(ME_BIN_PREFIX)/expansive" ; \
 	mkdir -p "$(ME_VAPP_PREFIX)/bin" ; \
 	cp $(BUILD)/bin/libejs.so $(ME_VAPP_PREFIX)/bin/libejs.so ; \
 	cp $(BUILD)/bin/libhttp.so $(ME_VAPP_PREFIX)/bin/libhttp.so ; \
@@ -714,13 +714,13 @@ installBinary: $(DEPS_44)
 	mkdir -p "$(ME_VAPP_PREFIX)/bin" ; \
 	cp $(BUILD)/bin/ca.crt $(ME_VAPP_PREFIX)/bin/ca.crt ; \
 	cp $(BUILD)/bin/ejs.mod $(ME_VAPP_PREFIX)/bin/ejs.mod ; \
-	cp $(BUILD)/bin/exp.mod $(ME_VAPP_PREFIX)/bin/exp.mod ; \
-	cp $(BUILD)/bin/expansive.sample $(ME_VAPP_PREFIX)/bin/expansive.sample ; \
+	cp $(BUILD)/bin/expansive.mod $(ME_VAPP_PREFIX)/bin/expansive.mod ; \
+	cp $(BUILD)/bin/sample.json $(ME_VAPP_PREFIX)/bin/sample.json ; \
 	mkdir -p "$(ME_VAPP_PREFIX)/doc/man/man1" ; \
-	cp doc/documents/man/exp.1 $(ME_VAPP_PREFIX)/doc/man/man1/exp.1 ; \
+	cp doc/source/man/expansive.1 $(ME_VAPP_PREFIX)/doc/man/man1/expansive.1 ; \
 	mkdir -p "$(ME_MAN_PREFIX)/man1" ; \
-	rm -f "$(ME_MAN_PREFIX)/man1/exp.1" ; \
-	ln -s "$(ME_VAPP_PREFIX)/doc/man/man1/exp.1" "$(ME_MAN_PREFIX)/man1/exp.1"
+	rm -f "$(ME_MAN_PREFIX)/man1/expansive.1" ; \
+	ln -s "$(ME_VAPP_PREFIX)/doc/man/man1/expansive.1" "$(ME_MAN_PREFIX)/man1/expansive.1"
 
 #
 #   start

@@ -1,8 +1,8 @@
 #
-#   exp-windows-default.nmake -- Makefile to build Embedthis Expansive for windows
+#   expansive-windows-default.nmake -- Makefile to build Embedthis Expansive for windows
 #
 
-NAME                  = exp
+NAME                  = expansive
 VERSION               = 0.4.3
 
 OS                    = windows
@@ -142,7 +142,7 @@ TARGETS               = $(TARGETS) build\$(CONFIG)\bin\ejs.mod
 !IF "$(ME_COM_EJS)" == "1"
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\ejs.exe
 !ENDIF
-TARGETS               = $(TARGETS) build\$(CONFIG)\bin\exp.exe
+TARGETS               = $(TARGETS) build\$(CONFIG)\bin\expansive.exe
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\ca.crt
 !IF "$(ME_COM_HTTP)" == "1"
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\http.exe
@@ -151,7 +151,7 @@ TARGETS               = $(TARGETS) build\$(CONFIG)\bin\http.exe
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\libest.dll
 !ENDIF
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\libmprssl.dll
-TARGETS               = $(TARGETS) build\$(CONFIG)\bin\expansive.sample
+TARGETS               = $(TARGETS) build\$(CONFIG)\bin\sample.json
 
 !IFNDEF SHOW
 .SILENT:
@@ -173,7 +173,7 @@ prep:
 	@if not exist $(BUILD)\bin md $(BUILD)\bin
 	@if not exist $(BUILD)\inc md $(BUILD)\inc
 	@if not exist $(BUILD)\obj md $(BUILD)\obj
-	@if not exist $(BUILD)\inc\me.h copy projects\exp-windows-default-me.h $(BUILD)\inc\me.h
+	@if not exist $(BUILD)\inc\me.h copy projects\expansive-windows-default-me.h $(BUILD)\inc\me.h
 
 !IF "$(SHOW)" != ""
 	@echo ..... [Info] Use "make SHOW=1" to trace executed commands and errors.
@@ -187,8 +187,8 @@ clean:
 	if exist "build\$(CONFIG)\obj\ejsLib.obj" del /Q "build\$(CONFIG)\obj\ejsLib.obj"
 	if exist "build\$(CONFIG)\obj\ejsc.obj" del /Q "build\$(CONFIG)\obj\ejsc.obj"
 	if exist "build\$(CONFIG)\obj\estLib.obj" del /Q "build\$(CONFIG)\obj\estLib.obj"
-	if exist "build\$(CONFIG)\obj\exp.obj" del /Q "build\$(CONFIG)\obj\exp.obj"
 	if exist "build\$(CONFIG)\obj\expParser.obj" del /Q "build\$(CONFIG)\obj\expParser.obj"
+	if exist "build\$(CONFIG)\obj\expansive.obj" del /Q "build\$(CONFIG)\obj\expansive.obj"
 	if exist "build\$(CONFIG)\obj\http.obj" del /Q "build\$(CONFIG)\obj\http.obj"
 	if exist "build\$(CONFIG)\obj\httpLib.obj" del /Q "build\$(CONFIG)\obj\httpLib.obj"
 	if exist "build\$(CONFIG)\obj\mprLib.obj" del /Q "build\$(CONFIG)\obj\mprLib.obj"
@@ -204,10 +204,10 @@ clean:
 	if exist "build\$(CONFIG)\bin\ejs.lib" del /Q "build\$(CONFIG)\bin\ejs.lib"
 	if exist "build\$(CONFIG)\bin\ejs.pdb" del /Q "build\$(CONFIG)\bin\ejs.pdb"
 	if exist "build\$(CONFIG)\bin\ejs.exp" del /Q "build\$(CONFIG)\bin\ejs.exp"
-	if exist "build\$(CONFIG)\bin\exp.exe" del /Q "build\$(CONFIG)\bin\exp.exe"
-	if exist "build\$(CONFIG)\bin\exp.lib" del /Q "build\$(CONFIG)\bin\exp.lib"
-	if exist "build\$(CONFIG)\bin\exp.pdb" del /Q "build\$(CONFIG)\bin\exp.pdb"
-	if exist "build\$(CONFIG)\bin\exp.exp" del /Q "build\$(CONFIG)\bin\exp.exp"
+	if exist "build\$(CONFIG)\bin\expansive.exe" del /Q "build\$(CONFIG)\bin\expansive.exe"
+	if exist "build\$(CONFIG)\bin\expansive.lib" del /Q "build\$(CONFIG)\bin\expansive.lib"
+	if exist "build\$(CONFIG)\bin\expansive.pdb" del /Q "build\$(CONFIG)\bin\expansive.pdb"
+	if exist "build\$(CONFIG)\bin\expansive.exp" del /Q "build\$(CONFIG)\bin\expansive.exp"
 	if exist "build\$(CONFIG)\bin\ca.crt" del /Q "build\$(CONFIG)\bin\ca.crt"
 	if exist "build\$(CONFIG)\bin\http.exe" del /Q "build\$(CONFIG)\bin\http.exe"
 	if exist "build\$(CONFIG)\bin\http.lib" del /Q "build\$(CONFIG)\bin\http.lib"
@@ -241,7 +241,7 @@ clean:
 	if exist "build\$(CONFIG)\bin\libzlib.lib" del /Q "build\$(CONFIG)\bin\libzlib.lib"
 	if exist "build\$(CONFIG)\bin\libzlib.pdb" del /Q "build\$(CONFIG)\bin\libzlib.pdb"
 	if exist "build\$(CONFIG)\bin\libzlib.exp" del /Q "build\$(CONFIG)\bin\libzlib.exp"
-	if exist "build\$(CONFIG)\bin\expansive.sample" del /Q "build\$(CONFIG)\bin\expansive.sample"
+	if exist "build\$(CONFIG)\bin\sample.json" del /Q "build\$(CONFIG)\bin\sample.json"
 
 #
 #   me.h
@@ -606,41 +606,41 @@ build\$(CONFIG)\bin\ejs.exe: $(DEPS_30)
 !ENDIF
 
 #
-#   exp.mod
+#   expansive.mod
 #
-DEPS_31 = $(DEPS_31) src\exp.es
+DEPS_31 = $(DEPS_31) src\expansive.es
 DEPS_31 = $(DEPS_31) src\ExpParser.es
 DEPS_31 = $(DEPS_31) src\paks\ejs-version\Version.es
 !IF "$(ME_COM_EJS)" == "1"
 DEPS_31 = $(DEPS_31) build\$(CONFIG)\bin\ejs.mod
 !ENDIF
 
-build\$(CONFIG)\bin\exp.mod: $(DEPS_31)
-	@echo .. [Compile] exp.mod
-	.\$(BUILD)\bin\ejsc --debug --out ./$(BUILD)/bin/exp.mod --optimize 9 src/exp.es src/ExpParser.es src/paks/ejs-version/Version.es
+build\$(CONFIG)\bin\expansive.mod: $(DEPS_31)
+	@echo .. [Compile] expansive.mod
+	.\$(BUILD)\bin\ejsc --debug --out ./$(BUILD)/bin/expansive.mod --optimize 9 src/expansive.es src/ExpParser.es src/paks/ejs-version/Version.es
 
 #
-#   exp.h
+#   expansive.h
 #
 
-build\$(CONFIG)\inc\exp.h: $(DEPS_32)
+build\$(CONFIG)\inc\expansive.h: $(DEPS_32)
 
 #
-#   exp.obj
+#   expansive.obj
 #
 DEPS_33 = $(DEPS_33) build\$(CONFIG)\inc\ejs.h
-DEPS_33 = $(DEPS_33) build\$(CONFIG)\inc\exp.h
+DEPS_33 = $(DEPS_33) build\$(CONFIG)\inc\expansive.h
 
-build\$(CONFIG)\obj\exp.obj: \
-    src\exp.c $(DEPS_33)
-	@echo .. [Compile] build\$(CONFIG)\obj\exp.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\exp.obj -Fd$(BUILD)\obj\exp.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\exp.c $(LOG)
+build\$(CONFIG)\obj\expansive.obj: \
+    src\expansive.c $(DEPS_33)
+	@echo .. [Compile] build\$(CONFIG)\obj\expansive.obj
+	"$(CC)" -c -Fo$(BUILD)\obj\expansive.obj -Fd$(BUILD)\obj\expansive.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\expansive.c $(LOG)
 
 #
 #   expParser.obj
 #
 DEPS_34 = $(DEPS_34) build\$(CONFIG)\inc\ejs.h
-DEPS_34 = $(DEPS_34) build\$(CONFIG)\inc\exp.h
+DEPS_34 = $(DEPS_34) build\$(CONFIG)\inc\expansive.h
 
 build\$(CONFIG)\obj\expParser.obj: \
     src\expParser.c $(DEPS_34)
@@ -648,7 +648,7 @@ build\$(CONFIG)\obj\expParser.obj: \
 	"$(CC)" -c -Fo$(BUILD)\obj\expParser.obj -Fd$(BUILD)\obj\expParser.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\expParser.c $(LOG)
 
 #
-#   exp
+#   expansive
 #
 DEPS_35 = $(DEPS_35) build\$(CONFIG)\bin\libmpr.dll
 !IF "$(ME_COM_HTTP)" == "1"
@@ -657,8 +657,8 @@ DEPS_35 = $(DEPS_35) build\$(CONFIG)\bin\libhttp.dll
 !IF "$(ME_COM_EJS)" == "1"
 DEPS_35 = $(DEPS_35) build\$(CONFIG)\bin\libejs.dll
 !ENDIF
-DEPS_35 = $(DEPS_35) build\$(CONFIG)\bin\exp.mod
-DEPS_35 = $(DEPS_35) build\$(CONFIG)\obj\exp.obj
+DEPS_35 = $(DEPS_35) build\$(CONFIG)\bin\expansive.mod
+DEPS_35 = $(DEPS_35) build\$(CONFIG)\obj\expansive.obj
 DEPS_35 = $(DEPS_35) build\$(CONFIG)\obj\expParser.obj
 
 LIBS_35 = $(LIBS_35) libmpr.lib
@@ -675,9 +675,9 @@ LIBS_35 = $(LIBS_35) libejs.lib
 LIBS_35 = $(LIBS_35) libzlib.lib
 !ENDIF
 
-build\$(CONFIG)\bin\exp.exe: $(DEPS_35)
-	@echo ..... [Link] build\$(CONFIG)\bin\exp.exe
-	"$(LD)" -nologo -out:$(BUILD)\bin\exp.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\exp.obj" "$(BUILD)\obj\expParser.obj" $(LIBPATHS_35) $(LIBS_35) $(LIBS_35) $(LIBS)  $(LOG)
+build\$(CONFIG)\bin\expansive.exe: $(DEPS_35)
+	@echo ..... [Link] build\$(CONFIG)\bin\expansive.exe
+	"$(LD)" -nologo -out:$(BUILD)\bin\expansive.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\expansive.obj" "$(BUILD)\obj\expParser.obj" $(LIBPATHS_35) $(LIBS_35) $(LIBS_35) $(LIBS)  $(LOG)
 
 #
 #   http-ca-crt
@@ -807,10 +807,10 @@ build\$(CONFIG)\obj\removeFiles.obj: \
 #
 #   sample
 #
-DEPS_46 = $(DEPS_46) src\expansive.sample
+DEPS_46 = $(DEPS_46) src\sample.json
 
-build\$(CONFIG)\bin\expansive.sample: $(DEPS_46)
-	@echo ..... [Copy] build\$(CONFIG)\bin\expansive.sample
+build\$(CONFIG)\bin\sample.json: $(DEPS_46)
+	@echo ..... [Copy] build\$(CONFIG)\bin\sample.json
 	if not exist "build\$(CONFIG)\bin" md "build\$(CONFIG)\bin"
-	copy /Y /B src\expansive.sample+modified build\$(CONFIG)\bin\expansive.sample $(LOG)
+	copy /Y /B src\sample.json+modified build\$(CONFIG)\bin\sample.json $(LOG)
 

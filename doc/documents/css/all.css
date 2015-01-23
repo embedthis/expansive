@@ -13,8 +13,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-  background-image: -webkit-linear-gradient(45deg, #007a70 0px, #01d3d3 100%);
-  background-image: linear-gradient(45deg, #007a70 0px, #01d3d3 100%);
+  background-image: -webkit-linear-gradient(45deg, #ed0500 0px, #a20300 100%);
+  background-image: linear-gradient(45deg, #ed0500 0px, #a20300 100%);
   background-attachment: fixed;
   min-width: 320px;
   text-rendering: optimizeLegibility;
@@ -113,7 +113,7 @@ body.show-sidebar {
   background: rgba(255, 255, 255, 0.1);
 }
 .sidebar .ui.vertical.menu a.item.active {
-  border-right: 18px solid #01d3d3;
+  border-right: 18px solid #a20300;
 }
 .ui.sidebar-launch.button {
   position: relative;
@@ -228,3 +228,4 @@ img.shadow {
     override.less - Appweb Theme Overrides
  */
 /* Teal */
+/* Red */

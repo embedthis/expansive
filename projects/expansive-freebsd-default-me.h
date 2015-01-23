@@ -1,5 +1,5 @@
 /*
-    me.h -- MakeMe Configuration Header for macosx-x64-default
+    me.h -- MakeMe Configuration Header for freebsd-x86-default
 
     This header is created by Me during configuration. To change settings, re-run
     configure or define variables in your Makefile to override these default values.
@@ -28,7 +28,7 @@
     #define ME_COMPILER_HAS_DYN_LOAD 1
 #endif
 #ifndef ME_COMPILER_HAS_LIB_EDIT
-    #define ME_COMPILER_HAS_LIB_EDIT 1
+    #define ME_COMPILER_HAS_LIB_EDIT 0
 #endif
 #ifndef ME_COMPILER_HAS_LIB_RT
     #define ME_COMPILER_HAS_LIB_RT 0
@@ -40,28 +40,28 @@
     #define ME_COMPILER_HAS_MTUNE 1
 #endif
 #ifndef ME_COMPILER_HAS_PAM
-    #define ME_COMPILER_HAS_PAM 1
+    #define ME_COMPILER_HAS_PAM 0
 #endif
 #ifndef ME_COMPILER_HAS_STACK_PROTECTOR
     #define ME_COMPILER_HAS_STACK_PROTECTOR 1
 #endif
 #ifndef ME_COMPILER_HAS_SYNC
-    #define ME_COMPILER_HAS_SYNC 1
+    #define ME_COMPILER_HAS_SYNC 0
 #endif
 #ifndef ME_COMPILER_HAS_SYNC64
-    #define ME_COMPILER_HAS_SYNC64 1
+    #define ME_COMPILER_HAS_SYNC64 0
 #endif
 #ifndef ME_COMPILER_HAS_SYNC_CAS
-    #define ME_COMPILER_HAS_SYNC_CAS 1
+    #define ME_COMPILER_HAS_SYNC_CAS 0
 #endif
 #ifndef ME_COMPILER_HAS_UNNAMED_UNIONS
     #define ME_COMPILER_HAS_UNNAMED_UNIONS 1
 #endif
 #ifndef ME_COMPILER_WARN64TO32
-    #define ME_COMPILER_WARN64TO32 1
+    #define ME_COMPILER_WARN64TO32 0
 #endif
 #ifndef ME_COMPILER_WARN_UNUSED
-    #define ME_COMPILER_WARN_UNUSED 1
+    #define ME_COMPILER_WARN_UNUSED 0
 #endif
 #ifndef ME_DEBUG
     #define ME_DEBUG 1
@@ -136,7 +136,7 @@
     #define ME_MPR_LOGGING 1
 #endif
 #ifndef ME_NAME
-    #define ME_NAME "exp"
+    #define ME_NAME "expansive"
 #endif
 #ifndef ME_PLATFORMS
     #define ME_PLATFORMS "local"
@@ -171,10 +171,10 @@
     #define ME_STATE_PREFIX "/var"
 #endif
 #ifndef ME_APP_PREFIX
-    #define ME_APP_PREFIX "/usr/local/lib/exp"
+    #define ME_APP_PREFIX "/usr/local/lib/expansive"
 #endif
 #ifndef ME_VAPP_PREFIX
-    #define ME_VAPP_PREFIX "/usr/local/lib/exp/0.4.3"
+    #define ME_VAPP_PREFIX "/usr/local/lib/expansive/0.4.3"
 #endif
 #ifndef ME_BIN_PREFIX
     #define ME_BIN_PREFIX "/usr/local/bin"
@@ -192,22 +192,22 @@
     #define ME_SBIN_PREFIX "/usr/local/sbin"
 #endif
 #ifndef ME_ETC_PREFIX
-    #define ME_ETC_PREFIX "/etc/exp"
+    #define ME_ETC_PREFIX "/etc/expansive"
 #endif
 #ifndef ME_WEB_PREFIX
-    #define ME_WEB_PREFIX "/var/www/exp"
+    #define ME_WEB_PREFIX "/var/www/expansive"
 #endif
 #ifndef ME_LOG_PREFIX
-    #define ME_LOG_PREFIX "/var/log/exp"
+    #define ME_LOG_PREFIX "/var/log/expansive"
 #endif
 #ifndef ME_SPOOL_PREFIX
-    #define ME_SPOOL_PREFIX "/var/spool/exp"
+    #define ME_SPOOL_PREFIX "/var/spool/expansive"
 #endif
 #ifndef ME_CACHE_PREFIX
-    #define ME_CACHE_PREFIX "/var/spool/exp/cache"
+    #define ME_CACHE_PREFIX "/var/spool/expansive/cache"
 #endif
 #ifndef ME_SRC_PREFIX
-    #define ME_SRC_PREFIX "exp-0.4.3"
+    #define ME_SRC_PREFIX "expansive-0.4.3"
 #endif
 
 /* Suffixes */
@@ -215,10 +215,10 @@
     #define ME_EXE ""
 #endif
 #ifndef ME_SHLIB
-    #define ME_SHLIB ".dylib"
+    #define ME_SHLIB ".so"
 #endif
 #ifndef ME_SHOBJ
-    #define ME_SHOBJ ".dylib"
+    #define ME_SHOBJ ".so"
 #endif
 #ifndef ME_LIB
     #define ME_LIB ".a"
@@ -229,10 +229,10 @@
 
 /* Profile */
 #ifndef ME_CONFIG_CMD
-    #define ME_CONFIG_CMD "me -d -q -platform macosx-x64-default -configure . --with openssl -gen xcode"
+    #define ME_CONFIG_CMD "me -d -q -platform freebsd-x86-default -configure . --with openssl -gen make"
 #endif
-#ifndef ME_EXP_PRODUCT
-    #define ME_EXP_PRODUCT 1
+#ifndef ME_EXPANSIVE_PRODUCT
+    #define ME_EXPANSIVE_PRODUCT 1
 #endif
 #ifndef ME_PROFILE
     #define ME_PROFILE "default"

@@ -1,5 +1,5 @@
 /*
-    me.h -- MakeMe Configuration Header for freebsd-x86-default
+    me.h -- MakeMe Configuration Header for windows-x86-default
 
     This header is created by Me during configuration. To change settings, re-run
     configure or define variables in your Makefile to override these default values.
@@ -16,13 +16,10 @@
     #define ME_COMPATIBLE "0.4"
 #endif
 #ifndef ME_COMPILER_HAS_ATOMIC
-    #define ME_COMPILER_HAS_ATOMIC 1
+    #define ME_COMPILER_HAS_ATOMIC 0
 #endif
 #ifndef ME_COMPILER_HAS_ATOMIC64
-    #define ME_COMPILER_HAS_ATOMIC64 1
-#endif
-#ifndef ME_COMPILER_HAS_DOUBLE_BRACES
-    #define ME_COMPILER_HAS_DOUBLE_BRACES 1
+    #define ME_COMPILER_HAS_ATOMIC64 0
 #endif
 #ifndef ME_COMPILER_HAS_DYN_LOAD
     #define ME_COMPILER_HAS_DYN_LOAD 1
@@ -36,14 +33,8 @@
 #ifndef ME_COMPILER_HAS_MMU
     #define ME_COMPILER_HAS_MMU 1
 #endif
-#ifndef ME_COMPILER_HAS_MTUNE
-    #define ME_COMPILER_HAS_MTUNE 1
-#endif
-#ifndef ME_COMPILER_HAS_PAM
-    #define ME_COMPILER_HAS_PAM 0
-#endif
 #ifndef ME_COMPILER_HAS_STACK_PROTECTOR
-    #define ME_COMPILER_HAS_STACK_PROTECTOR 1
+    #define ME_COMPILER_HAS_STACK_PROTECTOR 0
 #endif
 #ifndef ME_COMPILER_HAS_SYNC
     #define ME_COMPILER_HAS_SYNC 0
@@ -56,12 +47,6 @@
 #endif
 #ifndef ME_COMPILER_HAS_UNNAMED_UNIONS
     #define ME_COMPILER_HAS_UNNAMED_UNIONS 1
-#endif
-#ifndef ME_COMPILER_WARN64TO32
-    #define ME_COMPILER_WARN64TO32 0
-#endif
-#ifndef ME_COMPILER_WARN_UNUSED
-    #define ME_COMPILER_WARN_UNUSED 0
 #endif
 #ifndef ME_DEBUG
     #define ME_DEBUG 1
@@ -136,7 +121,7 @@
     #define ME_MPR_LOGGING 1
 #endif
 #ifndef ME_NAME
-    #define ME_NAME "exp"
+    #define ME_NAME "expansive"
 #endif
 #ifndef ME_PLATFORMS
     #define ME_PLATFORMS "local"
@@ -159,80 +144,83 @@
 
 /* Prefixes */
 #ifndef ME_ROOT_PREFIX
-    #define ME_ROOT_PREFIX "/"
+    #define ME_ROOT_PREFIX "C:"
+#endif
+#ifndef ME_PROGRAMFILES_PREFIX
+    #define ME_PROGRAMFILES_PREFIX "C:/Program Files"
+#endif
+#ifndef ME_PROGRAMFILES32_PREFIX
+    #define ME_PROGRAMFILES32_PREFIX "C:/Program Files"
 #endif
 #ifndef ME_BASE_PREFIX
-    #define ME_BASE_PREFIX "/usr/local"
-#endif
-#ifndef ME_DATA_PREFIX
-    #define ME_DATA_PREFIX "/"
-#endif
-#ifndef ME_STATE_PREFIX
-    #define ME_STATE_PREFIX "/var"
+    #define ME_BASE_PREFIX "C:/Program Files"
 #endif
 #ifndef ME_APP_PREFIX
-    #define ME_APP_PREFIX "/usr/local/lib/exp"
+    #define ME_APP_PREFIX "C:/Program Files/Embedthis Expansive"
 #endif
 #ifndef ME_VAPP_PREFIX
-    #define ME_VAPP_PREFIX "/usr/local/lib/exp/0.4.3"
+    #define ME_VAPP_PREFIX "C:/Program Files/Embedthis Expansive"
+#endif
+#ifndef ME_DATA_PREFIX
+    #define ME_DATA_PREFIX "C:/Program Files/Embedthis Expansive"
+#endif
+#ifndef ME_STATE_PREFIX
+    #define ME_STATE_PREFIX "C:/Program Files/Embedthis Expansive"
 #endif
 #ifndef ME_BIN_PREFIX
-    #define ME_BIN_PREFIX "/usr/local/bin"
+    #define ME_BIN_PREFIX "C:/Program Files/Embedthis Expansive/bin"
 #endif
 #ifndef ME_INC_PREFIX
-    #define ME_INC_PREFIX "/usr/local/include"
+    #define ME_INC_PREFIX "C:/Program Files/Embedthis Expansive/inc"
 #endif
 #ifndef ME_LIB_PREFIX
-    #define ME_LIB_PREFIX "/usr/local/lib"
+    #define ME_LIB_PREFIX "C:/Program Files/Embedthis Expansive/lib"
 #endif
 #ifndef ME_MAN_PREFIX
-    #define ME_MAN_PREFIX "/usr/local/share/man"
-#endif
-#ifndef ME_SBIN_PREFIX
-    #define ME_SBIN_PREFIX "/usr/local/sbin"
+    #define ME_MAN_PREFIX "C:/Program Files/Embedthis Expansive/man"
 #endif
 #ifndef ME_ETC_PREFIX
-    #define ME_ETC_PREFIX "/etc/exp"
+    #define ME_ETC_PREFIX "C:/Program Files/Embedthis Expansive"
 #endif
 #ifndef ME_WEB_PREFIX
-    #define ME_WEB_PREFIX "/var/www/exp"
+    #define ME_WEB_PREFIX "C:/Program Files/Embedthis Expansive/web"
 #endif
 #ifndef ME_LOG_PREFIX
-    #define ME_LOG_PREFIX "/var/log/exp"
+    #define ME_LOG_PREFIX "C:/Program Files/Embedthis Expansive/log"
 #endif
 #ifndef ME_SPOOL_PREFIX
-    #define ME_SPOOL_PREFIX "/var/spool/exp"
+    #define ME_SPOOL_PREFIX "C:/Program Files/Embedthis Expansive/tmp"
 #endif
 #ifndef ME_CACHE_PREFIX
-    #define ME_CACHE_PREFIX "/var/spool/exp/cache"
+    #define ME_CACHE_PREFIX "C:/Program Files/Embedthis Expansive/cache"
 #endif
 #ifndef ME_SRC_PREFIX
-    #define ME_SRC_PREFIX "exp-0.4.3"
+    #define ME_SRC_PREFIX "C:/Program Files/Embedthis Expansive/src"
 #endif
 
 /* Suffixes */
 #ifndef ME_EXE
-    #define ME_EXE ""
+    #define ME_EXE ".exe"
 #endif
 #ifndef ME_SHLIB
-    #define ME_SHLIB ".so"
+    #define ME_SHLIB ".lib"
 #endif
 #ifndef ME_SHOBJ
-    #define ME_SHOBJ ".so"
+    #define ME_SHOBJ ".dll"
 #endif
 #ifndef ME_LIB
-    #define ME_LIB ".a"
+    #define ME_LIB ".lib"
 #endif
 #ifndef ME_OBJ
-    #define ME_OBJ ".o"
+    #define ME_OBJ ".obj"
 #endif
 
 /* Profile */
 #ifndef ME_CONFIG_CMD
-    #define ME_CONFIG_CMD "me -d -q -platform freebsd-x86-default -configure . --with openssl -gen make"
+    #define ME_CONFIG_CMD "me -d -q -platform windows-x86-default -configure . --with est -gen vs"
 #endif
-#ifndef ME_EXP_PRODUCT
-    #define ME_EXP_PRODUCT 1
+#ifndef ME_EXPANSIVE_PRODUCT
+    #define ME_EXPANSIVE_PRODUCT 1
 #endif
 #ifndef ME_PROFILE
     #define ME_PROFILE "default"
@@ -263,7 +251,7 @@
     #define ME_COM_EJS 1
 #endif
 #ifndef ME_COM_EST
-    #define ME_COM_EST 0
+    #define ME_COM_EST 1
 #endif
 #ifndef ME_COM_HTTP
     #define ME_COM_HTTP 1
@@ -271,17 +259,23 @@
 #ifndef ME_COM_LIB
     #define ME_COM_LIB 1
 #endif
+#ifndef ME_COM_LINK
+    #define ME_COM_LINK 1
+#endif
 #ifndef ME_COM_MPR
     #define ME_COM_MPR 1
 #endif
 #ifndef ME_COM_OPENSSL
-    #define ME_COM_OPENSSL 1
+    #define ME_COM_OPENSSL 0
 #endif
 #ifndef ME_COM_OSDEP
     #define ME_COM_OSDEP 1
 #endif
 #ifndef ME_COM_PCRE
     #define ME_COM_PCRE 1
+#endif
+#ifndef ME_COM_RC
+    #define ME_COM_RC 1
 #endif
 #ifndef ME_COM_SQLITE
     #define ME_COM_SQLITE 0

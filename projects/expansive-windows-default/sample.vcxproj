@@ -96,10 +96,10 @@
 
       <CustomBuildStep>
         <Command>cd ..\..
-if exist $(BinDir)\expansive.sample del /Q $(BinDir)\expansive.sample
-copy /Y src\expansive.sample $(BinDir)\expansive.sample
-cd projects\exp-windows-default</Command>
-        <Outputs>$(BinDir)\expansive.sample</Outputs>
+if exist $(BinDir)\sample.json del /Q $(BinDir)\sample.json
+copy /Y src\sample.json $(BinDir)\sample.json
+cd projects\expansive-windows-default</Command>
+        <Outputs>$(BinDir)\sample.json</Outputs>
       </CustomBuildStep>
   </ItemDefinitionGroup>
 

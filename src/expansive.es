@@ -57,6 +57,7 @@ public class Expansive {
     var renderAll: Boolean
     var impliedUpdates: Object
     var initialized: Boolean
+    var lastRestart = new Date
     var lastGen: Date
     var log: Logger = App.log
     var mastersModified: Boolean
@@ -530,14 +531,20 @@ public class Expansive {
             let cmd = new Cmd
             cmd.on('readable', function(event, cmd) {
                 let buf = new ByteArray
-                cmd.read(buf, -1)
+                let len = cmd.read(buf, -1)
                 prints(buf)
+                if (len == 0 && cmd.wait(0)) {
+                    trace('Info', 'Server exited, restarting ...')
+                    pid = cmd.pid
+                    restartServer()
+                }
             })
             cmd.start(command, {detach: true})
             cmd.finalize()
             pid = cmd.pid
             trace('Run', command, '(' + pid + ')')
         }
+        lastRestart = new Date
     }
 
     function internalServer() {
@@ -564,7 +571,11 @@ public class Expansive {
 
     function restartServer() {
         if (services.serve && services.serve.command) {
-            externalServer()
+            if (lastRestart.elapsed < 5000) {
+                setTimeout(externalServer, 5000)
+            } else {
+                externalServer()
+            }
         }
     }
 

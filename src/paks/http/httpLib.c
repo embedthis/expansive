@@ -3857,8 +3857,8 @@ PUBLIC int httpFinalizeConfig(HttpRoute *route)
             httpParseError(route, "Cannot change working directory to %s", home);
             return MPR_ERR_BAD_STATE;
         }
-        if (route->flags & HTTP_ROUTE_UTILITY) {
-            /* Not running a web server but rather a utility like the "esp" generator program */
+        if (route->flags & HTTP_ROUTE_NO_LISTEN) {
+            /* Not running a web server */
             mprLog("info http config", 2, "Change directory to: \"%s\"", home);
         } else {
             if (chroot(home) < 0) {
@@ -4550,7 +4550,7 @@ static void parseLimitsWorkers(HttpRoute *route, cchar *key, MprJson *prop)
 
 static void parseMethods(HttpRoute *route, cchar *key, MprJson *prop)
 {
-    httpSetRouteMethods(route, getList(prop));
+    httpSetRouteMethods(route, supper(getList(prop)));
 }
 
 
@@ -4644,7 +4644,7 @@ static void parsePipelineHandlers(HttpRoute *route, cchar *key, MprJson *prop)
 
 static void parsePrefix(HttpRoute *route, cchar *key, MprJson *prop)
 {
-    httpSetRoutePrefix(route, sjoin(route->prefix, prop->value, 0));
+    httpSetRoutePrefix(route, prop->value);
 }
 
 
@@ -4763,46 +4763,56 @@ static void parseHttp(HttpRoute *route, cchar *key, MprJson *prop)
 }
 
 
+static void parseRoute(HttpRoute *route, cchar *key, MprJson *prop)
+{
+    HttpRoute   *newRoute;
+    cchar       *pattern;
+
+    if (prop->type & MPR_JSON_STRING) {
+        httpAddRouteSet(route, prop->value);
+
+    } else if (prop->type & MPR_JSON_OBJ) {
+        newRoute = 0;
+        pattern = mprReadJson(prop, "pattern");
+        if (pattern) {
+            newRoute = httpLookupRoute(route->host, pattern);
+            if (!newRoute) {
+                newRoute = httpCreateInheritedRoute(route);
+                httpSetRouteHost(newRoute, route->host);
+            }
+        } else {
+            newRoute = route;
+        }
+        httpParseAll(newRoute, key, prop);
+        if (pattern) {
+            httpFinalizeRoute(newRoute);
+        }
+    }
+}
+
+
 static void parseRoutes(HttpRoute *route, cchar *key, MprJson *prop)
 {
     MprJson     *child;
-    HttpRoute   *newRoute;
-    cchar       *pattern;
     int         ji;
 
+#if UNUSED
     if (route->loaded) {
         mprLog("warn http config", 1, "Skip reloading routes - must reboot if routes are modified");
         return;
     }
+#endif
     if (prop->type & MPR_JSON_STRING) {
         httpAddRouteSet(route, prop->value);
+
+    } else if (prop->type & MPR_JSON_OBJ) {
+        key = sreplace(key, ".routes", "");
+        parseRoute(route, key, prop);
 
     } else if (prop->type & MPR_JSON_ARRAY) {
         key = sreplace(key, ".routes", "");
         for (ITERATE_CONFIG(route, prop, child, ji)) {
-            if (child->type & MPR_JSON_STRING) {
-                httpAddRouteSet(route, child->value);
-
-            } else if (child->type & MPR_JSON_OBJ) {
-                newRoute = 0;
-                pattern = mprReadJson(child, "pattern");
-                if (pattern) {
-                    newRoute = httpLookupRoute(route->host, pattern);
-                    if (!newRoute) {
-                        newRoute = httpCreateInheritedRoute(route);
-                        httpSetRouteHost(newRoute, route->host);
-                    }
-                } else {
-                    newRoute = route;
-                }
-                httpParseAll(newRoute, key, child);
-                if (newRoute->error) {
-                    break;
-                }
-                if (pattern) {
-                    httpFinalizeRoute(newRoute);
-                }
-            }
+            parseRoute(route, key, child);
         }
     }
 }
@@ -8861,31 +8871,35 @@ PUBLIC HttpRoute *httpGetHostDefaultRoute(HttpHost *host)
 }
 
 
-static void printRoute(HttpRoute *route, int next, bool full)
+static void printRouteHeader(HttpHost *host, int *methodsLen, int *patternLen, int *targetLen)
 {
-    HttpRoute   *rp;
+    HttpRoute   *route;
+    int         next;
+
+    *methodsLen = (int) slen("Methods");
+    *patternLen = (int) slen("Route");
+    *targetLen = (int) slen("$&");
+
+    for (next = 0; (route = mprGetNextItem(host->routes, &next)) != 0; ) {
+        *targetLen = (int) max(*targetLen, slen(route->target));
+        *patternLen = (int) max(*patternLen, slen(route->pattern));
+        *methodsLen = (int) max(*methodsLen, slen(httpGetRouteMethods(route)));
+    }
+    printf("\n%-*s %-*s %-*s\n", *patternLen, "Route", *methodsLen, "Methods", *targetLen, "Target");
+}
+
+
+static void printRoute(HttpRoute *route, int idx, bool full, int methodsLen, int patternLen, int targetLen)
+{
     HttpRouteOp *condition;
     HttpStage   *handler;
     HttpAuth    *auth;
     MprKey      *kp;
     cchar       *methods, *pattern, *target, *index;
-    int         methodsLen, patternLen, targetLen, nextIndex;
+    int         nextIndex;
 
     if (route->flags & HTTP_ROUTE_HIDDEN) {
         return;
-    }
-    if (!full) {
-        if (next == 0) {
-            methodsLen = (int) slen("Methods");
-            patternLen = (int) slen("Route");
-            targetLen = (int) slen("$&");
-            for (next = 0; (rp = mprGetNextItem(route->host->routes, &next)) != 0; ) {
-                targetLen = (int) max(targetLen, slen(rp->target));
-                patternLen = (int) max(patternLen, slen(rp->pattern));
-                methodsLen = (int) max(methodsLen, slen(httpGetRouteMethods(rp)));
-            }
-            printf("%-*s %-*s %-*s\n", patternLen, "Route", methodsLen, "Methods", targetLen, "Target");
-        }
     }
     auth = route->auth;
     methods = httpGetRouteMethods(route);
@@ -8894,7 +8908,7 @@ static void printRoute(HttpRoute *route, int next, bool full)
     target = (route->target && *route->target) ? route->target : "$&";
 
     if (full) {
-        printf("\n Route [%d]. %s\n", next, route->pattern);
+        printf("\n Route [%d]. %s\n", idx, route->pattern);
         printf("    Pattern:      %s\n", pattern);
         if (route->prefix && *route->prefix) {
             printf("    RegExp:       %s\n", route->optimizedPattern);
@@ -8917,7 +8931,7 @@ static void printRoute(HttpRoute *route, int next, bool full)
             }
         }
         if (route->conditions) {
-            for (next = 0; (condition = mprGetNextItem(route->conditions, &next)) != 0; ) {
+            for (nextIndex = 0; (condition = mprGetNextItem(route->conditions, &nextIndex)) != 0; ) {
                 printf("    Condition:    %s %s\n", condition->name, condition->details ? condition->details : "");
             }
         }
@@ -8944,23 +8958,16 @@ static void printRoute(HttpRoute *route, int next, bool full)
 PUBLIC void httpLogRoutes(HttpHost *host, bool full)
 {
     HttpRoute   *route;
-    int         next, foundDefault;
+    int         index, methodsLen, patternLen, targetLen;
 
     if (!host) {
         host = httpGetDefaultHost();
     }
-    printf("\n");
-    for (foundDefault = next = 0; (route = mprGetNextItem(host->routes, &next)) != 0; ) {
-        printRoute(route, next - 1, full);
-        if (route == host->defaultRoute) {
-            foundDefault++;
-        }
+    if (!full) {
+        printRouteHeader(host, &methodsLen, &patternLen, &targetLen);
     }
-    /*
-        Add the default so LogRoutes can print the default route which has yet been added to host->routes
-     */
-    if (!foundDefault && host->defaultRoute) {
-        printRoute(host->defaultRoute, next - 1, full);
+    for (index = 0; (route = mprGetNextItem(host->routes, &index)) != 0; ) {
+        printRoute(route, index - 1, full, methodsLen, patternLen, targetLen);
     }
     printf("\n");
 }
@@ -11268,6 +11275,7 @@ PUBLIC void httpSetFileHandler(HttpConn *conn, cchar *path)
     fp->open(conn->writeq);
     fp->start(conn->writeq);
     conn->writeq->service = fp->outgoingService;
+    conn->readq->put = fp->incoming;
 }
 
 
@@ -12467,7 +12475,9 @@ PUBLIC HttpRoute *httpCreateInheritedRoute(HttpRoute *parent)
     route->languages = parent->languages;
     route->lifespan = parent->lifespan;
     route->limits = parent->limits;
+#if UNUSED
     route->loaded = parent->loaded;
+#endif
     route->map = parent->map;
     route->methods = parent->methods;
     route->mimeTypes = parent->mimeTypes;
@@ -15501,8 +15511,12 @@ PUBLIC void httpSetDir(HttpRoute *route, cchar *name, cchar *value)
     }
     path = httpMakePath(route, 0, value);
     path = mprJoinPath(route->home, path);
-    rpath = mprGetRelPath(path, 0);
     name = supper(name);
+
+    /*
+        Define the variable as a relative path to the route home
+     */
+    rpath = mprGetRelPath(path, route->home);
     httpSetRouteVar(route, sjoin(name, "_DIR", NULL), rpath);
 
     /*

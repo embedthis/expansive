@@ -194,7 +194,6 @@ clean:
 	if exist "build\$(CONFIG)\obj\mprLib.obj" del /Q "build\$(CONFIG)\obj\mprLib.obj"
 	if exist "build\$(CONFIG)\obj\mprSsl.obj" del /Q "build\$(CONFIG)\obj\mprSsl.obj"
 	if exist "build\$(CONFIG)\obj\pcre.obj" del /Q "build\$(CONFIG)\obj\pcre.obj"
-	if exist "build\$(CONFIG)\obj\removeFiles.obj" del /Q "build\$(CONFIG)\obj\removeFiles.obj"
 	if exist "build\$(CONFIG)\obj\zlib.obj" del /Q "build\$(CONFIG)\obj\zlib.obj"
 	if exist "build\$(CONFIG)\bin\ejsc.exe" del /Q "build\$(CONFIG)\bin\ejsc.exe"
 	if exist "build\$(CONFIG)\bin\ejsc.lib" del /Q "build\$(CONFIG)\bin\ejsc.lib"
@@ -252,41 +251,41 @@ build\$(CONFIG)\inc\me.h: $(DEPS_1)
 #
 #   osdep.h
 #
-DEPS_2 = $(DEPS_2) src\paks\osdep\osdep.h
+DEPS_2 = $(DEPS_2) paks\osdep\dist\osdep.h
 DEPS_2 = $(DEPS_2) build\$(CONFIG)\inc\me.h
 
 build\$(CONFIG)\inc\osdep.h: $(DEPS_2)
 	@echo ..... [Copy] build\$(CONFIG)\inc\osdep.h
 	if not exist "build\$(CONFIG)\inc" md "build\$(CONFIG)\inc"
-	copy /Y /B src\paks\osdep\osdep.h+modified build\$(CONFIG)\inc\osdep.h $(LOG)
+	copy /Y /B paks\osdep\dist\osdep.h+modified build\$(CONFIG)\inc\osdep.h $(LOG)
 
 #
 #   mpr.h
 #
-DEPS_3 = $(DEPS_3) src\paks\mpr\mpr.h
+DEPS_3 = $(DEPS_3) paks\mpr\dist\mpr.h
 DEPS_3 = $(DEPS_3) build\$(CONFIG)\inc\me.h
 DEPS_3 = $(DEPS_3) build\$(CONFIG)\inc\osdep.h
 
 build\$(CONFIG)\inc\mpr.h: $(DEPS_3)
 	@echo ..... [Copy] build\$(CONFIG)\inc\mpr.h
 	if not exist "build\$(CONFIG)\inc" md "build\$(CONFIG)\inc"
-	copy /Y /B src\paks\mpr\mpr.h+modified build\$(CONFIG)\inc\mpr.h $(LOG)
+	copy /Y /B paks\mpr\dist\mpr.h+modified build\$(CONFIG)\inc\mpr.h $(LOG)
 
 #
 #   mpr.h
 #
 
-src\paks\mpr\mpr.h: $(DEPS_4)
+paks\mpr\dist\mpr.h: $(DEPS_4)
 
 #
 #   mprLib.obj
 #
-DEPS_5 = $(DEPS_5) src\paks\mpr\mpr.h
+DEPS_5 = $(DEPS_5) paks\mpr\dist\mpr.h
 
 build\$(CONFIG)\obj\mprLib.obj: \
-    src\paks\mpr\mprLib.c $(DEPS_5)
+    paks\mpr\dist\mprLib.c $(DEPS_5)
 	@echo .. [Compile] build\$(CONFIG)\obj\mprLib.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\mprLib.obj -Fd$(BUILD)\obj\mprLib.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\paks\mpr\mprLib.c $(LOG)
+	"$(CC)" -c -Fo$(BUILD)\obj\mprLib.obj -Fd$(BUILD)\obj\mprLib.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) paks\mpr\dist\mprLib.c $(LOG)
 
 #
 #   libmpr
@@ -302,29 +301,29 @@ build\$(CONFIG)\bin\libmpr.dll: $(DEPS_6)
 #
 #   pcre.h
 #
-DEPS_7 = $(DEPS_7) src\paks\pcre\pcre.h
+DEPS_7 = $(DEPS_7) paks\pcre\dist\pcre.h
 
 build\$(CONFIG)\inc\pcre.h: $(DEPS_7)
 	@echo ..... [Copy] build\$(CONFIG)\inc\pcre.h
 	if not exist "build\$(CONFIG)\inc" md "build\$(CONFIG)\inc"
-	copy /Y /B src\paks\pcre\pcre.h+modified build\$(CONFIG)\inc\pcre.h $(LOG)
+	copy /Y /B paks\pcre\dist\pcre.h+modified build\$(CONFIG)\inc\pcre.h $(LOG)
 
 #
 #   pcre.h
 #
 
-src\paks\pcre\pcre.h: $(DEPS_8)
+paks\pcre\dist\pcre.h: $(DEPS_8)
 
 #
 #   pcre.obj
 #
 DEPS_9 = $(DEPS_9) build\$(CONFIG)\inc\me.h
-DEPS_9 = $(DEPS_9) src\paks\pcre\pcre.h
+DEPS_9 = $(DEPS_9) paks\pcre\dist\pcre.h
 
 build\$(CONFIG)\obj\pcre.obj: \
-    src\paks\pcre\pcre.c $(DEPS_9)
+    paks\pcre\dist\pcre.c $(DEPS_9)
 	@echo .. [Compile] build\$(CONFIG)\obj\pcre.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\pcre.obj -Fd$(BUILD)\obj\pcre.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\paks\pcre\pcre.c $(LOG)
+	"$(CC)" -c -Fo$(BUILD)\obj\pcre.obj -Fd$(BUILD)\obj\pcre.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) paks\pcre\dist\pcre.c $(LOG)
 
 !IF "$(ME_COM_PCRE)" == "1"
 #
@@ -341,29 +340,29 @@ build\$(CONFIG)\bin\libpcre.dll: $(DEPS_10)
 #
 #   http.h
 #
-DEPS_11 = $(DEPS_11) src\paks\http\http.h
+DEPS_11 = $(DEPS_11) paks\http\dist\http.h
 DEPS_11 = $(DEPS_11) build\$(CONFIG)\inc\mpr.h
 
 build\$(CONFIG)\inc\http.h: $(DEPS_11)
 	@echo ..... [Copy] build\$(CONFIG)\inc\http.h
 	if not exist "build\$(CONFIG)\inc" md "build\$(CONFIG)\inc"
-	copy /Y /B src\paks\http\http.h+modified build\$(CONFIG)\inc\http.h $(LOG)
+	copy /Y /B paks\http\dist\http.h+modified build\$(CONFIG)\inc\http.h $(LOG)
 
 #
 #   http.h
 #
 
-src\paks\http\http.h: $(DEPS_12)
+paks\http\dist\http.h: $(DEPS_12)
 
 #
 #   httpLib.obj
 #
-DEPS_13 = $(DEPS_13) src\paks\http\http.h
+DEPS_13 = $(DEPS_13) paks\http\dist\http.h
 
 build\$(CONFIG)\obj\httpLib.obj: \
-    src\paks\http\httpLib.c $(DEPS_13)
+    paks\http\dist\httpLib.c $(DEPS_13)
 	@echo .. [Compile] build\$(CONFIG)\obj\httpLib.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\httpLib.obj -Fd$(BUILD)\obj\httpLib.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\paks\http\httpLib.c $(LOG)
+	"$(CC)" -c -Fo$(BUILD)\obj\httpLib.obj -Fd$(BUILD)\obj\httpLib.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) paks\http\dist\httpLib.c $(LOG)
 
 !IF "$(ME_COM_HTTP)" == "1"
 #
@@ -389,30 +388,30 @@ build\$(CONFIG)\bin\libhttp.dll: $(DEPS_14)
 #
 #   zlib.h
 #
-DEPS_15 = $(DEPS_15) src\paks\zlib\zlib.h
+DEPS_15 = $(DEPS_15) paks\zlib\dist\zlib.h
 DEPS_15 = $(DEPS_15) build\$(CONFIG)\inc\me.h
 
 build\$(CONFIG)\inc\zlib.h: $(DEPS_15)
 	@echo ..... [Copy] build\$(CONFIG)\inc\zlib.h
 	if not exist "build\$(CONFIG)\inc" md "build\$(CONFIG)\inc"
-	copy /Y /B src\paks\zlib\zlib.h+modified build\$(CONFIG)\inc\zlib.h $(LOG)
+	copy /Y /B paks\zlib\dist\zlib.h+modified build\$(CONFIG)\inc\zlib.h $(LOG)
 
 #
 #   zlib.h
 #
 
-src\paks\zlib\zlib.h: $(DEPS_16)
+paks\zlib\dist\zlib.h: $(DEPS_16)
 
 #
 #   zlib.obj
 #
 DEPS_17 = $(DEPS_17) build\$(CONFIG)\inc\me.h
-DEPS_17 = $(DEPS_17) src\paks\zlib\zlib.h
+DEPS_17 = $(DEPS_17) paks\zlib\dist\zlib.h
 
 build\$(CONFIG)\obj\zlib.obj: \
-    src\paks\zlib\zlib.c $(DEPS_17)
+    paks\zlib\dist\zlib.c $(DEPS_17)
 	@echo .. [Compile] build\$(CONFIG)\obj\zlib.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\zlib.obj -Fd$(BUILD)\obj\zlib.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\paks\zlib\zlib.c $(LOG)
+	"$(CC)" -c -Fo$(BUILD)\obj\zlib.obj -Fd$(BUILD)\obj\zlib.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) paks\zlib\dist\zlib.c $(LOG)
 
 !IF "$(ME_COM_ZLIB)" == "1"
 #
@@ -430,63 +429,63 @@ build\$(CONFIG)\bin\libzlib.dll: $(DEPS_18)
 #   ejs.slots.h
 #
 
-src\paks\ejs\ejs.slots.h: $(DEPS_19)
+paks\ejs\dist\ejs.slots.h: $(DEPS_19)
 
 #
 #   ejs.h
 #
-DEPS_20 = $(DEPS_20) src\paks\ejs\ejs.h
+DEPS_20 = $(DEPS_20) paks\ejs\dist\ejs.h
 DEPS_20 = $(DEPS_20) build\$(CONFIG)\inc\me.h
 DEPS_20 = $(DEPS_20) build\$(CONFIG)\inc\osdep.h
 DEPS_20 = $(DEPS_20) build\$(CONFIG)\inc\mpr.h
 DEPS_20 = $(DEPS_20) build\$(CONFIG)\inc\http.h
-DEPS_20 = $(DEPS_20) src\paks\ejs\ejs.slots.h
+DEPS_20 = $(DEPS_20) paks\ejs\dist\ejs.slots.h
 DEPS_20 = $(DEPS_20) build\$(CONFIG)\inc\pcre.h
 DEPS_20 = $(DEPS_20) build\$(CONFIG)\inc\zlib.h
 
 build\$(CONFIG)\inc\ejs.h: $(DEPS_20)
 	@echo ..... [Copy] build\$(CONFIG)\inc\ejs.h
 	if not exist "build\$(CONFIG)\inc" md "build\$(CONFIG)\inc"
-	copy /Y /B src\paks\ejs\ejs.h+modified build\$(CONFIG)\inc\ejs.h $(LOG)
+	copy /Y /B paks\ejs\dist\ejs.h+modified build\$(CONFIG)\inc\ejs.h $(LOG)
 
 #
 #   ejs.slots.h
 #
-DEPS_21 = $(DEPS_21) src\paks\ejs\ejs.slots.h
+DEPS_21 = $(DEPS_21) paks\ejs\dist\ejs.slots.h
 
 build\$(CONFIG)\inc\ejs.slots.h: $(DEPS_21)
 	@echo ..... [Copy] build\$(CONFIG)\inc\ejs.slots.h
 	if not exist "build\$(CONFIG)\inc" md "build\$(CONFIG)\inc"
-	copy /Y /B src\paks\ejs\ejs.slots.h+modified build\$(CONFIG)\inc\ejs.slots.h $(LOG)
+	copy /Y /B paks\ejs\dist\ejs.slots.h+modified build\$(CONFIG)\inc\ejs.slots.h $(LOG)
 
 #
 #   ejsByteGoto.h
 #
-DEPS_22 = $(DEPS_22) src\paks\ejs\ejsByteGoto.h
+DEPS_22 = $(DEPS_22) paks\ejs\dist\ejsByteGoto.h
 
 build\$(CONFIG)\inc\ejsByteGoto.h: $(DEPS_22)
 	@echo ..... [Copy] build\$(CONFIG)\inc\ejsByteGoto.h
 	if not exist "build\$(CONFIG)\inc" md "build\$(CONFIG)\inc"
-	copy /Y /B src\paks\ejs\ejsByteGoto.h+modified build\$(CONFIG)\inc\ejsByteGoto.h $(LOG)
+	copy /Y /B paks\ejs\dist\ejsByteGoto.h+modified build\$(CONFIG)\inc\ejsByteGoto.h $(LOG)
 
 #
 #   ejs.h
 #
 
-src\paks\ejs\ejs.h: $(DEPS_23)
+paks\ejs\dist\ejs.h: $(DEPS_23)
 
 #
 #   ejsLib.obj
 #
-DEPS_24 = $(DEPS_24) src\paks\ejs\ejs.h
+DEPS_24 = $(DEPS_24) paks\ejs\dist\ejs.h
 DEPS_24 = $(DEPS_24) build\$(CONFIG)\inc\mpr.h
 DEPS_24 = $(DEPS_24) build\$(CONFIG)\inc\pcre.h
 DEPS_24 = $(DEPS_24) build\$(CONFIG)\inc\me.h
 
 build\$(CONFIG)\obj\ejsLib.obj: \
-    src\paks\ejs\ejsLib.c $(DEPS_24)
+    paks\ejs\dist\ejsLib.c $(DEPS_24)
 	@echo .. [Compile] build\$(CONFIG)\obj\ejsLib.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\ejsLib.obj -Fd$(BUILD)\obj\ejsLib.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\paks\ejs\ejsLib.c $(LOG)
+	"$(CC)" -c -Fo$(BUILD)\obj\ejsLib.obj -Fd$(BUILD)\obj\ejsLib.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) paks\ejs\dist\ejsLib.c $(LOG)
 
 !IF "$(ME_COM_EJS)" == "1"
 #
@@ -526,12 +525,12 @@ build\$(CONFIG)\bin\libejs.dll: $(DEPS_25)
 #
 #   ejsc.obj
 #
-DEPS_26 = $(DEPS_26) src\paks\ejs\ejs.h
+DEPS_26 = $(DEPS_26) paks\ejs\dist\ejs.h
 
 build\$(CONFIG)\obj\ejsc.obj: \
-    src\paks\ejs\ejsc.c $(DEPS_26)
+    paks\ejs\dist\ejsc.c $(DEPS_26)
 	@echo .. [Compile] build\$(CONFIG)\obj\ejsc.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\ejsc.obj -Fd$(BUILD)\obj\ejsc.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\paks\ejs\ejsc.c $(LOG)
+	"$(CC)" -c -Fo$(BUILD)\obj\ejsc.obj -Fd$(BUILD)\obj\ejsc.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) paks\ejs\dist\ejsc.c $(LOG)
 
 !IF "$(ME_COM_EJS)" == "1"
 #
@@ -561,11 +560,11 @@ build\$(CONFIG)\bin\ejsc.exe: $(DEPS_27)
 #
 #   ejs.mod
 #
-DEPS_28 = $(DEPS_28) src\paks\ejs\ejs.es
+DEPS_28 = $(DEPS_28) paks\ejs\dist\ejs.es
 DEPS_28 = $(DEPS_28) build\$(CONFIG)\bin\ejsc.exe
 
 build\$(CONFIG)\bin\ejs.mod: $(DEPS_28)
-	cd src\paks\ejs
+	cd paks\ejs\dist
 	@echo .. [Compile] ejs.mod
 	..\..\..\$(BUILD)\bin\ejsc --out ../../../$(BUILD)/bin/ejs.mod --optimize 9 --bind --require null ejs.es
 	cd ..\..\..
@@ -574,12 +573,12 @@ build\$(CONFIG)\bin\ejs.mod: $(DEPS_28)
 #
 #   ejs.obj
 #
-DEPS_29 = $(DEPS_29) src\paks\ejs\ejs.h
+DEPS_29 = $(DEPS_29) paks\ejs\dist\ejs.h
 
 build\$(CONFIG)\obj\ejs.obj: \
-    src\paks\ejs\ejs.c $(DEPS_29)
+    paks\ejs\dist\ejs.c $(DEPS_29)
 	@echo .. [Compile] build\$(CONFIG)\obj\ejs.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\ejs.obj -Fd$(BUILD)\obj\ejs.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\paks\ejs\ejs.c $(LOG)
+	"$(CC)" -c -Fo$(BUILD)\obj\ejs.obj -Fd$(BUILD)\obj\ejs.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) paks\ejs\dist\ejs.c $(LOG)
 
 !IF "$(ME_COM_EJS)" == "1"
 #
@@ -610,14 +609,14 @@ build\$(CONFIG)\bin\ejs.exe: $(DEPS_30)
 #
 DEPS_31 = $(DEPS_31) src\expansive.es
 DEPS_31 = $(DEPS_31) src\ExpParser.es
-DEPS_31 = $(DEPS_31) src\paks\ejs-version\Version.es
+DEPS_31 = $(DEPS_31) paks\ejs-version\Version.es
 !IF "$(ME_COM_EJS)" == "1"
 DEPS_31 = $(DEPS_31) build\$(CONFIG)\bin\ejs.mod
 !ENDIF
 
 build\$(CONFIG)\bin\expansive.mod: $(DEPS_31)
 	@echo .. [Compile] expansive.mod
-	.\$(BUILD)\bin\ejsc --debug --out ./$(BUILD)/bin/expansive.mod --optimize 9 src/expansive.es src/ExpParser.es src/paks/ejs-version/Version.es
+	.\$(BUILD)\bin\ejsc --debug --out ./$(BUILD)/bin/expansive.mod --optimize 9 src/expansive.es src/ExpParser.es paks/ejs-version/Version.es
 
 #
 #   expansive.h
@@ -682,22 +681,22 @@ build\$(CONFIG)\bin\expansive.exe: $(DEPS_35)
 #
 #   http-ca-crt
 #
-DEPS_36 = $(DEPS_36) src\paks\http\ca.crt
+DEPS_36 = $(DEPS_36) paks\http\dist\ca.crt
 
 build\$(CONFIG)\bin\ca.crt: $(DEPS_36)
 	@echo ..... [Copy] build\$(CONFIG)\bin\ca.crt
 	if not exist "build\$(CONFIG)\bin" md "build\$(CONFIG)\bin"
-	copy /Y /B src\paks\http\ca.crt+modified build\$(CONFIG)\bin\ca.crt $(LOG)
+	copy /Y /B paks\http\dist\ca.crt+modified build\$(CONFIG)\bin\ca.crt $(LOG)
 
 #
 #   http.obj
 #
-DEPS_37 = $(DEPS_37) src\paks\http\http.h
+DEPS_37 = $(DEPS_37) paks\http\dist\http.h
 
 build\$(CONFIG)\obj\http.obj: \
-    src\paks\http\http.c $(DEPS_37)
+    paks\http\dist\http.c $(DEPS_37)
 	@echo .. [Compile] build\$(CONFIG)\obj\http.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\http.obj -Fd$(BUILD)\obj\http.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\paks\http\http.c $(LOG)
+	"$(CC)" -c -Fo$(BUILD)\obj\http.obj -Fd$(BUILD)\obj\http.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) paks\http\dist\http.c $(LOG)
 
 !IF "$(ME_COM_HTTP)" == "1"
 #
@@ -720,28 +719,28 @@ build\$(CONFIG)\bin\http.exe: $(DEPS_38)
 #
 #   est.h
 #
-DEPS_39 = $(DEPS_39) src\paks\est\est.h
+DEPS_39 = $(DEPS_39) paks\est\dist\est.h
 
 build\$(CONFIG)\inc\est.h: $(DEPS_39)
 	@echo ..... [Copy] build\$(CONFIG)\inc\est.h
 	if not exist "build\$(CONFIG)\inc" md "build\$(CONFIG)\inc"
-	copy /Y /B src\paks\est\est.h+modified build\$(CONFIG)\inc\est.h $(LOG)
+	copy /Y /B paks\est\dist\est.h+modified build\$(CONFIG)\inc\est.h $(LOG)
 
 #
 #   est.h
 #
 
-src\paks\est\est.h: $(DEPS_40)
+paks\est\dist\est.h: $(DEPS_40)
 
 #
 #   estLib.obj
 #
-DEPS_41 = $(DEPS_41) src\paks\est\est.h
+DEPS_41 = $(DEPS_41) paks\est\dist\est.h
 
 build\$(CONFIG)\obj\estLib.obj: \
-    src\paks\est\estLib.c $(DEPS_41)
+    paks\est\dist\estLib.c $(DEPS_41)
 	@echo .. [Compile] build\$(CONFIG)\obj\estLib.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\estLib.obj -Fd$(BUILD)\obj\estLib.pdb -nologo -GR- -Zi -Od -MDd $(DFLAGS) $(IFLAGS) src\paks\est\estLib.c $(LOG)
+	"$(CC)" -c -Fo$(BUILD)\obj\estLib.obj -Fd$(BUILD)\obj\estLib.pdb -nologo -GR- -Zi -Od -MDd $(DFLAGS) $(IFLAGS) paks\est\dist\estLib.c $(LOG)
 
 !IF "$(ME_COM_EST)" == "1"
 #
@@ -759,12 +758,12 @@ build\$(CONFIG)\bin\libest.dll: $(DEPS_42)
 #
 #   mprSsl.obj
 #
-DEPS_43 = $(DEPS_43) src\paks\mpr\mpr.h
+DEPS_43 = $(DEPS_43) paks\mpr\dist\mpr.h
 
 build\$(CONFIG)\obj\mprSsl.obj: \
-    src\paks\mpr\mprSsl.c $(DEPS_43)
+    paks\mpr\dist\mprSsl.c $(DEPS_43)
 	@echo .. [Compile] build\$(CONFIG)\obj\mprSsl.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\mprSsl.obj -Fd$(BUILD)\obj\mprSsl.pdb $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH="$(ME_COM_OPENSSL_PATH)" $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)\include" src\paks\mpr\mprSsl.c $(LOG)
+	"$(CC)" -c -Fo$(BUILD)\obj\mprSsl.obj -Fd$(BUILD)\obj\mprSsl.pdb $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH="$(ME_COM_OPENSSL_PATH)" $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)\include" paks\mpr\dist\mprSsl.c $(LOG)
 
 #
 #   libmprssl
@@ -795,21 +794,11 @@ build\$(CONFIG)\bin\libmprssl.dll: $(DEPS_44)
 	"$(LD)" -dll -out:$(BUILD)\bin\libmprssl.dll -entry:$(ENTRY) $(LDFLAGS) $(LIBPATHS)   "$(BUILD)\obj\mprSsl.obj" $(LIBPATHS_44) $(LIBS_44) $(LIBS_44) $(LIBS)  $(LOG)
 
 #
-#   removeFiles.obj
-#
-DEPS_45 = $(DEPS_45) build\$(CONFIG)\inc\me.h
-
-build\$(CONFIG)\obj\removeFiles.obj: \
-    package\windows\removeFiles.c $(DEPS_45)
-	@echo .. [Compile] build\$(CONFIG)\obj\removeFiles.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\removeFiles.obj -Fd$(BUILD)\obj\removeFiles.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) package\windows\removeFiles.c $(LOG)
-
-#
 #   sample
 #
-DEPS_46 = $(DEPS_46) src\sample.json
+DEPS_45 = $(DEPS_45) src\sample.json
 
-build\$(CONFIG)\bin\sample.json: $(DEPS_46)
+build\$(CONFIG)\bin\sample.json: $(DEPS_45)
 	@echo ..... [Copy] build\$(CONFIG)\bin\sample.json
 	if not exist "build\$(CONFIG)\bin" md "build\$(CONFIG)\bin"
 	copy /Y /B src\sample.json+modified build\$(CONFIG)\bin\sample.json $(LOG)

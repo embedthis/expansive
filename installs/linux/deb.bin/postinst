@@ -1,0 +1,29 @@
+#!/bin/sh
+# 	postinst -- Post installation script for Bit
+#
+#	Copyright (c) Embedthis Software LLC, 2003-2014. All Rights Reserved.
+#
+
+ME_PRODUCT=${settings.product}
+ME_NAME="${settings.title}"
+
+###############################################################################
+#
+#	Main
+#
+
+cd /
+action=$1
+
+case $action in
+	configure)							# when new
+        echo
+		echo "$ME_NAME installation successful."
+		;;
+	abort-upgrade)						# when old
+		;;
+	abort-remove)
+		# 	sometimes conflictor's-postinst abort-remove in-favor package new-version
+		;;
+esac
+exit 0

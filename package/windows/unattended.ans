@@ -1,5 +1,0 @@
-[Setup]
-Lang=default
-Group=Embedthis Expansive
-NoIcons=0
-Components=bin,doc,dev

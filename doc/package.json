@@ -1,5 +1,5 @@
 {
-    "name":  "expansivedoc",
+    "name": "expansivedoc",
     "title": "Embedthis Expansive Documentation",
     "dependencies": {
         "exp-css": "~0.2",
@@ -9,5 +9,7 @@
         "jquery": "~1.11",
         "semantic": "~0.50"
     },
-    "mode": "debug"
+    "pak": {
+        "mode": "debug"
+    }
 }

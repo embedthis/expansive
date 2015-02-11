@@ -80,8 +80,8 @@ public class Expansive {
 
     let argsTemplate = {
         options: {
-            chdir:     { range: Path },
             benchmark: { alias: 'b' },        /* Undocumented */
+            chdir:     { range: Path },       /* Implemented in expansive.c */
             debug:     { alias: 'd' },        /* Undocumented */
             keep:      { alias: 'k' },
             listen:    { range: String },
@@ -104,9 +104,10 @@ public class Expansive {
         description: 'Full Package Description - one line',
         version: '1.0.0',
         mode: 'debug',
+        import: true,
     }
 
-    function Expansive() { 
+    function Expansive() {
         cache = {}
         /*
             Updated with expansive {} properties from expansive.es files
@@ -114,17 +115,18 @@ public class Expansive {
         control = {
             dependencies: {},
             directories: {
-                app:       Path('app'),
-                documents: Path('documents'),
-                files:     Path('files'),
-                layouts:   Path('layouts'),
-                lib:       Path('lib'),
-                paks:      Path('paks'),
-                partials:  Path('partials'),
-                source:    Path('source'),
-                top:       Path('.').absolute,
+                contents:   Path('contents'),
+                dist:       Path('dist'),
+                files:      Path('files'),
+                layouts:    Path('layouts'),
+                lib:        Path('lib'),
+                paks:       Path('paks'),
+                partials:   Path('partials'),
+
+                //  DEPRECATE
+                documents: Path('dist'),
+                source:    Path('contents'),
             },
-//  MOB - better name for this?
             documents: [ '**' ],
             listen: LISTEN,
             watch: 1200,
@@ -236,9 +238,9 @@ public class Expansive {
 
     function loadConfig(path: Path, meta = {}): Object {
         let cfg = readConfig(path)
-        let mode = cfg[package ? package.mode : '']
+        let mode = cfg[package ? package.pak.mode : '']
         if (mode) {
-            blend(cfg, { meta: {}, control: {}, services: {}}, {combine: true}) 
+            blend(cfg, { meta: {}, control: {}, services: {}}, {combine: true})
             blend(cfg.meta, mode.meta, {combine: true})
             if (!initialized) {
                 blend(cfg.control, mode.control, {combine: true})
@@ -282,7 +284,7 @@ public class Expansive {
         }
         let service = services[def.name] ||= {}
         if (service.name) {
-            vtrace('Warn', 'Redefining service "' + def.name + '"" from ' + 
+            vtrace('Warn', 'Redefining service "' + def.name + '"" from ' +
                 services[def.name].plugin + ' to ' + def.plugin)
         }
         blend(service, def, {overwrite: false})
@@ -327,7 +329,7 @@ public class Expansive {
 
     function loadPlugin(name, requiredVersion) {
         if (plugins[name]) {
-            return 
+            return
         }
         plugins[name] = true
 
@@ -393,13 +395,14 @@ public class Expansive {
     function loadPackage() {
         let pkg = readPackage('.')
         if (pkg) {
-//  MOB - must be moved out of here
+            pkg.pak ||= {}
+//  MOB moved out of here
             blend(directories, pkg.directories)
             castDirectories()
             topMeta.description = pkg.description
             topMeta.title = pkg.title
         }
-        return pkg || {}
+        return pkg || {pak: {}}
     }
 
     function findPackage(name, requiredVersion = '*'): Path? {
@@ -411,10 +414,10 @@ public class Expansive {
             return path
         }
         let pakcache = App.home.join('.paks')
-        for each (vpath in Version.sort(pakcache.join(name).files('*'))) {
+        for each (vpath in Version.sort(pakcache.join(name).files('*/*'))) {
             let version = Version(vpath.basename)
             if (version.acceptable(requiredVersion)) {
-                return pakcache.join(name, version)
+                return vpath
             }
         }
         return null
@@ -475,8 +478,8 @@ public class Expansive {
 
     function checkDepends(meta) {
         for (let [path, dependencies] in control.dependencies) {
-            path = directories.source.join(path)
-            let deps = directories.source.files(dependencies)
+            path = directories.contents.join(path)
+            let deps = directories.contents.files(dependencies)
             for each (let file: Path in deps) {
                 if (file.modified.time >= lastGen.time) {
                     impliedUpdates[path] = true
@@ -549,7 +552,7 @@ public class Expansive {
 
     function internalServer() {
         let address = options.listen || control.listen || '127.0.0.1:4000'
-        let server: HttpServer = new HttpServer({documents: directories.documents})
+        let server: HttpServer = new HttpServer({documents: directories.dist})
         let routes = control.routes || Router.Top
         var router = Router(Router.WebSite)
         router.addCatchall()
@@ -603,7 +606,7 @@ public class Expansive {
             cache = {}
         }
         copy = {}
-        for each (item in directories.source.files(control.copy, {contents: true})) {
+        for each (item in directories.contents.files(control.copy, {contents: true})) {
             copy[item] = true
         }
         if (initial) {
@@ -623,7 +626,7 @@ public class Expansive {
             trace('Debug', 'Total plugin time %.2f' % ((total / 1000) + ' secs.'))
         }
         if (renderAll) {
-            trace('Info', 'Rendered ' + stats.files + ' files to "' + directories.documents + '". ' +
+            trace('Info', 'Rendered ' + stats.files + ' files to "' + directories.dist + '". ' +
                 'Elapsed time %.2f' % ((stats.started.elapsed / 1000)) + ' secs.')
         } else if (filters && stats.files == 0) {
             trace('Warn', 'No matching files for filter: ' + filters)
@@ -631,25 +634,34 @@ public class Expansive {
     }
 
     /*
-        Render files and lib. These are rendered without processing by a simple copy.
+        Render 'files' and 'lib'. These are rendered without processing by a simple copy.
         Note: the paths under files do not copy the first directory portion, whereas the files under lib do.
         Note: files and lib are not watched for changes.
      */
     function renderFiles(meta) {
         if (!filters) {
-            directories.documents.makeDir()
-            if (!control.files && directories.files.exists) {
-                control.files = [ directories.files ]
+            let files = (control.files || []).clone()
+            directories.dist.makeDir()
+            if (directories.files.exists) {
+                files.push(directories.files)
             }
-            if (control.files) {
-                cp(control.files, directories.documents, { 
-                    flatten: false, 
-                    trim: 1, 
-                    post: function(from, to) {
-                        expansive.trace('Copy', to)
-                    }
-                })
+            cp(files, directories.dist, {
+                flatten: false,
+                trim: 1,
+                post: function(from, to) {
+                    expansive.trace('Copy', to)
+                }
+            })
+            files = []
+            if (directories.lib.exists) {
+                files.push(directories.lib)
             }
+            cp(files, directories.dist, {
+                flatten: false,
+                post: function(from, to) {
+                    expansive.trace('Copy', to)
+                }
+            })
         }
     }
 
@@ -657,24 +669,24 @@ public class Expansive {
         Copy file as-is without processing
      */
     function copyFile(file, meta) {
-        let trimmed = trimPath(file, directories.source)
+        let trimmed = trimPath(file, directories.contents)
         if (file.isDir) {
             if (renderAll || checkModified(file, meta)) {
                 trace('Copy', file)
-                cp(file.join('**'), directories.documents.join(trimmed), {dir: true, relative: file})
+                cp(file.join('**'), directories.dist.join(trimmed), {dir: true, relative: file})
 
             } else {
                 for each (path in file.files('**')) {
                     if (checkModified(path, meta)) {
                         trace('Copy', path)
-                        cp(path, directories.documents.join(path))
+                        cp(path, directories.dist.join(path))
                     }
                 }
             }
         } else {
             if (renderAll || checkModified(file, meta)) {
                 trace('Copy', file)
-                cp(file, directories.documents.join(trimmed))
+                cp(file, directories.dist.join(trimmed))
             }
         }
     }
@@ -704,15 +716,15 @@ public class Expansive {
     function buildMetaCache() {
         if (!metaCache) {
             metaCache ||= {}
-            let dirs = [ Path('.'), directories.source ] + directories.source.files('**', {include: /\/$/})
+            let dirs = [ Path('.'), directories.contents ] + directories.contents.files('**', {include: /\/$/})
             for each (dir in dirs) {
                 if (findConfig(dir)) {
                     let meta = metaCache[dir.parent] || topMeta
                     let meta = metaCache[dir] = loadConfig(dir, meta.clone(true))
                     if (meta.sitemap) {
                         /* Site maps must be processed after all rendering using the documents directory */
-                        let pubdir = trimPath(dir, directories.source)
-                        pubdir = directories.documents.join(pubdir)
+                        let pubdir = trimPath(dir, directories.contents)
+                        pubdir = directories.dist.join(pubdir)
                         sitemaps.push({dir: pubdir, meta: meta, sitemap: meta.sitemap})
                     }
                 } else {
@@ -740,7 +752,7 @@ public class Expansive {
     function renderDocuments() {
         buildMetaCache()
         buildRenderCache()
-        for each (file in directories.source.files(control.documents || '**', {exclude: 'directories'})) {
+        for each (file in directories.contents.files(control.documents || '**', {exclude: 'directories'})) {
             if (!filter(file)) {
                 continue
             }
@@ -828,8 +840,8 @@ public class Expansive {
 
     function getMappingDest(file, mapping) {
         let dest
-        if (!file.startsWith(directories.documents)) {
-            dest = directories.documents.join(file)
+        if (!file.startsWith(directories.dist)) {
+            dest = directories.dist.join(file)
         } else {
             dest = file
         }
@@ -847,10 +859,9 @@ public class Expansive {
         return file.trimComponents(count)
     }
 
-//  MOB - better if not including public in result
     public function getDest(file, meta) {
         meta ||= topMeta
-        let dest = directories.documents.join(meta.file || file)
+        let dest = directories.dist.join(meta.file || file)
         let mapping = getMapping(file)
         while (transforms[mapping]) {
             dest = getMappingDest(file, mapping)
@@ -859,7 +870,7 @@ public class Expansive {
             }
             mapping = getMapping(dest)
             file = dest
-        } 
+        }
         return dest
     }
 
@@ -869,10 +880,10 @@ public class Expansive {
             source - path relative to "source"              source/index.html
             document - path to the file in "documents"      documents/index.html
          */
-        meta.file = trimPath(path, directories.source)
+        meta.file = trimPath(path, directories.contents)
         meta.source = path
         meta.document = docNames[path] = (docNames[path] || getDest(meta.file, meta))
-        meta.dest = trimPath(meta.document, directories.documents)
+        meta.dest = trimPath(meta.document, directories.dist)
         meta.url = Uri(meta.dest)
         let dir = meta.file.dirname
         let count = (dir == '.') ? 0 : dir.components.length
@@ -896,7 +907,7 @@ public class Expansive {
             let dest = meta.document
             dest.dirname.makeDir()
             dest.write(contents)
-            trace('Created', dest)
+            trace('Render', dest)
             stats.files++
         }
     }
@@ -958,7 +969,7 @@ public class Expansive {
                 break
             }
         }
-        if (options.keep && file.startsWith(directories.documents)) {
+        if (options.keep && file.startsWith(directories.dist)) {
             trace('Keep', file, mapping)
             file.dirname.makeDir()
             file.write(contents)
@@ -1040,7 +1051,7 @@ public class Expansive {
     }
 
     /*
-        Find a layout or partial. 
+        Find a layout or partial.
         Find the first matching file using the order of transforms
      */
     function findFile(dir: Path, pattern: String, meta) {
@@ -1201,7 +1212,7 @@ public class Expansive {
             let [key,value] = arg.split('=')
             if (value) {
                 let parts = key.split('.')
-                for each (part in parts.slice(0, -1)) { 
+                for each (part in parts.slice(0, -1)) {
                     obj = obj[part]
                     if (!obj) {
                         fatal('Key ' + key + ' not found')
@@ -1211,7 +1222,7 @@ public class Expansive {
                 CONFIG.joinExt('.json').write(serialize(config, {pretty: true, indent: 4}) + '\n')
                 trace('Update', key, '=', value)
             } else {
-                for each (part in key.split('.')) { 
+                for each (part in key.split('.')) {
                     config = config[part]
                     if (!config) {
                         fatal('Key ' + key + ' not found')
@@ -1230,12 +1241,12 @@ public class Expansive {
 
     function preclean() {
         if (!filters && !options.noclean) {
-            directories.documents.removeAll()
+            directories.dist.removeAll()
         }
     }
 
     function postclean() {
-        directories.documents.join('partials').remove()
+        directories.dist.join('partials').remove()
     }
 
     function init() {
@@ -1259,12 +1270,12 @@ public class Expansive {
 
     function mode(newMode, meta) {
         if (newMode.length == 0) {
-            print(package.mode)
+            print(package.pak ? package.pak.mode : 'debug')
         } else {
-            package.app ||= {}
-            package.mode = newMode[0].toString()
+            package.pak ||= {}
+            package.pak.mode = newMode[0].toString()
             PACKAGE.write(serialize(package, {pretty: true, indent: 4}) + '\n')
-            trace('Set', 'Mode to "' + package.mode + '"')
+            trace('Set', 'Mode to "' + package.pak.mode + '"')
         }
     }
 
@@ -1282,7 +1293,7 @@ public class Expansive {
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         let list = dir.files(sitemap.files || '**.html', {exclude: 'directories', relative: true})
         let url = meta.url.trimEnd('/')
-        let base = dir.trimStart(directories.documents).trimStart('/')
+        let base = dir.trimStart(directories.dist).trimStart('/')
         for each (file in list) {
             let filename = base.join(file.name).trimEnd('.gz')
             fp.write('    <url>\n' +
@@ -1316,7 +1327,7 @@ public class Expansive {
         }
     }
 
-    //////// Public API 
+    //////// Public API
 
     public function trace(tag: String, ...args): Void {
         if (!options.quiet) {
@@ -1350,7 +1361,7 @@ public class Expansive {
 
     public function getFiles(query: Object, operation = 'and', options = {files: "**"}) {
         let list = []
-        for each (file in directories.source.files(pattern)) {
+        for each (file in directories.contents.files(pattern)) {
             if (file.isDir) continue
             let meta = getFileMeta(file)
             let match = true
@@ -1396,35 +1407,17 @@ public class Expansive {
                     getPakContent(dep)
                 }
             }
-//  MOB - this is a bit ugly.
-            if (ps.export) {
-                let def = renderCache[pak] = {}
-                for each (exp in ps.export) {
-                    if (exp.type) {
-                        print('WARN - ' + pak + ' package.json has legacy export defintion')
-                        if (!(exp.from is Array)) {
-                            exp.from = [exp.from]
-                        } 
-                        for (let [index, value] in exp.from) {
-                            let path = Path(value.toString().expand(dirTokens, {fill: '.'}))
-                            path = directories.lib.join(exp.to, path)
-                            exp.from[index] = path
-                        }
-                        def[exp.type] = exp.from 
-                    }
-                }
-            } 
             if (ps.app && ps.app[pak]) {
                 print('WARN - ' + pak + ' package.json has legacy app definition')
             }
-            if (ps.render) {
-                let pdef = ps.render
+            if (ps.pak.render) {
+                let pdef = ps.pak.render
                 let def = renderCache[pak] ||= {}
                 for each (ext in EXTENSIONS) {
                     if (pdef[ext]) {
                         if (!(pdef[ext] is Array)) {
                             pdef[ext] = [pdef[ext]]
-                        } 
+                        }
                         def[ext] ||= []
                         for each (item in pdef[ext]) {
                             if (item.startsWith('!')) {
@@ -1460,18 +1453,18 @@ public class Expansive {
                 let pdef = renderCache[pak]
                 let pfiles = []
                 if (pdef[ext]) {
-                    pfiles = directories.source.files(pdef[ext], {relative: true, missing: null})
+                    pfiles = Path().files(pdef[ext], {relative: true, missing: null})
                 } else {
                     /* Default file of same name as pak */
-                    let resource = directories.source.join(directories.lib, pak, pak).joinExt(ext)
+                    let resource = directories.lib.join(pak, pak).joinExt(ext)
                     if (resource.exists) {
                         pfiles = [resource]
                     }
                 }
-                if (pfiles.length == 0) { 
+                if (pfiles.length == 0) {
                     delete pdef[ext]
                 } else {
-                    pfiles = pfiles.map(function(path) trimPath(getDest(path, topMeta), directories.documents))
+                    pfiles = pfiles.map(function(path) trimPath(getDest(path, topMeta), directories.dist))
                     pdef[ext] = pfiles.unique()
                 }
                 files += pfiles
@@ -1483,7 +1476,7 @@ public class Expansive {
                 control.render[ext] = files
             }
             if (control.render[ext]) {
-                control.render[ext] = directories.source.files(control.render[ext], {relative: true, missing: ''})
+                control.render[ext] = directories.contents.files(control.render[ext], {relative: true, missing: ''})
             }
         }
         if (options.debug) {
@@ -1514,7 +1507,7 @@ public class Expansive {
             write('\n    </script>')
         }
     }
-    
+
     public function renderStyles() {
         let styles = getRenderResources('css') + (collections.styles || [])
         for each (style in styles) {
@@ -1532,6 +1525,9 @@ public class Expansive {
         }
     }
 }
+
+public function active(item)
+    meta.menu == item ? 'active' : ''
 
 /*
     Main program

@@ -5,7 +5,7 @@
     "keywords": [
         "expansive"
     ],
-    "homepage": "http://embedthis.com/products/expansive/",
+    "homepage": "https://embedthis.com/expansive/",
     "author": {
         "name": "Embedthis Software",
         "email": "dev@embedthis.com",
@@ -40,15 +40,8 @@
         "ssl": "~0.8",
         "zlib": "~1.0"
     },
-    "directories": {
-        "paks": "src/paks"
-    },
-    "app": {
-        "*": {
-            "ignore": [
-                "doc/**"
-            ],
-            "noblend": true
-        }
+    "pak": {
+        "import": true,
+        "version": ">=0.10.0"
     }
 }

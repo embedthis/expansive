@@ -3,7 +3,7 @@
  */
 
 Me.load({
-    plugins: [ 'configuration', 'package' ],
+    plugins: [ 'configuration', 'installs' ],
 
     blend: [
         'ejs',
@@ -72,8 +72,8 @@ Me.load({
 
         tune: 'speed',
 
-        prefixes: 'package-prefixes',
-        manifest: 'package/manifest.me',
+        prefixes: 'install-prefixes',
+        manifest: 'installs/manifest.me',
     },
 
     scripts: {
@@ -85,7 +85,7 @@ Me.load({
     targets: {
         'expansive.mod': {
             path: '${BIN}/expansive.mod',
-            files: [ 'src/expansive.es', 'src/ExpParser.es', 'src/paks/ejs-version/Version.es' ],
+            files: [ 'src/expansive.es', 'src/ExpParser.es', 'paks/ejs-version/Version.es' ],
             build: `
                 run('${LBIN}/ejsc --debug --out ${BIN}/expansive.mod --optimize 9 ${FILES}')
             `,

@@ -124,6 +124,10 @@ public class Expansive {
                 lib:        Path('lib'),
                 paks:       Path('paks'),
                 partials:   Path('partials'),
+                /*
+                    Top is absolute so that render properties can use ${TOP} to bypass the join with directories.lib
+                 */
+                top:        Path().absolute,
 
                 //  DEPRECATE
                 documents: Path('dist'),
@@ -1422,6 +1426,10 @@ public class Expansive {
                         }
                         def[ext] ||= []
                         for each (item in pdef[ext]) {
+                            /*
+                                Note: items can use ${TOP} to force and absolute path and neuter
+                                the join with directories.lib.
+                             */
                             if (item.startsWith('!')) {
                                 item = Path(item.trimStart('!').expand(dirTokens, {fill: '.'}))
                                 item = Path('!' + directories.lib.join(pak, item))

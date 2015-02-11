@@ -103,8 +103,10 @@ public class Expansive {
         title: 'Display Package Title - several words. E.g. Company Product',
         description: 'Full Package Description - one line',
         version: '1.0.0',
-        mode: 'debug',
-        import: true,
+        pak: {
+            mode: 'debug',
+            import: true,
+        }
     }
 
     function Expansive() {

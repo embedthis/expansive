@@ -89,7 +89,10 @@ EXP(1)                           User Commands                          EXP(1)
        *.less into css.
            exp install exp-less
 
-       To render a site from 'source' into 'documents'
+       To  render a site from 'contents' into 'dist'. This processes web pages
+       under the 'contents' directory into the 'dist'  directory  for  produc-
+       tion.
+
            exp render
 
        To serve content and watch for changes
@@ -99,32 +102,32 @@ EXP(1)                           User Commands                          EXP(1)
            exp watch
 
        To render a matching set of files
-           exp source/index.html
-           exp source/manual
+           exp contents/index.html
+           exp contents/manual
 
-       To clean the rendered site under 'public'
+       To clean the rendered site under 'dist'
            exp clean
 
 <B>DIRECTORIES</B>
        Expansive uses the following directories:
 
-           documents    Final  output  directory containing the rendered docu-
+           contents    Souce web content to be processed
+           dist         Final  output  directory containing the rendered docu-
        ments
            files       Files to be copied and not processed
            layouts     For master page layouts
            partials    For partial web pages that can  be  included  by  other
        pages
-           source      Input web pages to be processed
 
        These directories can be modified via meta 'expansive.directories' col-
        lection.
 
 <B>PROCESSING</B>
-       Expansive operates by processing web pages from the 'source' directory.
-       It  uses layout pages from the 'layouts' directory and includes partial
-       pages from the 'partials' directory. Raw files may be copied  from  the
-       'files'  directory.   Content is rendered to the 'public' output direc-
-       tory.
+       Expansive operates by processing web pages from the  'contents'  direc-
+       tory.  It  uses  layout pages from the 'layouts' directory and includes
+       partial pages from the 'partials' directory. Raw files  may  be  copied
+       from  the  'files' directory.  Content is rendered to the 'dist' output
+       directory.
 
 <B>CONFIGURATION</B>
        Expansive is controlled by an 'expansive.json' configuration file. This
@@ -136,41 +139,30 @@ EXP(1)                           User Commands                          EXP(1)
 
            exp init
 
-       This creates an expansive.json file. Here is a cut-down portion:
+       This  creates  an  expansive.json  and  package.json  file.  The expan-
+       sive.json file controls  Expansive  execution.  The  package.json  file
+       defines  the site name and details together with the installed packages
+       used by the site.
 
             {
                 meta: {
-                    title: 'Home page title',
                     url: 'Home page url',
-                    description: 'Meta data description (optional)',
                 },
-                expansive: {
-                    copy: [ '**.tags', 'images' ],
-                    dependencies: { 'css/all.css.less': 'css/*.inc.less' },
-                    documents: [ '**', '!css/*.inc.less' ],
-                    plugins: [ 'less', 'css', 'analytics', 'gzip' ],
-                    script: `
-                        function menu(item) meta.menu == item ? 'active' : ''
-                    `
-                },
-                services: {
-                    /* Configuration for plugins */
-                }
              }
 
-       Expansive  uses a "liberal" json format that permits comments, unquoted
-       property keys and use of multi-line  quotes.  The  layout  and  partial
+       Expansive uses a liberal json format that  permits  comments,  unquoted
+       property  keys  and  use  of  multi-line quotes. The layout and partial
        page. The 'expansive' collection has properties that control the opera-
        tion of Expansive. These values are made available to web pages via the
        'meta.expansive' property.
 
        In the expansive section, the 'documents' array defines the set of pat-
-       terns to select documents for processing.  The 'copy' array  defines  a
-       set  of  patterns  to select files to copy without processing. The copy
-       patterns are relative to the 'source' directory.  The  'script'  string
-       defines an optional global script to inject code into the Ejscript exe-
-       cution context. The 'sitemap'  collection  defines  what  documents  to
-       include in the created sitemap XML file.
+       terns to select documents from the 'contents' directory for processing.
+       The 'copy' array defines a set of patterns  to  select  files  to  copy
+       without  processing.  The  copy patterns are relative to the 'contents'
+       directory. The 'script' string defines an  optional  global  script  to
+       inject  code into the Ejscript execution context. The 'sitemap' collec-
+       tion defines what documents to include in the created sitemap XML file.
 
 <B>DYNAMIC CONTENT</B>
        Expansive  uses  embedded  Javascript  in  web  pages  to fully support
@@ -357,7 +349,8 @@ EXP(1)                           User Commands                          EXP(1)
 
        date        Generation date of the document.
 
-       document    Final name of the rendered document in 'documents'.
+       document    Final name of the rendered document in  the  'dist'  direc-
+                   tory.
 
        extension   The extension of the public document filename.
 
@@ -365,7 +358,7 @@ EXP(1)                           User Commands                          EXP(1)
 
        file        Filename of the document or partial being processed.
 
-       from        The filename  extension  being  processed  by  the  current
+       from        The  filename  extension  being  processed  by  the current
                    transformation.
 
        isLayout    True if a layout is being processed.
@@ -374,8 +367,8 @@ EXP(1)                           User Commands                          EXP(1)
 
        layout      Layout page in use. Set to '' if no layout being used.
 
-       mode        Index  in the modes property. The selected property collec-
-                   tion is copied up to the top level of the meta data.   This
+       mode        Index in the modes property. The selected property  collec-
+                   tion  is copied up to the top level of the meta data.  This
                    may be used to select a "debug" or "release" configuration.
 
        partial     Name of the partial page being processed.
@@ -384,9 +377,9 @@ EXP(1)                           User Commands                          EXP(1)
 
        service     Name of the transformation service being run.
 
-       source      Input source file in 'source' that is being processed.
+       source      Input source file in 'contents' that is being processed.
 
-       to          The destination filename extension after processing by  the
+       to          The  destination filename extension after processing by the
                    current transformation.
 
        top         URL for the top level home page of the site.
@@ -394,50 +387,50 @@ EXP(1)                           User Commands                          EXP(1)
        url         URL for the current page.
 
 <B>EXPANSIVE CONTROL</B>
-       Expansive  defines  a  set  of control properites in the meta.expansive
+       Expansive defines a set of control  properites  in  the  meta.expansive
        property. These are originally sourced from the
 
-       copy        Array of patterns to copy without processing. The  patterns
-                   may  include  "*"  or "**". If a directory is specifed, all
-                   files under the directory are copied. The files  are  rela-
-                   tive to the documents directory.
+       copy        Array  of patterns to copy without processing. The patterns
+                   may include "*" or "**". If a directory  is  specifed,  all
+                   files  under  the directory are copied. The files are rela-
+                   tive to the 'contents' directory.
 
        dependencies
-                   Hash  of file dependency relationships. The hash key is the
+                   Hash of file dependency relationships. The hash key is  the
                    document path and the value is a set of files that if modi-
-                   fied,  cause  the document to be rendered. The document and
-                   files are relative to the documents directory. The  set  of
+                   fied, cause the document to be rendered. The  document  and
+                   files  are relative to the 'contents' directory. The set of
                    files can be a string or an array of files. Each value file
                    may contain "*" or "**".
 
-       directories Directories collection. Entries for  'documents',  'files',
-                   'public', 'layouts', and 'partials'.
+       directories Directories  collection.  Entries  for  'contents', 'dist',
+                   'files', 'layouts', 'lib', 'paks', and 'partials'.
 
-       documents   Array  of patterns to process. The patterns may include "*"
-                   or "**". If a directory is specifed, all  files  under  the
-                   directory are processed. The files are relative to the doc-
-                   uments directory.
+       documents   Array of patterns to process. The patterns may include  "*"
+                   or  "**".  If  a directory is specifed, all files under the
+                   directory are processed. The  files  are  relative  to  the
+                   'contents' directory.
 
        listen      Address on which to listen for HTTP requests. May be just a
                    port number.
 
        plugins     List of plugins to use.
 
-       script      Script  to  evaluate  to  inject  code  into  the Expansive
+       script      Script to  evaluate  to  inject  code  into  the  Expansive
                    Ejscript global execution context.
 
-       sitemap     Control what files to include in  a  sitemap.  If  defined,
-                   Expansive  will  by  default  include all HTML files in the
-                   sitemap.  To change the file set included in  the  sitemap,
-                   define  a 'files' property with an array of patterns in the
+       sitemap     Control  what  files  to  include in a sitemap. If defined,
+                   Expansive will by default include all  HTML  files  in  the
+                   sitemap.   To  change the file set included in the sitemap,
+                   define a 'files' property with an array of patterns in  the
                    sitemap object.
 
                    sitemap: {
                       files: [ '**.html', '!draft.html' ],
                    }
 
-       transforms  Hash of extension mappings to a list of transform  services
-                   for  those mappings. Mappings are in the form 'ext -&gt; ext'.
+       transforms  Hash  of extension mappings to a list of transform services
+                   for those mappings. Mappings are in the form 'ext -&gt;  ext'.
                    For example:
 
                     transforms: {
@@ -445,16 +438,16 @@ EXP(1)                           User Commands                          EXP(1)
                    css', 'compress' ]
                     }
 
-                   Some  of  the standard service names are: compile-esp, com-
-                   pile-less,   compile-markdown,   compile-sass,    compress,
+                   Some of the standard service names are:  compile-esp,  com-
+                   pile-less,    compile-markdown,   compile-sass,   compress,
                    minify-css, minify-js, prefix-css, shell.
 
-       watch       Time  in  milliseconds to wait between checking for render-
+       watch       Time in milliseconds to wait between checking  for  render-
                    ing.
 
 <B>CREATING PLUGINS</B>
-       Expansive   plugins    are    created    using    the    Pak    utility
-       (https://embedthis.com/pak)   and  published  to  the  Pak  Catalog  at
+       Expansive    plugins    are    created    using    the    Pak   utility
+       (https://embedthis.com/pak)  and  published  to  the  Pak  Catalog   at
        (https://embedthis.com/catalog/). The plugin contains an expansive.json
        file that includes transforms relevant to the plugin.  For example:
 
@@ -474,26 +467,26 @@ EXP(1)                           User Commands                          EXP(1)
         }
 
        The plugin specifies a one or more transformations via the 'transforms'
-       collection. Each transform definition provides  an  implemention  of  a
-       transform  service. The 'name' property specifies the transform service
-       name. The service name provides an abstract  name  for  which  multiple
+       collection.  Each  transform  definition  provides an implemention of a
+       transform service. The 'name' property specifies the transform  service
+       name.  The  service  name  provides an abstract name for which multiple
        plugins may provide the implementation. The service is selected via the
-       'plugins' property and Expansive chooses the first plugin  that  adver-
+       'plugins'  property  and Expansive chooses the first plugin that adver-
        tized that service.
 
-       The  'input'  property  specifies  the input filename extension and the
-       'output' property specifies the output extension.   If  all  extensions
-       are  supported,  set the value to '*'. Both 'input' and 'output' may be
+       The 'input' property specifies the input  filename  extension  and  the
+       'output'  property  specifies  the output extension.  If all extensions
+       are supported, set the value to '*'. Both 'input' and 'output'  may  be
        arrays if multiple extensions are supported.
 
-       The transform script should define a global 'transform'  function  that
-       will  be  invoked  for  matching content.  It is invoked with the 'con-
-       tents' to transform (String), the meta data collection and the  service
-       object  that  contains service options.  The function should return the
+       The  transform  script should define a global 'transform' function that
+       will be invoked for matching content.  It is  invoked  with  the  'con-
+       tents'  to transform (String), the meta data collection and the service
+       object that contains service options.  The function should  return  the
        transformed data.
 
-       A plugin may also define other  Ejscript  functions  and  variables  in
-       'script'  that will be injected into the global scope of Expansive when
+       A  plugin  may  also  define  other Ejscript functions and variables in
+       'script' that will be injected into the global scope of Expansive  when
        it executes.
 
 <B>SCRIPTING</B>
@@ -501,14 +494,14 @@ EXP(1)                           User Commands                          EXP(1)
        sive services. This object provides the following methods:
 
        addItems(collection, items)
-              Add  items  to  a  named  collection.  Collections  are globally
-              defined and reset at the start of processing for each  document.
-              Documents,  partials  and  layouts can inject items into collec-
-              tions for sharing to other documents. Items may be a  string  or
+              Add items  to  a  named  collection.  Collections  are  globally
+              defined  and reset at the start of processing for each document.
+              Documents, partials and layouts can inject  items  into  collec-
+              tions  for  sharing to other documents. Items may be a string or
               an array of strings. Items are uniquely added to the collection.
 
        getFiles({key: value})
-              To return a list of  matching  documents  that  have  meta  data
+              To  return  a  list  of  matching  documents that have meta data
               matching the specified keys and values.
 
        getFileMeta(filename)
@@ -522,7 +515,7 @@ EXP(1)                           User Commands                          EXP(1)
 
        renderScripts
               Render  all  scripts  added  to  the  'scripts'  collection  via
-              'addItems'. This permits  documents,  partials  and  layouts  to
+              'addItems'.  This  permits  documents,  partials  and layouts to
               require Javascripts and have them emitted uniquely by a partial.
 
        renderStyles
@@ -535,9 +528,9 @@ EXP(1)                           User Commands                          EXP(1)
               To emit console trace while processing.
 
 <B>COMMANDS</B>
-       clean  Remove rendered content from the 'public' output directory.
+       clean  Remove rendered content from the 'dist' output directory.
 
-       init   Initialize  a directory by creating an 'expansive.json' configu-
+       init   Initialize a directory by creating an 'expansive.json'  configu-
               ration file.
 
        install
@@ -545,19 +538,18 @@ EXP(1)                           User Commands                          EXP(1)
 
        list   List the installed and uninstalled plugins and packages.
 
-       render Render the site by processing files from 'documents', 'layouts',
-              'partials' and 'files' into the 'public' output directory.
+       render Render  the site by processing files from 'contents', 'layouts',
+              'partials' and 'files' into the 'dist' output directory.
 
        uninstall
-              Uninstall  a  plugin  from  the  expansive.json plugin list. The
+              Uninstall a plugin from  the  expansive.json  plugin  list.  The
               plugin remains in the local Pak cache.
 
        upgrade
               Upgrade a plugin version in the local Pak cache.
 
-       watch  Watch for changes to 'documents', 'layouts' and  'partials'  and
-              render  the  modified  files. Changes to 'layouts' or 'partials'
-              will cause the entire site to be rendered.
+       watch  Watch  for  changes  to 'contents', 'layouts' and 'partials' and
+              render the modified files. Changes to 'layouts' or
 
        &lt;CR&gt;   Running exp without any arguments will cause  run  the  embedded
               web  server  to serve the site. By default Expansive will listen
@@ -585,8 +577,8 @@ EXP(1)                           User Commands                          EXP(1)
                  Emit  trace  to  the specified file. The level is a verbosity
                  level from 0-5 with 5 being the most verbose.
 
-       <B>--noclean </B>Do not clean the  'public'  directory  before  rendering.  By
-                 default  Expansive will remove all the content under 'public'
+       <B>--noclean </B>Do not  clean  the  'dist'  directory  before  rendering.  By
+                 default  Expansive  will  remove all the content under 'dist'
                  first.
 
        <B>--norender</B>

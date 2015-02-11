@@ -37,9 +37,8 @@ Expansive brings dynamic content to static web sites.
 .PP
 .SH WHY EXPANSIVE?
 There are many web site site generators, why another one? Existing site generators are slow, very slow, 
-often painfully slow.
-When creating or managing a web site, you need tools that do not delay the creative design process. They need to be as fast
-as possible. Expansive is designed to be fast, without sacrificing features.
+often painfully slow.  When creating or managing a web site, you need tools that do not delay the creative 
+design process. They need to be as fast as possible. Expansive is designed to be fast, without sacrificing features.
 .PP
 Futher, other site generators frequently provide poor diagnostics. Fine when everything works, but when a page fails 
 to render due to a scripting error -- debugging can be a nightmare. Expansive shows exactly where errors occur.
@@ -77,7 +76,9 @@ To prepare a directory for expansive and create an expansive.json configuration 
 To install new plugins to transform content. The exp-less compiles *.less into css. 
     exp install exp-less
 
-To render a site from 'source' into 'documents'
+To render a site from 'contents' into 'dist'. This processes web pages under the 'contents'
+directory into the 'dist' directory for production. 
+
     exp render
 
 To serve content and watch for changes
@@ -87,28 +88,28 @@ To watch for changes but not serve
     exp watch
 
 To render a matching set of files
-    exp source/index.html
-    exp source/manual
+    exp contents/index.html
+    exp contents/manual
 
-To clean the rendered site under 'public'
+To clean the rendered site under 'dist'
     exp clean
 
 .PP
 .SH DIRECTORIES
 Expansive uses the following directories:
 
-    documents   Final output directory containing the rendered documents
+    contents    Souce web content to be processed
+    dist        Final output directory containing the rendered documents
     files       Files to be copied and not processed
     layouts     For master page layouts
     partials    For partial web pages that can be included by other pages
-    source      Input web pages to be processed
 
 These directories can be modified via meta 'expansive.directories' collection.
 
 .SH PROCESSING
-Expansive operates by processing web pages from the 'source' directory. It uses layout pages from the 'layouts' directory
+Expansive operates by processing web pages from the 'contents' directory. It uses layout pages from the 'layouts' directory
 and includes partial pages from the 'partials' directory. Raw files may be copied from the 'files' directory.  Content is
-rendered to the 'public' output directory.
+rendered to the 'dist' output directory.
 
 .SH CONFIGURATION
 Expansive is controlled by an 'expansive.json' configuration file. This defines top level configuration for the site and 
@@ -119,39 +120,27 @@ To prepare a new site to use Expansive, run:
     exp init
 
 .PP
-This creates an expansive.json file. Here is a cut-down portion:
+This creates an expansive.json and package.json file. The expansive.json file controls Expansive execution. The package.json
+file defines the site name and details together with the installed packages used by the site.
 .PP
 .RS 5
 {
     meta: {
-        title: 'Home page title',
         url: 'Home page url',
-        description: 'Meta data description (optional)',
     },
-    expansive: {
-        copy: [ '**.tags', 'images' ],
-        dependencies: { 'css/all.css.less': 'css/*.inc.less' },
-        documents: [ '**', '!css/*.inc.less' ],
-        plugins: [ 'less', 'css', 'analytics', 'gzip' ],
-        script: `
-            function menu(item) meta.menu == item ? 'active' : ''
-        `
-    },
-    services: {
-        /* Configuration for plugins */
-    }
  }
 .RE
 .PP
-Expansive uses a "liberal" json format that permits comments, unquoted property keys and use of multi-line quotes. The 
+Expansive uses a liberal json format that permits comments, unquoted property keys and use of multi-line quotes. The 
 'meta' contents of the expansive.json file are added to the Expansive meta data collection that is provided to every page, 
 layout and partial page. The 'expansive' collection has properties that control the operation of Expansive. These values
 are made available to web pages via the 'meta.expansive' property.
 
 .PP
-In the expansive section, the 'documents' array defines the set of patterns to select documents for processing. 
+In the expansive section, the 'documents' array defines the set of patterns to select documents from the 'contents'
+directory for processing. 
 The 'copy' array defines a set of patterns to select files to copy without processing. The copy patterns are 
-relative to the 'source' directory. The 'script' string defines an optional global script to inject code into 
+relative to the 'contents' directory. The 'script' string defines an optional global script to inject code into 
 the Ejscript execution context. The 'sitemap' collection defines what documents to include in the created sitemap XML file.
 
 .SH DYNAMIC CONTENT
@@ -317,7 +306,7 @@ date
 Generation date of the document.
 .TP 12
 document
-Final name of the rendered document in 'documents'.
+Final name of the rendered document in the 'dist' directory.
 .TP 12
 extension
 The extension of the public document filename.
@@ -354,7 +343,7 @@ service
 Name of the transformation service being run.
 .TP 12
 source
-Input source file in 'source' that is being processed.
+Input source file in 'contents' that is being processed.
 .TP 12
 to
 The destination filename extension after processing by the current transformation.
@@ -371,17 +360,18 @@ Expansive defines a set of control properites in the meta.expansive property. Th
 .TP 12
 copy
 Array of patterns to copy without processing. The patterns may include "*" or "**". If a directory is specifed, all files
-under the directory are copied. The files are relative to the documents directory.
+under the directory are copied. The files are relative to the 'contents' directory.
 .TP 12
 dependencies
-Hash of file dependency relationships. The hash key is the document path and the value is a set of files that if modified, cause the document to be rendered. The document and files are relative to the documents directory. The set of files can be a string or an array of files. Each value file may contain "*" or "**".
+Hash of file dependency relationships. The hash key is the document path and the value is a set of files that if modified, cause the document to be rendered. The document and files are relative to the 'contents' directory. The set of files can 
+be a string or an array of files. Each value file may contain "*" or "**".
 .TP 12
 directories
-Directories collection. Entries for 'documents', 'files', 'public', 'layouts', and 'partials'.
+Directories collection. Entries for 'contents', 'dist', 'files', 'layouts', 'lib', 'paks', and 'partials'.
 .TP 12
 documents
 Array of patterns to process. The patterns may include "*" or "**". If a directory is specifed, all files
-under the directory are processed. The files are relative to the documents directory.
+under the directory are processed. The files are relative to the 'contents' directory.
 .TP 12
 listen
 Address on which to listen for HTTP requests. May be just a port number.
@@ -489,7 +479,7 @@ To emit console trace while processing.
 .SH COMMANDS
 .TP
 clean
-Remove rendered content from the 'public' output directory.
+Remove rendered content from the 'dist' output directory.
 .TP
 init
 Initialize a directory by creating an 'expansive.json' configuration file.
@@ -501,7 +491,7 @@ list
 List the installed and uninstalled plugins and packages. 
 .TP
 render
-Render the site by processing files from 'documents', 'layouts', 'partials' and 'files' into the 'public' output directory.
+Render the site by processing files from 'contents', 'layouts', 'partials' and 'files' into the 'dist' output directory.
 .TP
 uninstall
 Uninstall a plugin from the expansive.json plugin list. The plugin remains in the local Pak cache.
@@ -510,7 +500,8 @@ upgrade
 Upgrade a plugin version in the local Pak cache.
 .TP
 watch
-Watch for changes to 'documents', 'layouts' and 'partials' and render the modified files. Changes to 'layouts' or 'partials' will cause the entire site to be rendered.
+Watch for changes to 'contents', 'layouts' and 'partials' and render the modified files. Changes to 'layouts' or 
+'partials' will cause the entire site to be rendered.
 .TP
 <CR>
 Running exp without any arguments will cause run the embedded web server to serve the site. By default Expansive will listen on port 4000. This can be modified via the 'listen' property in the meta collection.
@@ -539,7 +530,7 @@ Emit trace to the specified file. The level is a verbosity level from 0-5 with 5
 
 .TP 10
 \fB\--noclean\fR
-Do not clean the 'public' directory before rendering. By default Expansive will remove all the content under 'public' first.
+Do not clean the 'dist' directory before rendering. By default Expansive will remove all the content under 'dist' first.
 
 .TP 10
 \fB\--norender\fR

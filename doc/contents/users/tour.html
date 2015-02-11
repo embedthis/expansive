@@ -18,17 +18,20 @@ $ expansive init
 </pre>
 		<p>This will create the required standard Expansive files and directories including:
 		<ul>
-			<li><b>documents</b> &mdash; where the final public documents of the web site will be placed.</li>
+			<li><b>contents</b> &mdash; Source content for the web site including web pages, images and assets.</li>
+			<li><b>dist</b> &mdash; Distribution directory where the final public documents of the web 
+                site will be placed.</li>
 			<li><b>expansive.json</b> &mdash; Expansive configuration file</li>
 			<li><b>layouts</b> &mdash; Directory for master page layouts</li>
+			<li><b>lib</b> &mdash; Library and scripts code</li>
 			<li><b>package.json</b> &mdash; Web site package description file</li>
+			<li><b>paks</b> &mdash; Installed packages - imported into lib</li>
 			<li><b>partials</b> &mdash; Directory for partial pages</li>
-			<li><b>source</b> &mdash; Input source for web pages, images and assets for the web site</li>
 		</ul>
 
 		<h2>First Page</h2>
 		<p>To create a web page, use your favorite editor and create a page named "index.html"
-		under the <b>source</b> directory.</p>
+		under the <b>contents</b> directory.</p>
 		<pre class="ui code segment">
 &lt;html>
 &lt;head>
@@ -42,20 +45,20 @@ $ expansive init
 		<h2>Running Expansive</h2>
 		<p>Now you can run expansive to create the new site.</p>
 		<pre class="ui code segment">$ <b>expansive render</b>
-   [Created] documents/index.html</pre>
+   [Created] dist/index.html</pre>
 
-   		<p>This process all the files under <b>source</b> and creates a complete, rendered web site under <b>documents</b>.
+   		<p>This process all the files under <b>contents</b> and creates a complete, rendered web site under <b>dist</b>.
    		You can also render and then serve the content while dynamically watching for any changes to the input sources by
    		invoking expansive without any other arguments.</p>
 		<pre class="ui code segment">$ <b>expansive</b>
     [Listen] 127.0.0.1:4000
     [Render] Initial render ...
-   [Created] documents/index.html
+   [Created] dist/index.html
   [Watching] for changes every 1 sec ...
 </pre>
 
-   		<p>Expansive will first render the files under <b>source</b> and create the web site under 
-   		the <b>documents</b> directory. It will then listen on port 4000 for browser requests. So open your browser and
+   		<p>Expansive will first render the files under <b>contents</b> and create the web site under 
+   		the <b>dist</b> directory. It will then listen on port 4000 for browser requests. So open your browser and
    		go to <b>http://localhost:4000</b> to see your new page.</p>
 
    		<h2>Creating Layouts</h2>
@@ -82,7 +85,7 @@ $ expansive init
 		More on this a little later on. The renderScripts() and renderStyles() calls will generate the required 
 		script HTML elements and stylesheet references.</p>
 
-		<p>Now we can change the <b>source/index.html</b> home page to remove the layout HTML and focus just on the
+		<p>Now we can change the <b>contents/index.html</b> home page to remove the layout HTML and focus just on the
 		unique content for this page:</p>
 		<pre class="ui code segment">
 {
@@ -92,7 +95,7 @@ $ expansive init
 &lt;h1>Hello World with Layouts&lt;/h1>
 </pre>
 		<p>If you kept Expansive running from before, it will detect the new layout and automatically render the new
-		<b>documents/index.html</b>. Reload your browser to see the new content.</p>
+		<b>dist/index.html</b>. Reload your browser to see the new content.</p>
 
 		<p>The special area between the braces at the top of the content page is called Meta data. It provides meta data
 		values that can be accessed in layout pages using the special <b>&#64;=</b> Expansive sequence. This is how you can
@@ -114,7 +117,7 @@ $ expansive init
 		collection via its package.json file. Expansive automatically generates a reference for "jquery.js" 
 		via the <b>renderScripts()</b> statement in the layout file. In this way, many Expansive extension paks,
 		can just be installed and they self-configure into your application.</p>
-		<p>This is what the <b>documents/index.html</b> home page now looks like:</p>
+		<p>This is what the <b>dist/index.html</b> home page now looks like:</p>
    		<pre class="ui code segment">
 &lt;html>
 &lt;head>
@@ -180,12 +183,12 @@ exp-css 0.2.0 cached
 			unwanted programs.</p>
 
 			<p>Now create a sample markdown page, create a document called
-			<b>source/greeting.html.md</b> with the following content:</p>
+			<b>contents/greeting.html.md</b> with the following content:</p>
 		 <pre class="ui code segment">
 # Greetings
 Expansive **expands** your mind.
 </pre>
-		<p>Expansive will render this and create <b>documents/greeting.html</b> which will look like:</p>
+		<p>Expansive will render this and create <b>dist/greeting.html</b> which will look like:</p>
    		<pre class="ui code segment">
 &lt;html>
 &lt;head>
@@ -198,10 +201,10 @@ Expansive **expands** your mind.
 &lt;/body>
 &lt;/html>
 </pre>
-		<p>Expansive renders the web site by processing all files in the <b>source</b> directory. It interprets 
+		<p>Expansive renders the web site by processing all files in the <b>contents</b> directory. It interprets 
 			all the extensions for each file, one by one. For example: if a file were named <b>page.html.md</b> it would
 			invoke the markdown processor for the <b>.md</b> extension, then it would invokek the <b>.html</b> processor
-			before saving the final result under the <b>documents</b> directory. A file can have any number of 
+			before saving the final result under the <b>dist</b> directory. A file can have any number of 
 			extensions and they will be processed from the outside-inwards.</p>
 
 		<h2>Scripting</h2>
@@ -302,7 +305,7 @@ Expansive **expands** your mind.
 		in Expansive script code to access collection data.</p>
 
 		<h3>Queries</h3>
-		<p>Expansive provides a powerful query like API to work with files to be rendered in the <b>source</b> directory.
+		<p>Expansive provides a powerful query like API to work with files to be rendered in the <b>contents</b> directory.
 			The <b>getFiles</b> API can query the meta data of source files 
 		<pre class="ui code segment">&lt;@ var list = getFiles({ isPublic: true }) &#64;></pre>
 		<p>This will return a list of filenames for documents that have meta data <b>isPublic</b> set to true.</p>
@@ -338,7 +341,7 @@ pak mode release</pre>
 
 		<h2>Deployment</h2>
 		<p>When deploying Expansive web sites, you should configure the appropriate <b>mode</b> and run <b>expansive render</b>.
-		All the files you need for your site will be under the <b>documents</b> directory.</p>
+		All the files you need for your site will be under the <b>dist</b> directory.</p>
 
 
 

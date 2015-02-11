@@ -7,7 +7,7 @@
 </head>
 <body>
     <@ partial('sidebar') @>
-    <div class="masthead">
+    <div class="ui inverted masthead">
         <@ partial('nav') @>
     </div>
     <div class="content">

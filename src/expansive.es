@@ -67,9 +67,9 @@ public class Expansive {
     var options: Object
     var package: Object
     var paks: Path
+    var pakRender: Object
     var pid: Number?
     var plugins: Object = {}
-    var renderCache: Object
     var services: Object = {}
     var sitemaps: Array = []
     var stats: Object
@@ -133,7 +133,7 @@ public class Expansive {
                 documents: Path('dist'),
                 source:    Path('contents'),
             },
-            documents: [ '**' ],
+            documents: [ 'contents/**', 'lib/**' ],
             listen: LISTEN,
             watch: 1200,
             services: {},
@@ -244,6 +244,7 @@ public class Expansive {
 
     function loadConfig(path: Path, meta = {}): Object {
         let cfg = readConfig(path)
+        vtrace('Info', 'Using mode:', package.pak.mode)
         let mode = cfg[package ? package.pak.mode : '']
         if (mode) {
             blend(cfg, { meta: {}, control: {}, services: {}}, {combine: true})
@@ -315,6 +316,7 @@ public class Expansive {
         }
         stats.services[def.name] = { elapsed: 0, count: 0}
 
+        //  DEPRECATE input/output
         if (def.output && !(def.output is Array)) {
             def.output = [def.output]
         }
@@ -330,6 +332,14 @@ public class Expansive {
                 }
                 vtrace('Plugin', def.plugin + ' provides "' + def.name + '" for ' + mapping)
             }
+        }
+        for (let [key,value] in def.mappings) {
+            let mapping = key + ' -> ' + (value ? value : key)
+            let transform = transforms[mapping] ||= []
+            if (!transform.contains(def.name)) {
+                transform.push(def.name)
+            }
+            vtrace('Plugin', def.plugin + ' provides "' + def.name + '" for ' + mapping)
         }
     }
 
@@ -659,9 +669,6 @@ public class Expansive {
                 }
             })
             files = []
-            if (directories.lib.exists) {
-                files.push(directories.lib)
-            }
             cp(files, directories.dist, {
                 flatten: false,
                 post: function(from, to) {
@@ -722,7 +729,9 @@ public class Expansive {
     function buildMetaCache() {
         if (!metaCache) {
             metaCache ||= {}
-            let dirs = [ Path('.'), directories.contents ] + directories.contents.files('**', {include: /\/$/})
+            let dirs = [ Path('.'), directories.contents, directories.lib ]
+            dirs += directories.top.files(control.documents, {include: /\/$/, relative: true})
+
             for each (dir in dirs) {
                 if (findConfig(dir)) {
                     let meta = metaCache[dir.parent] || topMeta
@@ -757,8 +766,9 @@ public class Expansive {
 
     function renderDocuments() {
         buildMetaCache()
-        buildRenderCache()
-        for each (file in directories.contents.files(control.documents || '**', {exclude: 'directories'})) {
+        buildPakRenderCache()
+        let files = directories.top.files(control.documents, {exclude: 'directories', relative: true})
+        for each (file in files) {
             if (!filter(file)) {
                 continue
             }
@@ -827,9 +837,31 @@ public class Expansive {
         return false
     }
 
+    function getExt(file: Path) {
+        if (!file.extension) {
+            return ''
+        }
+        let extensions = file.basename.name.split('.').slice(1)
+        while (extensions.length) {
+            for (let [key,value] in transforms) {
+                let [from] = key.split(' -> ')
+                let joined = extensions.join('.')
+                if (from == joined) {
+                    return from
+                }
+            }
+            extensions.shift()
+        }
+        return file.extension
+    }
+
     function getMapping(file, wild = false) {
+    /* UNUSED
         let ext = file.extension
         let next = file.trimExt().extension
+     */
+        let ext = getExt(file)
+        let next = getExt(file.trimEnd('.' + ext))
         if (next) {
             mapping = ext + ' -> ' + next
             if (!transforms[mapping]) {
@@ -841,8 +873,11 @@ public class Expansive {
         return mapping
     }
 
-    function getExtensions(file)
-        [file.extension, file.trimExt().extension]
+//  MOB - not right
+    function getExtensions(file) {
+    print("WARNING")
+        return [file.extension, file.trimExt().extension]
+    }
 
     function getMappingDest(file, mapping) {
         let dest
@@ -899,7 +934,9 @@ public class Expansive {
     }
 
     function renderDocument(file, meta) {
-        /* Collections reset at the start of each document */
+        /*
+            Collections reset at the start of each document
+         */
         collections = (control.collections || {}).clone()
         let [fileMeta, contents] = splitMetaContents(file, file.readString())
         meta = blendMeta(meta.clone(true), fileMeta || {})
@@ -1167,6 +1204,7 @@ public class Expansive {
     function splitMetaContents(file, contents): Array {
         let meta
         try {
+            //  DEPRECATE
             if (contents[0] == '-') {
                 let parts = contents.split('---')
                 if (parts) {
@@ -1183,9 +1221,11 @@ public class Expansive {
                     }
                 }
             } else {
-                if (contents[0] == '{') {
+                //  TEMP - need something better
+                if (contents[0] == '{' && file.extension != 'json') {
                     let parts = contents.split('\n}')
-                    if (parts) {
+                    //  TEMP - need something better
+                    if (parts && parts.length > 1) {
                         try {
                             meta = deserialize(parts[0] + '}')
                         } catch (e) {
@@ -1402,15 +1442,18 @@ public class Expansive {
     }
 
     /*
-        Get package resource definitions in dependency order from package.json files
+        Get pak render definitions in dependency order from package.json files
      */
-    private function getPakContent(pak) {
+    private function getPakRenders(pak) {
+        if (pakRender[pak]) {
+            return
+        }
         let path = directories.paks.join(pak, PACKAGE)
         if (path.exists) {
             let ps = path.readJSON()
             for (dep in ps.dependencies) {
-                if (!renderCache[dep]) {
-                    getPakContent(dep)
+                if (!pakRender[dep]) {
+                    getPakRenders(dep)
                 }
             }
             if (ps.app && ps.app[pak]) {
@@ -1418,7 +1461,7 @@ public class Expansive {
             }
             if (ps.pak.render) {
                 let pdef = ps.pak.render
-                let def = renderCache[pak] ||= {}
+                let def = pakRender[pak] ||= {}
                 for each (ext in EXTENSIONS) {
                     if (pdef[ext]) {
                         if (!(pdef[ext] is Array)) {
@@ -1432,10 +1475,10 @@ public class Expansive {
                              */
                             if (item.startsWith('!')) {
                                 item = Path(item.trimStart('!').expand(dirTokens, {fill: '.'}))
-                                item = Path('!' + directories.lib.join(pak, item))
+                                item = Path('!' + Path(pak).join(item))
                             } else {
                                 item = Path(item.expand(dirTokens, {fill: '.'}))
-                                item = directories.lib.join(pak, item)
+                                item = Path(pak).join(item)
                             }
                             def[ext].push(item)
                         }
@@ -1446,24 +1489,24 @@ public class Expansive {
     }
 
     /*
-        Populate the control.render[ext] lists with an ordered set of resources. Used for 'js' and 'css' files.
-        Uses getPakContents to traverse the package.json files and build an ordered renderCache.
+        Populate the control.render[ext] lists with an ordered set of pak resources. Used for 'js' and 'css' files.
+        Uses getPakRenders to traverse the package.json files and build an ordered pakRender cache.
      */
-    private function buildRenderCache() {
-        renderCache = {}
+    private function buildPakRenderCache() {
+        pakRender = {}
         if (options.debug) {
             dump("DirectoryTokens", dirTokens)
         }
         for (dep in package.dependencies) {
-            getPakContent(dep)
+            getPakRenders(dep)
         }
         for (let [ext, value] in control.render) {
             let files = []
-            for (let pak in renderCache) {
-                let pdef = renderCache[pak]
+            for (let pak in pakRender) {
+                let pdef = pakRender[pak]
                 let pfiles = []
                 if (pdef[ext]) {
-                    pfiles = Path().files(pdef[ext], {relative: true, missing: null})
+                    pfiles = directories.lib.files(pdef[ext], {relative: true, missing: null})
                 } else {
                     /* Default file of same name as pak */
                     let resource = directories.lib.join(pak, pak).joinExt(ext)
@@ -1490,10 +1533,10 @@ public class Expansive {
             }
         }
         if (options.debug) {
-            dump("RenderCache", renderCache)
+            dump("PakRender", pakRender)
             dump("Control.Render", control.render)
         }
-        return renderCache
+        return pakRender
     }
 
     private function getRenderResources(ext) {
@@ -1507,7 +1550,9 @@ public class Expansive {
         let scripts = getRenderResources('js') + (collections.scripts || [])
         scripts = scripts.unique()
         for each (script in scripts) {
-            write('<script src="' + meta.top + script + '"></script>\n    ')
+            if (directories.dist.join(script).exists) {
+                write('<script src="' + meta.top + script + '"></script>\n    ')
+            }
         }
         if (collections['inline-scripts']) {
             write('<script>')

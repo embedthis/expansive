@@ -338,12 +338,19 @@ public class Expansive {
             def.mappings = v
         }
         for (let [key,value] in def.mappings) {
-            let mapping = key + ' -> ' + (value ? value : key)
-            let transform = transforms[mapping] ||= []
-            if (!transform.contains(def.name)) {
-                transform.push(def.name)
+            if (!value) {
+                value = [key]
+            } else if (!(value is Array)) {
+                value = [value]
             }
-            vtrace('Plugin', def.plugin + ' provides "' + def.name + '" for ' + mapping)
+            for each (to in value) {
+                let mapping = key + ' -> ' + to
+                let transform = transforms[mapping] ||= []
+                if (!transform.contains(def.name)) {
+                    transform.push(def.name)
+                }
+                vtrace('Plugin', def.plugin + ' provides "' + def.name + '" for ' + mapping)
+            }
         }
     }
 
@@ -389,6 +396,9 @@ public class Expansive {
             }
         }
         let pkg = readPackage(path)
+        if (!pkg) {
+            throw 'Cannot find plugin package.json at: ' + path
+        }
         for (let [name, requiredVersion] in pkg.dependencies) {
             loadPlugin(name, requiredVersion)
         }

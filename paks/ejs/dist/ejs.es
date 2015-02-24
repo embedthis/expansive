@@ -8977,7 +8977,7 @@ module ejs {
             @return True if the path matches the pattern.
             @hide
          */
-        native function glob(pattern: String): Boolean
+        native function glob(patterns: Object): Boolean
 
         /**
             Does the file path have a drive spec (C:) in it's name. Only relevant on Windows like systems.

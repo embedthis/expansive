@@ -18510,7 +18510,11 @@ static bool matchPath(MprFileSystem *fs, char *path, char *pattern)
         }
         pattern = nextPat;
     }
+#if UNUSED
     return (pattern && *pattern) ? 0 : 1;
+#else
+    return ((pattern && *pattern) || (path && *path)) ? 0 : 1;
+#endif
 }
 
 

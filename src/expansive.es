@@ -66,7 +66,7 @@ public class Expansive {
     var obuf: ByteArray?
     var options: Object
     var package: Object
-    var paks: Path
+    var pakList: Array = []
     var pakRender: Object
     var pid: Number?
     var plugins: Object = {}
@@ -115,6 +115,7 @@ public class Expansive {
             Updated with expansive {} properties from expansive.es files
          */
         control = {
+            collections: {},
             dependencies: {},
             directories: {
                 contents:   Path('contents'),
@@ -128,20 +129,12 @@ public class Expansive {
                     Top is absolute so that render properties can use ${TOP} to bypass the join with directories.lib
                  */
                 top:        Path().absolute,
-
-                //  DEPRECATE
-                documents: Path('dist'),
-                source:    Path('contents'),
             },
-            documents: [ 'contents/**', 'lib/**' ],
+            documents: [ 'lib/**', 'contents/**' ],
             listen: LISTEN,
             watch: 1200,
             services: {},
-            render: {
-                'css': null,            /* Default is true */
-                'js': null,             /* Default is true */
-            },
-            transforms: {},
+            transforms: {}
         }
         directories = control.directories
         impliedUpdates = {}
@@ -198,6 +191,7 @@ public class Expansive {
         package = loadPackage()
         config = readConfig('.')
         loadConfig('.', topMeta)
+        buildPakList()
         loadPlugins()
         setupEjsTransformer()
         if (options.debug) {
@@ -323,6 +317,11 @@ public class Expansive {
         if (def.input && !(def.input is Array)) {
             def.input = [def.input]
         }
+        if (def.input) {
+            //DEPRECATE
+            trace('Warn', 'Using deprecated input/output. Use mappings instead.')
+            dump("DEF", def)
+        }
         for each (input in def.input) {
             for each (output in def.output) {
                 let mapping = input + ' -> ' + output
@@ -332,6 +331,11 @@ public class Expansive {
                 }
                 vtrace('Plugin', def.plugin + ' provides "' + def.name + '" for ' + mapping)
             }
+        }
+        if (def.mappings is String) {
+            let v = {}
+            v[def.mappings] = def.mappings
+            def.mappings = v
         }
         for (let [key,value] in def.mappings) {
             let mapping = key + ' -> ' + (value ? value : key)
@@ -391,7 +395,8 @@ public class Expansive {
     }
 
     function loadPlugins() {
-        createService({ plugin: 'exp-internal', name: 'exp', input: 'exp', output: '*', render: transformExp } )
+        // createService({ plugin: 'exp-internal', name: 'exp', input: 'exp', output: '*', render: transformExp } )
+        createService({ plugin: 'exp-internal', name: 'exp', mappings: { exp: '*' }, render: transformExp } )
         let stat = stats.services.exp
         stat.parse = stat.eval = stat.run = 0
 
@@ -412,7 +417,6 @@ public class Expansive {
         let pkg = readPackage('.')
         if (pkg) {
             pkg.pak ||= {}
-//  MOB moved out of here
             blend(directories, pkg.directories)
             castDirectories()
             topMeta.description = pkg.description
@@ -766,7 +770,6 @@ public class Expansive {
 
     function renderDocuments() {
         buildMetaCache()
-        buildPakRenderCache()
         let files = directories.top.files(control.documents, {exclude: 'directories', relative: true})
         for each (file in files) {
             if (!filter(file)) {
@@ -856,10 +859,6 @@ public class Expansive {
     }
 
     function getMapping(file, wild = false) {
-    /* UNUSED
-        let ext = file.extension
-        let next = file.trimExt().extension
-     */
         let ext = getExt(file)
         let next = getExt(file.trimEnd('.' + ext))
         if (next) {
@@ -935,7 +934,7 @@ public class Expansive {
 
     function renderDocument(file, meta) {
         /*
-            Collections reset at the start of each document
+            Collections reset at the start of each document so layouts/partials can modify
          */
         collections = (control.collections || {}).clone()
         let [fileMeta, contents] = splitMetaContents(file, file.readString())
@@ -1488,85 +1487,25 @@ public class Expansive {
         }
     }
 
-    /*
-        Populate the control.render[ext] lists with an ordered set of pak resources. Used for 'js' and 'css' files.
-        Uses getPakRenders to traverse the package.json files and build an ordered pakRender cache.
-     */
-    private function buildPakRenderCache() {
-        pakRender = {}
-        if (options.debug) {
-            dump("DirectoryTokens", dirTokens)
+    private function buildPakList(name = null) {
+        let pak, path
+        if (pakList.contains(name)) {
+            return
         }
-        for (dep in package.dependencies) {
-            getPakRenders(dep)
-        }
-        for (let [ext, value] in control.render) {
-            let files = []
-            for (let pak in pakRender) {
-                let pdef = pakRender[pak]
-                let pfiles = []
-                if (pdef[ext]) {
-                    pfiles = directories.lib.files(pdef[ext], {relative: true, missing: null})
-                } else {
-                    /* Default file of same name as pak */
-                    let resource = directories.lib.join(pak, pak).joinExt(ext)
-                    if (resource.exists) {
-                        pfiles = [resource]
-                    }
-                }
-                if (pfiles.length == 0) {
-                    delete pdef[ext]
-                } else {
-                    pfiles = pfiles.map(function(path) trimPath(getDest(path, topMeta), directories.dist))
-                    pdef[ext] = pfiles.unique()
-                }
-                files += pfiles
+        if (!name) {
+            pak = package
+        } else {
+            path = directories.paks.join(name, PACKAGE)
+            if (!path.exists) {
+                return
             }
-            /*
-                Update control.render which is used for renderScripts and renderStyles
-             */
-            if (control.render[ext] == null) {
-                control.render[ext] = files
-            }
-            if (control.render[ext]) {
-                control.render[ext] = directories.contents.files(control.render[ext], {relative: true, missing: ''})
-            }
+            pak = path.readJSON()
         }
-        if (options.debug) {
-            dump("PakRender", pakRender)
-            dump("Control.Render", control.render)
+        for (dname in pak.dependencies) {
+            buildPakList(dname)
         }
-        return pakRender
-    }
-
-    private function getRenderResources(ext) {
-        if (control.render[ext]) {
-            return control.render[ext]
-        }
-        return []
-    }
-
-    public function renderScripts() {
-        let scripts = getRenderResources('js') + (collections.scripts || [])
-        scripts = scripts.unique()
-        for each (script in scripts) {
-            if (directories.dist.join(script).exists) {
-                write('<script src="' + meta.top + script + '"></script>\n    ')
-            }
-        }
-        if (collections['inline-scripts']) {
-            write('<script>')
-            for each (script in collections['inline-scripts']) {
-                write(script)
-            }
-            write('\n    </script>')
-        }
-    }
-
-    public function renderStyles() {
-        let styles = getRenderResources('css') + (collections.styles || [])
-        for each (style in styles) {
-            write('<link href="' + meta.top + style + '" rel="stylesheet" type="text/css" />\n    ')
+        if (name) {
+            pakList.push(name)
         }
     }
 

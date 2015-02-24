@@ -116,6 +116,7 @@ public class Expansive {
          */
         control = {
             collections: {},
+            copy: ['images'],
             dependencies: {},
             directories: {
                 contents:   Path('contents'),
@@ -637,6 +638,7 @@ public class Expansive {
         }
         copy = {}
         for each (item in directories.contents.files(control.copy, {contents: true})) {
+        print("COPY", item)
             copy[item] = true
         }
         if (initial) {

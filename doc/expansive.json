@@ -3,20 +3,11 @@
         url: 'https://embedthis.com/expansive/doc/',
     },
     control: {
-        copy: [
-            'images'
-        ],
+        copy: 'images',
         collections: {
             styles: [
                 'css/all.css',
             ]
-        }
-    },
-    debug: {
-        services: {
-            'compress': false,
-            'minify-js': false,
-            'minify-css': false
         }
     }
 }

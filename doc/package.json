@@ -1,14 +1,12 @@
 {
-    "name": "expansivedoc",
+    "name": "expansive-doc",
     "title": "Embedthis Expansive Documentation",
     "dependencies": {
         "exp-css": "~0.2",
-        "exp-gzip": "~0.2",
         "exp-js": "~0.2",
         "exp-less": "~0.2",
-        "jquery": "~1.11",
         "me-docstyle": "~0.8",
-        "semantic": "~0.50"
+        "semantic-ui": "~1.9"
     },
     "pak": {
         "import": true,

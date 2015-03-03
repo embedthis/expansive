@@ -54,7 +54,6 @@
     ],
     "pak": {
         "import": true,
-        "version": ">=0.10.0",
-        "origin": "embedthis/ejs"
+        "version": ">=0.10.0"
     }
 }

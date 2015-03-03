@@ -8967,14 +8967,14 @@ module ejs {
 
         /**
             Test if the path matches a 'glob' style pattern
-            @pattern Path pattern to match with. The following special sequences are supported:
+            @patterns Pattern or array of patterns to match with. A pattern may be prefixed with '!' to negate the
+            pattern. The following special sequences are supported within patterns:
             <ul>
                 <li>The wildcard '?' matches any single character</li>
                 <li>* matches zero or more characters in a filename or directory</li>
                 <li>** matches zero or more files or directories and matches recursively in a directory tree</li>
             </ul>
-            If a pattern ends with '/', the path must exist and be a directory.
-            @return True if the path matches the pattern.
+            @return True if the path matches the patterns.
             @hide
          */
         native function glob(patterns: Object): Boolean

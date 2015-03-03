@@ -30,15 +30,8 @@
         }
     ],
     "dependencies": {
-        "ejs": "~2.5",
-        "ejs-version": "~0.8",
-        "est": "~0.6",
-        "http": "~6.0",
-        "mpr": "~6.0",
-        "osdep": "~0.8",
-        "pcre": "~1.0",
-        "ssl": "~0.8",
-        "zlib": "~1.0"
+        "ejs": "^2.5",
+        "ejs-version": "^0.8"
     },
     "pak": {
         "import": true,

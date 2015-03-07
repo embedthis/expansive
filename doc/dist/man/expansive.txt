@@ -400,7 +400,12 @@ META PROPERTIES
        service     Name of the transformation service being run.
 
        source      Current  input  source file being processed. May be a docu-
-                   ment, partial, layout or any input resource file.
+                   ment, partial, layout or any input resource file.  Includes
+                   the
+                       contents, lib, layouts or partials directory.
+
+       sourcePath  Source  filename relative to the contents, lib, layouts, or
+                   partials directories.
 
        title       Title of the web site. Sourced from the 'title' property in
                    the package.json file.

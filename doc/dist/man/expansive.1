@@ -346,7 +346,11 @@ service
 Name of the transformation service being run.
 .TP 12
 source
-Current input source file being processed. May be a document, partial, layout or any input resource file.
+Current input source file being processed. May be a document, partial, layout or any input resource file. Includes the
+    contents, lib, layouts or partials directory.
+.TP 12
+sourcePath
+Source filename relative to the contents, lib, layouts, or partials directories.
 .TP 12
 title
 Title of the web site. Sourced from the 'title' property in the package.json file.

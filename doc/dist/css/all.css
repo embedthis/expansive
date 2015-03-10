@@ -144,6 +144,9 @@ body.show-sidebar {
   background: #ffffff;
   padding: 1rem 2rem 2rem 2rem;
 }
+.content .floated {
+  overflow: auto;
+}
 .terms {
   margin: 10px 0 26px 0;
   height: 20px;
@@ -226,6 +229,16 @@ img.bare-screen {
 img.shadow {
   border-radius: 7px;
   box-shadow: 5px 5px 9px #999999;
+}
+@media (min-width: 900px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+@media (max-width: 900px) {
+  .desktop-only {
+    display: none !important;
+  }
 }
 /*
     theme.less - Default Embedthis Documentation Theme

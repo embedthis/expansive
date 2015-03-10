@@ -543,7 +543,6 @@ public class Expansive {
             mastersModified = checkMastersModified()
             render(false)
             if (options.serve && modified) {
-print("HERE RESTART")
                 restartServer()
             }
             App.sleep(control.watch)
@@ -611,6 +610,7 @@ print("HERE RESTART")
                 trace('Info', 'Server lasted less than 5 seconds, pausing 5 seconds before restart')
                 setTimeout(function() { externalServer() }, 5000)
             } else {
+                trace('Info', 'Restart server')
                 externalServer()
             }
         }

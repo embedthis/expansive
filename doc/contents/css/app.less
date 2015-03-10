@@ -146,7 +146,11 @@ body {
     text-decoration: none;
     background: @white;
     padding: 1rem 2rem 2rem 2rem;
+    .floated {
+      overflow: auto;
+    }
 }
+
 
 .terms {
     margin: 10px 0 26px 0;
@@ -247,5 +251,23 @@ img.shadow {
 	box-shadow: 5px 5px 9px @gray-light;
 }
 
-/////////// Tweaks
 
+//  Desktop
+@media (min-width: @mobile-break) {
+    .mobile-only {
+        display:none !important;
+    }
+    .desktop-only {
+        // display:block !important;
+    }
+}
+
+//  Mobile
+@media (max-width: @mobile-break) {
+    .mobile-only {
+        // display:block !important;
+    }
+    .desktop-only {
+        display:none !important;
+    }
+}

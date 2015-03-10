@@ -630,36 +630,36 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9A25F61F9A2615A00000002D /* ejsc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ejsc.c; path = paks/ejs/dist/ejsc.c; sourceTree = "<group>"; };
-		9A25F61F9A2615A0000000B0 /* ejs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ejs.h; path = paks/ejs/dist/ejs.h; sourceTree = "<group>"; };
+		9A25F61F9A2615A00000002D /* ejsc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ejsc.c; path = src/ejs/ejsc.c; sourceTree = "<group>"; };
+		9A25F61F9A2615A0000000B0 /* ejs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ejs.h; path = src/ejs/ejs.h; sourceTree = "<group>"; };
 		9A25F61F9A2615A0000000B1 /* ejsc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ejsc; sourceTree = BUILT_PRODUCTS_DIR; };
-		9A25F61F9A2615A00000002F /* ejs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ejs.c; path = paks/ejs/dist/ejs.c; sourceTree = "<group>"; };
+		9A25F61F9A2615A00000002F /* ejs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ejs.c; path = src/ejs/ejs.c; sourceTree = "<group>"; };
 		9A25F61F9A2615A0000000B2 /* ejscmd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ejs; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A25F61F9A2615A000000031 /* expansive.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = expansive.c; path = src/expansive.c; sourceTree = "<group>"; };
 		9A25F61F9A2615A0000000B3 /* ejs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ejs.h; path = build/macosx-x64-default/inc/ejs.h; sourceTree = "<group>"; };
 		9A25F61F9A2615A0000000B4 /* expansive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = expansive.h; path = build/macosx-x64-default/inc/expansive.h; sourceTree = "<group>"; };
 		9A25F61F9A2615A000000033 /* expParser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = expParser.c; path = src/expParser.c; sourceTree = "<group>"; };
 		9A25F61F9A2615A0000000B5 /* expansive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = expansive; sourceTree = BUILT_PRODUCTS_DIR; };
-		9A25F61F9A2615A000000035 /* http.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = http.c; path = paks/http/dist/http.c; sourceTree = "<group>"; };
-		9A25F61F9A2615A0000000B6 /* http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = http.h; path = paks/http/dist/http.h; sourceTree = "<group>"; };
+		9A25F61F9A2615A000000035 /* http.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = http.c; path = src/http/http.c; sourceTree = "<group>"; };
+		9A25F61F9A2615A0000000B6 /* http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = http.h; path = src/http/http.h; sourceTree = "<group>"; };
 		9A25F61F9A2615A0000000B7 /* httpcmd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = http; sourceTree = BUILT_PRODUCTS_DIR; };
-		9A25F61F9A2615A000000037 /* ejsLib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ejsLib.c; path = paks/ejs/dist/ejsLib.c; sourceTree = "<group>"; };
+		9A25F61F9A2615A000000037 /* ejsLib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ejsLib.c; path = src/ejs/ejsLib.c; sourceTree = "<group>"; };
 		9A25F61F9A2615A0000000B8 /* mpr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mpr.h; path = build/macosx-x64-default/inc/mpr.h; sourceTree = "<group>"; };
 		9A25F61F9A2615A0000000B9 /* pcre.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pcre.h; path = build/macosx-x64-default/inc/pcre.h; sourceTree = "<group>"; };
 		9A25F61F9A2615A0000000BA /* me.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = me.h; path = build/macosx-x64-default/inc/me.h; sourceTree = "<group>"; };
 		9A25F61F9A2615A000000043 /* libejs */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libejs.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		9A25F61F9A2615A000000039 /* httpLib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = httpLib.c; path = paks/http/dist/httpLib.c; sourceTree = "<group>"; };
+		9A25F61F9A2615A000000039 /* httpLib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = httpLib.c; path = src/http/httpLib.c; sourceTree = "<group>"; };
 		9A25F61F9A2615A000000045 /* libhttp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libhttp.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		9A25F61F9A2615A00000003B /* mprLib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mprLib.c; path = paks/mpr/dist/mprLib.c; sourceTree = "<group>"; };
-		9A25F61F9A2615A0000000BB /* mpr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mpr.h; path = paks/mpr/dist/mpr.h; sourceTree = "<group>"; };
+		9A25F61F9A2615A00000003B /* mprLib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mprLib.c; path = src/mpr/mprLib.c; sourceTree = "<group>"; };
+		9A25F61F9A2615A0000000BB /* mpr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mpr.h; path = src/mpr/mpr.h; sourceTree = "<group>"; };
 		9A25F61F9A2615A000000047 /* libmpr */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libmpr.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		9A25F61F9A2615A00000003D /* mprSsl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mprSsl.c; path = paks/mpr/dist/mprSsl.c; sourceTree = "<group>"; };
+		9A25F61F9A2615A00000003D /* mprSsl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mprSsl.c; path = src/mpr/mprSsl.c; sourceTree = "<group>"; };
 		9A25F61F9A2615A0000000BC /* libmprssl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libmprssl.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		9A25F61F9A2615A00000003F /* pcre.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pcre.c; path = paks/pcre/dist/pcre.c; sourceTree = "<group>"; };
-		9A25F61F9A2615A0000000BD /* pcre.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pcre.h; path = paks/pcre/dist/pcre.h; sourceTree = "<group>"; };
+		9A25F61F9A2615A00000003F /* pcre.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pcre.c; path = src/pcre/pcre.c; sourceTree = "<group>"; };
+		9A25F61F9A2615A0000000BD /* pcre.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pcre.h; path = src/pcre/pcre.h; sourceTree = "<group>"; };
 		9A25F61F9A2615A000000049 /* libpcre */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libpcre.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		9A25F61F9A2615A000000041 /* zlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zlib.c; path = paks/zlib/dist/zlib.c; sourceTree = "<group>"; };
-		9A25F61F9A2615A0000000BE /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zlib.h; path = paks/zlib/dist/zlib.h; sourceTree = "<group>"; };
+		9A25F61F9A2615A000000041 /* zlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zlib.c; path = src/zlib/zlib.c; sourceTree = "<group>"; };
+		9A25F61F9A2615A0000000BE /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zlib.h; path = src/zlib/zlib.h; sourceTree = "<group>"; };
 		9A25F61F9A2615A00000004B /* libzlib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libzlib.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -1117,7 +1117,7 @@
     			files = (
     			);
     			inputPaths = (
-    ../paks/ejs/dist/ejs.es
+    ../src/ejs/ejs.es
     			);
     			outputPaths = (
     ../build/macosx-x64-default/bin/ejs.mod
@@ -1125,8 +1125,8 @@
     			runOnlyForDeploymentPostprocessing = 0;
     			shellPath = /bin/bash;
     			shellScript = "PATH=$PATH:/usr/local/bin
-cd ../paks/ejs/dist
-	../../${OUT_DIR}/bin/ejsc --out ../../${OUT_DIR}/bin/ejs.mod --optimize 9 --bind --require null ejs.es
+cd ../src/ejs
+	../${OUT_DIR}/bin/ejsc --out ../${OUT_DIR}/bin/ejs.mod --optimize 9 --bind --require null ejs.es
 ";
     		};
 		9A25F61F9A2615A00000000C /* ShellScript for expansive.mod */ = {
@@ -1155,7 +1155,7 @@ cd ..
     			files = (
     			);
     			inputPaths = (
-    ../paks/http/dist/ca.crt
+    ../src/http/ca.crt
     			);
     			outputPaths = (
     ../build/macosx-x64-default/bin/ca.crt
@@ -1165,7 +1165,7 @@ cd ..
     			shellScript = "PATH=$PATH:/usr/local/bin
 cd ..
 	mkdir -p \"build/macosx-x64-default/bin\"
-	cp paks/http/dist/ca.crt build/macosx-x64-default/bin/ca.crt
+	cp src/http/ca.crt build/macosx-x64-default/bin/ca.crt
 ";
     		};
 		9A25F61F9A2615A000000015 /* ShellScript for sample */ = {
@@ -1208,50 +1208,50 @@ if ! diff ${INC_DIR}/me.h expansive-macosx-default-me.h >/dev/null 2>&1 ; then
 cp expansive-macosx-default-me.h ${INC_DIR}/me.h
 fi
 fi
-if [ ../paks/ejs/dist/ejs.h -nt ${OUT_DIR}/inc/ejs.h ] ; then
-cp ../paks/ejs/dist/ejs.h ${OUT_DIR}/inc/ejs.h
+if [ ../src/ejs/ejs.h -nt ${OUT_DIR}/inc/ejs.h ] ; then
+cp ../src/ejs/ejs.h ${OUT_DIR}/inc/ejs.h
 fi
-if [ ../paks/ejs/dist/ejs.slots.h -nt ${OUT_DIR}/inc/ejs.slots.h ] ; then
-cp ../paks/ejs/dist/ejs.slots.h ${OUT_DIR}/inc/ejs.slots.h
+if [ ../src/ejs/ejs.slots.h -nt ${OUT_DIR}/inc/ejs.slots.h ] ; then
+cp ../src/ejs/ejs.slots.h ${OUT_DIR}/inc/ejs.slots.h
 fi
-if [ ../paks/ejs/dist/ejsByteGoto.h -nt ${OUT_DIR}/inc/ejsByteGoto.h ] ; then
-cp ../paks/ejs/dist/ejsByteGoto.h ${OUT_DIR}/inc/ejsByteGoto.h
+if [ ../src/ejs/ejsByteGoto.h -nt ${OUT_DIR}/inc/ejsByteGoto.h ] ; then
+cp ../src/ejs/ejsByteGoto.h ${OUT_DIR}/inc/ejsByteGoto.h
 fi
-if [ ../paks/http/dist/http.h -nt ${OUT_DIR}/inc/http.h ] ; then
-cp ../paks/http/dist/http.h ${OUT_DIR}/inc/http.h
+if [ ../src/http/http.h -nt ${OUT_DIR}/inc/http.h ] ; then
+cp ../src/http/http.h ${OUT_DIR}/inc/http.h
 fi
-if [ ../paks/mpr/dist/mpr.h -nt ${OUT_DIR}/inc/mpr.h ] ; then
-cp ../paks/mpr/dist/mpr.h ${OUT_DIR}/inc/mpr.h
+if [ ../src/mpr/mpr.h -nt ${OUT_DIR}/inc/mpr.h ] ; then
+cp ../src/mpr/mpr.h ${OUT_DIR}/inc/mpr.h
 fi
-if [ ../paks/osdep/dist/osdep.h -nt ${OUT_DIR}/inc/osdep.h ] ; then
-cp ../paks/osdep/dist/osdep.h ${OUT_DIR}/inc/osdep.h
+if [ ../src/osdep/osdep.h -nt ${OUT_DIR}/inc/osdep.h ] ; then
+cp ../src/osdep/osdep.h ${OUT_DIR}/inc/osdep.h
 fi
-if [ ../paks/pcre/dist/pcre.h -nt ${OUT_DIR}/inc/pcre.h ] ; then
-cp ../paks/pcre/dist/pcre.h ${OUT_DIR}/inc/pcre.h
+if [ ../src/pcre/pcre.h -nt ${OUT_DIR}/inc/pcre.h ] ; then
+cp ../src/pcre/pcre.h ${OUT_DIR}/inc/pcre.h
 fi
-if [ ../paks/zlib/dist/zlib.h -nt ${OUT_DIR}/inc/zlib.h ] ; then
-cp ../paks/zlib/dist/zlib.h ${OUT_DIR}/inc/zlib.h
+if [ ../src/zlib/zlib.h -nt ${OUT_DIR}/inc/zlib.h ] ; then
+cp ../src/zlib/zlib.h ${OUT_DIR}/inc/zlib.h
 fi
-if [ ../paks/ejs/dist/ejs.h -nt ${OUT_DIR}/inc/ejs.h ] ; then
-cp ../paks/ejs/dist/ejs.h ${OUT_DIR}/inc/ejs.h
+if [ ../src/ejs/ejs.h -nt ${OUT_DIR}/inc/ejs.h ] ; then
+cp ../src/ejs/ejs.h ${OUT_DIR}/inc/ejs.h
 fi
-if [ ../paks/ejs/dist/ejs.slots.h -nt ${OUT_DIR}/inc/ejs.slots.h ] ; then
-cp ../paks/ejs/dist/ejs.slots.h ${OUT_DIR}/inc/ejs.slots.h
+if [ ../src/ejs/ejs.slots.h -nt ${OUT_DIR}/inc/ejs.slots.h ] ; then
+cp ../src/ejs/ejs.slots.h ${OUT_DIR}/inc/ejs.slots.h
 fi
-if [ ../paks/ejs/dist/ejsByteGoto.h -nt ${OUT_DIR}/inc/ejsByteGoto.h ] ; then
-cp ../paks/ejs/dist/ejsByteGoto.h ${OUT_DIR}/inc/ejsByteGoto.h
+if [ ../src/ejs/ejsByteGoto.h -nt ${OUT_DIR}/inc/ejsByteGoto.h ] ; then
+cp ../src/ejs/ejsByteGoto.h ${OUT_DIR}/inc/ejsByteGoto.h
 fi
-if [ ../paks/http/dist/http.h -nt ${OUT_DIR}/inc/http.h ] ; then
-cp ../paks/http/dist/http.h ${OUT_DIR}/inc/http.h
+if [ ../src/http/http.h -nt ${OUT_DIR}/inc/http.h ] ; then
+cp ../src/http/http.h ${OUT_DIR}/inc/http.h
 fi
-if [ ../paks/mpr/dist/mpr.h -nt ${OUT_DIR}/inc/mpr.h ] ; then
-cp ../paks/mpr/dist/mpr.h ${OUT_DIR}/inc/mpr.h
+if [ ../src/mpr/mpr.h -nt ${OUT_DIR}/inc/mpr.h ] ; then
+cp ../src/mpr/mpr.h ${OUT_DIR}/inc/mpr.h
 fi
-if [ ../paks/pcre/dist/pcre.h -nt ${OUT_DIR}/inc/pcre.h ] ; then
-cp ../paks/pcre/dist/pcre.h ${OUT_DIR}/inc/pcre.h
+if [ ../src/pcre/pcre.h -nt ${OUT_DIR}/inc/pcre.h ] ; then
+cp ../src/pcre/pcre.h ${OUT_DIR}/inc/pcre.h
 fi
-if [ ../paks/zlib/dist/zlib.h -nt ${OUT_DIR}/inc/zlib.h ] ; then
-cp ../paks/zlib/dist/zlib.h ${OUT_DIR}/inc/zlib.h
+if [ ../src/zlib/zlib.h -nt ${OUT_DIR}/inc/zlib.h ] ; then
+cp ../src/zlib/zlib.h ${OUT_DIR}/inc/zlib.h
 fi";
     		};
 /* End PBXShellScriptBuildPhase section */
@@ -1752,7 +1752,7 @@ fi";
 
                     OUT_DIR = "../build/macosx-x64-default";
                     BIN_DIR = "../build/macosx-x64-default/bin";
-                    LIB_DIR = "../lib";
+                    LIB_DIR = "../src";
                     INC_DIR = "../build/macosx-x64-default/inc";
                     OBJ_DIR = "../build/macosx-x64-default/obj";
                     SRC_DIR = "../src";
@@ -1821,7 +1821,7 @@ fi";
 
                     OUT_DIR = "../build/macosx-x64-default";
                     BIN_DIR = "../build/macosx-x64-default/bin";
-                    LIB_DIR = "../lib";
+                    LIB_DIR = "../src";
                     INC_DIR = "../build/macosx-x64-default/inc";
                     OBJ_DIR = "../build/macosx-x64-default/obj";
                     SRC_DIR = "../src";

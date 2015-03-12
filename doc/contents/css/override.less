@@ -1,7 +1,16 @@
 /*
-    override.less - Appweb Theme Overrides
+    override.less - Expansive Theme Overrides
  */
 
 /* Gold */
-@body-highlight:    #E3BA4D;
-@body-gradient:     45deg, #FFD159 0px, @body-highlight 100%;
+@body-highlight:    #FFD159;
+@body-gradient:     45deg, #E3BA4D 0px, @body-highlight 100%;
+
+.masthead .breadcrumb .section,
+.masthead .version {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.masthead .breadcrumb .active.section {
+    color: rgba(0, 0, 0, 1.0);
+}

@@ -31,7 +31,6 @@ body.show-sidebar {
   z-index: 100;
   background-image: -webkit-linear-gradient(45deg, #e3ba4d 0px, #ffd159 100%);
   background-image: linear-gradient(45deg, #e3ba4d 0px, #ffd159 100%);
-  background-attachment: fixed;
   border-bottom: 5px solid white;
 }
 .masthead .ui.inverted.menu {
@@ -206,12 +205,13 @@ h3 + ul {
   margin-top: -0.85rem;
 }
 em {
-  padding: 2px 6px;
+  padding: 3px;
   font-family: monospace;
   font-style: normal;
   background-color: #F2F2FF;
   color: #404080;
   border-radius: 4px;
+  white-space: nowrap;
 }
 code {
   display: block;
@@ -226,6 +226,14 @@ code {
   background-color: #EEE;
   color: #333;
 }
+code.inverted {
+  background: #002b36;
+  color: #c0c0c0;
+}
+code.inverted b {
+  color: #2aa198;
+  font-weight: bold;
+}
 .centered {
   margin-left: auto;
   margin-right: auto;
@@ -233,7 +241,7 @@ code {
 }
 .ui.code.inverted.code.segment {
   background: #002b36;
-  color: #93a1a1;
+  color: #c0c0c0;
 }
 .ui.code.inverted.code.segment b {
   color: #2aa198;

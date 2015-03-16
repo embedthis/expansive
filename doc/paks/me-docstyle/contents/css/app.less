@@ -27,7 +27,6 @@ body {
     width: 100%;
     z-index: 100;
     background-image: linear-gradient(@body-gradient);
-    background-attachment: fixed;
     border-bottom: 5px solid white;
 
     .ui.inverted.menu {
@@ -220,12 +219,13 @@ h3 + ul {
 }
 
 em {
-    padding: 2px 6px;
+    padding: 3px;
     font-family: monospace;
     font-style: normal;
     background-color: #F2F2FF;
     color: #404080;
     border-radius: 4px;
+    white-space: nowrap;
 }
 
 code {
@@ -240,6 +240,14 @@ code {
     line-height: 1.25em;
     background-color: #EEE;
     color: #333;
+    &.inverted {
+        background: @inverted-code-background;
+        color: @inverted-code-color;
+        b {
+            color: @inverted-code-bold;
+            font-weight: bold;
+        }
+    }
 }
 
 .centered {

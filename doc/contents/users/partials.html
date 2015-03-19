@@ -1,6 +1,73 @@
 {
-    title:  'Expansive Partial Pages',
-    crumbs: [ ],
+    title:  'Partial Pages',
+    crumbs: [ 
+          { "User's Guide": "index.html" },
+    ],
 }
    
-        <h1>Parital Pages</h1>
+      <h1>Partial Pages</h1>
+
+      <p>Sometimes you have a portion of content that needs to be shared over multiple pages. It may be a navigation bar,
+      page footer, or common piece of scripting. While <a href="layouts">Layout</a> pages provide for reuse of the outermost
+      page content, Partial Pages provide the ability to reuse any inner portion of content.</p>
+
+      <p>A partial page is invoked via the <em>partial(name)</em> Javascript function. This function is processed when the
+      site is rendered and the function call is replaced with the contents of the processed partial page. For example, 
+      consider the following page layout.</p>
+<code class="inverted">&lt;!DOCTYPE html>
+&lt;html lang="en">
+&lt;head>
+    <b>&lt;@ partial('head') @></b>
+&lt;/head>
+&lt;body>
+    <b>&lt;@ partial('nav') @></b>
+    &lt;@ content @>
+&lt;/body>
+&lt;/html>
+</code>
+
+      <h2>Creating Partial Pages</h2>
+      <p>A partial page is no different from any other web page except that it does not do layout processing and so does not
+      have a <em>&lt;@ content @></em> element. A partial page may reference other partial pages and may include any 
+      Expansive pipeline processing. For example, a HTML page may include a partial page that is defined using Markdown.</p>
+
+      <h2>Passing Parameters to Partial Pages</h2>
+      <p>Data may be passed to partial pages by either setting properties in the page's meta data. 
+      Pages have an optional special area between braces at the top of the page to define page meta data. 
+      This provides data values that can be passed to partial and layout pages to be accessed via scripting.
+      For example:</p>
+
+      <code class="inverted">{
+    <b>color: 'red'</b>,
+    title: 'Hello World'
+}    
+
+&lt;@ partial('hero') @>
+</code>
+
+      <p>This passes the <em>color</em> and <em>title</em> meta data properties to the <em>hero</em> partial page. 
+      The hero page will receive the parameter in its meta data and can access this via the <em>meta</em> global property.
+      For example (partials/hero.html.exp):</p>
+
+      <code class="inverted">&lt;p>The color is: &lt;&#64;= meta.color @></code>
+
+      <p>You can pass parameters to a single partial page via the <em>partial</em>() function call. For example:</p>
+      <code class="inverted">&lt;@ partial('hero', { color: 'rec' }) @></code>
+
+
+
+    <h2>Selecting Layouts</h2>
+    <p>A content page can request a different layout by adding a <em>layout</em>
+    property to the meta data section of the content page. For example:</p>
+    <code class="inverted">{
+    layout: 'product-layout'
+    title:  'Hello World'
+}    
+&lt;h1>Hello World with Layouts&lt;/h1>
+</code>
+    <p>This will select the <em>product-layout</em> in the <em>layouts</em> directory.
+    Expansive resolves layout pages by looking for a layout file that begins with the layout name in the <em>layouts</em>
+    directory. The default page layout is called <em>default</em> and resolves to <em>layouts/default.html.exp</em>.</p>
+		The <em>.exp</em> extension indicates that this page contains embedded Expansive script that should be processed during
+    rendering. The <em>Date().format</em> code above is executed when Expansive renders the site and is replaced with 
+    the current date string.</p>

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Expansive Layouts</title>
+    <title>Layouts</title>
     <!-- Copyright Embedthis Software. All Rights Reserved. -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="description" content="Expansive Layouts" />
+    <meta name="description" content="Layouts" />
     <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700'
         rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
@@ -21,7 +21,7 @@
          <div class="sidebar">
         <div class="ui large left vertical inverted labeled menu">
             <div class="item">
-                <a href="../index.html" class="logo">Expansive Docs</a>
+                <a href="../index.html" class="logo">Expansive<br/>Docs</a>
             </div>
             <div class="item">
                 <div class="menu">
@@ -48,32 +48,54 @@
                     <a class="item" href="../users/tour.html">Quick Tour</a>
                     <a class="item" href="../users/commands.html">Commands</a>
                     <a class="item" href="../users/skeletons.html">Skeletons</a>
-                    <a class="item" href="../users/layouts.html">Layouts</a>
-                    <a class="item" href="../users/partials.html">Partials</a>
-                    <a class="item" href="../users/render.html">Rendering</a>
-
-                    <a class="item" href="../users/stylesheets.html">Stylesheets</a>
-                    <a class="item" href="../users/assets.html">Assets</a>
-                    <a class="item" href="../users/serving.html">Serving Content</a>
                     <a class="item" href="../users/meta.html">Meta Data</a>
+                    <a class="item" href="../users/partials.html">Partials</a>
+                    <a class="item" href="../users/layouts.html">Layouts</a>
+                    <a class="item" href="../users/assets.html">Assets and Raw Files</a>
+
+                    <a class="item" href="../users/stylesheets.html">Scripts and Stylesheets</a>
                     <a class="item" href="../users/collections.html">Collections</a>
-                    <a class="item" href="../users/configuration.html">Configuration</a>
                     <a class="item" href="../users/scripting.html">Scripting</a>
+
+                    <a class="item" href="../users/rendering.html">Rendering</a>
+
+                    <!-- MOB - name? -->
+                    <a class="item" href="../users/serving.html">Serving Content</a>
+
+                    <!-- MOB - name? -->
+                    <a class="item" href="../users/packages.html">Installing Packages</a>
+                    <a class="item" href="../users/configuration.html">Configuration</a>
+
                     <!-- query engine -->
                     <a class="item" href="../users/sitemaps.html">Sitemaps</a>
                     <a class="item" href="../users/troubleshoot.html">Trouble shooting</a>
                 </div>
             </div>
             <div class="item">
-                <a href="../ref/index.html">Reference Guide</a>
+                <a href="../developers/index.html">Developer's Guide</a>
                 <div class="menu">
-                    <a class="item" href="../ref/plugins.html">Plugins</a>
-                    <a class="item" href="../ref/files.html">Files and Directories</a>
-                    <a class="item" href="../ref/meta.html">Meta Data</a>
-                    <a class="item" href="../ref/control.html">Configuration Control</a>
-                    <a class="item" href="../ref/scripting.html">Scripting</a>
-                    <a class="item" href="../ref/events.html">Events</a>
-                    <a class="item" href="../ref/pipeline.html">Processing Pipeline</a>
+                    <a class="item" href="../developers/events.html">Events</a>
+                    <a class="item" href="../developers/files.html">Files and Directories</a>
+                    <a class="item" href="../developers/control.html">Configuration Control</a>
+                    <a class="item" href="../developers/scripting.html">Scripting</a>
+                    <a class="item" href="../developers/properties.html">Meta Properties</a>
+                    <a class="item" href="../developers/plugins.html">Creating Plugins</a>
+                    <a class="item" href="../developers/plugins.html">Creating Skeletons</a>
+                    <a class="item" href="../developers/pipeline.html">Processing Pipeline</a>
+                </div>
+            </div>
+            <div class="item">
+                <a href="../plugins/project.html">Common Plugins</a>
+                <div class="menu">
+                    <a class="item" href="../plugins/skeletons.html">Skeletons</a>
+                    <a class="item" href="../plugins/exp-babel.html">exp-babel</a>
+                    <a class="item" href="../plugins/exp-css.html">exp-css</a>
+                    <a class="item" href="../plugins/exp-gzip.html">exp-gzip</a>
+                    <a class="item" href="../plugins/exp-js.html">exp-js</a>
+                    <a class="item" href="../plugins/exp-less.html">exp-less</a>
+                    <a class="item" href="../plugins/exp-md.html">exp-md</a>
+                    <a class="item" href="../plugins/exp-sass.html">exp-sass</a>
+                    <a class="item" href="../plugins/exp-shell.html">exp-shell</a>
                 </div>
             </div>
             <div class="item">
@@ -126,9 +148,14 @@
         <div class="ui breadcrumb">
             <a class="section" href="../">Home</a>
             
+            <div class="divider">/</div>
+            <a class="section" href="index.html">
+                User's Guide
+            </a>
+            
             
             <div class="divider">/</div>
-            <a class="active section" href="layouts.html">Expansive Layouts</a>
+            <a class="active section" href="layouts.html">Layouts</a>
             
         </div>
         
@@ -140,7 +167,70 @@
     <div class="content">
 
    
-        <h1>Expansive Layouts</h1>
+        <h1>Layouts</h1>
+
+        <p>Most web pages in a web site share a similar layout with one or more pages and replicating 
+        that layout from page to page is slow and difficult to keep each page in sync. Expansive provides 
+        layout pages that define the common elements of pages, so that content pages can focus on the 
+        unique aspects of the page.</p>
+
+        <h2>Definining Layouts</h2>
+   		<p>Layout pages provide the outer contents and content pages provide the inner contents. Expansive 
+        automatically blends the layout page with the content page to create a final composite page. 
+        Here is a sample layout page:</p>
+        <code class="inverted">&lt;html>
+&lt;head>
+    &lt;title>&lt;&#64;= meta.title @&gt;&lt;/title>
+    &lt;meta charset="utf-8" />
+    &lt;link href="css/all.css" rel="stylesheet" type="text/css" />
+    &lt;script src="jquery/jquery.min.js">&lt;/script>
+    &lt;script src="semantic/js/semantic.js">&lt;/script>
+&lt;/head>
+&lt;body>
+    <b>&lt;@ content @&gt;</b>
+    <span>Generated on Mar 17, 2015.</span>
+&lt;/body>
+&lt;/html>
+</code>
+        <p>The <em>@ content @</em> element is replaced with the content page before saving to the <em>dist</em> directory.</p>
+        <p>Layout pages can be nested and utilize other layout pages to an arbitrary depth.</p>
+
+        <h2>Content Pages</h2>
+        <p>A content page omits all the layout boiler plate and can focus solely on the unique content for that page.
+        Here is a sample content page.</p>
+
+        <code class="inverted">{
+    title: 'Hello World'
+}    
+&lt;h1>Hello World with Layouts&lt;/h1>
+</code>
+
+        <p>The special area between the braces at the top of the content page is called Meta data. 
+        It provides meta data values that can be accessed via scripting in layout and partial pages. This provides a means
+        to pass parameters to layout and partial pages.</p>
+
+        <h2>Selecting Layouts</h2>
+        <p>A content page can request a different layout by adding a <em>layout</em>
+        property to the meta data section of the content page. For example:</p>
+        
+        <code class="inverted">{
+    layout: 'product-layout'
+    title:  'Hello World'
+}    
+&lt;h1>Hello World with Layouts&lt;/h1>
+</code>
+        <p>This will select the <em>product-layout</em> in the <em>layouts</em> directory. Set the <em>layout</em>
+        property to the empty string <em>""</em> to disable layout processing. Expansive uses the presence of
+        a meta data section to enable layout processing. If you omit meta data in your page, you will disable 
+        layout processing.</p>
+
+        <p>Expansive resolves layout pages by looking for a layout file that begins with the layout name in the 
+        <em>layouts</em> directory. The default page layout is called <em>default</em> and resolves to 
+        <em>layouts/default.html.exp</em>.</p>
+
+		<p>The <em>.exp</em> extension indicates that this page contains embedded Expansive script that should be processed 
+        during rendering. The <em>Date().format</em> code above is executed when Expansive renders the site and is 
+        replaced with the current date string.</p>
 
     </div>
     <div class="terms ui basic center aligned segment">

@@ -1,6 +1,36 @@
 {
-    title:  'Expansive Stylesheets',
+    title:  'Scripts and Stylesheets',
     crumbs: [ ],
 }
    
-        <h1>Stylesheets</h1>
+        <h1>Scripts and Stylesheets</h1>
+
+<ul>
+	<li>exp-js, exp-css
+		- smartly selects minified or not
+		- usemap, usemin, 
+		- minify, mangle, genmap, dotmin, compress</li>
+	<li>renderScripts, renderStyles - auto configure packages - zero configure package addition 
+			goal: package install library .... nothing more to do
+			problem: add script, add css, ensure order of dependencies
+		</li>
+	<li>Role of collections</li>
+	<li>exp-less ...</li>
+</ul>
+
+<!--
+	Use cases:
+	- Using Less/Sass for everything
+	- Using Less/Sass plus some standard libraries: bootstrap, semantic UI
+	- Using CSS only
+
+	Bundling
+		- exp-ng - all scripts together
+
+	How to override generated scripts on a per page basis
+		- Add scripts / stylesheets
+		- Remove scripts / stylesheets
+
+	Best Practices
+		- Scripts at end - Unless jquery needed inline
+-->

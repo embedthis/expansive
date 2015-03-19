@@ -1,6 +1,71 @@
 {
-    title:  'Expansive Layouts',
-    crumbs: [ ],
+    title:  'Layouts',
+    crumbs: [ 
+          { "User's Guide": "index.html" },
+    ],
 }
    
-        <h1>Expansive Layouts</h1>
+        <h1>Layouts</h1>
+
+        <p>Most web pages in a web site share a similar layout with one or more pages and replicating 
+        that layout from page to page is slow and difficult to keep each page in sync. Expansive provides 
+        layout pages that define the common elements of pages, so that content pages can focus on the 
+        unique aspects of the page.</p>
+
+        <h2>Definining Layouts</h2>
+   		<p>Layout pages provide the outer contents and content pages provide the inner contents. Expansive 
+        automatically blends the layout page with the content page to create a final composite page. 
+        Here is a sample layout page:</p>
+        <code class="inverted">&lt;html>
+&lt;head>
+    &lt;title>&lt;&#64;= meta.title @&gt;&lt;/title>
+    &lt;meta charset="utf-8" />
+    &lt;link href="css/all.css" rel="stylesheet" type="text/css" />
+    &lt;script src="jquery/jquery.min.js">&lt;/script>
+    &lt;script src="semantic/js/semantic.js">&lt;/script>
+&lt;/head>
+&lt;body>
+    <b>&lt;@ content @&gt;</b>
+    <span>Generated on <@= Date().format('%b %e, %Y') @>.</span>
+&lt;/body>
+&lt;/html>
+</code>
+        <p>The <em>@ content @</em> element is replaced with the content page before saving to the <em>dist</em> directory.</p>
+        <p>Layout pages can be nested and utilize other layout pages to an arbitrary depth.</p>
+
+        <h2>Content Pages</h2>
+        <p>A content page omits all the layout boiler plate and can focus solely on the unique content for that page.
+        Here is a sample content page.</p>
+
+        <code class="inverted">{
+    title: 'Hello World'
+}    
+&lt;h1>Hello World with Layouts&lt;/h1>
+</code>
+
+        <p>The special area between the braces at the top of the content page is called Meta data. 
+        It provides meta data values that can be accessed via scripting in layout and partial pages. This provides a means
+        to pass parameters to layout and partial pages.</p>
+
+        <h2>Selecting Layouts</h2>
+        <p>A content page can request a different layout by adding a <em>layout</em>
+        property to the meta data section of the content page. For example:</p>
+        
+        <code class="inverted">{
+    layout: 'product-layout'
+    title:  'Hello World'
+}    
+&lt;h1>Hello World with Layouts&lt;/h1>
+</code>
+        <p>This will select the <em>product-layout</em> in the <em>layouts</em> directory. Set the <em>layout</em>
+        property to the empty string <em>""</em> to disable layout processing. Expansive uses the presence of
+        a meta data section to enable layout processing. If you omit meta data in your page, you will disable 
+        layout processing.</p>
+
+        <p>Expansive resolves layout pages by looking for a layout file that begins with the layout name in the 
+        <em>layouts</em> directory. The default page layout is called <em>default</em> and resolves to 
+        <em>layouts/default.html.exp</em>.</p>
+
+		<p>The <em>.exp</em> extension indicates that this page contains embedded Expansive script that should be processed 
+        during rendering. The <em>Date().format</em> code above is executed when Expansive renders the site and is 
+        replaced with the current date string.</p>

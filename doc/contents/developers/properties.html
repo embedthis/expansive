@@ -1,0 +1,44 @@
+{
+    title:  'Meta Properties',
+    crumbs: [ 
+        { "Developer's Guide": "index.html" },
+    ],
+}
+   
+        <h1>Meta Properties</h1>
+        <table class="ui celled table">
+        <thead>
+            <tr><th>Property</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>date</td><td>Current date and time</td></tr>
+            <tr><td>description</td><td>Description of the web site. Sourced from the <em>description</em> 
+                property in the package.json file.</td></tr>
+            <tr><td>dest</td><td>Final destination name of the rendered page or file in the <em>dist</em> directory.</td></tr>
+            <tr><td>document</td><td>Input file name of the page being processed. For partials and layouts, 
+                this is set to the invoking content page.</td></tr>
+            <tr><td>extension</td><td>The extension of the processed page filename.</td></tr>
+            <tr><td>extensions</td><td>The set of extensions on the original content page.</td></tr>
+            <tr><td>from</td><td>The filename extension being processed by the current transformation.</td></tr>
+            <tr><td>isLayout</td><td>True if a layout is being processed.</td></tr>
+            <tr><td>isPartial</td><td>True if a partial page is being processed.</td></tr>
+            <tr><td>layout</td><td>Layout page in use. Set to '' if no layout being used.</td></tr>
+            <tr><td>mode</td><td>Index name in the modes property. The selected property collection is copied up to the 
+                top level of the meta data. This may be used to select a <em>debug</em> or <em>release</em> configuration.</td></tr>
+            <tr><td>partial</td><td>Name of the partial page being processed.</td></tr>
+            <tr><td>path</td><td>Destination filename of the page relative to the <em>dist</em> directory.</td></tr>
+            <tr><td>service</td><td>Name of the transformation service being run.</td></tr>
+            <tr><td>source</td><td>Current input source file being processed. May be a document, partial, layout or 
+                any input resource file. Includes the <em>contents</em>, <em>lib</em>, <em>layouts</em> or <em>partials</em>
+                directory.</td></tr>
+            <tr><td>sourcePath</td><td>Source filename relative to the <em>contents</em>, <em>lib</em>, <em>layouts</em>, or 
+                <em>partials</em> directories.</td></tr>
+            <tr><td>title</td><td>Title of the web site. Sourced from the <em>title</em> property in the <em>package.json</em> 
+                file.</td></tr>
+            <tr><td>to</td><td>The destination filename extension after processing by the current transformation.</td></tr>
+            <tr><td>top</td><td>URL for the top level home page of the site.</td></tr>
+            <tr><td>url</td><td>URL for the current page.</td></tr>
+        </tbody>
+        </table>
+
+     

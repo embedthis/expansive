@@ -1,0 +1,35 @@
+{
+    title:  "Expansive Files and Directories",
+    crumbs: [ ],
+}
+            <h1>Files and Directories</h1>
+
+			<p>Expansive used the following standard files and directories.</p>
+			<table class="ui celled table">
+				<thead>
+					<tr><th>Name</th><th>Description</th></tr>
+				</thead>
+				<tbody>
+				<tr><td>contents</td><td>Source content for the web site including web pages, images and assets.</td></tr>
+				<tr><td>dist</td><td>Distribution directory where the final public documents of the web 
+	                site will be placed.</td></tr>
+				<tr><td>expansive.json</td><td>Expansive configuration file.</td></tr>
+				<tr><td>layouts</td><td>Directory for master page layouts.</td></tr>
+				<tr><td>lib</td><td>Installed package script code and assets.</td></tr>
+				<tr><td>package.json</td><td>Web site package description file.</td></tr>
+				<tr><td>paks</td><td>Installed packages &mdash; full contents.</td></tr>
+				<tr><td>partials</td><td>Directory for partial pages.</td></tr>
+				</tbody>
+			</table>
+
+			<p>The names of the directories can be remapped via the <em>directories</em> property in the package.json file.
+			For example:</p>
+<code>"directories": {
+    "contents": "source",
+    "dist":     "deploy",
+    "layouts":  "layouts",
+    "lib":      "libraries",
+    "paks":     "paks",
+    "partials": "partials"
+}
+</code>

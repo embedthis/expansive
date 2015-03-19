@@ -1,0 +1,66 @@
+{
+    title:  'Rendering the Site',
+    crumbs: [ 
+        { "User's Guide": "index.html" },
+    ],
+}
+   
+        <h1>Rendering the Site</h1>
+
+		<p>Rendering is the processing of input content together with layout pages into final web pages and assets,
+		ready for serving.</p>
+
+		<h2>Rendering and Serving</h2>
+		<p>To render the site, use the <em>expansive render</em> command.</p>
+		<code>$ <b>expansive render</b>
+[Created] dist/index.html</code>
+
+   		<p>This process all the files under <em>contents</em> and creates a complete, rendered web site 
+		under the <em>dist</em> directory.</p>
+
+   		<p>You can also render and then serve the content while dynamically watching for any changes to 
+   		the input sources by invoking expansive without any other arguments.</p>
+		<code>$ <b>expansive serve</b>
+   [Listen] 127.0.0.1:4000
+   [Render] Initial render ...
+  [Created] dist/index.html
+ [Watching] for changes every 1 sec ...
+</code>
+
+   		<p>Expansive will first render the site and will then listen on port 4000 for browser requests.</p>
+
+		<h2>Rendering Pipeline</h2>
+		<p>Expansive rendering consists of two phases</p>
+		<ul>
+			<li>Process each content page</li>
+			<li>Copy assets files</li>
+		</ul>
+
+		<p>Expansive uses a multi-stage processing pipeline to transform content pages into a final page suitable 
+		for viewing. During this process, each page, layout and partial page progresses through the following pipeline:</p>
+		<ul>
+			<li>Read page and extract and separate meta data &rarr; </li>
+			<li>Merge page content with required layout page &rarr; </li>
+			<li>Execute inline scripts &rarr; </li>
+			<li>Inline partial pages &rarr; </li>
+			<li>Peform filename extension transformations &rarr; </li>
+		</ul>
+
+		<h3>File Extensions Transformations</h3>
+		<p>For each page, Expansive will interpret document filename extensions and automatically transform content from 
+		one format to another.  For example, the filename <em>index.html.md</em> implies that the data is in 
+		<a href="http://daringfireball.net/projects/markdown/">Markdown</a> format via the <em>.md</em> extension, 
+		and it should be converted to <em>html</em>.  Expansive will examine each nested extension and process the 
+		document until it reaches an extension for which there are no further transformations defined.
+		
+		<p>For example, Expansive will process the file <em>index.html.md.exp</em> as follows:</p>
+     	<code class="inverted">index.html.md.exp &rarr; index.html.md &rarr; index.html</code>
+
+		<p>Expansive uses the <em>.exp</em> extension to specify the document has embedded Javascript. 
+     	Expansive will process this by first running the embedded Javascript, then piping the result through the Markdown 
+     	filter and finally saving the result as <em>index.html</em> after applying the appropriate layout.</p>
+
+     	<p>Nearly all transformations occur in-memory without persisting intermediate formats to disk. This means the 
+     	pipeline is very fast for most transformations.</p>
+
+		<p>The transformation pipeline for specific extensions can be overridden via the 'expansive.transforms' meta property.</p>

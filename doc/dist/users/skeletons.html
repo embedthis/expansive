@@ -21,7 +21,7 @@
          <div class="sidebar">
         <div class="ui large left vertical inverted labeled menu">
             <div class="item">
-                <a href="../index.html" class="logo">Expansive Docs</a>
+                <a href="../index.html" class="logo">Expansive<br/>Docs</a>
             </div>
             <div class="item">
                 <div class="menu">
@@ -48,32 +48,54 @@
                     <a class="item" href="../users/tour.html">Quick Tour</a>
                     <a class="item" href="../users/commands.html">Commands</a>
                     <a class="item" href="../users/skeletons.html">Skeletons</a>
-                    <a class="item" href="../users/layouts.html">Layouts</a>
-                    <a class="item" href="../users/partials.html">Partials</a>
-                    <a class="item" href="../users/render.html">Rendering</a>
-
-                    <a class="item" href="../users/stylesheets.html">Stylesheets</a>
-                    <a class="item" href="../users/assets.html">Assets</a>
-                    <a class="item" href="../users/serving.html">Serving Content</a>
                     <a class="item" href="../users/meta.html">Meta Data</a>
+                    <a class="item" href="../users/partials.html">Partials</a>
+                    <a class="item" href="../users/layouts.html">Layouts</a>
+                    <a class="item" href="../users/assets.html">Assets and Raw Files</a>
+
+                    <a class="item" href="../users/stylesheets.html">Scripts and Stylesheets</a>
                     <a class="item" href="../users/collections.html">Collections</a>
-                    <a class="item" href="../users/configuration.html">Configuration</a>
                     <a class="item" href="../users/scripting.html">Scripting</a>
+
+                    <a class="item" href="../users/rendering.html">Rendering</a>
+
+                    <!-- MOB - name? -->
+                    <a class="item" href="../users/serving.html">Serving Content</a>
+
+                    <!-- MOB - name? -->
+                    <a class="item" href="../users/packages.html">Installing Packages</a>
+                    <a class="item" href="../users/configuration.html">Configuration</a>
+
                     <!-- query engine -->
                     <a class="item" href="../users/sitemaps.html">Sitemaps</a>
                     <a class="item" href="../users/troubleshoot.html">Trouble shooting</a>
                 </div>
             </div>
             <div class="item">
-                <a href="../ref/index.html">Reference Guide</a>
+                <a href="../developers/index.html">Developer's Guide</a>
                 <div class="menu">
-                    <a class="item" href="../ref/plugins.html">Plugins</a>
-                    <a class="item" href="../ref/files.html">Files and Directories</a>
-                    <a class="item" href="../ref/meta.html">Meta Data</a>
-                    <a class="item" href="../ref/control.html">Configuration Control</a>
-                    <a class="item" href="../ref/scripting.html">Scripting</a>
-                    <a class="item" href="../ref/events.html">Events</a>
-                    <a class="item" href="../ref/pipeline.html">Processing Pipeline</a>
+                    <a class="item" href="../developers/events.html">Events</a>
+                    <a class="item" href="../developers/files.html">Files and Directories</a>
+                    <a class="item" href="../developers/control.html">Configuration Control</a>
+                    <a class="item" href="../developers/scripting.html">Scripting</a>
+                    <a class="item" href="../developers/properties.html">Meta Properties</a>
+                    <a class="item" href="../developers/plugins.html">Creating Plugins</a>
+                    <a class="item" href="../developers/plugins.html">Creating Skeletons</a>
+                    <a class="item" href="../developers/pipeline.html">Processing Pipeline</a>
+                </div>
+            </div>
+            <div class="item">
+                <a href="../plugins/project.html">Common Plugins</a>
+                <div class="menu">
+                    <a class="item" href="../plugins/skeletons.html">Skeletons</a>
+                    <a class="item" href="../plugins/exp-babel.html">exp-babel</a>
+                    <a class="item" href="../plugins/exp-css.html">exp-css</a>
+                    <a class="item" href="../plugins/exp-gzip.html">exp-gzip</a>
+                    <a class="item" href="../plugins/exp-js.html">exp-js</a>
+                    <a class="item" href="../plugins/exp-less.html">exp-less</a>
+                    <a class="item" href="../plugins/exp-md.html">exp-md</a>
+                    <a class="item" href="../plugins/exp-sass.html">exp-sass</a>
+                    <a class="item" href="../plugins/exp-shell.html">exp-shell</a>
                 </div>
             </div>
             <div class="item">
@@ -126,6 +148,11 @@
         <div class="ui breadcrumb">
             <a class="section" href="../">Home</a>
             
+            <div class="divider">/</div>
+            <a class="section" href="index.html">
+                User's Guide
+            </a>
+            
             
             <div class="divider">/</div>
             <a class="active section" href="skeletons.html">Expansive Skeletons</a>
@@ -141,7 +168,53 @@
 
    
         <h1>Skeletons</h1>
+		<p>Expansive skeletons are integrated starting points for web sites or web applications. 
+		Skeletons include starter web pages, ayouts, partial pages, stylesheets, scripts and 
+		required packages for an easy, one-step launch of your web site.</p>
 
+		<p>Skeletons are packaged as a single Pak package that specifies all the required dependencies. As such, 
+		you can install a skeleton with <em>pak install skeleton</em> and it will download all required packages.</p>
+
+		<p>For example, to create a web site that will use <a href="http://sementic-ui.com">Semantic-UI</a>,
+			a modern alternative to <a href="http://getbootstrap.com">Bootstrap</a>, install the 
+		<em>exp-semantic-skeleton</em> skeleton. First create an empty directory to hold your application and then run 
+		<em>pak install</em>.</p>
+		<pre class="ui code segment">$ mkdir demo
+$ cd demo
+$ <b>pak install exp-semantic-skeleton</b>
+[Install] jquery 1.11.1
+[Install] semantic 0.50.0
+[Install] exp-semantic-skeleton 0.1.0
+</pre>
+			<p>This installs the <em>semantic-ui</em> skeleton, the <em>Semanic-UI</em> and <em>jQuery</em> libraries, 
+			and a set of Expansive plugins to process Less and CSS stylesheets and scripts, as show by the <em>pak list</em>
+				command.</p>
+<pre class="ui code segment">
+$ <b>pak list</b>
+                 exp-css  0.2.0  installed from embedthis/exp-css
+                  exp-js  0.2.0  installed from embedthis/exp-js
+                exp-less  0.2.0  installed from embedthis/exp-less
+   exp-semantic-skeleton  0.1.0  installed from embedthis/exp-semantic-skeleton
+                  jquery 1.11.2  installed from @npm/jquery
+             semantic-ui 1.11.2  installed from Semantic-Org/Semantic-UI-CSS
+</pre>
+			<p>The <em>exp-css</em> plugin manages browser css prefixes and minifies CSS stylesheets. 
+			The <em>exp-js</em> plugin processes script files to minify and compress. 
+			The <em>exp-less</em> plugin processes Less stylesheets and compiles them into CSS files. 
+			These plugins are automatically invoked for the appropriate file extensions. Although, you can 
+			modify this behavior via the <em>expansive.json</em> configuration file.</p>
+
+		<h2>Popular Skeletons</h2>
+		<ul>
+			<li><a href="https://github.com/embedthis/exp-html-skeleton">exp-html-skeleton</a> &mdash; 
+				Expansive HTML5 Skeleton</li>
+			<li><a href="https://github.com/embedthis/exp-semantic-skeleton">esp-semantic-skeleton</a> &mdash; 
+				Expansive <a href="http://semantic-ui.com/">Semantic-UI</a> Skeleton</li>
+			<li><a href="https://github.com/embedthis/esp-angular-skeleton">esp-angular-skeleton</a> &mdash; 
+				ESP <a href="http://angularjs.org/">AngularJS</a> Skeleton</li>
+			<li><a href="https://github.com/embedthis/esp-html-skeleton">esp-html-skeleton</a> &mdash; 
+				ESP HTML5 Skeleton</li>
+		</ul>
     </div>
     <div class="terms ui basic center aligned segment">
         <p>&copy; Embedthis Software, 2003-2014. All rights reserved.</p>

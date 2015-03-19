@@ -1,6 +1,8 @@
 {
     title:  'Expansive Tour',
-    crumbs: [ ],
+    crumbs: [ 
+        { "User's Guide": "index.html" },
+    ],
 }
    
         <h1>A Quick Tour of Expansive</h1>
@@ -11,28 +13,44 @@
 
         <h2>Creating a New Web Site</h2>
         <p>We first need to create a directory for the web site. We'll call this "blog"</p>
-        <pre class="ui code segment">$ mkdir blog
+        <code class="inverted">$ mkdir blog
 $ cd blog
-$ expansive init
+$ <b>expansive init</b>
 [Create] expansive.json
-</pre>
-		<p>This will create the required standard Expansive files and directories including:
-		<ul>
-			<li><b>contents</b> &mdash; Source content for the web site including web pages, images and assets.</li>
-			<li><b>dist</b> &mdash; Distribution directory where the final public documents of the web 
-                site will be placed.</li>
-			<li><b>expansive.json</b> &mdash; Expansive configuration file</li>
-			<li><b>layouts</b> &mdash; Directory for master page layouts</li>
-			<li><b>lib</b> &mdash; Library and scripts code</li>
-			<li><b>package.json</b> &mdash; Web site package description file</li>
-			<li><b>paks</b> &mdash; Installed packages - imported into lib</li>
-			<li><b>partials</b> &mdash; Directory for partial pages</li>
-		</ul>
+</code>
+		<p>This will create the required standard Expansive files and directories including:</p>
+		<table class="ui celled table">
+			<thead>
+				<tr><th>Name</th><th>Description</th></tr>
+			</thead>
+			<tbody>
+			<tr><td>contents</td><td>Source content for the web site including web pages, images and assets.</td></tr>
+			<tr><td>dist</td><td>Distribution directory where the final public documents of the web 
+                site will be placed.</td></tr>
+			<tr><td>expansive.json</td><td>Expansive configuration file.</td></tr>
+			<tr><td>layouts</td><td>Directory for master page layouts.</td></tr>
+			<tr><td>package.json</td><td>Web site package description file.</td></tr>
+			<tr><td>partials</td><td>Directory for partial pages.</td></tr>
+			</tbody>
+		</table>
+
+		<p>As you install packages using the <a href="http://embedthis.com/pak/">Pak</a> package manager, 
+		the following directories will be created as needed.</p>
+
+		<table class="ui celled table">
+			<thead>
+				<tr><th>Name</th><th>Description</th></tr>
+			</thead>
+			<tbody>
+				<tr><td>paks</td><td>Installed packages &mdash; full contents.</td></tr>
+				<tr><td>lib</td><td>Package script code and assets.</td></tr>
+			</tbody>
+		</table>
 
 		<h2>First Page</h2>
-		<p>To create a web page, use your favorite editor and create a page named "index.html"
-		under the <b>contents</b> directory.</p>
-		<pre class="ui code segment">
+		<p>To create a web page, use your favorite editor and create a page named <em>index.html</em>
+		under the <em>contents</em> directory.</p>
+		<code>
 &lt;html>
 &lt;head>
     &lt;title>First Page&lt;/title>
@@ -41,34 +59,35 @@ $ expansive init
     &lt;h1>Hello World&lt;/h1>
 &lt;/body>
 &lt;/html>
-</pre>
+</code>
 		<h2>Running Expansive</h2>
 		<p>Now you can run expansive to create the new site.</p>
-		<pre class="ui code segment">$ <b>expansive render</b>
-   [Created] dist/index.html</pre>
+		<code>$ <b>expansive render</b>
+   [Created] dist/index.html</code>
 
-   		<p>This process all the files under <b>contents</b> and creates a complete, rendered web site under <b>dist</b>.
-   		You can also render and then serve the content while dynamically watching for any changes to the input sources by
-   		invoking expansive without any other arguments.</p>
-		<pre class="ui code segment">$ <b>expansive</b>
+   		<p>This process all the files under <em>contents</em> and creates a complete, rendered web site 
+   			under the <em>dist</em> directory.
+	   		You can also render and then serve the content while dynamically watching for any changes to 
+	   		the input sources by invoking expansive without any other arguments.</p>
+		<pre class="ui code segment">$ <b>expansive serve</b>
     [Listen] 127.0.0.1:4000
     [Render] Initial render ...
    [Created] dist/index.html
   [Watching] for changes every 1 sec ...
 </pre>
 
-   		<p>Expansive will first render the files under <b>contents</b> and create the web site under 
-   		the <b>dist</b> directory. It will then listen on port 4000 for browser requests. So open your browser and
-   		go to <b>http://localhost:4000</b> to see your new page.</p>
+   		<p>Expansive will first render the files under <em>contents</em> and create the web site under 
+   		the <em>dist</em> directory. It will then listen on port 4000 for browser requests. So open your 
+   		browser and go to <em>http://localhost:4000</em> to see your new page.</p>
 
    		<h2>Creating Layouts</h2>
    		<p>Most pages share a similar layout with other pages and replicating that layout from page to page is 
-   		slow and difficult to keep each page in sync. Expansive provides layout pages that define the common elements
-   		of pages so that content pages can focus on the unique aspects of the page.</p>
+   		slow and difficult to keep each page in sync. Expansive provides layout pages that define the 
+   		common elements of pages so that content pages can focus on the unique aspects of the page.</p>
 
-   		<p>Layout pages provide the outer contents. Expansive automatically blends the layout page with the content page to
-   		create a final composite page. Let's extract the layout from the first page and create a master layout page in
-   		<b>layouts/default.html.exp</b>.
+   		<p>Layout pages provide the outer contents. Expansive automatically blends the layout page 
+   		with the content page to create a final composite page. Let's extract the layout from the 
+   		first page and create a master layout page in <em>layouts/default.html.exp</em>.</p>
    		<pre class="ui code segment">
 &lt;html>
 &lt;head>
@@ -81,12 +100,13 @@ $ expansive init
 &lt;/body>
 &lt;/html>
 </pre>
-		<p>The <b>.exp</b> extension indicates that this page contains embedded Expansive script that must be processed.
-		More on this a little later on. The renderScripts() and renderStyles() calls will generate the required 
-		script HTML elements and stylesheet references.</p>
+		<p>The <em>.exp</em> extension indicates that this page contains embedded Expansive script that 
+		must be processed. More on this a little later on. The renderScripts() and renderStyles() calls 
+		will generate the required script HTML elements and stylesheet references.</p>
 
-		<p>Now we can change the <b>contents/index.html</b> home page to remove the layout HTML and focus just on the
-		unique content for this page:</p>
+		<p>Now we can change the <em>contents/index.html</em> home page to remove the layout HTML and 
+		focus just on the unique content for this page:</p>
+
 		<pre class="ui code segment">
 {
     title: 'Hello World'
@@ -94,30 +114,35 @@ $ expansive init
 
 &lt;h1>Hello World with Layouts&lt;/h1>
 </pre>
-		<p>If you kept Expansive running from before, it will detect the new layout and automatically render the new
-		<b>dist/index.html</b>. Reload your browser to see the new content.</p>
+		<p>If you kept Expansive running from before, it will detect the new layout and automatically 
+		render the new <em>dist/index.html</em>. Reload your browser to see the new content.</p>
 
-		<p>The special area between the braces at the top of the content page is called Meta data. It provides meta data
-		values that can be accessed in layout pages using the special <b>&#64;=</b> Expansive sequence. This is how you can
-		control and customize layout pages from within content pages.</p>
+		<p>The special area between the braces at the top of the content page is called Meta data. 
+		It provides meta data values that can be accessed in layout pages using the special 
+		<em>&#64;=</em> Expansive sequence. This is how you can control and customize layout pages from 
+		within content pages.</p>
 
-		<h2>Extensions</h2>
-		<p>Expansive can be extended by plugin extensions to provide content, functionality and quick-start skeletons.
-		Expansive leverages the <a href="https://embedthis/pak/">Pak</a> package manager and the 
-		online <a href="https://embedthis.com/catalog/">Pak Catalog</a> of extensions and plugins.
-		Pak is used to install, manage, upgrade and uninstall extensions and plugins. Expansive has a wide variety of
-		pre-integrated extensions to make your development go faster.</p>
+		<h2>Packages</h2>
+		<p>Expansive can be extended by installable packages to provide content, functionality and 
+		quick-start skeletons. Expansive leverages the <a href="https://embedthis/pak/">Pak</a> 
+		package manager and the online <a href="https://embedthis.com/catalog/">Pak Catalog</a> of 
+		packages. The Pak utility is used to install, manage, upgrade and uninstall packages.
+		Expansive has a wide variety of pre-integrated plugins to make your development 
+		go faster.</p>
+
 		<p>For example, to install <a href="http://jquery.com">jQuery</a> using Pak:</p>
 		<pre class="ui code segment">$ <b>pak install jquery</b>
 [Install] jquery 1.11.1</pre>
+
 		<p>Behinds the scenes, Pak has downloaded jquery into your local Pak cache (typically ~/.paks), 
-		installed jQuery into the <b>paks</b>
-		directory, and added jQuery to the list of dependencies in the package.json. When Expansive next renders the 
-		site, it will notice that jQuery asks for the "jquery.js" file to be added to the Expansive <b>scripts</b> 
-		collection via its package.json file. Expansive automatically generates a reference for "jquery.js" 
-		via the <b>renderScripts()</b> statement in the layout file. In this way, many Expansive extension paks,
-		can just be installed and they self-configure into your application.</p>
-		<p>This is what the <b>dist/index.html</b> home page now looks like:</p>
+		installed jQuery into the <em>paks</em> directory, and added jQuery to the list of dependencies 
+		in the package.json. When Expansive next renders the site, it will notice that jQuery asks for 
+		the <em>jquery.js</em> file to be added to the Expansive <em>scripts</em> collection via its 
+		package.json file. Expansive automatically generates a reference for <em>jquery.js</em>
+		via the <em>renderScripts()</em> statement in the layout file. In this way, many Expansive 
+		extension paks, can just be installed and they self-configure into your application.</p>
+
+		<p>This is what the <em>dist/index.html</em> home page now looks like:</p>
    		<pre class="ui code segment">
 &lt;html>
 &lt;head>
@@ -130,7 +155,7 @@ $ expansive init
 &lt;/html>
 </pre>
 		<p>See the <a href="https://embedthis.com/catalog/#/?kekywords=exp">Pak Catalog</a> for more Expansive 
-			extensions, including: 
+			plugins and packages, including: 
 			<a href="https://embedthis.com/catalog/#/?keywords=bootstrap">Bootstrap</a>,
 			<a href="https://embedthis.com/catalog/#/?keywords=angular">Angular</a>,
 			<a href="https://embedthis.com/catalog/#/?keywords=font-awesome">Font Awesome</a>,
@@ -138,23 +163,24 @@ $ expansive init
 			<a href="https://embedthis.com/catalog/#/?keywords=sass">Sass</a>.</p>
 
 		<h3>Plugins</h3>
-		<p>Plugins are a special class of extension that provides core processing for the Expansive pipeline. Plugins
-		provide <b>services</b> that are used to transform a file from one extension to another. For example: the
-		<b>exp-md</b> plugin provides the <b>compile-markdown-html</b> service that transforms <b>.md</b> files into
-		standard <b>.html</b> files.</p>
+		<p>Plugins are a special class of extension that provides core processing for the Expansive 
+		pipeline. Plugins provide <em>services</em> that are used to transform a file from one extension 
+		to another. For example: the <em>exp-md</em> plugin provides the <em>compile-markdown-html</em> service that transforms <em>.md</em> files into
+		standard <em>.html</em> files.</p>
 
 		<h2>Skeletons</h2>
-		<p>Expansive skeletons are integrated collections of Paks that are excellent starting points for web sites.
-			Skeletons include all required dependencies and provide an easy, one-step creation of your web site.</p>
-			<p>For example, to create a web site that will use <a href="http://sementic-ui.com">Semantic-UI</a>, a 
-			modern alternative to <a href="http://getbootstrap.com">Bootstrap</a>:</p>
+		<p>Expansive skeletons are integrated collections of Paks that are excellent starting points for 
+			web sites. Skeletons include all required dependencies and provide an easy, one-step creation 
+			of your web site.</p>
+		<p>For example, to create a web site that will use <a href="http://sementic-ui.com">Semantic-UI</a>,
+			a modern alternative to <a href="http://getbootstrap.com">Bootstrap</a>:</p>
 		<pre class="ui code segment">$ <b>pak install exp-semantic-skeleton</b>
 [Install] jquery 1.11.1
 [Install] semantic 0.50.0
 [Install] exp-semantic-skeleton 0.1.0
 </pre>
 			<p>This installs Semanic-UI, jQuery, the semantic skeleton, and a set of Expansive plugins to process
-				Less and CSS stylesheets and scripts, as show by the <b>pak list</b>
+				Less and CSS stylesheets and scripts, as show by the <em>pak list</em>
 				command.</p>
 <pre class="ui code segment">
 $ <b>pak list</b>
@@ -165,30 +191,27 @@ exp-js 0.2.0 cached
 exp-less 0.2.0 cached
 exp-css 0.2.0 cached
 </pre>
-			<p>The exp-js extension processes script files to minify and compress. The exp-less extension processes
-			Less stylesheets to compile into CSS files. The exp-css extension manages browser css prefixes and 
-			minifies CSS stylesheets. These extensions are automatically invoked for the appropriate file extensions.
-			Although, you can modify this behavior via the expansive.json configuration file.</p>
-
+			<p>The exp-js plugin processes script files to minify and compress. The exp-less plugin 
+			processes Less stylesheets to compile into CSS files. The exp-css plugin manages browser 
+			css prefixes and minifies CSS stylesheets. These plugins are automatically invoked for 
+			the appropriate file extensions. Although, you can modify this behavior via the 
+			<em>expansive.json</em> configuration file.</p>
 
 		<h2>Processing Pipeline</h2>
 		<p>So far, we have processed simply HTML pages, but Expansive can render other file types such as 
 			<a href="http://daringfireball.net/projects/markdown/syntax">Markdown</a> or 
 			<a href="https://embedthis.com/esp/">ESP</a>. To process Markdown files, first install the 
-			<a href="https://embedthis.com/catalog/#/?keywords=exp-md">Markdown</a> extension.
+			<a href="https://embedthis.com/catalog/#/?keywords=exp-md">Markdown</a> plugin.</p>
 			<pre class="ui code segment">$ pak install exp-md
 [Cached] exp-md 0.2.0</pre>
-			<p>This installs the Markdown extension into the Pak cache (~/.paks). Expansive can utilize some 
-			extensions directly from the Pak cache so that your local web directory does not get cluttered with 
-			unwanted programs.</p>
 
 			<p>Now create a sample markdown page, create a document called
-			<b>contents/greeting.html.md</b> with the following content:</p>
+			<em>contents/greeting.html.md</em> with the following content:</p>
 		 <pre class="ui code segment">
 # Greetings
 Expansive **expands** your mind.
 </pre>
-		<p>Expansive will render this and create <b>dist/greeting.html</b> which will look like:</p>
+		<p>Expansive will render this and create <em>dist/greeting.html</em> which will look like:</p>
    		<pre class="ui code segment">
 &lt;html>
 &lt;head>
@@ -201,25 +224,29 @@ Expansive **expands** your mind.
 &lt;/body>
 &lt;/html>
 </pre>
-		<p>Expansive renders the web site by processing all files in the <b>contents</b> directory. It interprets 
-			all the extensions for each file, one by one. For example: if a file were named <b>page.html.md</b> it would
-			invoke the markdown processor for the <b>.md</b> extension, then it would invokek the <b>.html</b> processor
-			before saving the final result under the <b>dist</b> directory. A file can have any number of 
-			extensions and they will be processed from the outside-inwards.</p>
+		<p>Expansive renders the web site by processing all files in the <em>contents</em> directory. 
+		It interprets the all file's extensions, one by one. For example: if a file were named 
+		<em>page.html.md</em> it would invoke the markdown processor for the <em>.md</em> extension, 
+		then it would invokek the <em>.html</em> processor before saving the final result under the 
+		<em>dist</em> directory. A file can have any number of extensions and they will be processed 
+		from the outside-inwards.</p>
 
 		<h2>Scripting</h2>
-		<p>Expansive supports powerful scripting for files with a <b>.exp</b> extension. Expansive uses the 
-			<a href="https://embedthis.com/ejscript/">Ejscript</a> Javascript language for embedded scripts that are
-			processed at "render-time". This means that static web pages can use dynamic scripting without a run-time
-			penalty when the site is live.</p>
-		<p>If a source page, layout or partial has a <b>.exp</b> extension, it will be processed by the Expansive Ejscript
-		service. Javascript code is defined between the <b>&lt;&#64; code &#64;></b> tags. For example:</p> 
+		<p>Expansive supports powerful scripting for files with a <em>.exp</em> extension. Expansive uses the 
+			<a href="https://embedthis.com/ejscript/">Ejscript</a> Javascript language for embedded scripts 
+			that are processed at "render-time". This means that static web pages can use dynamic scripting 
+			without a run-time penalty when the site is live.</p>
+
+		<p>If a source page, layout or partial has a <em>.exp</em> extension, it will be processed by 
+		the Expansive Ejscript service. Javascript code is defined between the <em>&lt;&#64; code &#64;></em>
+		tags. For example:</p> 
+
 		<pre class="ui code segment">
 &lt;p>Today's date is &lt;&#64;= Date() @&gt;
 </pre>
-			<p>The <b>&lt;&#64;=</b> sequence means run the Javascript expression and paste the result here.
-			The <b>&lt;&#64;</b> sequence (without the equals) means run the Javascript code and do not paste any result.
-			This is useful to iterate over html elements. For example:</p>
+			<p>The <em>&lt;&#64;=</em> sequence means run the Javascript expression and paste the result here.
+			The <em>&lt;&#64;</em> sequence (without the equals) means run the Javascript code and do not 
+			paste any result. This is useful to iterate over html elements. For example:</p>
 		<pre class="ui code segment">
 &lt;ul>
 &lt;@ for (i = 0; i < 10; i++) { @&gt;
@@ -228,7 +255,7 @@ Expansive **expands** your mind.
 &lt;/ul>
 </pre>
 			<p>This will emit ten item lines</p>
-			<p>The <b>&lt;&#64;=</b> sequence means run the Javascript expression and paste the result here.
+			<p>The <b>&lt;&#64;=</b> sequence means run the Javascript expression and paste the result here.</p>
 			<pre class="ui code segment">
 &lt;ul>
     &lt;li> Item 0 &lt;/li>
@@ -246,16 +273,17 @@ Expansive **expands** your mind.
 			<h3>Short Forms</h3>
 			<p>Because variable substitution is so common, Expansive provides some convenient short forms:</p>
 			<ul>
-				<li>&#64;=expression &mdash; to substitute the expression value (no spaces in expression)</li>
-				<li>&#64;={expression} &mdash; to substitute the expression value</li>
-				<li>&#64;~ &mdash; to replace with the relative URL to the application home (top)</li>
-				<li>&#64;&#64; &mdash; to get a single literal '@' in the rendered document.</li>
+				<li><em>&#64;=expression</em> &mdash; to substitute the expression value (no spaces in expression)</li>
+				<li><em>&#64;={expression}</em> &mdash; to substitute the expression value</li>
+				<li><em>&#64;~</em> &mdash; to replace with the relative URL to the application home (top)</li>
+				<li><em>&#64;&#64;</em> &mdash; to get a single literal '@' in the rendered document.</li>
 			</ul>
 
 		<h2>Configuration</h2>
-		<p>Expansive is configured by an <b>expansive.json</b> configuration file that controls the initial meta
-		data, directory names, file patterns to process, ports to serve and processing instructions. Expansive uses
-		sensible defaults so you typically do not need to configure much. Here is a typical expansive.json file:</p>
+		<p>Expansive is configured by an <em>expansive.json</em> configuration file that controls the 
+		initial meta data, directory names, file patterns to process, ports to serve and processing 
+		instructions. Expansive uses sensible defaults so you typically do not need to configure much. 
+		Here is a typical expansive.json file:</p>
 
 		<pre class="ui code segment">
 {
@@ -272,13 +300,13 @@ Expansive **expands** your mind.
  }
 }
 		</pre>
-		<p>The Meta property section defines the default public URL for the site. The <b>copy</b> property provides a 
+		<p>The Meta property section defines the default public URL for the site. The <em>copy</em> property provides a 
 		hint to Expansive that anything under the 'images' directory should be copied and not processed by the Expansive 
-		pipeline. The <b>services</b> property set provides configuration for the plugin services to control their operation 
-		and enable/disable minification and compression services.</p> 
+		pipeline. The <em>services</em> property set provides configuration for the plugin services to control their 
+		operation and enable/disable minification and compression services.</p> 
 
-		<p>If you require a scripted configuration, you can alternatively use an <b>expansive.es</b> script file instead of
-		the expansive.json. For more details, see the reference configuration section.</p>
+		<p>If you require a scripted configuration, you can alternatively use an <em>expansive.es</em> script file 
+		instead of the expansive.json. For more details, see the reference configuration section.</p>
 
 		<h2>Queries and Collections</h2>
 		<p>Expansive provides a Collections facility for managing lists of items. It uses collections to manage a list of
@@ -298,23 +326,24 @@ Expansive **expands** your mind.
   }
 }
 </pre>
-		<p>This adds the <b>css/all.css</b> stylesheet to the existing 'styles' collection. The <b>downloads</b> 
+		<p>This adds the <em>css/all.css</em> stylesheet to the existing 'styles' collection. The <em>downloads</em> 
 		collection does not exist, so it is created.</p>
 
 		<p>You can also use the APIs: addItems(collection, items), getItems(collection) and removeItems(collection, items)
 		in Expansive script code to access collection data.</p>
 
 		<h3>Queries</h3>
-		<p>Expansive provides a powerful query like API to work with files to be rendered in the <b>contents</b> directory.
-			The <b>getFiles</b> API can query the meta data of source files 
+		<p>Expansive provides a powerful query API to work with files to be rendered in the <em>contents</em> directory.
+		The <em>getFiles</em> API can query the meta data of source files. </p>
+
 		<pre class="ui code segment">&lt;@ var list = getFiles({ isPublic: true }) &#64;></pre>
-		<p>This will return a list of filenames for documents that have meta data <b>isPublic</b> set to true.</p>
+		<p>This will return a list of filenames for documents that have meta data <em>isPublic</em> set to true.</p>
 
 
 		<h2>Release Modes</h2>
-		<p>Expansive can render web sites according to a configured <b>mode</b>. This mode may be set to debug, test, 
-			release, or any string value you like. The mode is stored in the <b>mode</b> property in the package.json file and
-			is accessed by Expansive when rendering the site. For example:
+		<p>Expansive can render web sites according to a configured <em>mode</em>. This mode may be set to debug, test, 
+		release, or any string value you like. The mode is stored in the <em>mode</em> property in the package.json 
+		file and is accessed by Expansive when rendering the site. For example:</p>
 <pre class="ui code segment">
 {
   "debug": {
@@ -332,16 +361,16 @@ Expansive **expands** your mind.
 }
 </pre>
 		<p>This defines two modes: debug and release. In debug mode, minification of CSS and script files is disabled and
-			compression via the <b>exp-gzip</b> extension is disabled. In release mode, minfication is enabled for scripts
+			compression via the <em>exp-gzip</em> plugin is disabled. In release mode, minfication is enabled for scripts
 			by default and is explicitly enabled for CSS files.</p>
-		<p>The mode may be conveniently set via:
+		<p>The mode may be conveniently set via:</p>
 		<pre class="ui code segment">pak mode debug
   or
 pak mode release</pre>
 
 		<h2>Deployment</h2>
-		<p>When deploying Expansive web sites, you should configure the appropriate <b>mode</b> and run <b>expansive render</b>.
-		All the files you need for your site will be under the <b>dist</b> directory.</p>
+		<p>When deploying Expansive web sites, you should configure the appropriate <em>mode</em> and run 
+		<em>expansive render</em>. All the files you need for your site will be under the <em>dist</em> directory.</p>
 
 
 

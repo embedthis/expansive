@@ -231,8 +231,8 @@ code.inverted {
   color: #c0c0c0;
 }
 code.inverted b {
-  color: #2aa198;
-  font-weight: bold;
+  color: #4ab1b0;
+  font-weight: normal;
 }
 .centered {
   margin-left: auto;
@@ -244,7 +244,7 @@ code.inverted b {
   color: #c0c0c0;
 }
 .ui.code.inverted.code.segment b {
-  color: #2aa198;
+  color: #4ab1b0;
   font-weight: normal;
 }
 .ui.code.segment {
@@ -291,6 +291,12 @@ img.shadow {
 .masthead .version {
   color: rgba(0, 0, 0, 0.7);
 }
+.masthead .breadcrumb .section {
+  color: black;
+}
+.masthead .breadcrumb a:hover {
+  color: white !important;
+}
 .masthead .breadcrumb .active.section {
-  color: #000000;
+  color: white;
 }

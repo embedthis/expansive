@@ -1,0 +1,37 @@
+{
+    title:  'Release Modes',
+    crumbs: [ ],
+}
+   
+        <h1>Release Modes</h1>
+
+		<p>Expansive can render web sites according to a configured <em>mode</em>. This mode may be set to debug, test, 
+		release, or any string value you like. The mode is stored in the <em>mode</em> property in the package.json 
+		file and is accessed by Expansive when rendering the site. For example:</p>
+<pre class="ui code segment">
+{
+  "debug": {
+    "services": {
+      "compress": false,
+      "minify-css": false,
+      "minify-js": false,
+    }
+  },
+  "release": {
+    "services": {
+      "minify-css": true
+    }
+  }
+}
+</pre>
+		<p>This defines two modes: debug and release. In debug mode, minification of CSS and script files is disabled and
+			compression via the <em>exp-gzip</em> plugin is disabled. In release mode, minfication is enabled for scripts
+			by default and is explicitly enabled for CSS files.</p>
+		<p>The mode may be conveniently set via:</p>
+		<pre class="ui code segment">pak mode debug
+  or
+pak mode release</pre>
+
+		<h2>Deployment</h2>
+		<p>When deploying Expansive web sites, you should configure the appropriate <em>mode</em> and run 
+		<em>expansive render</em>. All the files you need for your site will be under the <em>dist</em> directory.</p>

@@ -1,6 +1,52 @@
 {
-    title:  'Assets',
-    crumbs: [ ],
+    title:  'Assets and Raw Files',
+    crumbs: [ 
+        { "User's Guide": "index.html" },
+    ],
 }
    
-        <h1>Assets</h1>
+        <h1>Assets and Raw Files</h1>
+        <p>Assets are images, fonts, binary files and other files that do not need processing by Expansive and should be 
+        copied "raw" to the <em>dist</em> output directory. Expansive provides a means of listing the assets in your 
+        application to optimize the processing of these files. You can define you can define your assets in three ways:</p>
+
+        <ul>
+        	<li>Storing the assets under the <em>files</em> directory</li>
+        	<li>Nominating another directory via the <em>control.files</em> list in the package.json configuration file.</li>
+        	<li>The <em>control.copy</em> list in <em>expansive.json</em>.</li>
+    	</ul>
+
+    	<h2>Files Directory</h2>
+    	<p>The <em>files</em> directory contents are directly copied without processing to the <em>dist</em> directory
+    	during rendering. No Expansive pipeline processing takes place for these files. You can think of the <em>files</em>
+    	directory as a directory of "raw" files that are copied without modification.</p>
+
+    	<h2>Other Files Directories</h2>
+    	<p>The <em>files</em> directory is by default defined in the <em>control.files</em> list. You can add other
+    	directories to this list via the <em>control.files</em> property in the <em>expansive.json</em> configuration file.
+    	For example:</p>
+    	<p>For example:</p>
+    	<code class="inverted">control: {
+    files: [ 'files', '/usr/guest/myfiles' ]
+}
+</code>
+
+    	<h2>Copy Property</h2>
+    	<p>To designate files under the <em>contents</em> directory as assets, you can specify them in the
+    	<em>control.copy</em> property. This property takes an array of patterns for files that should be designated 
+    	as being assets and thus bypass pipeline processing.</p>
+
+    	<p>For example:</p>
+    	<code class="inverted">control: {
+    copy: [ '**.tags', 'images' ],
+}
+</code>
+		<p>This will treat all <em>*.tags</em> files in any directory under <em>contents</em>, and all files under 
+		<em>contents/images</em> as assets. Note: the <em>**</em> wild-card means to match in any directory.</p>
+
+		<p>You can also specify negated patterns to remove a file or pattern from the list. 
+    	For example, to treat PHP files as assets and copy without processing, except for download.php.</p>
+    	<code class="inverted">control: {
+    copy: [ '**.php', '!**download.php' ],
+}
+</code>

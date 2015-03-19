@@ -21,7 +21,7 @@
          <div class="sidebar">
         <div class="ui large left vertical inverted labeled menu">
             <div class="item">
-                <a href="../index.html" class="logo">Expansive Docs</a>
+                <a href="../index.html" class="logo">Expansive<br/>Docs</a>
             </div>
             <div class="item">
                 <div class="menu">
@@ -48,32 +48,54 @@
                     <a class="item" href="../users/tour.html">Quick Tour</a>
                     <a class="item" href="../users/commands.html">Commands</a>
                     <a class="item" href="../users/skeletons.html">Skeletons</a>
-                    <a class="item" href="../users/layouts.html">Layouts</a>
-                    <a class="item" href="../users/partials.html">Partials</a>
-                    <a class="item" href="../users/render.html">Rendering</a>
-
-                    <a class="item" href="../users/stylesheets.html">Stylesheets</a>
-                    <a class="item" href="../users/assets.html">Assets</a>
-                    <a class="item" href="../users/serving.html">Serving Content</a>
                     <a class="item" href="../users/meta.html">Meta Data</a>
+                    <a class="item" href="../users/partials.html">Partials</a>
+                    <a class="item" href="../users/layouts.html">Layouts</a>
+                    <a class="item" href="../users/assets.html">Assets and Raw Files</a>
+
+                    <a class="item" href="../users/stylesheets.html">Scripts and Stylesheets</a>
                     <a class="item" href="../users/collections.html">Collections</a>
-                    <a class="item" href="../users/configuration.html">Configuration</a>
                     <a class="item" href="../users/scripting.html">Scripting</a>
+
+                    <a class="item" href="../users/rendering.html">Rendering</a>
+
+                    <!-- MOB - name? -->
+                    <a class="item" href="../users/serving.html">Serving Content</a>
+
+                    <!-- MOB - name? -->
+                    <a class="item" href="../users/packages.html">Installing Packages</a>
+                    <a class="item" href="../users/configuration.html">Configuration</a>
+
                     <!-- query engine -->
                     <a class="item" href="../users/sitemaps.html">Sitemaps</a>
                     <a class="item" href="../users/troubleshoot.html">Trouble shooting</a>
                 </div>
             </div>
             <div class="item">
-                <a href="../ref/index.html">Reference Guide</a>
+                <a href="../developers/index.html">Developer's Guide</a>
                 <div class="menu">
-                    <a class="item" href="../ref/plugins.html">Plugins</a>
-                    <a class="item" href="../ref/files.html">Files and Directories</a>
-                    <a class="item" href="../ref/meta.html">Meta Data</a>
-                    <a class="item" href="../ref/control.html">Configuration Control</a>
-                    <a class="item" href="../ref/scripting.html">Scripting</a>
-                    <a class="item" href="../ref/events.html">Events</a>
-                    <a class="item" href="../ref/pipeline.html">Processing Pipeline</a>
+                    <a class="item" href="../developers/events.html">Events</a>
+                    <a class="item" href="../developers/files.html">Files and Directories</a>
+                    <a class="item" href="../developers/control.html">Configuration Control</a>
+                    <a class="item" href="../developers/scripting.html">Scripting</a>
+                    <a class="item" href="../developers/properties.html">Meta Properties</a>
+                    <a class="item" href="../developers/plugins.html">Creating Plugins</a>
+                    <a class="item" href="../developers/plugins.html">Creating Skeletons</a>
+                    <a class="item" href="../developers/pipeline.html">Processing Pipeline</a>
+                </div>
+            </div>
+            <div class="item">
+                <a href="../plugins/project.html">Common Plugins</a>
+                <div class="menu">
+                    <a class="item" href="../plugins/skeletons.html">Skeletons</a>
+                    <a class="item" href="../plugins/exp-babel.html">exp-babel</a>
+                    <a class="item" href="../plugins/exp-css.html">exp-css</a>
+                    <a class="item" href="../plugins/exp-gzip.html">exp-gzip</a>
+                    <a class="item" href="../plugins/exp-js.html">exp-js</a>
+                    <a class="item" href="../plugins/exp-less.html">exp-less</a>
+                    <a class="item" href="../plugins/exp-md.html">exp-md</a>
+                    <a class="item" href="../plugins/exp-sass.html">exp-sass</a>
+                    <a class="item" href="../plugins/exp-shell.html">exp-shell</a>
                 </div>
             </div>
             <div class="item">
@@ -126,6 +148,11 @@
         <div class="ui breadcrumb">
             <a class="section" href="../">Home</a>
             
+            <div class="divider">/</div>
+            <a class="section" href="index.html">
+                User's Guide
+            </a>
+            
             
             <div class="divider">/</div>
             <a class="active section" href="collections.html">Expansive Collections</a>
@@ -141,6 +168,38 @@
 
    
         <h1>Collections</h1>
+		<p>Expansive provides a Collections facility for managing lists of items that can be statically defined in 
+			<em>expansive.json</em> files or can be manipulated via scripting.</p>
+
+		<h3>Static Collections</h3>
+		<p>You can define collections in <em>expansive.json</em> via the <em>control.collections</em> property. For
+		example:</p>
+		<code class="inverted">{
+  control: {
+    collections: {
+      downloads: [
+        'public/*.gz',
+      ]
+    }
+  }
+}
+</code>
+		<p>This adds <em>public/*.gz</em> to the <em>downloads</em> collection.</p>
+
+		<h3>Scripted Collections</h3>
+		<p>You can use the APIs from embedded Javascript.</p>
+		<ul>
+			<li><em>addItems(collection, items)</em></li>
+			<li><em>getItems(collection)</em></li>
+			<li><em>removeItems(collection, items)</em></li>
+		</ul>
+
+		<h3>Queries</h3>
+		<p>Expansive provides a powerful query API to manage files. The <em>getFiles</em> API can query the meta data of 
+		source files and return a list of matching files. </p>
+
+		<code class="inverted">&lt;@ var list = getFiles({ isPublic: true }) &#64;></code>
+		<p>This will return a list of filenames for documents that have meta data <em>isPublic</em> set to true.</p>
 
     </div>
     <div class="terms ui basic center aligned segment">

@@ -1,6 +1,143 @@
 {
     title:  'Expansive Commands',
-    crumbs: [ ],
+    crumbs: [
+        { "User's Guide": "index.html" },
+    ]
 }
    
         <h1>Expansive Commands</h1>
+        <p>The Expansive utility <em>expansive</em> is your command line interface to Expansive. It is typically installed as
+        <em>/usr/local/bin/expansive</em> on Linux and Mac and under <em>Program Files/Embedthis Expansive</em> 
+        on windows.</p>
+
+        <p>Expansive supports the following commands.</p>
+        <ul>
+        	<li><a href="#init">expansive init</a></li>
+        	<li><a href="#render">expansive render</a></li>
+        	<li><a href="#files">expansive files...</a></li>
+        	<li><a href="#watch">expansive watch</a></li>
+        	<li><a href="#serve">expansive serve</a></li>
+        	<li><a href="#edit">expansive edit</a></li>
+        	<li><a href="#mode">expansive mode</a></li>
+        	<li><a href="#clean">expansive clean</a></li>
+        </ul>
+
+        <a name="init"></a>
+        <h2>Initialization</h2>
+        <p>Before using Expansive, you must initialize the directory that will contain your web site or web application.
+        Expansive is configured by an <em>expansive.json</em> configuration file. This defines top level configuration for the 
+        site and controls how Expansive renders the site. An expansive.json file must be present for Expansive to run.</p>
+        The <em>expansive init</em> command will create an <em>expansive.json</em> file as well as other required files
+        and directories.</p>
+        <code class="inverted">$ expansive init</code>
+        <p>This will create the following files and directories:</p>
+		<table class="ui celled table">
+			<thead>
+				<tr><th>Name</th><th>Description</th></tr>
+			</thead>
+			<tbody>
+				<tr><td>contents</td><td>Source content for the web site including web pages, images and assets.</td></tr>
+				<tr><td>dist</td><td>Distribution directory where the final public documents of the web 
+	                site will be placed.</td></tr>
+				<tr><td>expansive.json</td><td>Expansive configuration file.</td></tr>
+				<tr><td>layouts</td><td>Directory for master page layouts.</td></tr>
+				<tr><td>package.json</td><td>Web site package description file.</td></tr>
+				<tr><td>partials</td><td>Directory for partial pages.</td></tr>
+			</tbody>
+		</table>
+
+        <a name="install"></a>
+        <h2>Install Packages</h2>
+        <p>Expansive relies on the <a href="http://embedthis.com/pak/">Pak</a> package manager to install, upgrade and
+        manage extension packages. Expansive has a wide selection of packages that extend the product's core functionality.
+        To install a package, use <em>pak install</em>. For example, to install the <em>exp-js</em> package to process
+        and minify Javascript files.</p>
+        <code class="inverted">$ pak install exp-js</code>
+
+        <p>Once one or more packages have been installed, the following directories will be created by <em>Pak</em>.</p>
+		<table class="ui celled table">
+			<thead>
+				<tr><th>Name</th><th>Description</th></tr>
+			</thead>
+			<tbody>
+				<tr><td>lib</td><td>Installed package script code and assets.</td></tr>
+				<tr><td>paks</td><td>Installed packages &mdash; full contents.</td></tr>
+			</tbody>
+		</table>
+
+        <a name="render"></a>
+        <h2>Render Site</h2>
+        <p>After you have created some web pages under the <em>contents</em> directory, you can render the site.
+        Rendering is the process of generating your site from content by combining layout pages, partial pages, 
+        running scripts and other processing before saving the site under the <em>dist</em> (distribution) directory.</p>
+        <code class="inverted">$ expansive render</code>
+        <p>Once rendered, you can copy the <em>dist</em> directory to your web server for hosting. </p>
+
+        <a name="files"></a>
+        <h2>Render a Files</h2>
+        <code class="inverted">$ expansive FILE</code>
+        <p>If you wish to render just a single file or set of files, you can specify the leading portion of the 
+        desired filename under <em>contents</em>. For example:</p>
+        <code>$ expansive contents/index.html</code>
+
+        <a name="watch"></a>
+        <h2>Watch for Changes</h2>
+        <p>Expansive can monitor the file system for changes and automatically re-render any modified content. The
+        <em>expansive watch</em> command will nap for a short period (1 second by default) and then check if any 
+        files have been modified. If a single page is modified, it will be rendered. If a layout or partial is modified, 
+        the entire site will be rendered. You can change the default nap period via the <em>control.watch</em> property
+        in the <em>expansive.json</em> configuration file.</p>
+        <code class="inverted">$ expansive watch</code>
+
+        <a name="serve"></a>
+        <h2>Serve Browser Requests</h2>
+        <p>For development, or light web serving, you can use the built-in web server in the <em>expansive</em> utility.
+        Running <em>expansive serve</em> or running the <em>expansive</em> command without any arguments will listen 
+        by default on <em>localhost:4000</em>
+        for browser requests. Browse to <em>http://localhost:4000</em> in your browser. This command will also watch
+        for changes to any web pages and will automatically re-render content as required.</p>
+        <code class="inverted">$ expansive</code>
+
+        <a name="clean"></a>
+        <h2>Clean Distribution Directory</h2>
+        <p>To clean the <em>dist</em> directory of rendered content, use <em>expansive clean</em>.</p>
+        <code class="inverted">$ expansive clean</code>
+
+        <a name="edit"></a>
+        <h2>Edit Configuration</h2>
+        <p>To edit configuration properties in the <em>expansive.json</em> file, use <em>expansive edit key=value</em>.
+        Omit the <em>=value</em> to display the current property value.</p>
+        <code class="inverted">$ expansive edit control.listen=127.0.0.1:5000</code>
+
+        <a name="mode"></a>
+        <h2>Get and Set Executation Mode</h2>
+        <p>To get the current execution mode, use <em>expansive mode</em>. To set the mode, use <em>expansive mode MODE</em>.
+        For example:</p>
+
+        <code class="inverted">$ expansive mode
+release
+
+$ expansive mode debug</code>
+
+        <a name="options"></a>
+        <h2>Options</h2>
+        <p>The <em>expansive</em> command can accept the following command line arguments.</p>
+        <table class="ui celled table">
+        <thead>
+        	<tr><th>Option</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+        	<tr><td>--benchmark</td><td>Show per-plugin statistics</td></tr>
+        	<tr><td>--chdir directory</td><td>Change to directory before running</td></tr>
+        	<tr><td>--keep</td><td>Keep intermediate pipeline results</td></tr>
+        	<tr><td>--listen IP:PORT</td><td>Listen endpoint to serve on</td></tr>
+        	<tr><td>--log path:level</td><td>Log messages to log file at verbosity level (0-5)</td></tr>
+        	<tr><td>--noclean</td><td>Do not clean the <em>dist</em> directory before rendering</td></tr>
+        	<tr><td>--norender</td><td>Do not do an initial render before watching</td></tr>
+        	<tr><td>--nowatch</td><td>Do not watch for changes, just serve</td></tr>
+        	<tr><td>--quiet</td><td>Quiet mode</td></tr>
+        	<tr><td>--trace path:level</td>Trace http requests to file at level (0-5)<td></td></tr>
+        	<tr><td>--verbose</td><td>Verbose mode</td></tr>
+        	<tr><td>--version</td><td>Display version information</td></tr>
+        </tbody>
+        </table>

@@ -1,6 +1,49 @@
 {
     title:  'Expansive Web Server',
-    crumbs: [ ],
+    crumbs: [ 
+        { "User's Guide": "index.html" },
+    ],
 }
    
         <h1>Serving Pages</h1>
+        <p>Expansive includes a built-in web server based on the outstanding
+        <a href="http://embedthis.com/appweb/">Appweb</a> embedded web server. This is a fast, secure, 
+        embedded web server that is ideal for testing your site before production deployment.</p>
+
+        <p>To serve your web site, run <em>expansive serve</em>.</p>
+        <code class="inverted">$ <b>expansive serve</b>
+    [Listen] 127.0.0.1:4000
+    [Render] Initial render ...
+  [Watching] for changes every 1 sec ...
+</code>
+        <p>When serving, expansive will first render the site and then serve the requests from the rendered pages
+        under the <em>dist</em> directory. It will then listen on port 4000 by default, for browser requests. So open your 
+        browser and go to <em>http://localhost:4000</em> to see your site.</p>
+
+        <p>You can also omit the <em>serve</em> command and simply invoke <em>expansive</em> which is a convenient 
+            short-form.</p>
+        <code class="inverted">$ expansive</code>
+
+        <h2>Listening Address</h2>
+        <p>The listening address can be set on the command line via the --listen switch.</p>
+        <code class="inverted">$ expansive --listen 5000</code>
+        <p>This will listen on port 5000 on all interfaces. Use <em>--listen 127.0.0.1:5000</em> to listen on local
+        interfaces only.</p>
+        <p>You can also add a <em>control.listen</em> property to the <em>package.json</em> file.</p>
+        <code class="inverted">{
+    control: {
+        listen: '127.0.0.1:5000'
+    }
+}
+</code>
+
+        <h3>Watching for Changes</h3>
+        <p>If content changes, expansive will transparently render the site as required. If a single page is modified,
+        that page alone will be re-rendered. If a layout page or partial page is modified, the entire site will be 
+        rendered.</p>
+        <p>If you wish to disable watching for modified content while serving, run with the <em>--nowatch</em> option.</p>
+        <code class="inverted">$ expansive --nowatch</code>
+
+        <p>If your site is already rendered before serving via a prior <em>expansive render</em>, you can disable 
+        the initial render for a faster startup via <em>expansive --norender</em>.</p>
+        <code class="inverted">$ expansive --norender</code>

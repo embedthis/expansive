@@ -1,6 +1,6 @@
 .TH EXP "1" "March 2014" "exp" "User Commands"
 .SH NAME
-exp \- Embedthis Expansive -- Fast, Flexible Static Web Site Generator
+expansive \- Embedthis Expansive -- Fast, Flexible Static Web Site Generator
 .SH SYNOPSIS
 .B exp
     \fB--chdir directory\fR
@@ -18,15 +18,13 @@ exp \- Embedthis Expansive -- Fast, Flexible Static Web Site Generator
 .SH ""
 .B Commands:
     clean
-    filters ...
+    edit key[=value]
     init
-    install plugins
-    list 
     mode [debug|release|...]
     render
-    uninstall plugins
-    upgrade plugins
+    serve
     watch
+    FILES ...
     <CR>
 .RE
 .SH DESCRIPTION
@@ -35,10 +33,14 @@ It quickly creates HTML pages from layouts, partials and content pages.
 Expansive brings dynamic content to static web sites.
 
 .PP
+Expansive includes flexible tooling so you can build your site in development mode and 
+painlessly switch to production mode for release. It will minify, compress and bundle your site for easy deployment.
+
+.PP
 .SH WHY EXPANSIVE?
-There are many web site site generators, why another one? Existing site generators are slow, very slow, 
-often painfully slow.  When creating or managing a web site, you need tools that do not delay the creative 
-design process. They need to be as fast as possible. Expansive is designed to be fast, without sacrificing features.
+There are many web site site generators, why another one? Most existing site generators are slow, often painfully 
+slow.  When creating or managing a web site, you need tools that do not delay the creative design process. 
+They need to be as fast as possible. Expansive is designed to be fast, without sacrificing features.
 
 .SH FEATURES
 Expansive generates static web sites from pages, layouts, partials and scripts. It
@@ -52,6 +54,7 @@ has the following major features:
     . Watches for changes and automatically render site
     . Scripting support via change events
     . Automatic sitemap creation
+    . Complete tooling for minifying, compression and bundling your site
     . Content transition pipeline
     . Open plugin architecture
 
@@ -68,33 +71,36 @@ While Expansive has a strong feature set, there are some characteristics that ma
 .PP
 To prepare a directory for expansive and create an expansive.json configuration file:
 
-    exp init
+    expansive init
 
-To install new plugins to transform content. The exp-less compiles *.less into css. 
+To install new plugins to transform content, use the Pak command. The exp-less compiles *.less into css. 
 
-    exp install exp-less
+    pak install exp-less
 
 To render a site from 'contents' into 'dist'. This processes web pages under the 'contents'
 directory into the 'dist' directory for production. 
 
-    exp render
+    expansive render
 
 To serve content and watch for changes
 
-    exp
+    expansive serve
+
+or
+    expansive
 
 To watch for changes but not serve
 
-    exp watch
+    expansive watch
 
 To render a matching set of files
 
-    exp contents/index.html
-    exp contents/manual
+    expansive contents/index.html
+    expansive contents/manual
 
 To clean the rendered site under 'dist'
 
-    exp clean
+    expansive clean
 
 .PP
 .SH DIRECTORIES
@@ -109,7 +115,7 @@ Expansive uses the following directories:
 These directories can be modified via meta 'directories' collection in the package.json file.
 
 .SH PROCESSING
-Expansive operates by processing web pages from the 'contents' and 'lib' directorcwiesy. It uses layout pages from 
+Expansive operates by processing web pages from the 'contents' and 'lib' directories. It uses layout pages from 
 the 'layouts' directory and includes partial pages from the 'partials' directory. 
 Raw files may be copied from the 'files' directory. Documents are rendered to the 'dist' output directory.
 
@@ -119,7 +125,7 @@ controls how Expansive renders the site. An expansive.json file must be present 
 .PP
 To prepare a new site to use Expansive, run:
 
-    exp init
+    expansive init
 
 .PP
 This creates an expansive.json and package.json file. The expansive.json file controls Expansive execution. The package.json
@@ -179,7 +185,7 @@ Expansive uses the '.exp' extension to specify the document has embedded Javascr
 
 This means the file has Embedded Javascript in a Markdown file that will be compiled to HTML. Expansive will process
 this by first running the embedded Javascript, then piping the result through the Markdown filter and finally saving the
-result as 'index.html' after applying the appropriate layout.
+result as 'index.html'.
 .PP
 The transformation pipeline for specific extensions can be overridden via the 'expansive.transforms' meta property.
 
@@ -244,8 +250,9 @@ web site so that each pages does not need to replicate this content. Document pa
 use, and the layout page then wraps the content page to create a composite page. 
 The '<@ content @>' tag in the layout is replaced with the web page content after separating the page meta data.
 .PP
-There can be multiple layout pages and the default layout is called 'default.html.exp'. Layout pages may nest, 
-i.e. may use other layout pages.  Layout pages can use any desired transformation file extension.
+There can be multiple layout pages and the default layout is called 'default.html.exp'. This may be modified by setting
+the 'layout' meta property to an alternate layout name. Set to '' to disable layout processing.
+Layout pages may nest, i.e. may use other layout pages.  Layout pages can use any desired transformation file extension.
 
 .RS 5
  <!DOCTYPE html>
@@ -374,6 +381,9 @@ under the directory are copied. The files are relative to the 'contents' directo
 documents
 Array of patterns to process. The patterns may include "*" or "**". If a directory is specifed, all files
 under the directory are processed. The files are relative to the 'contents' directory.
+.TP 12
+files
+Array of directories containing raw content to copy to 'dist' without processing. By default, contains 'files'.
 .TP 12
 listen
 Address on which to listen for HTTP requests. May be just a port number.
@@ -518,8 +528,10 @@ watch
 Watch for changes to 'contents', 'layouts' and 'partials' and render the modified files. Changes to 'layouts' or 
 'partials' will cause the entire site to be rendered.
 .TP
-<CR>
-Running exp without any arguments will cause run the embedded web server to serve the site. By default Expansive will listen on port 4000. This can be modified via the 'listen' property in the meta collection.
+serve
+Serve the web site. 
+By default Expansive will listen on port 4000. This can be modified via the 'listen' property in the meta collection.
+Running expansive without any arguments is the same as "expansive serve".
 .TP
 patterns ...
 Providing a list of patterns to filter the set of documents to render.  Expansive will render only the documents that
@@ -570,7 +582,7 @@ Run in verbose mode. Emit more activity trace.
 
 .TP 10
 \fB\--versions URI\fR
-Show exp version information.
+Show expansive version information.
 
 .TP 10
 \fB\--DIGIT
@@ -581,7 +593,7 @@ This option is the same as "--log stderr:DIGIT --trace stderr:DIGIT"
 .SH "REPORTING BUGS"
 Report bugs to dev@embedthis.com.
 .SH COPYRIGHT
-Copyright \(co 2004-2014 Embedthis Software. MakeMe, Pak and Ejscript are a trademarks of Embedthis Software.
+Copyright \(co Embedthis Software. MakeMe, Pak and Ejscript are a trademarks of Embedthis Software.
 .br
 .SH "SEE ALSO"
 ejs, esp, me, pak, http://embedthis.com/expansive/

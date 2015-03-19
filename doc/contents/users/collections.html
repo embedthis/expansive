@@ -1,6 +1,41 @@
 {
     title:  'Expansive Collections',
-    crumbs: [ ],
+    crumbs: [ 
+        { "User's Guide": "index.html" },
+    ],
+
 }
    
         <h1>Collections</h1>
+		<p>Expansive provides a Collections facility for managing lists of items that can be statically defined in 
+			<em>expansive.json</em> files or can be manipulated via scripting.</p>
+
+		<h3>Static Collections</h3>
+		<p>You can define collections in <em>expansive.json</em> via the <em>control.collections</em> property. For
+		example:</p>
+		<code class="inverted">{
+  control: {
+    collections: {
+      downloads: [
+        'public/*.gz',
+      ]
+    }
+  }
+}
+</code>
+		<p>This adds <em>public/*.gz</em> to the <em>downloads</em> collection.</p>
+
+		<h3>Scripted Collections</h3>
+		<p>You can use the APIs from embedded Javascript.</p>
+		<ul>
+			<li><em>addItems(collection, items)</em></li>
+			<li><em>getItems(collection)</em></li>
+			<li><em>removeItems(collection, items)</em></li>
+		</ul>
+
+		<h3>Queries</h3>
+		<p>Expansive provides a powerful query API to manage files. The <em>getFiles</em> API can query the meta data of 
+		source files and return a list of matching files. </p>
+
+		<code class="inverted">&lt;@ var list = getFiles({ isPublic: true }) &#64;></code>
+		<p>This will return a list of filenames for documents that have meta data <em>isPublic</em> set to true.</p>

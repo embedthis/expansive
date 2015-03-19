@@ -1,6 +1,110 @@
 {
-    title:  'Expansive Meta Data',
-    crumbs: [ ],
+    title:  'Meta Data',
+    crumbs: [ 
+        { "User's Guide": "index.html" },
+    ],
 }
    
-        <h1>Meta Data</h1>
+      <h1>Meta Data</h1>
+
+      <p>Web pages have a special area at the top of the page for Meta data. Meta data defines properties for the 
+      page that can be passed to layout pages, partial pages and scripts to modify their behavior.</p>
+
+      <h2>Defining Meta Data</h2>
+      <p>Meta data is defined in several sources</p>
+      <ul>
+        <li>Top level expansive.json</li>
+        <li>Content directory level expansive.json files</li>
+        <li>Content pages</li>
+        <li>Layout pages</li>
+        <li>Partial pages</li>
+      </ul>
+      <p>When Expansive renders a file, it aggregates the meta data for the page by blending the meta data from these 
+      sources. These sources are blended in this order with the latter sources overwriting the meta data from prior 
+      sources. Note: meta data flows one way, top down. There is no way to globally set meta data from a subdirectory 
+      <em>expansive.json</em> file or from a content page.</p>
+
+      <h3>Top Level Meta Data</h3>
+      <p>The top level expansive.json file defines the global meta data inherited by all pages. This is where you should
+      define the web sites home url.</p>
+
+      <h3>Directory Level Meta Data</h3>
+      <p>To help partition an application, meta data may be defined by per-directory <em>expansive.json</em> files. 
+      These files define meta data that applies to all pages in that directory or in subdirectories below. </p>
+
+      <h3>Content Page Meta Data</h3>
+      <p>Content pages define meta data inline at the top of the page. This meta data applies only to the page itself
+      and is also passed to layout and partial pages as they are processed for the content page.</p>  
+
+      <h2>Meta Data Files</h2>
+      <p>To define meta data in <em>expansive.json</em> files, set the required property values in the <em>meta</em>
+      property collection. For example:</p>
+
+      <code class="inverted">{
+    meta: {
+        property: 'value'
+    }
+}
+</code>
+      <h2>Content Meta Data</h2>
+      <p>To define meta data in a content, partial or layout page, set the required property values in the meta data
+      section at the top of the page. For example, consider the page <em>contents/index.html</em>.</p>
+
+      <code class="inverted">{
+    <b>color: 'red'</b>,
+    title: 'Hello World'
+}    
+
+&lt;p>Hello World&lt;/p>
+</code>
+
+      <p>This Meta data defines two properties <em>meta.color</em> and <em>meta.title</em> for this page. </p>
+
+      <h3>JSON Syntax</h3>
+      <p>Expansive supports a relaxed JSON syntax where property keys do not have to be quoted, and you can use a comma
+      after the last property in an array or hash. Further, multiline strings
+      are supported and may be delimited by single, double or back-tick quotes.</p>
+
+</code>
+      <p>The Meta section may contain any JSON object, so multiple property levels are permitted.</p>
+      <code class="inverted">{
+    user: {
+        name: 'George'
+        age: 42,
+        address: "1717 Cherry Lane
+          London
+          UK"
+    }
+}    
+</code>
+
+      <h2>Accessing Meta Data</h2>
+      <p>Meta data may be accessed in pages or scripts via the <em>meta</em> global script property.</p>
+
+      <code class="inverted">&lt;p>Favorite Color is: &lt;&#64;= meta.color &#64;>&lt;/p></code>
+
+      <p>For debugging, you can <em>print</em> properties or <em>dump</em> all the meta data to the expansive console.</p>
+      <code class="inverted">&lt;&#64; 
+    print("COLOR", meta.color) 
+    dump("META", meta)
+&#64;>
+</code>
+
+        <h3>Layouts</h3>
+        <p>A content page can request a different layout by adding a <em>layout</em>
+        property to the meta data section of the content page. For example:</p>
+        <code class="inverted">{
+    layout: 'product-layout'
+    title:  'Hello World'
+}    
+&lt;h1>Hello World with Layouts&lt;/h1>
+</code>
+        <p>This will select the <em>product-layout</em> in the <em>layouts</em> directory. Set the <em>layout</em>
+        property to the empty string <em>""</em> to disable layout processing. Expansive uses the presence of
+        a meta data section to enable layout processing. If you omit meta data in your page, you will disable 
+        layout processing.</p>
+
+      <h3>Partial Pages</h3>
+      <p>You can pass one-off meta data parameters to a partial page without changing the general meta for the page. 
+      Do this via the <em>partial</em>() function call. For example:</p>
+      <code class="inverted">&lt;@ partial('hero', { color: 'rec' }) @></code>

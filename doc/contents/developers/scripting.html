@@ -1,0 +1,51 @@
+{
+    title:  "Scripting",
+    crumbs: [ ],
+}
+            <h1>Scripting</h1>
+			<p>Expansive supports powerful scripting for files with a <em>.exp</em> extension. Expansive uses the 
+				<a href="https://embedthis.com/ejscript/">Ejscript</a> Javascript language for embedded scripts 
+				that are processed at "render-time". This means that static web pages can use dynamic scripting 
+				without a run-time penalty when the site is live.</p>
+
+			<p>If a source page, layout or partial has a <em>.exp</em> extension, it will be processed by 
+			the Expansive Ejscript service. Javascript code is defined between the <em>&lt;&#64; code &#64;></em>
+			tags. For example:</p> 
+
+			<pre class="ui code segment">
+	&lt;p>Today's date is &lt;&#64;= Date() @&gt;
+	</pre>
+				<p>The <em>&lt;&#64;=</em> sequence means run the Javascript expression and paste the result here.
+				The <em>&lt;&#64;</em> sequence (without the equals) means run the Javascript code and do not 
+				paste any result. This is useful to iterate over html elements. For example:</p>
+			<pre class="ui code segment">
+	&lt;ul>
+	&lt;@ for (i = 0; i < 10; i++) { @&gt;
+		&lt;li> Item &lt;&#64;= i @&gt; &lt;/li>
+	&lt;@ } @&gt;
+	&lt;/ul>
+	</pre>
+				<p>This will emit ten item lines</p>
+				<p>The <b>&lt;&#64;=</b> sequence means run the Javascript expression and paste the result here.</p>
+				<pre class="ui code segment">
+	&lt;ul>
+	    &lt;li> Item 0 &lt;/li>
+	    &lt;li> Item 1 &lt;/li>
+	    &lt;li> Item 2 &lt;/li>
+	    &lt;li> Item 3 &lt;/li>
+	    &lt;li> Item 4 &lt;/li>
+	    &lt;li> Item 5 &lt;/li>
+	    &lt;li> Item 6 &lt;/li>
+	    &lt;li> Item 7 &lt;/li>
+	    &lt;li> Item 8 &lt;/li>
+	    &lt;li> Item 9 &lt;/li>
+	&lt;/ul>
+	</pre>
+				<h3>Short Forms</h3>
+				<p>Because variable substitution is so common, Expansive provides some convenient short forms:</p>
+				<ul>
+					<li><em>&#64;=expression</em> &mdash; to substitute the expression value (no spaces in expression)</li>
+					<li><em>&#64;={expression}</em> &mdash; to substitute the expression value</li>
+					<li><em>&#64;~</em> &mdash; to replace with the relative URL to the application home (top)</li>
+					<li><em>&#64;&#64;</em> &mdash; to get a single literal '@' in the rendered document.</li>
+				</ul>

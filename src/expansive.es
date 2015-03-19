@@ -18,13 +18,13 @@ const EXTENSIONS = ['js', 'css']
 const PACKAGE = Path('package.json')
 
 const USAGE = 'Expansive Web Site Generator
-  Usage: exp [options] [filters ...]
+  Usage: exp [options] [FILES ...]
     --benchmark          # Show per-plugin stats
     --chdir dir          # Change to directory before running
     --keep               # Keep intermediate transform results
     --listen IP:PORT     # Endpoint to listen on
     --log path:level     # Trace to logfile
-    --noclean            # Do not clean "documents" before render
+    --noclean            # Do not clean "dist" directory before render
     --norender           # Do not do an initial render before watching
     --nowatch            # Do not watch for changes, just serve
     --quiet              # Quiet mode
@@ -32,14 +32,15 @@ const USAGE = 'Expansive Web Site Generator
     --verbose            # Verbose mode
     --version            # Output version information
   Commands :
-    clean                # Clean "documents" output directory
+    clean                # Clean "dist" output directory
     edit key[=value]     # Get and set expansive.json values
-    filters, ...         # Render only matching files
     init                 # Create expansive.json
     mode [debug|release] # Select property mode set
     render               # Render entire site
+    serve                # Serve and watch for changes
     watch                # Watch for changes and render as required
-    <CR>                 # Serve and watches for changes
+    FILES, ...           # Render only matching files
+    <CR>                 # Same as "expansive serve"
 '
 
 public class Expansive {
@@ -494,7 +495,7 @@ public class Expansive {
             break
 
         default:
-            if (task) {
+            if (task && task != 'serve') {
                 /* Process only specified files. If not, process all */
                 filters = [task] + rest
                 renderAll = false
@@ -1335,7 +1336,7 @@ public class Expansive {
         let path = CONFIG.joinExt('json')
         trace('Create', path)
         path.write(App.exeDir.join('sample.json').readString())
-        for each (p in [ 'documents', 'layouts', 'partials', 'source' ]) {
+        for each (p in [ 'contents', 'dist', 'layouts', 'partials' ]) {
             Path(p).makeDir()
         }
         if (!PACKAGE.exists) {

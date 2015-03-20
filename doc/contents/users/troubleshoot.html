@@ -6,3 +6,42 @@
 }
    
         <h1>Troubleshooting</h1>
+        <p>Expansive has some debugging features to help you determine why the program may not be rendering your
+        site the way you expect.</p>
+
+        <h2>Verbose Mode</h2>
+        <p>Expansive verbose mode provide detailed trace as it loads configuration, plugins and renders the site.
+        This can help pin-point whe Expansive thinks it is doing.</p>
+
+        <code class="inverted">$ expansive -v
+   [Loading] expansive.json
+      [Info] Using mode: debug
+    [Plugin] exp-internal provides "exp" for exp -> *
+      [Load] Plugin paks/animate.css
+      [Load] Plugin paks/exp-analytics
+    [Plugin] exp-analytics provides "analytics" for html -> html
+      [Load] Plugin paks/exp-css
+        ....
+ [Transform] layouts/default.html.exp (exp -> *)
+   [Service] exp from "exp-internal"
+ [Transform] partials/head.html.exp (exp -> *)
+   [Service] exp from "exp-internal"
+ [Transform] partials/head.html.exp (html -> html)
+   [Service] analytics from "exp-analytics"
+        ....
+</code>
+        
+        <p>Conversely to verbose mode, there is a quite mode.</p>
+        <code class="inverted">$ expansive -q</code>
+
+        <h2>Debug Mode</h2>
+        <p>Debug mode will dump some internal Expansive data structures on startup and will also display
+        symbolic stack backtraces for internal and other scripting errors. These data structures include:</p>
+        <ul>
+            <li>Meta &mdash; Top level meta data properties</li>
+            <li>Control &mdash; Aggregated Expansive control properties</li>
+            <li>Transforms &mdash; File type transformation rules</li>
+            <li>Services &mdash; The configured services and service configuration</li>
+            <li>Collections &mdash; The configured collection lists</li>
+        </ul>
+        <code class="inverted">$ expansive -d</code>

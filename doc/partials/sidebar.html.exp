@@ -49,40 +49,15 @@
 
                     <!-- query engine -->
                     <a class="item" href="@~users/sitemaps.html">Sitemaps</a>
-                    <a class="item" href="@~users/troubleshoot.html">Trouble shooting</a>
+                    <a class="item" href="@~users/troubleshoot.html">Troubleshooting</a>
                 </div>
             </div>
             <div class="item">
                 <a href="@~developers/index.html">Developer's Guide</a>
                 <div class="menu">
-                    <a class="item" href="@~developers/events.html">Events</a>
                     <a class="item" href="@~developers/plugins.html">Creating Plugins</a>
                     <a class="item" href="@~developers/skeletons.html">Creating Skeletons</a>
-                    <a class="item" href="@~developers/pipeline.html">Processing Pipeline</a>
                     <a class="item" href="@~man/expansive.txt">Manual Page</a>
-                </div>
-            </div>
-            <div class="item">
-                <a href="@~plugins/project.html">Popular Skeletons</a>
-                <div class="menu">
-                    <a class="item" href="@~plugins/exp-html-skeleton.html">exp-html-skeleton</a>
-                    <a class="item" href="@~plugins/exp-semantic-skeleton.html">exp-semantic-skeleton</a>
-                    <a class="item" href="@~plugins/esp-html-skeleton.html">esp-html-skeleton</a>
-                    <a class="item" href="@~plugins/esp-angular-skeleton.html">esp-angular-skeleton</a>
-                </div>
-            </div>
-            <div class="item">
-                <a href="@~plugins/project.html">Popular Plugins</a>
-                <div class="menu">
-                    <a class="item" href="@~plugins/exp-html-skeleton.html">exp-html-skeleton</a>
-                    <a class="item" href="@~plugins/exp-babel.html">exp-babel</a>
-                    <a class="item" href="@~plugins/exp-css.html">exp-css</a>
-                    <a class="item" href="@~plugins/exp-gzip.html">exp-gzip</a>
-                    <a class="item" href="@~plugins/exp-js.html">exp-js</a>
-                    <a class="item" href="@~plugins/exp-less.html">exp-less</a>
-                    <a class="item" href="@~plugins/exp-md.html">exp-md</a>
-                    <a class="item" href="@~plugins/exp-sass.html">exp-sass</a>
-                    <a class="item" href="@~plugins/exp-shell.html">exp-shell</a>
                 </div>
             </div>
             <div class="item">

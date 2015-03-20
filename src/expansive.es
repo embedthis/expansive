@@ -391,7 +391,7 @@ public class Expansive {
     }
 
     function loadPlugins() {
-        createService({ plugin: 'exp-internal', name: 'exp', mappings: { exp: '*' }, render: transformExp } )
+        createService({ plugin: 'compile-exp', name: 'exp', mappings: { exp: '*' }, render: transformExp } )
         let stat = stats.services.exp
         stat.parse = stat.eval = stat.run = 0
 
@@ -561,7 +561,7 @@ public class Expansive {
             Cmd.kill(pid)
             pid = null
         }
-        command = (services.serve) ? services.serve.command : null
+        let command = control.server
         if (command) {
             let cmd = new Cmd
             cmd.on('readable', function(event, cmd) {
@@ -581,6 +581,18 @@ public class Expansive {
             trace('Run', command, '(' + pid + ')')
         }
         lastRestart = new Date
+    }
+
+    function restartServer() {
+        if (control.server) {
+            if (lastRestart.elapsed < 5000) {
+                trace('Info', 'Server lasted less than 5 seconds, pausing 5 seconds before restart')
+                setTimeout(function() { externalServer() }, 5000)
+            } else {
+                trace('Info', 'Restart server')
+                externalServer()
+            }
+        }
     }
 
     function internalServer() {
@@ -605,20 +617,8 @@ public class Expansive {
         }
     }
 
-    function restartServer() {
-        if (services.serve && services.serve.command) {
-            if (lastRestart.elapsed < 5000) {
-                trace('Info', 'Server lasted less than 5 seconds, pausing 5 seconds before restart')
-                setTimeout(function() { externalServer() }, 5000)
-            } else {
-                trace('Info', 'Restart server')
-                externalServer()
-            }
-        }
-    }
-
     function serve(meta) {
-        if (services.serve && services.serve.command) {
+        if (control.server) {
             externalServer()
         } else {
             internalServer()
@@ -1438,10 +1438,9 @@ public class Expansive {
         collections[collection] = ((collections[collection] || []) + items).unique()
     }
 
-    public function getFiles(query: Object, operation = 'and', options = {files: "**"}) {
+    public function getFiles(patterns: Object, query: Object) {
         let list = []
-        for each (file in directories.contents.files(pattern)) {
-            if (file.isDir) continue
+        for each (file in directories.contents.files(patterns, {directories: false})) {
             let meta = getFileMeta(file)
             let match = true
             for (let [key, value] in query) {

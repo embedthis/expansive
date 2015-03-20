@@ -227,11 +227,11 @@ code {
   color: #333;
 }
 code.inverted {
-  background: #002b36;
+  background: #101008;
   color: #c0c0c0;
 }
 code.inverted b {
-  color: #4ab1b0;
+  color: #d8d840;
   font-weight: normal;
 }
 .centered {
@@ -240,11 +240,11 @@ code.inverted b {
   display: block;
 }
 .ui.code.inverted.code.segment {
-  background: #002b36;
+  background: #101008;
   color: #c0c0c0;
 }
 .ui.code.inverted.code.segment b {
-  color: #4ab1b0;
+  color: #d8d840;
   font-weight: normal;
 }
 .ui.code.segment {

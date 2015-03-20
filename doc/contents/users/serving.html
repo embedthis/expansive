@@ -1,11 +1,11 @@
 {
-    title:  'Expansive Web Server',
+    title:  'Serving Content',
     crumbs: [ 
         { "User's Guide": "index.html" },
     ],
 }
    
-        <h1>Serving Pages</h1>
+        <h1>Serving Content</h1>
         <p>Expansive includes a built-in web server based on the outstanding
         <a href="http://embedthis.com/appweb/">Appweb</a> embedded web server. This is a fast, secure, 
         embedded web server that is ideal for testing your site before production deployment.</p>
@@ -34,6 +34,16 @@
     control: {
         listen: '127.0.0.1:5000'
     }
+}
+</code>
+        <h2>External Servers</h2>
+        <p>You can configure expansive to run an external server by defining the <em>control.server</em> property.
+        This server will be automatically started when Expansive is serving pages. If the server dies or exits 
+        prematurely, Expansive will automatically restart.</p>
+
+        For example:</p>
+        <code class="inverted">control: {
+    server: 'esp --trace stdout:4 127.0.0.1:4000'
 }
 </code>
 

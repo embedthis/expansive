@@ -1,17 +1,24 @@
 {
-    title:  'Expansive Skeletons',
+    title:  'Skeletons and Plugins',
     crumbs: [ 
         { "User's Guide": "index.html" },
     ],
 }
    
-        <h1>Skeletons</h1>
+        <h1>Skeletons and Plugins</h1>
 		<p>Expansive skeletons are integrated starting points for web sites or web applications. 
 		Skeletons include starter web pages, ayouts, partial pages, stylesheets, scripts and 
 		required packages for an easy, one-step launch of your web site.</p>
 
-		<p>Skeletons are packaged as a single Pak package that specifies all the required dependencies. As such, 
-		you can install a skeleton with <em>pak install skeleton</em> and it will download all required packages.</p>
+        <p>Plugins are packages that provides core processing for the Expansive processing pipeline. 
+        Plugins provide <em>services</em> that are used to transform content from one file type to 
+        another. For example: the <em>exp-md</em> plugin provides the <em>compile-markdown-html</em> 
+        service that transforms <em>.md</em> files into standard <em>.html</em> files.</p>
+
+        <h2>Skeletons</h2>
+		<p>Skeletons are packaged as a single <a href="http://embedthis.com/pak/">Pak</a> package that specifies 
+        all the required dependencies. As such, you can install a skeleton with <em>pak install skeleton</em> 
+        and it will download and install all the required packages.</p>
 
 		<p>For example, to create a web site that will use <a href="http://sementic-ui.com">Semantic-UI</a>,
 			a modern alternative to <a href="http://getbootstrap.com">Bootstrap</a>, install the 
@@ -42,7 +49,7 @@ $ <b>pak list</b>
 			These plugins are automatically invoked for the appropriate file extensions. Although, you can 
 			modify this behavior via the <em>expansive.json</em> configuration file.</p>
 
-		<h2>Popular Skeletons</h2>
+		<h3>Popular Skeletons</h3>
 		<ul>
 			<li><a href="https://github.com/embedthis/exp-html-skeleton">exp-html-skeleton</a> &mdash; 
 				Expansive HTML5 Skeleton</li>
@@ -53,3 +60,31 @@ $ <b>pak list</b>
 			<li><a href="https://github.com/embedthis/esp-html-skeleton">esp-html-skeleton</a> &mdash; 
 				ESP HTML5 Skeleton</li>
 		</ul>
+
+        <h2>Plugins</h2>
+        <p>Plugins are delivered as <a href="http://embedthis.com/pak">Pak</a> packages. Most skeletons will
+        install the required plugins by specifying them as skeleton package dependencies. This means you often
+        do not need to explicitly install plugins when installing skeletons.</p>
+
+        <p>To install a plugin, simply use <em>pak install</em>. For example:</p>
+        <code class="inverted">pak install exp-babel</code>
+        <p>This will install the <a href="http://babelejs.io">Babel</a> transpiler to compile Javascript ES6 into
+        Javascript ES5.</p>
+
+        <p>Expansive understands the list of package dependencies in the package.json and will automatically
+        add plugins loaded as packages to its transformation processing pipeline. Other than installing the plugin,
+        no further configuration is required to enable the plugin.</p>
+
+        <h3>Popular Plugins</h3
+        <ul>
+            <li><a class="item" href="@~plugins/exp-html-skeleton.html">exp-html-skeleton</a></li>
+            <li><a class="item" href="@~plugins/exp-babel.html">exp-babel</a></li>
+            <li><a class="item" href="@~plugins/exp-css.html">exp-css</a></li>
+            <li><a class="item" href="@~plugins/exp-gzip.html">exp-gzip</a></li>
+            <li><a class="item" href="@~plugins/exp-js.html">exp-js</a></li>
+            <li><a class="item" href="@~plugins/exp-less.html">exp-less</a></li>
+            <li><a class="item" href="@~plugins/exp-md.html">exp-md</a></li>
+            <li><a class="item" href="@~plugins/exp-sass.html">exp-sass</a></li>
+            <li><a class="item" href="@~plugins/exp-shell.html">exp-shell</a></li>
+        </ul>
+

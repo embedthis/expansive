@@ -47,13 +47,14 @@
                 <div class="menu">
                     <a class="item" href="../users/tour.html">Quick Tour</a>
                     <a class="item" href="../users/commands.html">Commands</a>
+                    <a class="item" href="../users/files.html">Files and Directories</a>
                     <a class="item" href="../users/skeletons.html">Skeletons</a>
                     <a class="item" href="../users/meta.html">Meta Data</a>
                     <a class="item" href="../users/partials.html">Partials</a>
                     <a class="item" href="../users/layouts.html">Layouts</a>
                     <a class="item" href="../users/assets.html">Assets and Raw Files</a>
 
-                    <a class="item" href="../users/stylesheets.html">Scripts and Stylesheets</a>
+                    <a class="item" href="../users/stylescripts.html">Scripts and Stylesheets</a>
                     <a class="item" href="../users/collections.html">Collections</a>
                     <a class="item" href="../users/scripting.html">Scripting</a>
 
@@ -63,7 +64,7 @@
                     <a class="item" href="../users/serving.html">Serving Content</a>
 
                     <!-- MOB - name? -->
-                    <a class="item" href="../users/packages.html">Installing Packages</a>
+                    <a class="item" href="../users/packages.html">Packages and Plugins</a>
                     <a class="item" href="../users/configuration.html">Configuration</a>
 
                     <!-- query engine -->
@@ -75,19 +76,25 @@
                 <a href="../developers/index.html">Developer's Guide</a>
                 <div class="menu">
                     <a class="item" href="../developers/events.html">Events</a>
-                    <a class="item" href="../developers/files.html">Files and Directories</a>
-                    <a class="item" href="../developers/control.html">Configuration Control</a>
-                    <a class="item" href="../developers/scripting.html">Scripting</a>
-                    <a class="item" href="../developers/properties.html">Meta Properties</a>
                     <a class="item" href="../developers/plugins.html">Creating Plugins</a>
-                    <a class="item" href="../developers/plugins.html">Creating Skeletons</a>
+                    <a class="item" href="../developers/skeletons.html">Creating Skeletons</a>
                     <a class="item" href="../developers/pipeline.html">Processing Pipeline</a>
+                    <a class="item" href="../man/expansive.txt">Manual Page</a>
                 </div>
             </div>
             <div class="item">
-                <a href="../plugins/project.html">Common Plugins</a>
+                <a href="../plugins/project.html">Popular Skeletons</a>
                 <div class="menu">
-                    <a class="item" href="../plugins/skeletons.html">Skeletons</a>
+                    <a class="item" href="../plugins/exp-html-skeleton.html">exp-html-skeleton</a>
+                    <a class="item" href="../plugins/exp-semantic-skeleton.html">exp-semantic-skeleton</a>
+                    <a class="item" href="../plugins/esp-html-skeleton.html">esp-html-skeleton</a>
+                    <a class="item" href="../plugins/esp-angular-skeleton.html">esp-angular-skeleton</a>
+                </div>
+            </div>
+            <div class="item">
+                <a href="../plugins/project.html">Popular Plugins</a>
+                <div class="menu">
+                    <a class="item" href="../plugins/exp-html-skeleton.html">exp-html-skeleton</a>
                     <a class="item" href="../plugins/exp-babel.html">exp-babel</a>
                     <a class="item" href="../plugins/exp-css.html">exp-css</a>
                     <a class="item" href="../plugins/exp-gzip.html">exp-gzip</a>
@@ -155,7 +162,7 @@
         </div>
         
         <div class="version desktop-only">
-            v0.4.3
+            v0.5.0
         </div>
 
     </div>
@@ -172,7 +179,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><a href="../start/tour.html">Tour of Expansive</a></td>
+                        <td><a href="../start/tour.html">Quick Tour of Expansive</a></td>
                         <td>Quick tour of Expansive features for beginners.</td>
                     </tr>
                     <tr>
@@ -180,49 +187,53 @@
                         <td>Expansive command line tool commands.</td>
                     </tr>
                     <tr>
+                        <td><a href="../developers/files.html">Files and Directories</a></td>
+                        <td>Standard file and directories used by Expansive.</td>
+                    </tr>
+                    <tr>
                         <td><a href="../users/skeletongs.html">Skeletons</a></td>
                         <td>Ready-made skeletons to quickly get started.</td>
-                    </tr>
-                    <tr>
-                        <td><a href="../users/layouts.html">Layouts</a></td>
-                        <td>Master page layouts and templating.</td>
-                    </tr>
-                    <tr>
-                        <td><a href="../users/partials.html">Partials</a></td>
-                        <td>Reusing common page segments via partial pagestd>
-                    </tr>
-                    <tr>
-                        <td><a href="../users/assets.html">Assets</a></td>
-                        <td>Processing images, fonts and media assets.</td>
-                    </tr>
-                    <tr>
-                        <td><a href="../users/render.html">Rendering</a></td>
-                        <td>Expansive rendering pipeline.</td>
-                    </tr>
-                    <tr>
-                        <td><a href="../users/collections.html">Collections</a></td>
-                        <td>Collections.</td>
-                    </tr>
-                    <tr>
-                        <td><a href="../users/stylesheets.html">Stylesheets</a></td>
-                        <td>Rendering stylesheet links.</td>
-                    </tr>
-                    <tr>
-                        <td><a href="../users/serving.html">Serving Content</a></td>
-                        <td>Serving content via the built-in web server.</td>
                     </tr>
                     <tr>
                         <td><a href="../users/meta.html">Meta Data</a></td>
                         <td>Parameterizing and customizing pages via page meta data.</td>
                     </tr>
                     <tr>
-                        <td><a href="../users/configuration.html">Configuration</a></td>
-                        <td>Configuring Expansive.</td>
+                        <td><a href="../users/partials.html">Partials</a></td>
+                        <td>Reusing common page segments via partial pagestd>
+                    </tr>
+                    <tr>
+                        <td><a href="../users/layouts.html">Layouts</a></td>
+                        <td>Master page layouts and templating.</td>
+                    </tr>
+                    <tr>
+                        <td><a href="../users/assets.html">Assets and Raw Files</a></td>
+                        <td>Processing images, fonts and media assets.</td>
+                    </tr>
+                    <tr>
+                        <td><a href="../users/stylescripts.html">Scripts and Stylesheets</a></td>
+                        <td>Rendering stylesheet links.</td>
+                    </tr>
+                    <tr>
+                        <td><a href="../users/collections.html">Collections</a></td>
+                        <td>Collections.</td>
                     </tr>
                     <tr>
                         <td class="nowrap"><a href="../users/scripting.html">Scripting</a></td>
                         <td>Using <a href="https://embedthis.com/ejscript/">Ejscript</a> 
                             for in-page scripting.</td>
+                    </tr>
+                    <tr>
+                        <td><a href="../users/render.html">Rendering</a></td>
+                        <td>Expansive rendering pipeline.</td>
+                    </tr>
+                    <tr>
+                        <td><a href="../users/serving.html">Serving Content</a></td>
+                        <td>Serving content via the built-in web server.</td>
+                    </tr>
+                    <tr>
+                        <td><a href="../users/configuration.html">Configuration</a></td>
+                        <td>Configuring Expansive.</td>
                     </tr>
                     <tr>
                         <td><a href="../users/sitemaps.html">Sitemaps</a></td>

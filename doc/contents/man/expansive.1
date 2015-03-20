@@ -132,24 +132,32 @@ This creates an expansive.json and package.json file. The expansive.json file co
 file is used by the Pak manager when installing or managing extension packages.
 .PP
 .RS 5
-{
-    meta: {
-        url: 'Home page url',
-    },
+ {
+     meta: {
+         url: 'http://example.com',
+         sitemap: {
+            files: [
+                '**.html',
+                !**unsupported.html'
+            ]
+        }
+     },
+     control: {
+         copy: [ 'images' ],
+         listen: '127.0.0.1:4800'
+     }
  }
 .RE
 .PP
 Expansive uses a liberal json format that permits comments, unquoted property keys and use of multi-line quotes. The 
 'meta' contents of the expansive.json file are added to the Expansive meta data collection that is provided to every page, 
-layout and partial page. The 'expansive' collection has properties that control the operation of Expansive. These values
-are made available to web pages via the 'meta.expansive' property.
+layout and partial page. The 'control' collection has properties that control the operation of Expansive. These values
+are made available to web pages via the 'expansive.control' property.
 
 .PP
-In the expansive section, the 'documents' array defines the set of patterns to select documents from the 'contents'
-directory for processing. 
-The 'copy' array defines a set of patterns to select files to copy without processing. The copy patterns are 
-relative to the 'contents' directory. The 'script' string defines an optional global script to inject code into 
-the Javascript execution context. The 'sitemap' collection defines what documents to include in the created sitemap XML file.
+In the 'control' section, the 'documents' array defines the set of patterns to select documents from the 'contents'
+directory for processing.  The 'copy' array defines a set of patterns to select files to copy without processing. 
+The copy patterns are relative to the 'contents' directory.
 
 .SH DYNAMIC CONTENT
 Expansive uses embedded Javascript in web pages to fully support dynamic content.  Scripts can be embedded via the special
@@ -197,6 +205,9 @@ installed plugin packages.
 .SH USEFUL PLUGINS
 Here are some of the more useful Expansive plugins:
 .TP 10
+exp-bash
+Run shell scripts and capture the output.
+.TP 10
 exp-css
 Process CSS files to add browser specific prefixes and minify the output. Requires 'autoprefixer' and 'recess' to be installed.
 .TP 10
@@ -212,33 +223,23 @@ Process Javascript files to mangle and minify. Requires 'uglify' to be installed
 exp-less
 Process Less stylesheets into CSS. Requires 'recess' to be installed.
 .TP 10
-exp-marked
-Install the Markdown program. Use with the exp-md plugin for Markdown files.
-.TP 10
 exp-md
 Process Markdown files and emit html.
 .TP 10
-exp-recess
-Install the recess program. Use with the exp-less plugin for Less file processing, and the exp-css file
-for minifying CSS files.
-.TP 10
 exp-sass
 Process SASS files into CSS. Requires "sass" to be installed. 
-.TP 10
-exp-shell
-Run shell scripts and capture the output.
 .PP
 Many plugins can be customized by passing configuration to the plugin via expansive.json file. For example:
 To request that all Javascript files be minified, use a '.min.js' extension, and be compressed but not managed:
 .PP
-{
-    services: {
-        'minify-js': {
-            compress: true,
-            mangle: true,
-            dotmin: true,
-        }
-    }
+ {
+     services: {
+         'minify-js': {
+             compress: true,
+             mangle: true,
+             dotmin: true
+         }
+     }
  }
 
 .PP 
@@ -352,6 +353,16 @@ Destination filename of the document relative to the dist directory.
 service
 Name of the transformation service being run.
 .TP 12
+sitemap
+Control what files to include in a sitemap. If defined, Expansive will by default include all HTML files in the sitemap.
+To change the file set included in the sitemap, define a 'files' property with an array of patterns in the sitemap object.
+.RS 5
+
+       sitemap: {
+          files: [ '**.html', '!draft.html' ],
+       }
+.RE
+.TP 12
 source
 Current input source file being processed. May be a document, partial, layout or any input resource file. Includes the
     contents, lib, layouts or partials directory.
@@ -388,28 +399,21 @@ Array of directories containing raw content to copy to 'dist' without processing
 listen
 Address on which to listen for HTTP requests. May be just a port number.
 .TP 12
-plugins
-List of plugins to use.
-.TP 12
 script
 Script to evaluate to inject code into the Javascript global execution context.
-.TP 12
-sitemap
-Control what files to include in a sitemap. If defined, Expansive will by default include all HTML files in the sitemap.
-To change the file set included in the sitemap, define a 'files' property with an array of patterns in the sitemap object.
 .PP
-.RS 5
-       sitemap: {
-          files: [ '**.html', '!draft.html' ],
-       }
-.RE
 .TP 12
 transforms
 Hash of extension mappings to a list of transform services for those mappings. Mappings are in the form 'ext -> ext'.
 For example: 
 
  transforms: {
-    'less -> css': [ 'compile-less', 'prefix-css', 'minify-css', 'compress' ]
+    'less -> css': [ 
+        'compile-less', 
+        'prefix-css', 
+        'minify-css', 
+        'compress' 
+    ]
  }
 
 Some of the standard service names are: compile-esp, compile-less, compile-markdown, compile-sass, compress, minify-css, minify-js, prefix-css, shell.
@@ -462,7 +466,7 @@ Web sites may configure services via properties in the expansive.json. For examp
         compress: false
         minfiy-css: {
             minify: true
-        },
+        }
     }
  }
 .PP

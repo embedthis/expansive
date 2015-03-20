@@ -1,6 +1,29 @@
 {
     title:  'Expansive Sitemaps',
-    crumbs: [ ],
+    crumbs: [ 
+        { "User's Guide": "index.html" },
+    ],
 }
    
         <h1>Sitemaps</h1>
+        <p>Sitemaps are files that are used by search engines to quickly and efficiently determine what documents
+        they should index on a web site. Expansive can generate sitemaps for you each time you render the site.</p>
+
+        <h2>Creating a Sitemap</h2>
+        <p>Sitemap generation is enabled by adding a <em>sitemap</em> property to your <em>expansive.json</em> meta
+        properties. The <em>sitemap</em> property should contain a <em>files</em> property that lists the files
+        to add to the sitemap. For example:</p>
+
+        <code class="inverse">{
+    meta: {
+        sitemap: {
+            files: [
+                '**.html',
+                '!unsupported.html',
+                '!lib/**',
+            ]
+        }
+    }
+}</code>
+        <p>The <em>files</em> list may contain wild-cards including <em>**</em> which matches files in any subdirectory.
+        You can specify negated patterns using a <em>!</em> prefix. These remove files from the list.</p>

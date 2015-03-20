@@ -1,11 +1,11 @@
 {
-    title:  'Packages',
+    title:  'Packages and Plugins',
     crumbs: [ 
         { "User's Guide": "index.html" },
     ],
 }
    
-        <h1>Installing Packages</h1>
+        <h1>Packages and Plugins</h1>
  
 		<p>Expansive can be extended by installable packages to provide content, functionality and 
 		quick-start skeletons. Expansive has a wide variety of extension packages and plugins to 
@@ -48,11 +48,30 @@
 			<a href="https://embedthis.com/catalog/#/?keywords=semantic">Semantic UI</a>, and
 			<a href="https://embedthis.com/catalog/#/?keywords=sass">Sass</a>.</p>
 
-		<h3>Plugins</h3>
+		<h2>Plugins</h2>
 		<p>Plugins are a special class of extension that provides core processing for the Expansive 
 		pipeline. Plugins provide <em>services</em> that are used to transform a file from one extension 
 		to another. For example: the <em>exp-md</em> plugin provides the <em>compile-markdown-html</em> service that transforms <em>.md</em> files into
 		standard <em>.html</em> files.</p>
+
+        <h3>Popular Plugins</h3>
+        <table class="ui table">
+            <thead>
+                <th>Name</th><th>Description</th>
+            </thead>
+            <tbody>
+                <tr><td>exp-css</td><td>Process CSS files to add browser specific prefixes and
+                    minify the output.</td></tr>
+                <tr><td>exp-esp</td><td>Compile ESP pages and applications.</td></tr>
+                <tr><td>exp-gzip</td><td>Compress final output using gzip.</td></tr>
+                <tr><td>exp-js</td><td>Process Javascript files to mangle and minify.</td></tr>
+                <tr><td>exp-less</td><td>Process Less stylesheets into CSS.</td></tr>
+                <tr><td>exp-md</td><td>Process markdown pages.</td></tr>
+                <tr><td>exp-ng</td><td>Angular applications.</td></tr>
+                <tr><td>exp-sass</td><td>Process SASS files into css.</td></tr>
+                <tr><td>exp-shell</td><td>Run shell scripts and capture the output.</td></tr>
+            </tbody>
+        </table>
 
 		<h2>Skeletons</h2>
 		<p>Expansive skeletons are integrated collections of packages that are excellent starting points for 

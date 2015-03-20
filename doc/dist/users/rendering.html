@@ -47,13 +47,14 @@
                 <div class="menu">
                     <a class="item" href="../users/tour.html">Quick Tour</a>
                     <a class="item" href="../users/commands.html">Commands</a>
+                    <a class="item" href="../users/files.html">Files and Directories</a>
                     <a class="item" href="../users/skeletons.html">Skeletons</a>
                     <a class="item" href="../users/meta.html">Meta Data</a>
                     <a class="item" href="../users/partials.html">Partials</a>
                     <a class="item" href="../users/layouts.html">Layouts</a>
                     <a class="item" href="../users/assets.html">Assets and Raw Files</a>
 
-                    <a class="item" href="../users/stylesheets.html">Scripts and Stylesheets</a>
+                    <a class="item" href="../users/stylescripts.html">Scripts and Stylesheets</a>
                     <a class="item" href="../users/collections.html">Collections</a>
                     <a class="item" href="../users/scripting.html">Scripting</a>
 
@@ -63,7 +64,7 @@
                     <a class="item" href="../users/serving.html">Serving Content</a>
 
                     <!-- MOB - name? -->
-                    <a class="item" href="../users/packages.html">Installing Packages</a>
+                    <a class="item" href="../users/packages.html">Packages and Plugins</a>
                     <a class="item" href="../users/configuration.html">Configuration</a>
 
                     <!-- query engine -->
@@ -75,19 +76,25 @@
                 <a href="../developers/index.html">Developer's Guide</a>
                 <div class="menu">
                     <a class="item" href="../developers/events.html">Events</a>
-                    <a class="item" href="../developers/files.html">Files and Directories</a>
-                    <a class="item" href="../developers/control.html">Configuration Control</a>
-                    <a class="item" href="../developers/scripting.html">Scripting</a>
-                    <a class="item" href="../developers/properties.html">Meta Properties</a>
                     <a class="item" href="../developers/plugins.html">Creating Plugins</a>
-                    <a class="item" href="../developers/plugins.html">Creating Skeletons</a>
+                    <a class="item" href="../developers/skeletons.html">Creating Skeletons</a>
                     <a class="item" href="../developers/pipeline.html">Processing Pipeline</a>
+                    <a class="item" href="../man/expansive.txt">Manual Page</a>
                 </div>
             </div>
             <div class="item">
-                <a href="../plugins/project.html">Common Plugins</a>
+                <a href="../plugins/project.html">Popular Skeletons</a>
                 <div class="menu">
-                    <a class="item" href="../plugins/skeletons.html">Skeletons</a>
+                    <a class="item" href="../plugins/exp-html-skeleton.html">exp-html-skeleton</a>
+                    <a class="item" href="../plugins/exp-semantic-skeleton.html">exp-semantic-skeleton</a>
+                    <a class="item" href="../plugins/esp-html-skeleton.html">esp-html-skeleton</a>
+                    <a class="item" href="../plugins/esp-angular-skeleton.html">esp-angular-skeleton</a>
+                </div>
+            </div>
+            <div class="item">
+                <a href="../plugins/project.html">Popular Plugins</a>
+                <div class="menu">
+                    <a class="item" href="../plugins/exp-html-skeleton.html">exp-html-skeleton</a>
                     <a class="item" href="../plugins/exp-babel.html">exp-babel</a>
                     <a class="item" href="../plugins/exp-css.html">exp-css</a>
                     <a class="item" href="../plugins/exp-gzip.html">exp-gzip</a>
@@ -160,7 +167,7 @@
         </div>
         
         <div class="version desktop-only">
-            v0.4.3
+            v0.5.0
         </div>
 
     </div>
@@ -169,63 +176,60 @@
    
         <h1>Rendering the Site</h1>
 
-		<p>Rendering is the processing of input content together with layout pages into final web pages and assets,
-		ready for serving.</p>
-
-		<h2>Rendering and Serving</h2>
-		<p>To render the site, use the <em>expansive render</em> command.</p>
-		<code>$ <b>expansive render</b>
+        <p>Rendering is the processing of input content together with layout pages into final web pages and assets,
+        ready for serving. To render the site, use the <em>expansive render</em> command.</p>
+        <code>$ <b>expansive render</b>
 [Created] dist/index.html</code>
 
-   		<p>This process all the files under <em>contents</em> and creates a complete, rendered web site 
-		under the <em>dist</em> directory.</p>
+        <p>This process all the files under <em>contents</em> and creates a complete, rendered web site 
+        under the <em>dist</em> directory.</p>
 
-   		<p>You can also render and then serve the content while dynamically watching for any changes to 
-   		the input sources by invoking expansive without any other arguments.</p>
-		<code>$ <b>expansive serve</b>
+        <p>You can also render and then serve the content while dynamically watching for any changes to 
+        the input sources by invoking expansive without any other arguments.</p>
+        <code>$ <b>expansive serve</b>
    [Listen] 127.0.0.1:4000
    [Render] Initial render ...
   [Created] dist/index.html
  [Watching] for changes every 1 sec ...
 </code>
 
-   		<p>Expansive will first render the site and will then listen on port 4000 for browser requests.</p>
+        <p>Expansive will first render the site and will then listen on port 4000 for browser requests.</p>
 
-		<h2>Rendering Pipeline</h2>
-		<p>Expansive rendering consists of two phases</p>
-		<ul>
-			<li>Process each content page</li>
-			<li>Copy assets files</li>
-		</ul>
+        <h2>Rendering Pipeline</h2>
+        <p>Expansive rendering consists of two phases</p>
+        <ul>
+            <li>Process each content page</li>
+            <li>Copy assets files</li>
+        </ul>
 
-		<p>Expansive uses a multi-stage processing pipeline to transform content pages into a final page suitable 
-		for viewing. During this process, each page, layout and partial page progresses through the following pipeline:</p>
-		<ul>
-			<li>Read page and extract and separate meta data &rarr; </li>
-			<li>Merge page content with required layout page &rarr; </li>
-			<li>Execute inline scripts &rarr; </li>
-			<li>Inline partial pages &rarr; </li>
-			<li>Peform filename extension transformations &rarr; </li>
-		</ul>
+        <p>Expansive uses a multi-stage processing pipeline to transform content pages into a final page suitable 
+        for viewing. During this process, each page, layout and partial page progresses through the following pipeline:</p>
+        <ul>
+            <li>Read page and extract and separate meta data &rarr; </li>
+            <li>Merge page content with required layout page &rarr; </li>
+            <li>Execute inline scripts &rarr; </li>
+            <li>Inline partial pages &rarr; </li>
+            <li>Peform transformation by file type</li>
+        </ul>
 
-		<h3>File Extensions Transformations</h3>
-		<p>For each page, Expansive will interpret document filename extensions and automatically transform content from 
-		one format to another.  For example, the filename <em>index.html.md</em> implies that the data is in 
-		<a href="http://daringfireball.net/projects/markdown/">Markdown</a> format via the <em>.md</em> extension, 
-		and it should be converted to <em>html</em>.  Expansive will examine each nested extension and process the 
-		document until it reaches an extension for which there are no further transformations defined.
-		
-		<p>For example, Expansive will process the file <em>index.html.md.exp</em> as follows:</p>
-     	<code class="inverted">index.html.md.exp &rarr; index.html.md &rarr; index.html</code>
+        <h3>Transformation by File Type</h3>
+        <p>For each page, Expansive will interpret document filename extensions and automatically transform content from 
+        one format to another.  For example, the filename <em>index.html.md</em> implies that the data is in 
+        <a href="http://daringfireball.net/projects/markdown/">Markdown</a> format via the <em>.md</em> extension, 
+        and it should be converted to <em>html</em>.  Expansive will examine each nested extension and process the 
+        document until it reaches an extension for which there are no further transformations defined.
+        
+        <p>For example, Expansive will process the file <em>index.html.md.exp</em> as follows:</p>
+        <code class="inverted">index.html.md.exp &rarr; index.html.md &rarr; index.html</code>
 
-		<p>Expansive uses the <em>.exp</em> extension to specify the document has embedded Javascript. 
-     	Expansive will process this by first running the embedded Javascript, then piping the result through the Markdown 
-     	filter and finally saving the result as <em>index.html</em> after applying the appropriate layout.</p>
+        <p>Expansive uses the <em>.exp</em> extension to specify the document has embedded Javascript. 
+        Expansive will process this by first running the embedded Javascript, then piping the result through the Markdown 
+        filter and finally saving the result as <em>index.html</em> after applying the appropriate layout.</p>
 
-     	<p>Nearly all transformations occur in-memory without persisting intermediate formats to disk. This means the 
-     	pipeline is very fast for most transformations.</p>
+        <p>Nearly all transformations occur in-memory without persisting intermediate formats to disk. This means the 
+        pipeline is very fast for most transformations.</p>
 
-		<p>The transformation pipeline for specific extensions can be overridden via the 'expansive.transforms' meta property.</p>
+        <p>The transformation pipeline for specific extensions can be overridden via the 'expansive.transforms' meta property.</p>
     </div>
     <div class="terms ui basic center aligned segment">
         <p>&copy; Embedthis Software, 2003-2014. All rights reserved.</p>

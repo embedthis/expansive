@@ -1504,13 +1504,13 @@ public class Expansive {
         paks[pak.name] = pak
         blend(pak, {pak: {render:{}}}, {overwrite: false})
         let render = pak.pak.render
+        let dir = name ? directories.lib.join(pak.name) : directories.top
         for (let [kind, patterns] in render) {
-            /* Expand first to permit ${TOP} which is absolute to override directories.lib */
             for (let [index,pattern] in patterns) {
-                patterns[index] = pattern.expand(expansive.dirTokens, { fill: '.' })
+                /* Expand first to permit ${TOP} which is absolute to override directories.lib */
+                patterns[index] = dir.join(pattern.expand(expansive.dirTokens, { fill: '.' }))
             }
-            let dir = name ? directories.lib.join(pak) : directories.top
-            render[kind] = dir.files(patterns, {relative: true})
+            render[kind] = Path().files(patterns, {relative: true})
         }
     }
 

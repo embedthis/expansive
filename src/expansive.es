@@ -70,6 +70,7 @@ public class Expansive {
     var paks: Object = {}
     var pid: Number?
     var plugins: Object = {}
+    var reload: Array = []
     var services: Object = {}
     var sitemaps: Array = []
     var stats: Object
@@ -546,6 +547,9 @@ public class Expansive {
             if (options.serve && modified) {
                 restartServer()
             }
+            if (modified) {
+                reloadBrowsers();
+            }
             App.sleep(control.watch)
 
             vtrace('Check', 'for changes (' + Date().format('%I:%M:%S') + ')')
@@ -595,15 +599,30 @@ public class Expansive {
         }
     }
 
+    function reloadBrowsers() {
+        for each (request in reload) {
+            request.write('html')
+            request.finalize()
+        }
+        reload = []
+    }
+
     function internalServer() {
         let address = options.listen || control.listen || '127.0.0.1:4000'
         let server: HttpServer = new HttpServer({documents: directories.dist})
         let routes = control.routes || Router.Top
         var router = Router(Router.WebSite)
         router.addCatchall()
+        let self = this
         server.on('readable', function (event, request) {
             try {
-                server.serve(request, router)
+                if (request.pathInfo == '/reload-service') {
+                    setLimits({inactivityTimeout: 999999999, requestTimeout: 99999999})
+                    dontAutoFinalize()
+                    self.reload.push(this)
+                } else {
+                    server.serve(request, router)
+                }
             } catch (e) {
                 trace('Error', 'Cannot serve request')
                 App.log.debug(3, e)
@@ -792,6 +811,8 @@ public class Expansive {
             }
             let meta = metaCache[file.dirname]
             if (copy[file]) {
+//  MOB - keeps on rendering
+//  print("COPY", file)
                 copyFile(file, meta)
             } else if (renderAll || filters || mastersModified || checkModified(file, meta)) {
                 modified = true

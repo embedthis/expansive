@@ -22,17 +22,21 @@
     /*
         Internal meta properties
 
-        basename    Basename portion of the public document filename.
+        base        Source file without 'contents/lib'.
         control     Control collection specified in exp.json.
         date        Generation date of the document.
-        document    Name of the document in 'documents' that is being processed.
+        dest        Destination filename being created. Relative path including 'dist'.
+        document    Source of the document being processed. For partials/layouts, it is the invoking document.
         extension   The extension of the public document filename.
         extensions  The set of extensions on the original input document.
-        file        Filename of the document or partial being processed.
         from        The filename extension being processed by the current transformation.
         isLayout    True if a layout is being processed.
         isPartial   True if a partial page is being processed.
         layout      Layout page in use. Set to '' if no layout being used.
+        path        Destination without 'dist'. Note: may have different extensions to base.
+        source      Current source file being processed. Relative path including 'contents/lib/layouts/partials'.
+        top         Relative Url to application home page.
+        url         Url made from 'path'.
 
         sitemap: {  // Generate a site map
             files: [ '**.html' ],
@@ -66,23 +70,22 @@
             Directory mappings. These are the default directory settings.
          */
         directories: {
-            documents:  'documents',
+            contents:   'contents',
+            dest:       'dest',
             files:      'files',
             layouts:    'layouts',
             lib:        'lib',
             paks:       'paks',
             partials:   'partials',
-            public:     'public',
         },
 
         /*
-            Documents to process under directories.documents
+            Documents to process. Relative to top.
          */
         documents: [ '**' ],
 
         /*
-            Files to copy outside of the documents directory. This defaults to [ documents.files ] if unset.
-            Expansive copies files/** to public/.
+            Files to copy outside of the documents directory. This defaults to [ 'files' ] if unset.
          */
         files: [ 'files' ],
 
@@ -105,6 +108,8 @@
         script: `
             function menu(item) meta.menu == item ? 'active' : ''
         `,
+
+        serve: 'command line for external web server',
 
         /*
             Generate a sitemap
@@ -142,7 +147,6 @@
      */
     release: {
         control: {
-            // plugins: [ 'ng', 'js', 'less', 'css', 'esp', 'gzip' ],
         },
         services: {
             //  Per-service configuration

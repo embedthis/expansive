@@ -1,5 +1,19 @@
 {
-    "meta": {
-        "url": "Home Page URL"
+    meta: {
+        url: "http://example.com/"
+    }
+    control: {
+        copy: [ 'images' ],
+        listen: '127.0.0.1:4000'
+    },
+    services: {
+    }
+    debug: {
+        services: {
+        }
+    },
+    release: {
+        services: {
+        }
     }
 }

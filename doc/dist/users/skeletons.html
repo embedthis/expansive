@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Skeletons and Plugins</title>
+    <title>Skeletons</title>
     <!-- Copyright Embedthis Software. All Rights Reserved. -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="description" content="Skeletons and Plugins" />
+    <meta name="description" content="Skeletons" />
     <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700'
         rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
@@ -48,7 +48,11 @@
                     <a class="item" href="../users/tour.html">Quick Tour</a>
                     <a class="item" href="../users/commands.html">Commands</a>
                     <a class="item" href="../users/files.html">Files and Directories</a>
+
+                    <a class="item" href="../users/packages.html">Packages</a>
                     <a class="item" href="../users/skeletons.html">Skeletons</a>
+                    <a class="item" href="../users/plugins.html">Plugins</a>
+
                     <a class="item" href="../users/meta.html">Meta Data</a>
                     <a class="item" href="../users/partials.html">Partials</a>
                     <a class="item" href="../users/layouts.html">Layouts</a>
@@ -60,11 +64,7 @@
 
                     <a class="item" href="../users/rendering.html">Rendering</a>
 
-                    <!-- MOB - name? -->
                     <a class="item" href="../users/serving.html">Serving Content</a>
-
-                    <!-- MOB - name? -->
-                    <a class="item" href="../users/packages.html">Packages and Plugins</a>
                     <a class="item" href="../users/configuration.html">Configuration</a>
 
                     <!-- query engine -->
@@ -137,7 +137,7 @@
             
             
             <div class="divider">/</div>
-            <a class="active section" href="skeletons.html">Skeletons and Plugins</a>
+            <a class="active section" href="skeletons.html">Skeletons</a>
             
         </div>
         
@@ -149,87 +149,57 @@
     <div class="content">
 
    
-        <h1>Skeletons and Plugins</h1>
-		<p>Expansive skeletons are integrated starting points for web sites or web applications. 
-		Skeletons include starter web pages, ayouts, partial pages, stylesheets, scripts and 
-		required packages for an easy, one-step launch of your web site.</p>
+        <h1>Skeletons</h1>
+        <p>Expansive skeletons are integrated starting points for web sites or web applications. Skeletons 
+        include starter web pages, ayouts, partial pages, stylesheets, scripts and required packages for an 
+        easy, one-step launch of your web site.</p>
 
-        <p>Plugins are packages that provides core processing for the Expansive processing pipeline. 
-        Plugins provide <em>services</em> that are used to transform content from one file type to 
-        another. For example: the <em>exp-md</em> plugin provides the <em>compile-markdown-html</em> 
-        service that transforms <em>.md</em> files into standard <em>.html</em> files.</p>
-
-        <h2>Skeletons</h2>
-		<p>Skeletons are packaged as a single <a href="http://embedthis.com/pak/">Pak</a> package that specifies 
+        <h2>Installing Skeletons</h2>
+        <p>Skeletons are packaged as a single <a href="http://embedthis.com/pak/">Pak</a> package that specifies 
         all the required dependencies. As such, you can install a skeleton with <em>pak install skeleton</em> 
         and it will download and install all the required packages.</p>
 
-		<p>For example, to create a web site that will use <a href="http://sementic-ui.com">Semantic-UI</a>,
-			a modern alternative to <a href="http://getbootstrap.com">Bootstrap</a>, install the 
-		<em>exp-semantic-skeleton</em> skeleton. First create an empty directory to hold your application and then run 
-		<em>pak install</em>.</p>
-		<pre class="ui code segment">$ mkdir demo
+        <p>For example, to create a web site that will use <a href="http://sementic-ui.com">Semantic-UI</a>,
+            a modern alternative to <a href="http://getbootstrap.com">Bootstrap</a>, install the 
+        <em>exp-semantic-skeleton</em> skeleton. First create an empty directory to hold your application and then run 
+        <em>pak install</em>.</p>
+        <code class="inverted">$ mkdir demo
 $ cd demo
+
 $ <b>pak install exp-semantic-skeleton</b>
 [Install] jquery 1.11.1
 [Install] semantic 0.50.0
 [Install] exp-semantic-skeleton 0.1.0
-</pre>
-			<p>This installs the <em>semantic-ui</em> skeleton, the <em>Semanic-UI</em> and <em>jQuery</em> libraries, 
-			and a set of Expansive plugins to process Less and CSS stylesheets and scripts, as show by the <em>pak list</em>
-				command.</p>
-<pre class="ui code segment">
-$ <b>pak list</b>
+</code>
+            <p>This installs the <em>semantic-ui</em> skeleton, the <em>Semanic-UI</em> and <em>jQuery</em> libraries, 
+            and a set of Expansive plugins to process Less and CSS stylesheets and scripts, as show by the <em>pak list</em>
+                command.</p>
+<code class="inverted">$ <b>pak list</b>
                  exp-css  0.2.0  installed from embedthis/exp-css
                   exp-js  0.2.0  installed from embedthis/exp-js
                 exp-less  0.2.0  installed from embedthis/exp-less
    exp-semantic-skeleton  0.1.0  installed from embedthis/exp-semantic-skeleton
                   jquery 1.11.2  installed from @npm/jquery
              semantic-ui 1.11.2  installed from Semantic-Org/Semantic-UI-CSS
-</pre>
-			<p>The <em>exp-css</em> plugin manages browser css prefixes and minifies CSS stylesheets. 
-			The <em>exp-js</em> plugin processes script files to minify and compress. 
-			The <em>exp-less</em> plugin processes Less stylesheets and compiles them into CSS files. 
-			These plugins are automatically invoked for the appropriate file extensions. Although, you can 
-			modify this behavior via the <em>expansive.json</em> configuration file.</p>
+</code>
+            <p>The <em>exp-css</em> plugin manages browser css prefixes and minifies CSS stylesheets. 
+            The <em>exp-js</em> plugin processes script files to minify and compress. 
+            The <em>exp-less</em> plugin processes Less stylesheets and compiles them into CSS files. 
+            These plugins are automatically invoked for the appropriate file extensions. Although, you can 
+            modify this behavior via the <em>expansive.json</em> configuration file.</p>
 
-		<h3>Popular Skeletons</h3>
-		<ul>
-			<li><a href="https://github.com/embedthis/exp-html-skeleton">exp-html-skeleton</a> &mdash; 
-				Expansive HTML5 Skeleton</li>
-			<li><a href="https://github.com/embedthis/exp-semantic-skeleton">esp-semantic-skeleton</a> &mdash; 
-				Expansive <a href="http://semantic-ui.com/">Semantic-UI</a> Skeleton</li>
-			<li><a href="https://github.com/embedthis/esp-angular-skeleton">esp-angular-skeleton</a> &mdash; 
-				ESP <a href="http://angularjs.org/">AngularJS</a> Skeleton</li>
-			<li><a href="https://github.com/embedthis/esp-html-skeleton">esp-html-skeleton</a> &mdash; 
-				ESP HTML5 Skeleton</li>
-		</ul>
-
-        <h2>Plugins</h2>
-        <p>Plugins are delivered as <a href="http://embedthis.com/pak">Pak</a> packages. Most skeletons will
-        install the required plugins by specifying them as skeleton package dependencies. This means you often
-        do not need to explicitly install plugins when installing skeletons.</p>
-
-        <p>To install a plugin, simply use <em>pak install</em>. For example:</p>
-        <code class="inverted">pak install exp-babel</code>
-        <p>This will install the <a href="http://babelejs.io">Babel</a> transpiler to compile Javascript ES6 into
-        Javascript ES5.</p>
-
-        <p>Expansive understands the list of package dependencies in the package.json and will automatically
-        add plugins loaded as packages to its transformation processing pipeline. Other than installing the plugin,
-        no further configuration is required to enable the plugin.</p>
-
-        <h3>Popular Plugins</h3
+        <h3>Popular Skeletons</h3>
         <ul>
-            <li><a class="item" href="../plugins/exp-html-skeleton.html">exp-html-skeleton</a></li>
-            <li><a class="item" href="../plugins/exp-babel.html">exp-babel</a></li>
-            <li><a class="item" href="../plugins/exp-css.html">exp-css</a></li>
-            <li><a class="item" href="../plugins/exp-gzip.html">exp-gzip</a></li>
-            <li><a class="item" href="../plugins/exp-js.html">exp-js</a></li>
-            <li><a class="item" href="../plugins/exp-less.html">exp-less</a></li>
-            <li><a class="item" href="../plugins/exp-md.html">exp-md</a></li>
-            <li><a class="item" href="../plugins/exp-sass.html">exp-sass</a></li>
-            <li><a class="item" href="../plugins/exp-shell.html">exp-shell</a></li>
+            <li><a href="https://github.com/embedthis/exp-html-skeleton">exp-html-skeleton</a> &mdash; 
+                Expansive HTML5 Skeleton</li>
+            <li><a href="https://github.com/embedthis/exp-bootstrap-skeleton">exp-bootstrap-skeleton</a> &mdash; 
+                Expansive <a href="http://getbootstrap.com/">Bootstrap</a> Skeleton</li>
+            <li><a href="https://github.com/embedthis/exp-semantic-skeleton">exp-semantic-skeleton</a> &mdash; 
+                Expansive <a href="http://semantic-ui.com/">Semantic-UI</a> Skeleton</li>
+            <li><a href="https://github.com/embedthis/esp-angular-skeleton">esp-angular-skeleton</a> &mdash; 
+                ESP <a href="http://angularjs.org/">AngularJS</a> Skeleton</li>
+            <li><a href="https://github.com/embedthis/esp-html-skeleton">esp-html-skeleton</a> &mdash; 
+                ESP HTML5 Skeleton</li>
         </ul>
 
 
@@ -263,6 +233,21 @@ $ <b>pak list</b>
             $('.sidebar').scrollTop(sessionStorage.getItem('scroll-top'));
         });
     </script> 
+
+        
+    <script>
+        (function() {
+            var r = new XMLHttpRequest();
+            r.onreadystatechange = function() {
+                if (r.readyState >= 3 && r.status == 200) {
+                    window.location.reload();
+                }
+            }
+            r.open("GET", "/reload-service", true);
+            r.send();
+        })();
+    </script>
+    
 
 </body>
 </html>

@@ -152,7 +152,7 @@ body.show-sidebar {
   min-height: 95%;
   text-decoration: none;
   background: #ffffff;
-  padding: 70px 2rem 2rem 2rem;
+  padding: 100px 2rem 2rem 2rem;
 }
 .content .floated {
   overflow: auto;

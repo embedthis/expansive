@@ -48,7 +48,11 @@
                     <a class="item" href="../users/tour.html">Quick Tour</a>
                     <a class="item" href="../users/commands.html">Commands</a>
                     <a class="item" href="../users/files.html">Files and Directories</a>
+
+                    <a class="item" href="../users/packages.html">Packages</a>
                     <a class="item" href="../users/skeletons.html">Skeletons</a>
+                    <a class="item" href="../users/plugins.html">Plugins</a>
+
                     <a class="item" href="../users/meta.html">Meta Data</a>
                     <a class="item" href="../users/partials.html">Partials</a>
                     <a class="item" href="../users/layouts.html">Layouts</a>
@@ -60,11 +64,7 @@
 
                     <a class="item" href="../users/rendering.html">Rendering</a>
 
-                    <!-- MOB - name? -->
                     <a class="item" href="../users/serving.html">Serving Content</a>
-
-                    <!-- MOB - name? -->
-                    <a class="item" href="../users/packages.html">Packages and Plugins</a>
                     <a class="item" href="../users/configuration.html">Configuration</a>
 
                     <!-- query engine -->
@@ -214,6 +214,21 @@
             $('.sidebar').scrollTop(sessionStorage.getItem('scroll-top'));
         });
     </script> 
+
+        
+    <script>
+        (function() {
+            var r = new XMLHttpRequest();
+            r.onreadystatechange = function() {
+                if (r.readyState >= 3 && r.status == 200) {
+                    window.location.reload();
+                }
+            }
+            r.open("GET", "/reload-service", true);
+            r.send();
+        })();
+    </script>
+    
 
 </body>
 </html>

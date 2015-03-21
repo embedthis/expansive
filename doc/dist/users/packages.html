@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Packages and Plugins</title>
+    <title>Packages</title>
     <!-- Copyright Embedthis Software. All Rights Reserved. -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="description" content="Packages and Plugins" />
+    <meta name="description" content="Packages" />
     <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700'
         rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
@@ -48,7 +48,11 @@
                     <a class="item" href="../users/tour.html">Quick Tour</a>
                     <a class="item" href="../users/commands.html">Commands</a>
                     <a class="item" href="../users/files.html">Files and Directories</a>
+
+                    <a class="item" href="../users/packages.html">Packages</a>
                     <a class="item" href="../users/skeletons.html">Skeletons</a>
+                    <a class="item" href="../users/plugins.html">Plugins</a>
+
                     <a class="item" href="../users/meta.html">Meta Data</a>
                     <a class="item" href="../users/partials.html">Partials</a>
                     <a class="item" href="../users/layouts.html">Layouts</a>
@@ -60,11 +64,7 @@
 
                     <a class="item" href="../users/rendering.html">Rendering</a>
 
-                    <!-- MOB - name? -->
                     <a class="item" href="../users/serving.html">Serving Content</a>
-
-                    <!-- MOB - name? -->
-                    <a class="item" href="../users/packages.html">Packages and Plugins</a>
                     <a class="item" href="../users/configuration.html">Configuration</a>
 
                     <!-- query engine -->
@@ -137,7 +137,7 @@
             
             
             <div class="divider">/</div>
-            <a class="active section" href="packages.html">Packages and Plugins</a>
+            <a class="active section" href="packages.html">Packages</a>
             
         </div>
         
@@ -149,14 +149,14 @@
     <div class="content">
 
    
-        <h1>Packages and Plugins</h1>
+        <h1>Packages</h1>
  
-		<p>Expansive can be extended by installable packages to provide content, functionality and 
-		quick-start skeletons. Expansive has a wide variety of extension packages and plugins to 
-		make your development more productive.</p>
+		<p>Expansive can be extended by installable packages to provide content and extended functionality.
+        Expansive uses packages to deliver content, plugins and skeletons.Expansive has a wide variety of 
+        extension packages to make your development more productive.</p>
 
 		<h2>The Pak Manager</h2>
-		<p>Expansive leverages the amazing <a href="https://embedthis.com/pak/">Pak</a> 
+		<p>Expansive uses the amazing <a href="https://embedthis.com/pak/">Pak</a> 
 		package manager and the online <a href="https://embedthis.com/catalog/">Pak Catalog</a> of 
 		packages. The Pak utility is used to install, manage, upgrade and uninstall packages for Expansive.
 
@@ -183,8 +183,8 @@
 &lt;/body>
 &lt;/html>
 </pre>
-		<p>See <a href="stylesheets.html">Scripts and Stylesheets</a> for more details.</p>
-		<p>See the <a href="https://embedthis.com/catalog/search?exp">Pak Catalog</a> for more Expansive 
+		<p>See <a href="stylescripts.html">Scripts and Stylesheets</a> for more details.
+		See the <a href="https://embedthis.com/catalog/search?exp">Pak Catalog</a> for more Expansive 
 			plugins and packages, including: 
 			<a href="https://embedthis.com/catalog/#/?keywords=bootstrap">Bootstrap</a>,
 			<a href="https://embedthis.com/catalog/#/?keywords=angular">Angular</a>,
@@ -192,60 +192,12 @@
 			<a href="https://embedthis.com/catalog/#/?keywords=semantic">Semantic UI</a>, and
 			<a href="https://embedthis.com/catalog/#/?keywords=sass">Sass</a>.</p>
 
-		<h2>Plugins</h2>
-		<p>Plugins are a special class of extension that provides core processing for the Expansive 
-		pipeline. Plugins provide <em>services</em> that are used to transform a file from one extension 
-		to another. For example: the <em>exp-md</em> plugin provides the <em>compile-markdown-html</em> service that transforms <em>.md</em> files into
-		standard <em>.html</em> files.</p>
-
-        <h3>Popular Plugins</h3>
-        <table class="ui table">
-            <thead>
-                <th>Name</th><th>Description</th>
-            </thead>
-            <tbody>
-                <tr><td>exp-css</td><td>Process CSS files to add browser specific prefixes and
-                    minify the output.</td></tr>
-                <tr><td>exp-esp</td><td>Compile ESP pages and applications.</td></tr>
-                <tr><td>exp-gzip</td><td>Compress final output using gzip.</td></tr>
-                <tr><td>exp-js</td><td>Process Javascript files to mangle and minify.</td></tr>
-                <tr><td>exp-less</td><td>Process Less stylesheets into CSS.</td></tr>
-                <tr><td>exp-md</td><td>Process markdown pages.</td></tr>
-                <tr><td>exp-ng</td><td>Angular applications.</td></tr>
-                <tr><td>exp-sass</td><td>Process SASS files into css.</td></tr>
-                <tr><td>exp-shell</td><td>Run shell scripts and capture the output.</td></tr>
-            </tbody>
-        </table>
-
-		<h2>Skeletons</h2>
-		<p>Expansive skeletons are integrated collections of packages that are excellent starting points for 
-			web sites. Skeletons include all required dependencies and provide an easy, one-step creation 
-			of your web site.</p>
-		<p>For example, to create a web site that will use <a href="http://sementic-ui.com">Semantic-UI</a>,
-			a modern alternative to <a href="http://getbootstrap.com">Bootstrap</a>:</p>
-		<pre class="ui code segment">$ <b>pak install exp-semantic-skeleton</b>
-[Install] jquery 1.11.1
-[Install] semantic 0.50.0
-[Install] exp-semantic-skeleton 0.1.0
-</pre>
-			<p>This installs Semanic-UI, jQuery, the semantic skeleton, and a set of Expansive plugins to process
-				Less and CSS stylesheets and scripts, as show by the <em>pak list</em>
-				command.</p>
-<pre class="ui code segment">
-$ <b>pak list</b>
-                 exp-css  0.2.0  installed from embedthis/exp-css
-                  exp-js  0.2.0  installed from embedthis/exp-js
-                exp-less  0.2.0  installed from embedthis/exp-less
-   exp-semantic-skeleton  0.1.0  installed from embedthis/exp-semantic-skeleton
-                  jquery 1.11.2  installed from @npm/jquery
-             semantic-ui 1.11.2  installed from Semantic-Org/Semantic-UI-CSS
-</pre>
-			<p>The <em>exp-js</em> plugin processes script files to minify and compress. The <em>exp-less</em> plugin 
-			processes Less stylesheets to compile into CSS files. The <em>exp-css</em> plugin manages browser 
-			css prefixes and minifies CSS stylesheets. These plugins are automatically invoked for 
-			the appropriate file extensions. Although, you can modify this behavior via the 
-			<em>expansive.json</em> configuration file.</p>
-
+        <h2>Want More?</h2>
+        <p>Read more about packages with:</p> 
+        <ul>
+            <li><a href="plugins.html">Plugins</a></li>
+            <li><a href="skeletons.html">Skeletons</a></li>
+        </ul>
 		
     </div>
     <div class="terms ui basic center aligned segment">
@@ -277,6 +229,21 @@ $ <b>pak list</b>
             $('.sidebar').scrollTop(sessionStorage.getItem('scroll-top'));
         });
     </script> 
+
+        
+    <script>
+        (function() {
+            var r = new XMLHttpRequest();
+            r.onreadystatechange = function() {
+                if (r.readyState >= 3 && r.status == 200) {
+                    window.location.reload();
+                }
+            }
+            r.open("GET", "/reload-service", true);
+            r.send();
+        })();
+    </script>
+    
 
 </body>
 </html>

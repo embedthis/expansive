@@ -1,0 +1,51 @@
+{
+    title:  'Plugins',
+    crumbs: [ 
+        { "User's Guide": "index.html" },
+    ],
+}
+   
+        <h1>Plugins</h1>
+ 
+        <p>Plugins are packages that provides core processing for the Expansive processing pipeline. 
+        Plugins provide <em>services</em> that are used to transform content from one file type to 
+        another. For example: the <em>exp-md</em> plugin provides the <em>compile-markdown-html</em> 
+        service that transforms <em>.md</em> files into standard <em>.html</em> files.</p>
+
+        <h2>Installing Plugins</h2>
+        <p>Plugins are delivered as <a href="http://embedthis.com/pak">Pak</a> packages. Most skeletons will
+        install the required plugins by specifying them as skeleton package dependencies. This means you often
+        do not need to explicitly install plugins when installing skeletons.</p>
+
+        <p>To install a plugin, simply use <em>pak install</em>. For example:</p>
+        <code class="inverted">pak install exp-babel</code>
+        <p>This will install the <a href="http://babelejs.io">Babel</a> transpiler to compile Javascript ES6 into
+        Javascript ES5. If the plugin relies on other packages as dependencies, those dependent packages will also
+        be installed.</p>
+
+        <p>Expansive understands the list of package dependencies in the package.json and will automatically
+        add plugins loaded as packages to its transformation processing pipeline. Other than installing the plugin,
+        no further configuration is required to enable the plugin.</p>
+
+        <h2>Popular Plugins</h2>
+        <table class="ui table">
+            <thead>
+                <th>Name</th><th>Description</th>
+            </thead>
+            <tbody>
+                <tr><td>exp-babel</td><td>Compile Javascript ES6 to ES5.</td></tr>
+                <tr><td>exp-css</td><td>Process CSS files to add browser specific prefixes and
+                    minify the output.</td></tr>
+                <tr><td>exp-esp</td><td>Compile ESP pages and applications.</td></tr>
+                <tr><td>exp-gzip</td><td>Compress final output using gzip.</td></tr>
+                <tr><td>exp-js</td><td>Process Javascript files to mangle and minify.</td></tr>
+                <tr><td>exp-less</td><td>Process Less stylesheets into CSS.</td></tr>
+                <tr><td>exp-md</td><td>Process markdown pages.</td></tr>
+                <tr><td>exp-ng</td><td>Angular applications.</td></tr>
+                <tr><td>exp-reload</td><td>Live reload in the browser when content is updated.</td></tr>
+                <tr><td>exp-sass</td><td>Process SASS files into css.</td></tr>
+                <tr><td>exp-shell</td><td>Run shell scripts and capture the output.</td></tr>
+            </tbody>
+        </table>
+
+        

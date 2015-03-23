@@ -3,7 +3,7 @@
 #
 
 NAME                  := expansive
-VERSION               := 0.4.3
+VERSION               := 0.5.0
 PROFILE               ?= default
 ARCH                  ?= $(shell uname -m | sed 's/i.86/x86/;s/x86_64/x64/;s/arm.*/arm/;s/mips.*/mips/')
 CC_ARCH               ?= $(shell echo $(ARCH) | sed 's/x86/i686/;s/x64/x86_64/')
@@ -694,7 +694,7 @@ stop: $(DEPS_43)
 installBinary: $(DEPS_44)
 	mkdir -p "$(ME_APP_PREFIX)" ; \
 	rm -f "$(ME_APP_PREFIX)/latest" ; \
-	ln -s "0.4.3" "$(ME_APP_PREFIX)/latest" ; \
+	ln -s "0.5.0" "$(ME_APP_PREFIX)/latest" ; \
 	mkdir -p "$(ME_VAPP_PREFIX)/bin" ; \
 	cp $(BUILD)/bin/expansive $(ME_VAPP_PREFIX)/bin/expansive ; \
 	mkdir -p "$(ME_BIN_PREFIX)" ; \
@@ -753,5 +753,5 @@ uninstall: $(DEPS_47)
 #
 
 version: $(DEPS_48)
-	echo 0.4.3
+	echo 0.5.0
 

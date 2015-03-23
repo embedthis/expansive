@@ -977,6 +977,7 @@ public class Expansive {
         meta.dest = destCache[meta.source] = (destCache[meta.source] || getDest(sourcePath, meta))
         meta.path = trimPath(meta.dest, directories.dist)
         meta.url = Uri(meta.path)
+        meta.mode = package.pak.mode || 'debug'
 
         let dir = meta.path.dirname
         let count = (dir == '.') ? 0 : dir.components.length

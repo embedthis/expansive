@@ -76,7 +76,7 @@ public class Expansive {
     var stats: Object
     var topMeta: Object
     var transforms: Object = {}
-    var postProcessors: Array = []
+    var postProcessors: Object = {}
     var verbosity: Number = 0
 
     let argsTemplate = {
@@ -406,7 +406,8 @@ public class Expansive {
                     service.render = global.transform
                     delete global.transform
                     if (global.post) {
-                        postProcessors.push({ service: service, post: global.post})
+                        service.post = global.post
+                        postProcessors[service.name] = service
                         delete global.post
                     }
                     delete service.script
@@ -811,8 +812,6 @@ public class Expansive {
             }
             let meta = metaCache[file.dirname]
             if (copy[file]) {
-//  MOB - keeps on rendering
-//  print("COPY", file)
                 copyFile(file, meta)
             } else if (renderAll || filters || mastersModified || checkModified(file, meta)) {
                 modified = true
@@ -823,10 +822,20 @@ public class Expansive {
 
     function postProcess() {
         if (modified) {
-            for each (pp in postProcessors) {
-                vtrace('Process', pp.service.name)
-                if (pp.service.enable !== false) {
-                    pp.post.call(this, meta, pp.service)
+            control.post ||= []
+            for each (service in postProcessors) {
+                if (!control.post.contains(service.name)) {
+                    control.post.push(service.name)
+                }
+            }
+            for each (name in control.post) {
+                let service = postProcessors[name]
+                if (!service) {
+                    throw 'Post processing service "' + name + '" cannot be found'
+                }
+                trace('Post', service.name)
+                if (service.enable !== false) {
+                    service.post.call(this, meta, service)
                 }
             }
         }

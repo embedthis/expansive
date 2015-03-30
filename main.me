@@ -25,7 +25,6 @@ Me.load({
 
     settings: {
         platforms: [ 'local' ],
-        static: false,
         tune: 'size',
         integrate: true,
 
@@ -96,7 +95,6 @@ Me.load({
             type: 'exe',
             path: '${BIN}/expansive${EXE}',
             sources: [ 'src/*.c' ],
-            static: false,
             depends: [ 'libmpr', 'libhttp', 'libejs', 'expansive.mod' ],
         },
 

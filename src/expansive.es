@@ -33,6 +33,7 @@ const USAGE = 'Expansive Web Site Generator
     --version            # Output version information
   Commands :
     clean                # Clean "dist" output directory
+    deploy [directory]   # Deploy required production files
     edit key[=value]     # Get and set expansive.json values
     init                 # Create expansive.json
     mode [debug|release] # Select property mode set
@@ -121,6 +122,7 @@ public class Expansive {
             dependencies: {},
             directories: {
                 contents:   Path('contents'),
+                deploy:     Path('deploy'),
                 dist:       Path('dist'),
                 files:      Path('files'),
                 layouts:    Path('layouts'),
@@ -469,6 +471,10 @@ public class Expansive {
         switch (task) {
         case 'clean':
             preclean(meta)
+            break
+
+        case 'deploy':
+            deploy(rest, meta)
             break
 
         case 'edit':
@@ -1314,6 +1320,39 @@ public class Expansive {
             directories[key] = Path(value)
         }
         return meta
+    }
+
+    function deploy(rest, meta) {
+        if (!control.deploy) {
+            control.deploy = {
+                from: [directories.dist.join('**'), directories.cache.join('*'), 'package.json', 'esp.json'],
+                flatten: false,
+                clean: true
+            }
+        }
+        if (!(control.deploy is Array)) {
+            control.deploy = [control.deploy]
+        }
+        for each (dep in control.deploy) {
+            if (rest[0]) {
+                dep.to = rest[0]
+            }
+            dep.to ||= directories.deploy || '.'
+            if (dep.flatten !== true) {
+                dep.flatten = false
+            }
+            if (dep.clean !== false) {
+                dep.clean = true
+            }
+            trace('Deploy', 'To "' + dep.to + '"')
+            if (!options.noclean && dep.clean !== false) {
+                Path(dep.to).removeAll()
+            }
+            Path().operate(dep)
+            if (dep.script) {
+                eval(dep.script)
+            }
+        }
     }
 
     function edit(rest, meta) {

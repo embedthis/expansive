@@ -16260,15 +16260,15 @@ module ejs.tar {
             }
             archive.close()
 
-            if (archive.extension == 'tgz' || archive.extension == 'gz') {
-                let plain = archive.joinExt('plain')
-                archive.rename(plain)
-                Zlib.compress(plain, archive)
+            if (path.extension == 'tgz' || path.extension == 'gz') {
+                let plain = path.joinExt('plain', true)
+                path.rename(plain)
+                Zlib.compress(plain, path)
                 plain.remove()
             } else if (options.compress) {
-                let plain = archive.joinExt('plain')
-                archive.rename(plain)
-                Zlib.compress(plain, archive)
+                let plain = path.joinExt('plain', true)
+                path.rename(plain)
+                Zlib.compress(plain, path)
                 plain.remove()
             }
         }

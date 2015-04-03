@@ -4190,7 +4190,7 @@ static void parseCache(HttpRoute *route, cchar *key, MprJson *prop)
 
     clientLifespan = serverLifespan = 0;
     if (prop->type & MPR_JSON_STRING && smatch(prop->value, "true")) {
-        httpAddCache(route, 0, 0, 0, 0, 86400 * 1000, 0, HTTP_CACHE_CLIENT | HTTP_CACHE_STATIC);
+        httpAddCache(route, 0, 0, 0, 0, 3600 * 1000, 0, HTTP_CACHE_CLIENT | HTTP_CACHE_STATIC);
     } else {
         for (ITERATE_CONFIG(route, prop, child, ji)) {
             flags = 0;
@@ -12099,7 +12099,7 @@ static void outgoingRangeService(HttpQueue *q)
     conn = q->conn;
     tx = conn->tx;
 
-    if (!(q->flags & HTTP_QUEUE_SERVICED)) {
+    if (!(q->flags & HTTP_QUEUE_SERVICED || q->servicing)) {
         /*
             The httpContentNotModified routine can set outputRanges to zero if returning not-modified.
          */

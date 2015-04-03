@@ -925,7 +925,7 @@ public class Expansive {
 
 //  MOB - not right
     function getExtensions(file) {
-    print("WARNING")
+        print("WARNING")
         return [file.extension, file.trimExt().extension]
     }
 
@@ -1609,6 +1609,12 @@ public class Expansive {
 
 public function active(item)
     meta.menu == item ? 'active' : ''
+
+public function trace(tag: String, ...args): Void
+    expansive.trace(tag, ...args)
+
+public function vtrace(tag: String, ...args): Void
+    expansive.vtrace(tag, ...args)
 
 /*
     Main program

@@ -18,6 +18,7 @@ expansive \- Embedthis Expansive -- Fast, Flexible Static Web Site Generator
 .SH ""
 .B Commands:
     clean
+    deploy [directory]
     edit key[=value]
     init
     mode [debug|release|...]
@@ -97,6 +98,10 @@ To render a matching set of files
 
     expansive contents/index.html
     expansive contents/manual
+
+To deploy a rendered site
+
+    expansive deploy directory
 
 To clean the rendered site under 'dist'
 
@@ -509,6 +514,10 @@ To emit console trace while processing.
 .TP
 clean
 Remove rendered content from the 'dist' output directory.
+.TP
+deploy
+Deploy rendered content to a directory. This by default copies 'dist', 'cache', 
+and expansive.json to 'deploy'.
 .TP
 init
 Initialize a directory by creating an 'expansive.json' configuration file.

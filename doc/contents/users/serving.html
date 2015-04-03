@@ -6,7 +6,7 @@
 }
    
         <h1>Serving Content</h1>
-        <p>Expansive includes a built-in web server based on the outstanding
+        <p>Expansive includes a built-in web server based on the high-performance
         <a href="http://embedthis.com/appweb/">Appweb</a> embedded web server. This is a fast, secure, 
         embedded web server that is ideal for testing your site before production deployment.</p>
 
@@ -25,7 +25,7 @@
         <code class="inverted">$ expansive</code>
 
         <h2>Listening Address</h2>
-        <p>The listening address can be set on the command line via the --listen switch.</p>
+        <p>The listening address can be set on the command line via the <em>--listen</em> switch.</p>
         <code class="inverted">$ expansive --listen 5000</code>
         <p>This will listen on port 5000 on all interfaces. Use <em>--listen 127.0.0.1:5000</em> to listen on local
         interfaces only.</p>
@@ -37,7 +37,7 @@
 }
 </code>
         <h2>External Servers</h2>
-        <p>You can configure expansive to run an external server by defining the <em>control.server</em> property.
+        <p>You can configure Expansive to run an external server by defining the <em>control.server</em> property.
         This server will be automatically started when Expansive is serving pages. If the server dies or exits 
         prematurely, Expansive will automatically restart.</p>
 
@@ -46,6 +46,7 @@
     server: 'esp --trace stdout:4 127.0.0.1:4000'
 }
 </code>
+        <p>If content is modified, Expansive will render the content and restart the server.</p>
 
         <h3>Watching for Changes</h3>
         <p>If content changes, expansive will transparently render the site as required. If a single page is modified,

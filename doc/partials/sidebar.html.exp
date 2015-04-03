@@ -45,6 +45,7 @@
                     <a class="item" href="@~users/rendering.html">Rendering</a>
 
                     <a class="item" href="@~users/serving.html">Serving Content</a>
+                    <a class="item" href="@~users/deploying.html">Deploying a Site</a>
                     <a class="item" href="@~users/configuration.html">Configuration</a>
 
                     <!-- query engine -->

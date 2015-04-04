@@ -200,7 +200,7 @@
     title: 'Hello World'
 }    
 
-&lt;p&gt;Hello World&lt;/p>
+&lt;p&gt;Hello World&lt;/p&gt;
 </pre>
 
       <p>This Meta data defines two properties <em>meta.color</em> and <em>meta.title</em> for this page. </p>
@@ -225,7 +225,7 @@
       <h2>Accessing Meta Data</h2>
       <p>Meta data may be accessed in pages or scripts via the <em>meta</em> global script property.</p>
 
-      <pre class="code">&lt;p>Favorite Color is: &lt;&#64;= meta.color &#64;>&lt;/p></pre>
+      <pre class="code">&lt;p&gt;Favorite Color is: &lt;&#64;= meta.color &#64;&gt;&lt;/p&gt;</pre>
 
       <p>For debugging, you can <em>print</em> properties or <em>dump</em> all the meta data to the expansive console.</p>
 
@@ -283,7 +283,7 @@
     layout: 'product-layout'
     title:  'Hello World'
 }    
-&lt;h1&gt;Hello World with Layouts&lt;/h1>
+&lt;h1&gt;Hello World with Layouts&lt;/h1&gt;
 </pre>
         <p>This will select the <em>product-layout</em> in the <em>layouts</em> directory. Set the <em>layout</em>
         property to the empty string <em>""</em> to disable layout processing. Expansive uses the presence of
@@ -294,7 +294,7 @@
       <p>You can pass one-off meta data parameters to a partial page without changing the general meta for the page. 
       Do this via the <em>partial</em>() function call. For example:</p>
 
-      <pre class="code">&lt;@ partial('hero', { color: 'rec' }) @></pre>
+      <pre class="code">&lt;@ partial('hero', { color: 'rec' }) @&gt;</pre>
 
     </div>
     <div class="terms ui basic center aligned segment">

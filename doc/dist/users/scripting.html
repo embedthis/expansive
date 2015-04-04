@@ -166,10 +166,10 @@
 
             <h2>Creating Dynamic Pages</h2>
             <p>If a source page, layout or partial has a <em>.exp</em> extension, it will be processed by 
-            the Expansive Ejscript service. Javascript code is defined between the <em>&lt;&#64; code &#64;></em>
+            the Expansive Ejscript service. Javascript code is defined between the <em>&lt;&#64; code &#64;&gt;</em>
             tags. For example:</p> 
 
-            <pre class="code">&lt;p>Today's date is &lt;&#64;= Date() @&gt;</pre>
+            <pre class="code">&lt;p&gt;Today's date is &lt;&#64;= Date() @&gt;</pre>
 
                 <p>The <em>&lt;&#64;=</em> sequence means run the Javascript expression and paste the result here.
                 The <em>&lt;&#64;</em> sequence (without the equals) means run the Javascript code and do not 
@@ -177,7 +177,7 @@
 
             <pre class="code">&lt;ul&gt;
     &lt;@ for (i = 0; i &lt; 10; i++) { @&gt;
-        &lt;li> Item &lt;&#64;= i @&gt; &lt;/li&gt;
+        &lt;li&gt; Item &lt;&#64;= i @&gt; &lt;/li&gt;
     &lt;@ } @&gt;
 &lt;/ul&gt;</pre>
                 <p>This will emit ten item lines.</p>

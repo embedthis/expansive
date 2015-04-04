@@ -29,7 +29,7 @@
 
       <h2>Creating Partial Pages</h2>
       <p>A partial page is no different from any other web page except that it does not do layout processing and so does not
-      have a <em>&lt;@ content @></em> element. A partial page may reference other partial pages and may include any 
+      have a <em>&lt;@ content @&gt;</em> element. A partial page may reference other partial pages and may include any 
       Expansive pipeline processing. For example, a HTML page may include a partial page that is defined using Markdown.</p>
 
       <h2>Passing Parameters to Partial Pages</h2>
@@ -50,10 +50,10 @@
       The hero page will receive the parameter in its meta data and can access this via the <em>meta</em> global property.
       For example (partials/hero.html.exp):</p>
 
-      <pre class="code">&lt;p>The color is: &lt;&#64;= meta.color @></pre>
+      <pre class="code">&lt;p&gt;The color is: &lt;&#64;= meta.color @&gt;</pre>
 
       <p>You can pass parameters to a single partial page via the <em>partial</em>() function call. For example:</p>
-      <pre class="code">&lt;@ partial('hero', { color: 'rec' }) @></pre>
+      <pre class="code">&lt;@ partial('hero', { color: 'rec' }) @&gt;</pre>
 
 
 
@@ -64,7 +64,7 @@
     layout: 'product-layout'
     title:  'Hello World'
 }    
-&lt;h1&gt;Hello World with Layouts&lt;/h1>
+&lt;h1&gt;Hello World with Layouts&lt;/h1&gt;
 </pre>
 
     <p>This will select the <em>product-layout</em> in the <em>layouts</em> directory.

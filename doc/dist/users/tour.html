@@ -214,7 +214,7 @@ $ <b>expansive init</b>
             under the <em>dist</em> directory.
             You can also render and then serve the content while dynamically watching for any changes to 
             the input sources by invoking expansive without any other arguments.</p>
-        <pre class="ui code segment">$ <b>expansive serve</b>
+        <pre class="code">$ <b>expansive serve</b>
     [Listen] 127.0.0.1:4000
     [Render] Initial render ...
    [Created] dist/index.html
@@ -233,7 +233,7 @@ $ <b>expansive init</b>
         <p>Layout pages provide the outer contents. Expansive automatically blends the layout page 
         with the content page to create a final composite page. Let's extract the layout from the 
         first page and create a master layout page in <em>layouts/default.html.exp</em>.</p>
-        <pre class="ui code segment">
+        <pre class="code">
 &lt;html&gt;
 &lt;head&gt;
     &lt;title&gt;<b>&lt;&#64;= meta.title @&gt;</b>&lt;/title&gt;
@@ -252,7 +252,7 @@ $ <b>expansive init</b>
         <p>Now we can change the <em>contents/index.html</em> home page to remove the layout HTML and 
         focus just on the unique content for this page:</p>
 
-        <pre class="ui code segment">
+        <pre class="code">
 {
     title: 'Hello World'
 }    
@@ -276,7 +276,7 @@ $ <b>expansive init</b>
         go faster.</p>
 
         <p>For example, to install <a href="http://jquery.com">jQuery</a> using Pak:</p>
-        <pre class="ui code segment">$ <b>pak install jquery</b>
+        <pre class="code">$ <b>pak install jquery</b>
 [Install] jquery 1.11.1</pre>
 
         <p>Behinds the scenes, Pak has downloaded jquery into your local Pak cache (typically ~/.paks), 
@@ -288,7 +288,7 @@ $ <b>expansive init</b>
         extension paks, can just be installed and they self-configure into your application.</p>
 
         <p>This is what the <em>dist/index.html</em> home page now looks like:</p>
-        <pre class="ui code segment">
+        <pre class="code">
 &lt;html&gt;
 &lt;head&gt;
     &lt;title&gt;Blog&lt;/title&gt;
@@ -318,7 +318,7 @@ $ <b>expansive init</b>
             of your web site.</p>
         <p>For example, to create a web site that will use <a href="http://sementic-ui.com">Semantic-UI</a>,
             a modern alternative to <a href="http://getbootstrap.com">Bootstrap</a>:</p>
-        <pre class="ui code segment">$ <b>pak install exp-semantic-skeleton</b>
+        <pre class="code">$ <b>pak install exp-semantic-skeleton</b>
 [Install] jquery 1.11.1
 [Install] semantic 0.50.0
 [Install] exp-semantic-skeleton 0.1.0
@@ -326,7 +326,7 @@ $ <b>expansive init</b>
             <p>This installs Semanic-UI, jQuery, the semantic skeleton, and a set of Expansive plugins to process
                 Less and CSS stylesheets and scripts, as show by the <em>pak list</em>
                 command.</p>
-<pre class="ui code segment">
+<pre class="code">
 $ <b>pak list</b>
 exp-semantic-skeleton 0.1.0 installed
 jquery 1.11.1 installed
@@ -346,17 +346,17 @@ exp-css 0.2.0 cached
             <a href="http://daringfireball.net/projects/markdown/syntax">Markdown</a> or 
             <a href="https://embedthis.com/esp/">ESP</a>. To process Markdown files, first install the 
             <a href="https://embedthis.com/catalog/#/?keywords=exp-md">Markdown</a> plugin.</p>
-            <pre class="ui code segment">$ pak install exp-md
+            <pre class="code">$ pak install exp-md
 [Cached] exp-md 0.2.0</pre>
 
             <p>Now create a sample markdown page, create a document called
             <em>contents/greeting.html.md</em> with the following content:</p>
-         <pre class="ui code segment">
+         <pre class="code">
 # Greetings
 Expansive **expands** your mind.
 </pre>
         <p>Expansive will render this and create <em>dist/greeting.html</em> which will look like:</p>
-        <pre class="ui code segment">
+        <pre class="code">
 &lt;html&gt;
 &lt;head&gt;
     &lt;title&gt;Blog&lt;/title&gt;
@@ -371,7 +371,7 @@ Expansive **expands** your mind.
         <p>Expansive renders the web site by processing all files in the <em>contents</em> directory. 
         It interprets the all file's extensions, one by one. For example: if a file were named 
         <em>page.html.md</em> it would invoke the markdown processor for the <em>.md</em> extension, 
-        then it would invokek the <em>.html</em> processor before saving the final result under the 
+        then it would invoke the <em>.html</em> processor before saving the final result under the 
         <em>dist</em> directory. A file can have any number of extensions and they will be processed 
         from the outside-inwards.</p>
 
@@ -385,13 +385,13 @@ Expansive **expands** your mind.
         the Expansive Ejscript service. Javascript code is defined between the <em>&lt;&#64; code &#64;&gt;</em>
         tags. For example:</p> 
 
-        <pre class="ui code segment">
+        <pre class="code">
 &lt;p&gt;Today's date is &lt;&#64;= Date() @&gt;
 </pre>
             <p>The <em>&lt;&#64;=</em> sequence means run the Javascript expression and paste the result here.
             The <em>&lt;&#64;</em> sequence (without the equals) means run the Javascript code and do not 
             paste any result. This is useful to iterate over html elements. For example:</p>
-        <pre class="ui code segment">
+        <pre class="code">
 &lt;ul&gt;
 &lt;@ for (i = 0; i &lt; 10; i++) { @&gt;
     &lt;li&gt; Item &lt;&#64;= i @&gt; &lt;/li&gt;
@@ -400,7 +400,7 @@ Expansive **expands** your mind.
 </pre>
             <p>This will emit ten item lines</p>
             <p>The <b>&lt;&#64;=</b> sequence means run the Javascript expression and paste the result here.</p>
-            <pre class="ui code segment">
+            <pre class="code">
 &lt;ul&gt;
     &lt;li&gt; Item 0 &lt;/li&gt;
     &lt;li&gt; Item 1 &lt;/li&gt;
@@ -429,7 +429,7 @@ Expansive **expands** your mind.
         instructions. Expansive uses sensible defaults so you typically do not need to configure much. 
         Here is a typical expansive.json file:</p>
 
-        <pre class="ui code segment">
+        <pre class="code">
 {
   meta: {
     url: 'https://embedthis.com/',
@@ -454,9 +454,9 @@ Expansive **expands** your mind.
 
         <h2>Queries and Collections</h2>
         <p>Expansive provides a Collections facility for managing lists of items. It uses collections to manage a list of
-        requried stylesheets and scripts. However you can create your own collections. To create a collection via the 
+        required stylesheets and scripts. However you can create your own collections. To create a collection via the 
         configuration file:</p>
-        <pre class="ui code segment">
+        <pre class="code">
 {
   control: {
     collections: {
@@ -480,7 +480,7 @@ Expansive **expands** your mind.
         <p>Expansive provides a powerful query API to work with files to be rendered in the <em>contents</em> directory.
         The <em>getFiles</em> API can query the meta data of source files. </p>
 
-        <pre class="ui code segment">&lt;@ var list = getFiles({ isPublic: true }) &#64;&gt;</pre>
+        <pre class="code">&lt;@ var list = getFiles({ isPublic: true }) &#64;&gt;</pre>
         <p>This will return a list of filenames for documents that have meta data <em>isPublic</em> set to true.</p>
 
 
@@ -488,7 +488,7 @@ Expansive **expands** your mind.
         <p>Expansive can render web sites according to a configured <em>mode</em>. This mode may be set to debug, test, 
         release, or any string value you like. The mode is stored in the <em>mode</em> property in the package.json 
         file and is accessed by Expansive when rendering the site. For example:</p>
-<pre class="ui code segment">
+<pre class="code">
 {
   "debug": {
     "services": {
@@ -505,10 +505,10 @@ Expansive **expands** your mind.
 }
 </pre>
         <p>This defines two modes: debug and release. In debug mode, minification of CSS and script files is disabled and
-            compression via the <em>exp-gzip</em> plugin is disabled. In release mode, minfication is enabled for scripts
+            compression via the <em>exp-gzip</em> plugin is disabled. In release mode, minification is enabled for scripts
             by default and is explicitly enabled for CSS files.</p>
         <p>The mode may be conveniently set via:</p>
-        <pre class="ui code segment">pak mode debug
+        <pre class="code">pak mode debug
   or
 pak mode release</pre>
 

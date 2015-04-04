@@ -40,23 +40,23 @@
       <p>To define meta data in <em>expansive.json</em> files, set the required property values in the <em>meta</em>
       property collection. For example:</p>
 
-      <code class="inverted">{
+      <pre class="code">{
     meta: {
         property: 'value'
     }
 }
-</code>
+</pre>
       <h2>Content Meta Data</h2>
       <p>To define meta data in a content, partial or layout page, set the required property values in the meta data
       section at the top of the page. For example, consider the page <em>contents/index.html</em>.</p>
 
-      <code class="inverted">{
+      <pre class="code">{
     <b>color: 'red'</b>,
     title: 'Hello World'
 }    
 
-&lt;p>Hello World&lt;/p>
-</code>
+&lt;p&gt;Hello World&lt;/p>
+</pre>
 
       <p>This Meta data defines two properties <em>meta.color</em> and <em>meta.title</em> for this page. </p>
 
@@ -65,9 +65,8 @@
       after the last property in an array or hash. Further, multiline strings
       are supported and may be delimited by single, double or back-tick quotes.</p>
 
-</code>
       <p>The Meta section may contain any JSON object, so multiple property levels are permitted.</p>
-      <code class="inverted">{
+      <pre class="code">{
     user: {
         name: 'George'
         age: 42,
@@ -76,24 +75,25 @@
           UK"
     }
 }    
-</code>
+</pre>
 
       <h2>Accessing Meta Data</h2>
       <p>Meta data may be accessed in pages or scripts via the <em>meta</em> global script property.</p>
 
-      <code class="inverted">&lt;p>Favorite Color is: &lt;&#64;= meta.color &#64;>&lt;/p></code>
+      <pre class="code">&lt;p>Favorite Color is: &lt;&#64;= meta.color &#64;>&lt;/p></pre>
 
       <p>For debugging, you can <em>print</em> properties or <em>dump</em> all the meta data to the expansive console.</p>
-      <code class="inverted">&lt;&#64; 
+
+      <pre class="code">&lt;&#64; 
     print("COLOR", meta.color) 
     dump("META", meta)
-&#64;>
-</code>
+&#64;&gt;
+</pre>
 
         <a name="properties"></a>
         <h2>Meta Properties</h2>
         <p>These are the standard, pre-defined Meta properties availale in content, layout and partial pages.</p>
-        <table class="ui celled table">
+        <table class="ui celled table" title="predefined">
         <thead>
             <tr><th>Property</th><th>Description</th></tr>
         </thead>
@@ -133,12 +133,13 @@
         <h3>Layouts</h3>
         <p>A content page can request a different layout by adding a <em>layout</em>
         property to the meta data section of the content page. For example:</p>
-        <code class="inverted">{
+
+        <pre class="code">{
     layout: 'product-layout'
     title:  'Hello World'
 }    
-&lt;h1>Hello World with Layouts&lt;/h1>
-</code>
+&lt;h1&gt;Hello World with Layouts&lt;/h1>
+</pre>
         <p>This will select the <em>product-layout</em> in the <em>layouts</em> directory. Set the <em>layout</em>
         property to the empty string <em>""</em> to disable layout processing. Expansive uses the presence of
         a meta data section to enable layout processing. If you omit meta data in your page, you will disable 
@@ -147,4 +148,5 @@
       <h3>Partial Pages</h3>
       <p>You can pass one-off meta data parameters to a partial page without changing the general meta for the page. 
       Do this via the <em>partial</em>() function call. For example:</p>
-      <code class="inverted">&lt;@ partial('hero', { color: 'rec' }) @></code>
+
+      <pre class="code">&lt;@ partial('hero', { color: 'rec' }) @></pre>

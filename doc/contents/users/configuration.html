@@ -51,7 +51,8 @@
 
         <h2>Control Properties</h2>
         <p>These are the standard properties in the <em>control</em> collection in <em>expansive.json</em>.</p>
-        <table class="ui celled table">
+
+        <table class="ui celled table" title="control">
             <thead>
                 <tr><th>Name</th><th>Description</th></tr>
             </thead>
@@ -68,9 +69,9 @@
                 <tr><td>script</td><td>Script to evaluate to inject code into the Javascript global execution
                     context. This is visible to scripting in all pages.</td></tr>
                 <tr><td>transforms</td><td>Hash of extension mappings to a list of transform services for those 
-                    mappings. Mappings are in the form <em>ext -> ext</em>. For example:
+                    mappings. Mappings are in the form <em>ext -&gt; ext</em>. For example:
                     <code>transforms: {
-    'less -> css': [ 'compile-less', 'prefix-css', 'minify-css', 'compress' ]
+    'less -&gt; css': [ 'compile-less', 'prefix-css', 'minify-css', 'compress' ]
 }</code>
 
                     Some of the standard service names are: <em>compile-esp</em>, <em>compile-less</em>, 
@@ -80,39 +81,9 @@
             </tbody>
         </table>
         
-        <h2>Control Properties</h2>
-        <p>These are the standard properties in the <em>control</em> collection in <em>expansive.json</em>.</p>
-        <table class="ui celled table">
-            <thead>
-                <tr><th>Name</th><th>Description</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>copy</td><td>Array of patterns to copy without processing. The patterns may include 
-                    <em>*</em> or <em>**</em>. If a directory is specifed, all files under the directories copied. 
-                    The files are relative to the <em>contents</em> directory.</td></tr>
-                <tr><td>documents</td><td>Array of patterns to process. The patterns may include 
-                    <em>*</em> or <em>**</em>. If a directory is specifed, all files under the directories 
-                    are copied. The files are relative to the top-level directory.</td></tr>
-                <tr><td>files</td><td>Array of directories containing raw content to copy to <em>dist</em> 
-                    without processing. By default, contains <em>files</em>.</td></tr>
-                <tr><td>listen</td><td>Address on which to listen for HTTP requests. May be just a port number.</td></tr>
-                <tr><td>script</td><td>Script to evaluate to inject code into the Javascript global execution
-                    context. This is visible to scripting in all pages.</td></tr>
-                <tr><td>transforms</td><td>Hash of extension mappings to a list of transform services for those 
-                    mappings. Mappings are in the form <em>ext -> ext</em>. For example:
-                    <code>transforms: {
-    'less -> css': [ 'compile-less', 'prefix-css', 'minify-css', 'compress' ]
-}</code>
-
-                    Some of the standard service names are: <em>compile-esp</em>, <em>compile-less</em>, 
-                    <em>compile-markdown</em>, <em>compile-sass</em>, <em>compress</em>, <em>minify-css</em>, 
-                    <em>minify-js</em>, <em>prefix-css</em>, and <em>shell</em>.</td></tr>
-                <tr><td>watch</td><td>Time in milliseconds to wait between checking for rendering.</td></tr>
-            </tbody>
-        </table>
         <h2>Sample expansive.json</h2>
         <p>Here is a sample expansive.json configuration file for an 
-            <a href="http://angularjs.org/">Angular application.</p>
+            <a href="http://angularjs.org/">Angular application.</a></p>
         <code class="inverted">{
     meta: {
         url: 'https://embedthis.com/appweb/demo/',

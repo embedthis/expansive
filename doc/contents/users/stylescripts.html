@@ -39,7 +39,7 @@
         <p>The exp-css services can be enabled and configured via properties in the 
         <em>expansive.json</em> configuration file.</p>
 
-        <table class="ui celled table">
+        <table class="ui celled table" title="exp-css">
             <thead>
                 <tr><th class="two wide column">Service</th><th>Property</th><th>Description</th></tr>
             </thead>
@@ -74,7 +74,7 @@
         minified CSS files are used only if they have an associated map file. A default release configuration 
         in <em>expansive.json</em> would look like:</p>
 
-        <code class="inverted">{
+        <pre class="code">{
     "release": {
         "services": {
             "minify-css": {
@@ -83,7 +83,7 @@
         }
     }
 }
-</code>
+</pre>
         <p>This would then be selected via <em>pak mode release</em>.</p>
 
         <h2>exp-js</h2>
@@ -97,7 +97,7 @@
         <p>The exp-js services can be enabled and configured via properties in the 
             <em>expansive.json</em> configuration file.</p>
 
-        <table class="ui celled table">
+        <table class="ui celled table" title="exp-js">
             <thead>
                 <tr><th class="two wide column">Service</th><th>Property</th><th>Description</th></tr>
             </thead>
@@ -132,7 +132,7 @@
         minified JS files are used only if they have an associated map file. A default release configuration 
         in <em>expansive.json</em> would look like:</p>
 
-        <code class="inverted">{
+        <pre class="code">{
     "release": {
         "services": {
             "minify-js": {
@@ -142,11 +142,11 @@
         }
     }
 }
-</code>
+</pre>
 
         <h2>Automated Library Configuration</h2>
 
-        <p>You can manually define your &lt;script> and stylesheet &lt;link> elements if you wish.
+        <p>You can manually define your &lt;script&gt; and stylesheet &lt;link&gt; elements if you wish.
         However, as you develop your application and install various script and stylesheet libraries, you will 
         need to manually add or modify references to these script and stylesheet references. 
         If there are dependencies between libraries, order matters. For example, 
@@ -171,7 +171,7 @@
             <li><a href="http://getbootstrap.com">Angular-Animate</a></li>
             <li><a href="http://getbootstrap.com">Font-Awesome</a></li>
         </ul>
-        <code>$ pak install angular angular-route angular-animate bootstrap font-awesome exp-js exp-css
+        <pre>$ pak install angular angular-route angular-animate bootstrap font-awesome exp-js exp-css
    [Install] angular 1.3.14
    [Install] angular-route 1.3.9
    [Install] angular-animate 1.3.9
@@ -181,44 +181,44 @@
    [Install] exp-js 0.2.0
    [Install] exp-css 0.2.0
    [Install] jquery 2.1.3
-   [Install] bootstrap 3.3.2</code>
+   [Install] bootstrap 3.3.2</pre>
 
         <p>The following layout page can use the <em>renderStyles</em> and <em>renderScripts</em>
         to automatically generate the required HTML for the stylesheets and scripts.</p>
 
 
-        <code class="inverted">&lt;html>
-&lt;head>
+        <pre class="code">&lt;html&gt;
+&lt;head&gt;
     <b>&lt;@ renderStyles() @&gt;
     &lt;@ renderScripts() @&gt;</b>
-&lt;/head>
-&lt;body>
-    &lt;@ content @>
-&lt;/body>
-&lt;/html></code>
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;@ content @&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
 
         <p>This will be rendered as:</p>
-        <code class="inverted">&lt;html>
-&lt;head>
-    <b>&lt;link href="angular/angular-csp.css" ... />
-    &lt;link href="bootstrap/css/bootstrap.min.css" ... />
-    &lt;link href="bootstrap/css/bootstrap-theme.min.css" ... />
-    &lt;link href="font-awesome/css/font-awesome.min.css" ... />
+        <pre class="code">&lt;html&gt;
+&lt;head&gt;
+    <b>&lt;link href="angular/angular-csp.css" ... /&gt;
+    &lt;link href="bootstrap/css/bootstrap.min.css" ... /&gt;
+    &lt;link href="bootstrap/css/bootstrap-theme.min.css" ... /&gt;
+    &lt;link href="font-awesome/css/font-awesome.min.css" ... /&gt;
 
-    &lt;script src="angular/angular.min.js">&lt;/script>
-    &lt;script src="angular-animate/angular-animate.min.js">&lt;/script>
-    &lt;script src="angular-route/angular-route.min.js">&lt;</script>
-    &lt;script src="jquery/jquery.min.js">&lt;/script>
-    &lt;script src="bootstrap/js/bootstrap.js">&lt;/script></b>
-&lt;/head>
-&lt;/html>
-</code>
+    &lt;script src="angular/angular.min.js"&gt;&lt;/script&gt;
+    &lt;script src="angular-animate/angular-animate.min.js"&gt;&lt;/script&gt;
+    &lt;script src="angular-route/angular-route.min.js"&gt;&lt;</script&gt;
+    &lt;script src="jquery/jquery.min.js"&gt;&lt;/script&gt;
+    &lt;script src="bootstrap/js/bootstrap.js"&gt;&lt;/script&gt;</b>
+&lt;/head&gt;
+&lt;/html&gt;
+</pre>
     <p>Note that all required stylesheets and scripts are rendered in the correct order.</p>
 
     <h3>renderScripts and renderStyles</h3>
     <p>The <em>renderScripts</em> and <em>renderStyles</em> APIs have the following signatures:</p>
-    <code class="inverted">function renderScripts(filter = null, extras = [])
-function renderStyles(filter = null, extras = [])</code>
+    <pre class="code">function renderScripts(filter = null, extras = [])
+function renderStyles(filter = null, extras = [])</pre>
     <p>Where <em>filter</em> is an optional filename pattern or array of patterns. If not supplied, then all the
         default the scripts/styles are rendered. If <em>filter</em> is provided, only the files that match the 
         <em>filter</em> will be rendered. Wild-cards are supported including
@@ -243,4 +243,3 @@ function renderStyles(filter = null, extras = [])</code>
     <h2>Want More?</h2>
     <p>Use the <em><a href="https://github.com/embedthis/exp-less">exp-less</a></em> to process Less stylesheets
     and the  <em><a href="https://github.com/embedthis/exp-sass">exp-sass</a></em> to process Sass stylesheets.</p> 
-</ul>

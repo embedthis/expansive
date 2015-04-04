@@ -24,29 +24,32 @@
             the Expansive Ejscript service. Javascript code is defined between the <em>&lt;&#64; code &#64;></em>
             tags. For example:</p> 
 
-            <code class="inverted">&lt;p>Today's date is &lt;&#64;= Date() @&gt;</code>
+            <pre class="code">&lt;p>Today's date is &lt;&#64;= Date() @&gt;</pre>
+
                 <p>The <em>&lt;&#64;=</em> sequence means run the Javascript expression and paste the result here.
                 The <em>&lt;&#64;</em> sequence (without the equals) means run the Javascript code and do not 
                 paste any result. This is useful to iterate over html elements. For example:</p>
-            <code class="inverted">&lt;ul>
-    &lt;@ for (i = 0; i < 10; i++) { @&gt;
-        &lt;li> Item &lt;&#64;= i @&gt; &lt;/li>
+
+            <pre class="code">&lt;ul&gt;
+    &lt;@ for (i = 0; i &lt; 10; i++) { @&gt;
+        &lt;li> Item &lt;&#64;= i @&gt; &lt;/li&gt;
     &lt;@ } @&gt;
-&lt;/ul></code>
+&lt;/ul&gt;</pre>
                 <p>This will emit ten item lines.</p>
-            <code class="inverted">&lt;ul>
-    &lt;li> Item 0 &lt;/li>
-    &lt;li> Item 1 &lt;/li>
-    &lt;li> Item 2 &lt;/li>
-    &lt;li> Item 3 &lt;/li>
-    &lt;li> Item 4 &lt;/li>
-    &lt;li> Item 5 &lt;/li>
-    &lt;li> Item 6 &lt;/li>
-    &lt;li> Item 7 &lt;/li>
-    &lt;li> Item 8 &lt;/li>
-    &lt;li> Item 9 &lt;/li>
-&lt;/ul>
-</code>
+
+            <pre class="code">&lt;ul&gt;
+    &lt;li&gt; Item 0 &lt;/li&gt;
+    &lt;li&gt; Item 1 &lt;/li&gt;
+    &lt;li&gt; Item 2 &lt;/li&gt;
+    &lt;li&gt; Item 3 &lt;/li&gt;
+    &lt;li&gt; Item 4 &lt;/li&gt;
+    &lt;li&gt; Item 5 &lt;/li&gt;
+    &lt;li&gt; Item 6 &lt;/li&gt;
+    &lt;li&gt; Item 7 &lt;/li&gt;
+    &lt;li&gt; Item 8 &lt;/li&gt;
+    &lt;li&gt; Item 9 &lt;/li&gt;
+&lt;/ul&gt;
+</pre>
                 <h3>Short Forms</h3>
                 <p>Because variable substitution is so common, Expansive provides some convenient short forms. 
                 These can be used outside <em>&lt;@ @&gt;</em> delimiters.</p>
@@ -57,9 +60,10 @@
                     <li><em>&#64;&#64;</em> &mdash; to get a single literal '@' in the rendered document.</li>
                 </ul>
 
-                <code class="inverted">&lt;p>Generated on <b>&#64;=meta.date</b> &lt;/p></code>
+                <pre class="code">&lt;p&gt;Generated on <b>&#64;=meta.date</b> &lt;/p&gt;</pre>
 
                 <h3>Relative URLs</h3>
                 <p>The <em>&#64;~</em> short form can be very useful when constructing relative URLs that may vary depending
                 on what URL the application is hosted.</p>
-                <code class="inverted"> &lt;a href="&#64;~/admin/index.html">&lt;button ...>&lt;/a></code>
+
+                <pre class="code"> &lt;a href="&#64;~/admin/index.html"&gt;&lt;button ...&gt;&lt;/a&gt;</pre>

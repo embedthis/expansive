@@ -13,26 +13,26 @@
         <p>Expansive verbose mode provide detailed trace as it loads configuration, plugins and renders the site.
         This can help pin-point whe Expansive thinks it is doing.</p>
 
-        <code class="inverted">$ expansive -v
+        <pre class="code">$ expansive -v
    [Loading] expansive.json
       [Info] Using mode: debug
-    [Plugin] exp-internal provides "exp" for exp -> *
+    [Plugin] exp-internal provides "exp" for exp -&gt; *
       [Load] Plugin paks/animate.css
       [Load] Plugin paks/exp-analytics
-    [Plugin] exp-analytics provides "analytics" for html -> html
+    [Plugin] exp-analytics provides "analytics" for html -&gt; html
       [Load] Plugin paks/exp-css
         ....
- [Transform] layouts/default.html.exp (exp -> *)
+ [Transform] layouts/default.html.exp (exp -&gt; *)
    [Service] exp from "exp-internal"
- [Transform] partials/head.html.exp (exp -> *)
+ [Transform] partials/head.html.exp (exp -&gt; *)
    [Service] exp from "exp-internal"
- [Transform] partials/head.html.exp (html -> html)
+ [Transform] partials/head.html.exp (html -&gt; html)
    [Service] analytics from "exp-analytics"
         ....
-</code>
+</pre>
         
         <p>Conversely to verbose mode, there is a quite mode.</p>
-        <code class="inverted">$ expansive -q</code>
+        <pre class="code">$ expansive -q</pre>
 
         <h2>Debug Mode</h2>
         <p>Debug mode will dump some internal Expansive data structures on startup and will also display
@@ -44,4 +44,4 @@
             <li>Services &mdash; The configured services and service configuration</li>
             <li>Collections &mdash; The configured collection lists</li>
         </ul>
-        <code class="inverted">$ expansive -d</code>
+        <pre class="code">$ expansive -d</pre>

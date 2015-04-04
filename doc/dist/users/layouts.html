@@ -161,20 +161,21 @@
    		<p>Layout pages provide the outer contents and content pages provide the inner contents. Expansive 
         automatically blends the layout page with the content page to create a final composite page. 
         Here is a sample layout page:</p>
-        <code class="inverted">&lt;html>
-&lt;head>
-    &lt;title>&lt;&#64;= meta.title @&gt;&lt;/title>
-    &lt;meta charset="utf-8" />
-    &lt;link href="css/all.css" rel="stylesheet" type="text/css" />
-    &lt;script src="jquery/jquery.min.js">&lt;/script>
-    &lt;script src="semantic/js/semantic.js">&lt;/script>
-&lt;/head>
-&lt;body>
+
+        <pre class="code">&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;&lt;&#64;= meta.title @&gt;&lt;/title&gt;
+    &lt;meta charset="utf-8" /&gt;
+    &lt;link href="css/all.css" rel="stylesheet" type="text/css" /&gt;
+    &lt;script src="jquery/jquery.min.js"&gt;&lt;/script&gt;
+    &lt;script src="semantic/js/semantic.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
     <b>&lt;@ content @&gt;</b>
-    <span>Generated on Apr  3, 2015.</span>
-&lt;/body>
-&lt;/html>
-</code>
+    &lt;span&gt;Generated on &lt;[object Type]().format('%b %e, %Y') @&gt;&lt;/span&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
         <p>The <em>@ content @</em> element is replaced with the content page before saving to the <em>dist</em> directory.</p>
         <p>Layout pages can be nested and utilize other layout pages to an arbitrary depth.</p>
 
@@ -182,11 +183,11 @@
         <p>A content page omits all the layout boiler plate and can focus solely on the unique content for that page.
         Here is a sample content page.</p>
 
-        <code class="inverted">{
+        <pre class="code">{
     title: 'Hello World'
 }    
-&lt;h1>Hello World with Layouts&lt;/h1>
-</code>
+&lt;h1&gt;Hello World with Layouts&lt;/h1&gt;
+</pre>
 
         <p>The special area between the braces at the top of the content page is called Meta data. 
         It provides meta data values that can be accessed via scripting in layout and partial pages. This provides a means
@@ -196,12 +197,12 @@
         <p>A content page can request a different layout by adding a <em>layout</em>
         property to the meta data section of the content page. For example:</p>
         
-        <code class="inverted">{
+        <pre class="code">{
     layout: 'product-layout'
     title:  'Hello World'
 }    
-&lt;h1>Hello World with Layouts&lt;/h1>
-</code>
+&lt;h1&gt;Hello World with Layouts&lt;/h1&gt;
+</pre>
         <p>This will select the <em>product-layout</em> in the <em>layouts</em> directory. Set the <em>layout</em>
         property to the empty string <em>""</em> to disable layout processing. Expansive uses the presence of
         a meta data section to enable layout processing. If you omit meta data in your page, you will disable 

@@ -25,13 +25,17 @@
         <a name="init"></a>
         <h2>Initialization</h2>
         <p>Before using Expansive, you must initialize the directory that will contain your web site or web application.
-        Expansive is configured by an <em>expansive.json</em> configuration file. This defines top level configuration for the 
-        site and controls how Expansive renders the site. An expansive.json file must be present for Expansive to run.</p>
-        The <em>expansive init</em> command will create an <em>expansive.json</em> file as well as other required files
-        and directories.</p>
+        Expansive is configured by an <em>expansive.json</em> configuration file. This defines top level configuration 
+        for the site and controls how Expansive renders the site. An expansive.json file must be present for Expansive 
+        to run.</p> 
+
+        <p>The <em>expansive init</em> command will create an <em>expansive.json</em> file as well as other 
+        required files and directories.</p>
+
         <code class="inverted">$ expansive init</code>
+
         <p>This will create the following files and directories:</p>
-		<table class="ui celled table">
+		<table class="ui celled table" title="files">
 			<thead>
 				<tr><th>Name</th><th>Description</th></tr>
 			</thead>
@@ -55,7 +59,8 @@
         <code class="inverted">$ pak install exp-js</code>
 
         <p>Once one or more packages have been installed, the following directories will be created by <em>Pak</em>.</p>
-		<table class="ui celled table">
+
+		<table class="ui celled table" title="directories">
 			<thead>
 				<tr><th>Name</th><th>Description</th></tr>
 			</thead>
@@ -122,7 +127,7 @@ $ expansive mode debug</code>
         <a name="options"></a>
         <h2>Options</h2>
         <p>The <em>expansive</em> command can accept the following command line arguments.</p>
-        <table class="ui celled table">
+        <table class="ui celled table" title="options">
         <thead>
         	<tr><th>Option</th><th>Description</th></tr>
         </thead>
@@ -136,7 +141,7 @@ $ expansive mode debug</code>
         	<tr><td>--norender</td><td>Do not do an initial render before watching</td></tr>
         	<tr><td>--nowatch</td><td>Do not watch for changes, just serve</td></tr>
         	<tr><td>--quiet</td><td>Quiet mode</td></tr>
-        	<tr><td>--trace path:level</td>Trace http requests to file at level (0-5)<td></td></tr>
+        	<tr><td>--trace path:level</td><td>Trace http requests to file at level (0-5)</td></tr>
         	<tr><td>--verbose</td><td>Verbose mode</td></tr>
         	<tr><td>--version</td><td>Display version information</td></tr>
         </tbody>

@@ -362,7 +362,7 @@ Expansive **expands** your mind.
     &lt;title&gt;Blog&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
-    <b>&lt;h1 id="greetings"&ft;Greetings&lt;/h1&gt;
+    <b>&lt;h1 id="greetings"&gt;Greetings&lt;/h1&gt;
     &lt;p&gt;Expansive <strong>expands</strong> your mind.&lt;/p&gt;</b>
     &lt;script src="lib/jquery/jquery.js"&gt;&lt;/script&gt;
 &lt;/body&gt;
@@ -386,17 +386,17 @@ Expansive **expands** your mind.
         tags. For example:</p> 
 
         <pre class="ui code segment">
-&lt;p>Today's date is &lt;&#64;= Date() @&gt;
+&lt;p&gt;Today's date is &lt;&#64;= Date() @&gt;
 </pre>
             <p>The <em>&lt;&#64;=</em> sequence means run the Javascript expression and paste the result here.
             The <em>&lt;&#64;</em> sequence (without the equals) means run the Javascript code and do not 
             paste any result. This is useful to iterate over html elements. For example:</p>
         <pre class="ui code segment">
-&lt;ul&ft;&gt;
+&lt;ul&gt;
 &lt;@ for (i = 0; i &lt; 10; i++) { @&gt;
     &lt;li&gt; Item &lt;&#64;= i @&gt; &lt;/li&gt;
 &lt;@ } @&gt;
-&lt;/u&ft;l
+&lt;/ul&gt;
 </pre>
             <p>This will emit ten item lines</p>
             <p>The <b>&lt;&#64;=</b> sequence means run the Javascript expression and paste the result here.</p>

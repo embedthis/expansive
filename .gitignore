@@ -36,3 +36,4 @@ start.me
 *.mod
 .gitattributes
 tags
+.cdrc

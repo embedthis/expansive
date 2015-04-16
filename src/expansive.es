@@ -12,7 +12,6 @@ require expansive.template
 
 const CONFIG: Path = Path('expansive')
 const HOME = Path(App.getenv('HOME') || App.getenv('USERPROFILE') || '.')
-const VERSION = '0.1.0'
 const LISTEN = '127.0.0.1:4000'
 const EXTENSIONS = ['js', 'css']
 const PACKAGE = Path('package.json')
@@ -175,10 +174,6 @@ public class Expansive {
         App.log.name = 'expansive'
         args = Args(argsTemplate, App.args)
         options = args.options
-        if (options.version) {
-            print(VERSION)
-            App.exit(0)
-        }
         if (options.verbose) {
             verbosity++
         }
@@ -194,6 +189,10 @@ public class Expansive {
         }
         package = loadPackage()
         config = readConfig('.')
+        if (config.expansive && !Version(Config.Version).acceptable(config.expansive)) {
+            throw 'Requires Expansive ' + config.expansive + '. Expansive version ' + Config.Version +
+                            ' is not compatible with this requirement.' + '\n'
+        }
         loadConfig('.', topMeta)
         checkPaks()
         loadPlugins()
@@ -1625,7 +1624,6 @@ try {
     expansive.parseArgs()
     expansive.process()
 } catch (e) {
-    App.log.error('Internal application error')
     App.log.error(e)
     App.exit(1)
 }

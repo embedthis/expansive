@@ -1,7 +1,7 @@
 {
     "name": "expansive",
     "description": "Embedthis Expansive",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "keywords": [
         "expansive"
     ],
@@ -35,6 +35,6 @@
     },
     "pak": {
         "import": true,
-        "version": ">=0.10.0"
+        "pak": ">=0.10.0"
     }
 }

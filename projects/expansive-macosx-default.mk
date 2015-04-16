@@ -694,7 +694,7 @@ stop: $(DEPS_43)
 installBinary: $(DEPS_44)
 	mkdir -p "$(ME_APP_PREFIX)" ; \
 	rm -f "$(ME_APP_PREFIX)/latest" ; \
-	ln -s "0.5.1" "$(ME_APP_PREFIX)/latest" ; \
+	ln -s "$(VERSION)" "$(ME_APP_PREFIX)/latest" ; \
 	mkdir -p "$(ME_VAPP_PREFIX)/bin" ; \
 	cp $(BUILD)/bin/expansive $(ME_VAPP_PREFIX)/bin/expansive ; \
 	mkdir -p "$(ME_BIN_PREFIX)" ; \
@@ -753,5 +753,5 @@ uninstall: $(DEPS_47)
 #
 
 version: $(DEPS_48)
-	echo 0.5.1
+	echo $(VERSION)
 

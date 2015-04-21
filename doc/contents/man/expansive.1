@@ -139,7 +139,7 @@ file is used by the Pak manager when installing or managing extension packages.
 .RS 5
  {
      meta: {
-         url: 'http://example.com',
+         site: 'http://example.com',
          sitemap: {
             files: [
                 '**.html',
@@ -182,7 +182,7 @@ expression, HTML escapse the data and then write it. For example:
 
 Even simpler, you can use an abbreviated @= variable to emit the value of a Javascript variable. For example:
 
- <p>Site URL is @={meta.url}</p>
+ <p>Site URL is @={meta.site}</p>
 
 The top URL of the site may be abbreviated as '@~'.
 
@@ -357,6 +357,9 @@ Destination filename of the document relative to the dist directory.
 .TP 12
 service
 Name of the transformation service being run.
+.TP 12
+site
+URL for the home page of the web site.
 .TP 12
 sitemap
 Control what files to include in a sitemap. If defined, Expansive will by default include all HTML files in the sitemap.

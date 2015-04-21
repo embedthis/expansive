@@ -17,7 +17,8 @@
     meta: {
         description: 'Meta data description. Value read from package.json by default',
         title:       'Home page title. Value read from package.json by default',
-        url:         'Home page URL',
+        site:        'Home page URL',
+        url:         'Current document URL',
 
     /*
         Internal meta properties

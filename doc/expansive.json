@@ -1,6 +1,6 @@
 {
     meta: {
-        url: 'https://embedthis.com/expansive/doc/'
+        site: 'https://embedthis.com/expansive/doc/'
     },
     control: {
         listen: '127.0.0.1:5000'

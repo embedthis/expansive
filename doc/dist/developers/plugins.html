@@ -248,6 +248,15 @@ mappings: {
             <p>The transform function should process and return the new contents. The service can instruct the pipeline
             to delete the file by returning null.</p>
 
+            <h2>Pre Function</h2>
+            <p>If a service defines a <em>pre</em> function, it will be invoked before all pipeline processing. 
+            This "pre-processor" is useful to configure the environment or dynamically create pages.
+            It is passed two arguments:</p>
+            <ul>
+                <li>meta &mdash; Meta data properties for the file.</li>
+                <li>service &mdash; The service data object containing the service properties.</li>
+            </ul>
+
             <h2>Post Function</h2>
             <p>If a service defines a <em>post</em> function, it will be invoked after all pipeline processing to 
             perform "post" processing. It is passed two arguments:</p>

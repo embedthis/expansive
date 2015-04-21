@@ -1,6 +1,6 @@
 {
     meta: {
-        url: "http://example.com/"
+        site: "http://example.com/"
     }
     control: {
         copy: [ 'images' ],

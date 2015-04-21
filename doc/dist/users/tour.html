@@ -432,7 +432,7 @@ Expansive **expands** your mind.
         <pre class="code">
 {
   meta: {
-    url: 'https://embedthis.com/',
+    site: 'https://embedthis.com/',
   },
   control: {
     copy: [ 'images' ],
@@ -444,9 +444,10 @@ Expansive **expands** your mind.
  }
 }
         </pre>
-        <p>The Meta property section defines the default public URL for the site. The <em>copy</em> property provides a 
-        hint to Expansive that anything under the 'images' directory should be copied and not processed by the Expansive 
-        pipeline. The <em>services</em> property set provides configuration for the plugin services to control their 
+        <p>The Meta property section defines the default public URL for the site via the <em>site</em> property. 
+        The <em>control.copy</em> property provides a hint to Expansive that anything under the 'images' directory 
+        should be copied and not processed by the Expansive pipeline. 
+        The <em>services</em> property set provides configuration for the plugin services to control their 
         operation and enable/disable minification and compression services.</p> 
 
         <p>If you require a scripted configuration, you can alternatively use an <em>expansive.es</em> script file 

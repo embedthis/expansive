@@ -26,7 +26,7 @@
 
       <h3>Top Level Meta Data</h3>
       <p>The top level expansive.json file defines the global meta data inherited by all pages. This is where you should
-      define the web sites home url.</p>
+      define the web site's home url via the <em>site</em> property.</p>
 
       <h3>Directory Level Meta Data</h3>
       <p>To help partition an application, meta data may be defined by per-directory <em>expansive.json</em> files. 
@@ -116,6 +116,7 @@
             <tr><td>partial</td><td>Name of the partial page being processed.</td></tr>
             <tr><td>path</td><td>Destination filename of the page relative to the <em>dist</em> directory.</td></tr>
             <tr><td>service</td><td>Name of the transformation service being run.</td></tr>
+            <tr><td>site</td><td>Home page URL for the web site.</td></tr>
             <tr><td>source</td><td>Current input source file being processed. May be a document, partial, layout or 
                 any input resource file. Includes the <em>contents</em>, <em>lib</em>, <em>layouts</em> or <em>partials</em>
                 directory.</td></tr>

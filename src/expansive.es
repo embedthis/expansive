@@ -76,6 +76,7 @@ public class Expansive {
     var stats: Object
     var topMeta: Object
     var transforms: Object = {}
+    var preProcessors: Object = {}
     var postProcessors: Object = {}
     var verbosity: Number = 0
 
@@ -406,6 +407,11 @@ public class Expansive {
                     eval(service.script)
                     service.render = global.transform
                     delete global.transform
+                    if (global.pre) {
+                        service.pre = global.pre
+                        preProcessors[service.name] = service
+                        delete global.pre
+                    }
                     if (global.post) {
                         service.post = global.post
                         postProcessors[service.name] = service
@@ -459,6 +465,7 @@ public class Expansive {
 
     function process(): Void {
         let task = args.rest.shift()
+        options.task = task
         if (task == 'init') {
             init()
             return
@@ -550,7 +557,7 @@ public class Expansive {
             checkDepends(meta)
             mastersModified = checkMastersModified()
             render(false)
-            if (options.serve && modified) {
+            if (options.serving && modified) {
                 restartServer()
             }
             if (modified) {
@@ -643,12 +650,13 @@ public class Expansive {
     }
 
     function serve(meta) {
+        options.serve = true
         if (control.server) {
             externalServer()
         } else {
             internalServer()
         }
-        options.serve = true
+        options.serving = true
         let address = options.listen || control.listen || '127.0.0.1:4000'
         if (options.nowatch) {
             trace('Listen', address)
@@ -669,6 +677,8 @@ public class Expansive {
         for each (item in directories.contents.files(control.copy, {contents: true})) {
             copy[item] = true
         }
+        buildMetaCache()
+        preProcess()
         if (initial) {
             renderFiles(topMeta)
         }
@@ -797,6 +807,10 @@ public class Expansive {
         Test if a path should be processed according to command line filters
      */
     function filter(path: Path): Boolean {
+        let base = path.basename
+        if (base == 'expansive.json' || base == 'expansive.es') {
+            return false
+        }
         if (!filters) {
             return true
         }
@@ -809,7 +823,6 @@ public class Expansive {
     }
 
     function renderDocuments() {
-        buildMetaCache()
         let files = directories.top.files(control.documents, {exclude: 'directories', relative: true})
         for (let [index,file] in files) {
             if (!filter(file)) {
@@ -821,6 +834,30 @@ public class Expansive {
             } else if (renderAll || filters || mastersModified || checkModified(file, meta)) {
                 modified = true
                 renderDocument(file, meta)
+            }
+        }
+    }
+
+//  MOB
+    let once
+    function preProcess() {
+        if (modified || !once) {
+once = true
+            control.pre ||= []
+            for each (service in preProcessors) {
+                if (!control.pre.contains(service.name)) {
+                    control.pre.push(service.name)
+                }
+            }
+            for each (name in control.pre) {
+                let service = preProcessors[name]
+                if (!service) {
+                    throw 'Pre processing service "' + name + '" cannot be found'
+                }
+                trace('Pre', service.name)
+                if (service.enable !== false) {
+                    service.pre.call(this, meta, service)
+                }
             }
         }
     }
@@ -990,29 +1027,37 @@ public class Expansive {
         meta.sourcePath = sourcePath
         meta.dest = destCache[meta.source] = (destCache[meta.source] || getDest(sourcePath, meta))
         meta.path = trimPath(meta.dest, directories.dist)
-        meta.url = Uri(meta.path)
+        if (options.serve) {
+            meta.site ||= options.listen || control.listen || 'localhost:4000'
+        } else {
+            meta.site ||= 'localhost'
+        }
+        meta.url = Uri(meta.path).complete(meta.site)
         meta.mode = package.pak.mode || 'debug'
+        meta.date ||= new Date
+        meta.date = Date(meta.date)
+        meta.isoDate = meta.date.toISOString()
 
         let dir = meta.path.dirname
         let count = (dir == '.') ? 0 : dir.components.length
         meta.top = '../'.times(count)
-        meta.date = new Date
         global.top = meta.top
     }
 
-    function renderDocument(file, meta) {
+    function renderContents(contents, meta) {
         /*
             Collections reset at the start of each document so layouts/partials can modify
          */
         collections = (control.collections || {}).clone()
-        let [fileMeta, contents] = splitMetaContents(file, file.readString())
-        meta = blendMeta(meta.clone(true), fileMeta || {})
-        initMeta(file, meta)
+        initMeta(meta.document, meta)
         contents = transformContents(contents, meta)
-        if (fileMeta) {
+        if (meta.layout) {
             contents = blendLayout(contents, meta)
         }
-        contents = pipeline(contents, '* -> *', meta.dest, meta)
+        return pipeline(contents, '* -> *', meta.dest, meta)
+    }
+
+    function writeDest(contents, meta) {
         if (contents != null) {
             let dest = meta.dest
             dest.dirname.makeDir()
@@ -1020,6 +1065,20 @@ public class Expansive {
             trace('Render', dest)
             stats.files++
         }
+    }
+
+    function renderDocument(file, meta) {
+        /*
+            Collections reset at the start of each document so layouts/partials can modify
+         */
+        let [fileMeta, contents] = splitMetaContents(file, file.readString())
+        meta = blendMeta(meta.clone(true), fileMeta || {})
+        meta.document = file
+        if (!fileMeta) {
+            delete meta.layout
+        }
+        contents = renderContents(contents, meta)
+        writeDest(contents, meta)
     }
 
     function transformContents(contents, meta) {
@@ -1062,7 +1121,7 @@ public class Expansive {
                         contents = service.render.call(this, contents, meta, service)
                     } catch (e) {
                         print(e)
-                        if (options.serve) {
+                        if (options.serving) {
                             trace('Error', 'Cannot render ' + file)
                             print(e)
                         } else {
@@ -1440,7 +1499,7 @@ public class Expansive {
         fp.write('<?xml version="1.0" encoding="UTF-8"?>\n' +
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         let list = dir.files(sitemap.files || '**.html', {exclude: 'directories', relative: true})
-        let url = meta.url.trimEnd('/')
+        let url = meta.site.trimEnd('/')
         let base = dir.trimStart(directories.dist).trimStart('/')
         for each (file in list) {
             let filename = base.join(file.name).trimEnd('.gz')

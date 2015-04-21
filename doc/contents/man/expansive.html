@@ -157,7 +157,7 @@ EXP(1)                           User Commands                          EXP(1)
 
              {
                  meta: {
-                     url: 'http://example.com',
+                     site: 'http://example.com',
                      sitemap: {
                         files: [
                             '**.html',
@@ -206,7 +206,7 @@ EXP(1)                           User Commands                          EXP(1)
        Even  simpler, you can use an abbreviated @= variable to emit the value
        of a Javascript variable. For example:
 
-        &lt;p&gt;Site URL is @={meta.url}&lt;/p&gt;
+        &lt;p&gt;Site URL is @={meta.site}&lt;/p&gt;
 
        The top URL of the site may be abbreviated as '@~'.
 
@@ -389,6 +389,8 @@ EXP(1)                           User Commands                          EXP(1)
                    directory.
 
        service     Name of the transformation service being run.
+
+       site        URL for the home page of the web site.
 
        sitemap     Control  what  files  to  include in a sitemap. If defined,
                    Expansive will by default include all  HTML  files  in  the

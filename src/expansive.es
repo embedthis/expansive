@@ -15,6 +15,7 @@ const HOME = Path(App.getenv('HOME') || App.getenv('USERPROFILE') || '.')
 const LISTEN = '127.0.0.1:4000'
 const EXTENSIONS = ['js', 'css']
 const PACKAGE = Path('package.json')
+const LAST_GEN = Path('.expansive-lastgen')
 
 const USAGE = 'Expansive Web Site Generator
   Usage: exp [options] [FILES ...]
@@ -55,15 +56,13 @@ public class Expansive {
     var dirTokens: Object
     var filters: Array
     var destCache: Object
-    var renderAll: Boolean
     var impliedUpdates: Object
     var initialized: Boolean
     var lastRestart = new Date
     var lastGen: Date
     var log: Logger = App.log
-    var mastersModified: Boolean
     var metaCache: Object
-    var modified: Boolean
+    var modified: Object
     var obuf: ByteArray?
     var options: Object
     var package: Object
@@ -78,12 +77,15 @@ public class Expansive {
     var transforms: Object = {}
     var preProcessors: Object = {}
     var postProcessors: Object = {}
+    var using: Object = {}
     var verbosity: Number = 0
+    var watchers: Object = {}
 
     let argsTemplate = {
         options: {
             benchmark: { alias: 'b' },        /* Undocumented */
             chdir:     { range: Path },       /* Implemented in expansive.c */
+            clean:     { },
             debug:     { alias: 'd' },        /* Undocumented */
             keep:      { alias: 'k' },
             listen:    { range: String },
@@ -118,7 +120,7 @@ public class Expansive {
          */
         control = {
             collections: {},
-            copy: ['images'],
+            copy: ['images'],                   /* Directory relative to 'sources' */
             dependencies: {},
             directories: {
                 contents:   Path('contents'),
@@ -134,7 +136,7 @@ public class Expansive {
                  */
                 top:        Path().absolute,
             },
-            documents: [ 'lib/**', 'contents/**' ],
+            documents: [ 'lib', 'contents' ],
             listen: LISTEN,
             watch: 1200,
             services: {},
@@ -153,7 +155,8 @@ public class Expansive {
             blendMeta(topMeta, App.config.expansive)
         }
         global.meta = topMeta
-        lastGen = new Date()
+        lastGen = LAST_GEN.exists ? LAST_GEN.modified : Date(0)
+        addWatcher('standard', standardWatcher)
     }
 
     public function unknown(argv, i) {
@@ -199,6 +202,7 @@ public class Expansive {
         loadPlugins()
         setupEjsTransformer()
         if (options.debug) {
+            dump('Directories', directories)
             dump('Meta', topMeta)
             dump('Control', control)
             dump('Transforms', transforms)
@@ -401,6 +405,7 @@ public class Expansive {
         for (let [name, requiredVersion] in package.dependencies) {
             loadPlugin(name, requiredVersion)
         }
+        buildMetaCache()
         for each (service in services) {
             if (service.script) {
                 try {
@@ -494,10 +499,9 @@ public class Expansive {
         case 'render':
             if (rest.length > 0) {
                 filters = rest
-            } else {
-                renderAll = true
             }
             preclean()
+            runWatchers()
             render()
             break
 
@@ -512,7 +516,7 @@ public class Expansive {
             if (task && task != 'serve') {
                 /* Process only specified files. If not, process all */
                 filters = [task] + rest
-                renderAll = false
+                runWatchers()
                 render()
             } else {
                 serve(topMeta)
@@ -521,54 +525,161 @@ public class Expansive {
         }
     }
 
-    function checkDepends(meta) {
+    function runWatchers() {
+        modified = { file: {} }
+        if (options.clean) {
+            modified.everything ||= {}
+            options.clean = false
+        }
+        for each (watch in watchers) {
+//let mark = new Date()
+            watch.call(this)
+//print("Watcher", watch.name, mark.elapsed)
+        }
+        if (modified.any) {
+            lastGen = Date()
+            LAST_GEN.write(lastGen + '\n')
+        }
+    }
+
+    public function modify(file, ...kinds) {
+        for each (kind in kinds) {
+            modified[kind] ||= {}
+            modified[kind][file] = true
+        }
+        modified.any = true
+        vtrace('Modified', file)
+        event('onchange', file)
+    }
+
+    public function getLastRendered(source): Date {
+        let sourcePath = getSourcePath(source)
+        let dest = getDest(sourcePath)
+        return dest.modified ? dest.modified : lastGen
+    }
+
+    public function touchDir(dir: Path) {
+        dir.makeDir()
+        let path = dir.join('.touch')
+        path.write('')
+        path.remove()
+    }
+
+    public function addWatcher(key, fn) {
+        watchers[key] = fn
+    }
+
+    function useFile(kind, key, file) {
+        using[kind] ||= {}
+        using[kind][key] ||= []
+        using[kind][key].push(file)
+    }
+
+    function standardWatcher() {
+        for each (partial in directories.partials.files('*')) {
+            let found
+            if (using.partials) {
+                for each (file in using.partials[partial]) {
+                    found = true
+                    if (partial.modified > getLastRendered(file)) {
+                        modify(file, 'file')
+                    }
+                }
+            }
+            if (!found && partial.modified > lastGen) {
+                modify(partial, 'partial', 'everything')
+            }
+        }
+        for each (layout in directories.layouts.files('*')) {
+            let found
+            if (using.layouts) {
+                for each (file in using.layouts[layout]) {
+                    found = true
+                    if (layout.modified > getLastRendered(file)) {
+                        modify(file, 'file')
+                    }
+                }
+            }
+            if (!found && layout.modified > lastGen) {
+                modify(layout, 'layout', 'everything')
+            }
+        }
+
         for (let [path, dependencies] in control.dependencies) {
             path = directories.contents.join(path)
             let deps = directories.contents.files(dependencies)
             for each (let file: Path in deps) {
-                if (file.modified.time >= lastGen.time) {
-                    impliedUpdates[path] = true
-                    modified = true
-                    event('onchange', file, meta)
+                if (file.modified > getLastRendered(path)) {
+                    modify(file, 'file')
+                    modify(path, 'file')
                 }
             }
+        }
+
+        let files = directories.top.files(control.documents, {contents: true, relative: true})
+        files.push(directories.contents)
+        files.push(directories.lib)
+        for (let [index,file] in files) {
+            if (!filter(file)) {
+                continue
+            }
+            if (file.isDir) {
+                if (file.modified > getLastRendered(file)) {
+                    modify(file, 'file', 'everything')
+                    touchDir(getDest(getSourcePath(file)))
+                }
+            } else if (file.modified > getLastRendered(file)) {
+                modify(file, 'file')
+            }
+        }
+
+        /*
+            This is costly - do only first time
+         */
+        if (!stats.started) {
+            for each (dir in control.files) {
+                for each (file in dir.files('**')) {
+                    if (!filter(file)) {
+                        continue
+                    }
+                    if (file.modified > getLastRendered(file)) {
+                        modify(file, 'file')
+                    }
+                }
+            }
+        }
+
+        for (dir in metaCache) {
+            let path = findConfig(dir)
+            if (path && path.modified > lastGen) {
+                modify(path, 'config', 'everything')
+            }
+        }
+        if (options.debug) {
+            dump('Modified', modified)
         }
     }
 
     function watch(meta) {
-        mastersModified = checkMastersModified()
-        if (!options.norender) {
-            trace('Render', 'Initial render ...')
-            options.quiet = true
-            renderAll = true
-            render()
-            renderAll = false
-            options.quiet = false
-        }
         trace('Watching', 'for changes every ' + control.watch + ' msec ...')
+        options.watching = true
         if (control.watch < 1000) {
             /* File modified resolution is at best (portably) 1000 msec */
             control.watch = 1000
         }
         while (true) {
-            let mark = Date(((Date().time / 1000).toFixed(0) * 1000))
-            modified = false
-            event('check', lastGen)
-            checkDepends(meta)
-            mastersModified = checkMastersModified()
-            render(false)
-            if (options.serving && modified) {
+            runWatchers()
+            render()
+
+            if (options.serving && modified.any) {
                 restartServer()
             }
-            if (modified) {
+            if (modified.any) {
                 reloadBrowsers();
             }
             App.sleep(control.watch)
 
             vtrace('Check', 'for changes (' + Date().format('%I:%M:%S') + ')')
-            if (modified) {
-                lastGen = mark
-            }
         }
     }
 
@@ -667,21 +778,12 @@ public class Expansive {
         }
     }
 
-    function render(initial = true) {
+    function render() {
         stats.started = new Date
         stats.files = 0
-        if (mastersModified) {
-            cache = {}
-        }
-        copy = {}
-        for each (item in directories.contents.files(control.copy, {contents: true})) {
-            copy[item] = true
-        }
         buildMetaCache()
         preProcess()
-        if (initial) {
-            renderFiles(topMeta)
-        }
+        renderFiles()
         renderDocuments()
         renderSitemaps()
         postProcess()
@@ -695,11 +797,13 @@ public class Expansive {
             }
             trace('Debug', 'Total plugin time %.2f' % ((total / 1000) + ' secs.'))
         }
-        if (renderAll) {
+        if (filters) {
+            if (stats.files == 0) {
+                trace('Warn', 'No matching files for filter: ' + filters)
+            }
+        } else if (!options.watching) {
             trace('Info', 'Rendered ' + stats.files + ' files to "' + directories.dist + '". ' +
                 'Elapsed time %.2f' % ((stats.started.elapsed / 1000)) + ' secs.')
-        } else if (filters && stats.files == 0) {
-            trace('Warn', 'No matching files for filter: ' + filters)
         }
     }
 
@@ -708,27 +812,18 @@ public class Expansive {
         Note: the paths under files do not copy the first directory portion, whereas the files under lib do.
         Note: files and lib are not watched for changes.
      */
-    function renderFiles(meta) {
+    function renderFiles() {
         if (!filters) {
-            let files = (control.files || []).clone()
-            directories.dist.makeDir()
-            if (directories.files.exists) {
-                files.push(directories.files)
+            for each (dir in control.files) {
+                for each (file in dir.files('**', {directories: false})) {
+                    if (modified.file[file]) {
+                        let dest = directories.dist.join(getSourcePath(file))
+                        cp(file, dest)
+                        trace('Copy', dest)
+                        stats.files++
+                    }
+                }
             }
-            cp(files, directories.dist, {
-                flatten: false,
-                trim: 1,
-                post: function(from, to) {
-                    expansive.trace('Copy', to)
-                }
-            })
-            files = []
-            cp(files, directories.dist, {
-                flatten: false,
-                post: function(from, to) {
-                    expansive.trace('Copy', to)
-                }
-            })
         }
     }
 
@@ -736,25 +831,12 @@ public class Expansive {
         Copy file as-is without processing
      */
     function copyFile(file, meta) {
-        let trimmed = trimPath(file, directories.contents)
-        if (file.isDir) {
-            if (renderAll || checkModified(file, meta)) {
-                trace('Copy', file)
-                cp(file.join('**'), directories.dist.join(trimmed), {dir: true, relative: file})
-
-            } else {
-                for each (path in file.files('**')) {
-                    if (checkModified(path, meta)) {
-                        trace('Copy', path)
-                        cp(path, directories.dist.join(path))
-                    }
-                }
-            }
-        } else {
-            if (renderAll || checkModified(file, meta)) {
-                trace('Copy', file)
-                cp(file, directories.dist.join(trimmed))
-            }
+        if (modified.file[file] || modified.everything) {
+            let trimmed = trimPath(file, directories.contents)
+            let dest = directories.dist.join(trimmed)
+            cp(file, dest)
+            trace('Copy', dest)
+            stats.files++
         }
     }
 
@@ -781,10 +863,10 @@ public class Expansive {
         Load expansive.es files and inherit upper definitions.
      */
     function buildMetaCache() {
-        if (!metaCache) {
+        if (!metaCache || modified.everything) {
             metaCache ||= {}
             let dirs = [ Path('.'), directories.contents, directories.lib ]
-            dirs += directories.top.files(control.documents, {include: /\/$/, relative: true})
+            dirs += directories.top.files(control.documents, {contents: true, include: /\/$/, relative: true})
 
             for each (dir in dirs) {
                 if (findConfig(dir)) {
@@ -823,47 +905,47 @@ public class Expansive {
     }
 
     function renderDocuments() {
-        let files = directories.top.files(control.documents, {exclude: 'directories', relative: true})
+        copy = {}
+        for each (item in directories.contents.files(control.copy, {contents: true})) {
+            copy[item] = true
+        }
+        let files = directories.top.files(control.documents, {contents: true, directories: false, relative: true})
         for (let [index,file] in files) {
             if (!filter(file)) {
                 continue
             }
-            let meta = metaCache[file.dirname]
-            if (copy[file]) {
-                copyFile(file, meta)
-            } else if (renderAll || filters || mastersModified || checkModified(file, meta)) {
-                modified = true
-                renderDocument(file, meta)
+            if (modified.file[file] || modified.everything) {
+                let meta = metaCache[file.dirname]
+                if (copy[file]) {
+                    copyFile(file, meta)
+                } else {
+                    renderDocument(file, meta)
+                }
             }
         }
     }
 
-//  MOB
-    let once
     function preProcess() {
-        if (modified || !once) {
-once = true
-            control.pre ||= []
-            for each (service in preProcessors) {
-                if (!control.pre.contains(service.name)) {
-                    control.pre.push(service.name)
-                }
+        control.pre ||= []
+        for each (service in preProcessors) {
+            if (!control.pre.contains(service.name)) {
+                control.pre.push(service.name)
             }
-            for each (name in control.pre) {
-                let service = preProcessors[name]
-                if (!service) {
-                    throw 'Pre processing service "' + name + '" cannot be found'
-                }
-                trace('Pre', service.name)
-                if (service.enable !== false) {
-                    service.pre.call(this, meta, service)
-                }
+        }
+        for each (name in control.pre) {
+            let service = preProcessors[name]
+            if (!service) {
+                throw 'Pre processing service "' + name + '" cannot be found'
+            }
+            vtrace('PreProcess', service.name)
+            if (service.enable !== false) {
+                service.pre.call(this, meta, service)
             }
         }
     }
 
     function postProcess() {
-        if (modified) {
+        if (modified.any) {
             control.post ||= []
             for each (service in postProcessors) {
                 if (!control.post.contains(service.name)) {
@@ -875,7 +957,7 @@ once = true
                 if (!service) {
                     throw 'Post processing service "' + name + '" cannot be found'
                 }
-                trace('Post', service.name)
+                trace('PostProcess', service.name)
                 if (service.enable !== false) {
                     service.post.call(this, meta, service)
                 }
@@ -884,47 +966,11 @@ once = true
     }
 
     function renderSitemaps() {
-        for each (map in sitemaps) {
-            sitemap(map)
-        }
-    }
-
-    function checkModified(file, meta) {
-        if (impliedUpdates[file]) {
-            delete impliedUpdates[file]
-            return true
-        }
-        if (file.isDir) {
-            if (file.modified.time >= lastGen.time) {
-                return true
-            }
-            return false
-        }
-        if (file.modified && file.modified.time < lastGen.time) {
-            return false
-        }
-        vtrace('Modified', file)
-        modified = true
-        event('onchange', file, meta)
-        return true
-    }
-
-    function checkMastersModified(dir): Boolean {
-        for each (file in directories.partials.files('*')) {
-            if (file.modified.time >= lastGen.time) {
-                modified = true
-                event('onchange', file, topMeta)
-                return true
+        if (modified.everything) {
+            for each (map in sitemaps) {
+                sitemap(map)
             }
         }
-        for each (file in directories.layouts.files('*')) {
-            if (file.modified.time >= lastGen.time) {
-                modified = true
-                event('onchange', file, topMeta)
-                return true
-            }
-        }
-        return false
     }
 
     function getExt(file: Path) {
@@ -959,12 +1005,6 @@ once = true
         return mapping
     }
 
-//  MOB - not right
-    function getExtensions(file) {
-        print("WARNING")
-        return [file.extension, file.trimExt().extension]
-    }
-
     function getMappingDest(file, mapping) {
         let dest
         if (!file.startsWith(directories.dist)) {
@@ -988,7 +1028,15 @@ once = true
 
     public function getDest(file, meta) {
         meta ||= topMeta
-        let dest = directories.dist.join(meta.sourcePath || file)
+        let source = file || meta.sourcePath
+        if (!source) {
+            return null
+        }
+        let dest = destCache[source]
+        if (dest) {
+            return dest
+        }
+        let dest = directories.dist.join(source)
         let mapping = getMapping(file)
         while (transforms[mapping]) {
             dest = getMappingDest(file, mapping)
@@ -998,37 +1046,46 @@ once = true
             mapping = getMapping(dest)
             file = dest
         }
+        destCache[source] = dest
         return dest
+    }
+
+    function getSourcePath(source) {
+        //  TODO - optimize
+        if (source.startsWith(directories.contents)) {
+            return source.trimComponents(directories.contents.components.length)
+        } else if (source.startsWith(directories.lib)) {
+            return source.trimComponents(directories.lib.components.length)
+        } else if (source.startsWith(directories.layouts)) {
+            return source.trimComponents(directories.layouts.components.length)
+        } else if (source.startsWith(directories.partials)) {
+            return source.trimComponents(directories.partials.components.length)
+        } else if (source.startsWith(directories.files)) {
+            return source.trimComponents(directories.files.components.length)
+        }
+        return source
     }
 
     /*
         Initialize meta
 
-        source   - Current source file being processed. Relative path including 'contents/lib/layouts/partials'.
-        dest     - Destination filename being created. Relative path including 'dist'.
-        base     - Source file without 'contents/lib'.
-        document - Source of the document being processed. For partials/layouts, it is the invoking document.
-        path     - Destination without 'dist'. Note: may have different extensions to base.
-        url      - Url made from 'path'.
-        top      - Relative URL to application home page.
+        source     - Current source file being processed. Relative path including 'contents|lib|layouts|partials'.
+        sourcePath - Current source file being processed. Relative path excluding 'contents|lib|layouts|partials'.
+        dest       - Destination filename being created. Relative path including 'dist'.
+        base       - Source file without 'contents/lib'.
+        document   - Source of the document being processed. For partials/layouts, it is the invoking document.
+        path       - Destination without 'dist'. Note: may have different extensions to base.
+        url        - Url made from 'path'.
+        top        - Relative URL to application home page.
      */
     function initMeta(path, meta) {
         meta.document = path
         meta.source = path
-
-        let sourcePath
-        if (path.startsWith(directories.contents)) {
-            sourcePath = path.trimComponents(directories.contents.components.length)
-        } else if (path.startsWith(directories.lib)) {
-            sourcePath = path.trimComponents(directories.lib.components.length)
-        } else {
-            sourcePath = path
-        }
-        meta.sourcePath = sourcePath
-        meta.dest = destCache[meta.source] = (destCache[meta.source] || getDest(sourcePath, meta))
+        meta.sourcePath = getSourcePath(meta.source)
+        meta.dest = getDest(meta.sourcePath)
         meta.path = trimPath(meta.dest, directories.dist)
         if (options.serve) {
-            meta.site ||= options.listen || control.listen || 'localhost:4000'
+            meta.site = options.listen || control.listen || meta.site || 'localhost:4000'
         } else {
             meta.site ||= 'localhost'
         }
@@ -1263,6 +1320,7 @@ once = true
         } else {
             while (meta.layout) {
                 let layout = findFile(directories.layouts, meta.layout, meta)
+                useFile('layouts', layout, meta.document)
                 if (!layout) {
                     fatal('Cannot find layout "' + meta.layout + '"')
                 }
@@ -1289,6 +1347,7 @@ once = true
         if (!partial) {
             fatal('Cannot find partial "' + name + '"' + ' for ' + meta.source)
         }
+        useFile('partials', partial, meta.document)
         blend(meta, options)
         if (meta.partial == name) {
             fatal('Recursive partial in "' + partial + '"')
@@ -1442,18 +1501,23 @@ once = true
 
     function event(name, arg = null, meta = null) {
         if (global[name]) {
-            (global[name]).call(this, arg, meta)
+            (global[name]).call(this, arg, meta || topMeta)
         }
     }
 
     function preclean() {
-        if (!filters && !options.noclean) {
+        if (options.clean) {
+            trace('Clean', directories.dist)
             directories.dist.removeAll()
+            LAST_GEN.remove()
         }
     }
 
     function postclean() {
-        directories.dist.join('partials').remove()
+        if (directories.dist.join('partials').exists) {
+            print("UNUSED -- WHY THIS postclean() - dist/partials exists")
+            directories.dist.join('partials').remove()
+        }
     }
 
     function init() {
@@ -1464,6 +1528,8 @@ once = true
         let path = CONFIG.joinExt('json')
         trace('Create', path)
         path.write(App.exeDir.join('sample.json').readString())
+
+        //  TODO - these names should come from directories
         for each (p in [ 'contents', 'dist', 'layouts', 'partials' ]) {
             Path(p).makeDir()
         }
@@ -1490,9 +1556,6 @@ once = true
         let dir = map.dir
         let meta = map.meta
         let sitemap = map.sitemap
-        if (!(renderAll || mastersModified)) {
-            return
-        }
         let path = dir.join('Sitemap.xml')
         path.dirname.makeDir()
         let fp = new File(path, 'w')
@@ -1608,6 +1671,13 @@ once = true
         dirTokens = {}
         for (let [name,value] in directories) {
             dirTokens[name.toUpperCase()] = value
+        }
+        control.files ||= []
+        for (let [key, value] in control.files) {
+            control.files[key] = Path(value)
+        }
+        if (directories.files.exists && !control.files.contains(directories.files)) {
+            control.files.push(directories.files)
         }
     }
 

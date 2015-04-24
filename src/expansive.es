@@ -583,6 +583,7 @@ public class Expansive {
                     found = true
                     if (partial.modified > getLastRendered(file)) {
                         modify(file, 'file')
+                        modify(partial, 'partial')
                     }
                 }
             }
@@ -597,6 +598,7 @@ public class Expansive {
                     found = true
                     if (layout.modified > getLastRendered(file)) {
                         modify(file, 'file')
+                        modify(layout, 'layout')
                     }
                 }
             }
@@ -781,6 +783,9 @@ public class Expansive {
     function render() {
         stats.started = new Date
         stats.files = 0
+        if (modified.everything || modified.partial) {
+            cache = {}
+        }
         buildMetaCache()
         preProcess()
         renderFiles()

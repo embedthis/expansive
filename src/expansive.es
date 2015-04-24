@@ -201,6 +201,7 @@ public class Expansive {
         checkPaks()
         loadPlugins()
         setupEjsTransformer()
+        clean(meta)
         if (options.debug) {
             dump('Directories', directories)
             dump('Meta', topMeta)
@@ -481,7 +482,7 @@ public class Expansive {
 
         switch (task) {
         case 'clean':
-            preclean(meta)
+            clean(meta)
             break
 
         case 'deploy':
@@ -500,7 +501,6 @@ public class Expansive {
             if (rest.length > 0) {
                 filters = rest
             }
-            preclean()
             runWatchers()
             render()
             break
@@ -792,7 +792,6 @@ public class Expansive {
         renderDocuments()
         renderSitemaps()
         postProcess()
-        postclean()
 
         if (options.benchmark) {
             trace('Debug', '\n' + serialize(stats, {pretty: true, indent: 4, quotes: false}))
@@ -1510,18 +1509,11 @@ public class Expansive {
         }
     }
 
-    function preclean() {
-        if (options.clean) {
+    function clean() {
+        if (options.clean && !options.noclean) {
             trace('Clean', directories.dist)
             directories.dist.removeAll()
             LAST_GEN.remove()
-        }
-    }
-
-    function postclean() {
-        if (directories.dist.join('partials').exists) {
-            print("UNUSED -- WHY THIS postclean() - dist/partials exists")
-            directories.dist.join('partials').remove()
         }
     }
 

@@ -4866,16 +4866,15 @@ module ejs {
          */
         native function call(thisObject: Object, ...args): Object 
 
-        //  TODO this should return a bound function
         /** 
-            Bind the value of "this" for the function. This can set the value of "this" for the function. If
-            $overwrite is false, it will only define the value of "this" if it is not already defined.
+            Bind the value of "this" for the function. This can set the value of "this" for the function. 
             Use $bound to examine the bound "this" value.
             @param thisObj Value of "this" to define
             @param args Function arguments to supply to the function. These arguments preceed any caller supplied
                 arguments when the function is actually invoked.
+            @return The function for chaining.
          */
-        native function bind(thisObj: Object, ...args): Void
+        native function bind(thisObj: Object, ...args): Function
 
         /** 
             The bound object representing the "this" object for the function. Will be set to null if no object is bound.

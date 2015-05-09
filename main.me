@@ -6,7 +6,7 @@ Me.load({
     plugins: [ 'configuration', 'installs' ],
 
     blend: [
-        'ejs',
+        'src/*/*.me',
     ],
 
     configure: {
@@ -75,18 +75,12 @@ Me.load({
         manifest: 'installs/manifest.me',
     },
 
-    scripts: {
-        loaded: `
-            me.targets.makerom.enable = false
-        `
-    },
-
     targets: {
         'expansive.mod': {
             path: '${BIN}/expansive.mod',
             files: [ 'src/expansive.es', 'src/ExpParser.es', 'paks/ejs-version/Version.es' ],
             build: `
-                run('${LBIN}/ejsc --debug --out ${BIN}/expansive.mod --optimize 9 ${FILES}')
+                run('"${LBIN}/ejsc" --debug --out "${BIN}/expansive.mod" --optimize 9 ${FILES}')
             `,
             message: 'Compile: expansive.mod',
             depends: [ 'ejs.mod' ],

@@ -90,13 +90,13 @@
 
       <ItemDefinitionGroup>
       <Link>
-        <AdditionalDependencies>libejs.lib;libhttp.lib;libmpr.lib;libpcre.lib;libzlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+        <AdditionalDependencies>libejs.lib;libhttp.lib;libmpr.lib;estssl;libest.lib;libpcre.lib;libzlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
         <AdditionalLibraryDirectories>$(OutDir);build\$(Cfg)\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       </Link>
 
       <CustomBuildStep>
         <Command>cd ..\..
-.\build\windows-x86-default\bin\ejsc --debug --out ./build/windows-x86-default/bin/expansive.mod --optimize 9 src/expansive.es src/ExpParser.es paks/ejs-version/Version.es
+"./build/windows-x86-default/bin/ejsc" --debug --out "./build/windows-x86-default/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs-version/Version.es
 cd projects\expansive-windows-default</Command>
         <Outputs>$(BinDir)\expansive.mod</Outputs>
       </CustomBuildStep>

@@ -58,7 +58,6 @@ public class Expansive {
     var destCache: Object
     var impliedUpdates: Object
     var initialized: Boolean
-    var lastRestart = new Date
     var lastGen: Date
     var log: Logger = App.log
     var metaCache: Object
@@ -67,9 +66,10 @@ public class Expansive {
     var options: Object
     var package: Object
     var paks: Object = {}
-    var pid: Number?
     var plugins: Object = {}
     var reload: Array = []
+    var restarts = []
+    var server: Cmd
     var services: Object = {}
     var sitemaps: Array = []
     var stats: Object
@@ -138,7 +138,7 @@ public class Expansive {
             },
             documents: [ 'lib', 'contents' ],
             listen: LISTEN,
-            watch: 1200,
+            watch: 1500,
             services: {},
             transforms: {}
         }
@@ -445,8 +445,8 @@ public class Expansive {
             pkg.pak ||= {}
             blend(directories, pkg.directories)
             castDirectories()
-            topMeta.description = pkg.description
             topMeta.title = pkg.title
+            topMeta.description = pkg.description
         }
         return pkg || {pak: {}}
     }
@@ -532,9 +532,7 @@ public class Expansive {
             options.clean = false
         }
         for each (watch in watchers) {
-//let mark = new Date()
             watch.call(this)
-//print("Watcher", watch.name, mark.elapsed)
         }
         if (modified.any) {
             lastGen = Date()
@@ -631,7 +629,10 @@ public class Expansive {
                     touchDir(getDest(getSourcePath(file)))
                 }
             } else if (file.modified > getLastRendered(file)) {
-                modify(file, 'file')
+                let meta = getFileMeta(file)
+                if (!meta || !meta.draft) {
+                    modify(file, 'file')
+                }
             }
         }
 
@@ -672,52 +673,57 @@ public class Expansive {
         while (true) {
             runWatchers()
             render()
-
-            if (options.serving && modified.any) {
-                restartServer()
+            if (modified.any && options.serving) {
+                restartServer(true)
             }
             if (modified.any) {
                 reloadBrowsers();
             }
             App.sleep(control.watch)
-
             vtrace('Check', 'for changes (' + Date().format('%I:%M:%S') + ')')
         }
     }
 
-    function externalServer() {
-        if (pid) {
-            vtrace('Kill', 'Server', pid)
-            Cmd.kill(pid)
-            pid = null
+    function externalWatch(event, cmd) {
+        let buf = new ByteArray
+        let len = cmd.read(buf, -1)
+        prints(buf)
+        if (len == 0 && cmd.wait(0)) {
+            if (server) {
+                options.quiet = false
+                trace('Info', 'Server exited, restarting ...')
+            }
+            restartServer()
         }
-        let command = control.server
-        if (command) {
-            let cmd = new Cmd
-            cmd.on('readable', function(event, cmd) {
-                let buf = new ByteArray
-                let len = cmd.read(buf, -1)
-                prints(buf)
-                if (len == 0 && cmd.wait(0)) {
-                    options.quiet = false
-                    trace('Info', 'Server exited, restarting ...')
-                    pid = cmd.pid
-                    restartServer()
-                }
-            })
-            cmd.start(command, {detach: true})
-            cmd.finalize()
-            pid = cmd.pid
-            trace('Run', command, '(' + pid + ')')
-        }
-        lastRestart = new Date
     }
 
-    function restartServer() {
+    function externalServer() {
+        if (server) {
+            if (server.pid) {
+                server.off('readable', externalWatch)
+                vtrace('Kill', 'Server', server.pid)
+                try { Cmd.kill(server.pid) } catch {}
+            }
+        }
+        server = new Cmd
+        externalWatch.bind(this)
+        server.on('readable', externalWatch)
+        server.start(control.server, {detach: true})
+        server.finalize()
+        trace('Run', control.server, '(' + server.pid + ')')
+        if (restarts.push(Date.now()).length > 5) {
+            restarts.splice(0, 1)
+        }
+    }
+
+    var restarts = []
+
+    function restartServer(force = false) {
         if (control.server) {
-            if (lastRestart.elapsed < 5000) {
-                trace('Info', 'Server lasted less than 5 seconds, pausing 5 seconds before restart')
-                setTimeout(function() { externalServer() }, 5000)
+            if (restarts.length >= 5 && (Date.now() - restarts[0]) < 60000 && !force) {
+                trace('Info', 'Server keeps dying, pausing 5 seconds before restart')
+                restarts = []
+                setTimeout(function() { restartServer(force) }, 5000)
             } else {
                 trace('Info', 'Restart server')
                 externalServer()
@@ -872,6 +878,7 @@ public class Expansive {
             let dirs = [ Path('.'), directories.contents, directories.lib ]
             dirs += directories.top.files(control.documents, {contents: true, include: /\/$/, relative: true})
 
+            sitemaps = []
             for each (dir in dirs) {
                 if (findConfig(dir)) {
                     let meta = metaCache[dir.parent] || topMeta
@@ -961,7 +968,7 @@ public class Expansive {
                 if (!service) {
                     throw 'Post processing service "' + name + '" cannot be found'
                 }
-                trace('PostProcess', service.name)
+                trace('Post', service.name)
                 if (service.enable !== false) {
                     service.post.call(this, meta, service)
                 }
@@ -1134,6 +1141,9 @@ public class Expansive {
          */
         let [fileMeta, contents] = splitMetaContents(file, file.readString())
         meta = blendMeta(meta.clone(true), fileMeta || {})
+        if (meta.draft) {
+            return
+        }
         meta.document = file
         if (!fileMeta) {
             delete meta.layout
@@ -1559,9 +1569,15 @@ public class Expansive {
         fp.write('<?xml version="1.0" encoding="UTF-8"?>\n' +
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         let list = dir.files(sitemap.files || '**.html', {exclude: 'directories', relative: true})
+        if (!meta.site) {
+            throw 'Must define a meta "site" URL'
+        }
         let url = meta.site.trimEnd('/')
         let base = dir.trimStart(directories.dist).trimStart('/')
         for each (file in list) {
+            if (!filter(file)) {
+                continue
+            }
             let filename = base.join(file.name).trimEnd('.gz')
             fp.write('    <url>\n' +
                 '        <loc>' + url + '/' + filename + '</loc>\n' +

@@ -34435,9 +34435,9 @@ static EjsObj *fun_applyFunction(Ejs *ejs, EjsFunction *fun, int argc, EjsObj **
 
 
 /*
-    function bind(thisObj: Object, ...args): Void
+    function bind(thisObj: Object, ...args): Function
  */
-static EjsObj *fun_bindFunction(Ejs *ejs, EjsFunction *fun, int argc, EjsObj **argv)
+static EjsFunction *fun_bindFunction(Ejs *ejs, EjsFunction *fun, int argc, EjsObj **argv)
 {
     EjsAny      *thisObj;
 
@@ -34449,7 +34449,7 @@ static EjsObj *fun_bindFunction(Ejs *ejs, EjsFunction *fun, int argc, EjsObj **a
         fun->boundArgs = (EjsArray*) argv[1];
         assert(ejsIs(ejs, fun->boundArgs, Array));
     }
-    return 0;
+    return fun;
 }
 
 

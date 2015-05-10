@@ -9782,7 +9782,7 @@ module ejs {
                         if (options.footer) {
                             contents.push(expand(options.footer, options))
                         }
-                        to.write(contents.join('\n'))
+                        to.write(contents.join('\n') + '\n')
                         to.setAttributes(options)
                     }
                     /*
@@ -12209,6 +12209,16 @@ module ejs {
             @return A URI
          */
         native static function template(pattern: String, ...options): Uri
+
+        /**
+            Create a string URI based on a template. The template is a subset of the URI-templates specification and supports
+            simple {tokens} only. Each token is looked for in the set of provided option objects. The search stops with
+            the first object providing a value.
+            @param pattern URI-Template with {word} tokens.
+            @param options Set of option objects with token properties to complete the URI.
+            @return A URI String
+         */
+        native static function templateString(pattern: String, ...options): String
 
         /** 
             Convert the URI to a JSON string. 
@@ -22366,7 +22376,7 @@ module ejs.web {
                     value = pathInfo.replace(r.pattern, value)
                 }
                 if (value.toString().contains("{")) {
-                    value = Uri.template(value, params, request)
+                    value = Uri.templateString(value, params, request)
                 }
                 params[field] = value
             }

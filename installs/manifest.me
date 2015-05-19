@@ -15,14 +15,14 @@ Me.load({
             install: {
                 inherit:    'package-manifest',
                 prefixes:   [ 'root', 'app', 'vapp', 'bin', 'inc', 'man'],
-                sets:       [ 'core', 'libs', 'doc' ],
+                sets:       [ 'core', 'doc' ],
                 platforms:  [ 'windows', 'unix' ]
             },
             binary: {
                 inherit:    'package-manifest',
                 prefixes:   [ 'root', 'app', 'vapp', 'bin', 'inc', 'man'],
                 formats:    [ 'native', 'tar' ],
-                sets:       [ 'core', 'libs', 'doc', 'package' ],
+                sets:       [ 'core', 'doc', 'package' ],
                 platforms:  [ 'freebsd', 'linux', 'windows', 'macosx' ]
             },
             source: {
@@ -72,25 +72,6 @@ Me.load({
                     to:         '${abin}/',
                     exclude:    /src\/expansive.c|src\/paks|\/$/,
                     enable:     false,
-                }
-            ],
-            libs: [
-                { 
-                    from: [
-                                'libssl*${SHOBJ}*',
-                                'libcrypto*${SHOBJ}*',
-                    ],
-                    to:         '${abin}/',
-                    enable:     'me.platform.os != "windows" && !makeme.options.gen',
-                    ifdef:      'openssl',
-
-                }, { from: [
-                                'libeay32${SHOBJ}',
-                                'ssleay32${SHOBJ}',
-                    ],
-                    to:         '${abin}/',
-                    enable:     'me.platform.os == "windows"',
-                    ifdef:      'openssl',
                 }
             ],
             doc: [

@@ -741,7 +741,7 @@ DEPS_39 += src/http/ca.crt
 $(BUILD)/bin/ca.crt: $(DEPS_39)
 	@echo '      [Copy] $(BUILD)/bin/ca.crt'
 	mkdir -p "$(BUILD)/bin"
-	cp src/http/ca.crt $(BUILD)/bin/ca.crt
+	cp src/http/src/http/ca.crt $(BUILD)/bin/ca.crt
 
 ifeq ($(ME_COM_HTTP),1)
 #

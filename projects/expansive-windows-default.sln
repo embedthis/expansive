@@ -244,14 +244,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "expansive", "expansive-wind
 		{80960947-AC85-4936-AE84-93B0B65B2722} = {80960947-AC85-4936-AE84-93B0B65B2722}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "http-ca-crt", "expansive-windows-default\http-ca-crt.vcxproj", "{C859320E-03EB-41F0-8779-EC350442CE94}"
-	ProjectSection(ProjectDependencies) = postProject
-		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{C859320E-03EB-41F0-8779-EC350442CE94} = {C859320E-03EB-41F0-8779-EC350442CE94}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "httpcmd", "expansive-windows-default\httpcmd.vcxproj", "{35E35408-AD4B-417E-8045-9A11A101363F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
@@ -292,6 +284,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libestssl", "expansive-wind
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{43651ECA-27E7-4095-AC9E-26FE2D5A0188} = {43651ECA-27E7-4095-AC9E-26FE2D5A0188}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "roots.crt", "expansive-windows-default\roots.crt.vcxproj", "{9A4B0D56-EBC2-4683-A382-4AD141DFBBD6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2DDCC749-D49B-42E6-8E4E-0CE105C6F507} = {2DDCC749-D49B-42E6-8E4E-0CE105C6F507}
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{9A4B0D56-EBC2-4683-A382-4AD141DFBBD6} = {9A4B0D56-EBC2-4683-A382-4AD141DFBBD6}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sample", "expansive-windows-default\sample.vcxproj", "{B31144AE-D1DF-4933-9764-92F97354B33F}"
@@ -399,14 +399,6 @@ EndProject
 {80960947-AC85-4936-AE84-93B0B65B2722}.Release|Win32.Build.0 = Release|Win32
 {80960947-AC85-4936-AE84-93B0B65B2722}.Release|x64.ActiveCfg = Release|x64
 {80960947-AC85-4936-AE84-93B0B65B2722}.Release|x64.Build.0 = Release|x64
-{C859320E-03EB-41F0-8779-EC350442CE94}.Debug|Win32.ActiveCfg = Debug|Win32
-{C859320E-03EB-41F0-8779-EC350442CE94}.Debug|Win32.Build.0 = Debug|Win32
-{C859320E-03EB-41F0-8779-EC350442CE94}.Debug|x64.ActiveCfg = Debug|x64
-{C859320E-03EB-41F0-8779-EC350442CE94}.Debug|x64.Build.0 = Debug|x64
-{C859320E-03EB-41F0-8779-EC350442CE94}.Release|Win32.ActiveCfg = Release|Win32
-{C859320E-03EB-41F0-8779-EC350442CE94}.Release|Win32.Build.0 = Release|Win32
-{C859320E-03EB-41F0-8779-EC350442CE94}.Release|x64.ActiveCfg = Release|x64
-{C859320E-03EB-41F0-8779-EC350442CE94}.Release|x64.Build.0 = Release|x64
 {35E35408-AD4B-417E-8045-9A11A101363F}.Debug|Win32.ActiveCfg = Debug|Win32
 {35E35408-AD4B-417E-8045-9A11A101363F}.Debug|Win32.Build.0 = Debug|Win32
 {35E35408-AD4B-417E-8045-9A11A101363F}.Debug|x64.ActiveCfg = Debug|x64
@@ -431,6 +423,14 @@ EndProject
 {43651ECA-27E7-4095-AC9E-26FE2D5A0188}.Release|Win32.Build.0 = Release|Win32
 {43651ECA-27E7-4095-AC9E-26FE2D5A0188}.Release|x64.ActiveCfg = Release|x64
 {43651ECA-27E7-4095-AC9E-26FE2D5A0188}.Release|x64.Build.0 = Release|x64
+{9A4B0D56-EBC2-4683-A382-4AD141DFBBD6}.Debug|Win32.ActiveCfg = Debug|Win32
+{9A4B0D56-EBC2-4683-A382-4AD141DFBBD6}.Debug|Win32.Build.0 = Debug|Win32
+{9A4B0D56-EBC2-4683-A382-4AD141DFBBD6}.Debug|x64.ActiveCfg = Debug|x64
+{9A4B0D56-EBC2-4683-A382-4AD141DFBBD6}.Debug|x64.Build.0 = Debug|x64
+{9A4B0D56-EBC2-4683-A382-4AD141DFBBD6}.Release|Win32.ActiveCfg = Release|Win32
+{9A4B0D56-EBC2-4683-A382-4AD141DFBBD6}.Release|Win32.Build.0 = Release|Win32
+{9A4B0D56-EBC2-4683-A382-4AD141DFBBD6}.Release|x64.ActiveCfg = Release|x64
+{9A4B0D56-EBC2-4683-A382-4AD141DFBBD6}.Release|x64.Build.0 = Release|x64
 {B31144AE-D1DF-4933-9764-92F97354B33F}.Debug|Win32.ActiveCfg = Debug|Win32
 {B31144AE-D1DF-4933-9764-92F97354B33F}.Debug|Win32.Build.0 = Debug|Win32
 {B31144AE-D1DF-4933-9764-92F97354B33F}.Debug|x64.ActiveCfg = Debug|x64

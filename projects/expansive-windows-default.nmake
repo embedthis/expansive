@@ -149,10 +149,10 @@ TARGETS               = $(TARGETS) build\$(CONFIG)\bin\ejs.mod
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\ejs.exe
 !ENDIF
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\expansive.exe
-TARGETS               = $(TARGETS) build\$(CONFIG)\bin\ca.crt
 !IF "$(ME_COM_HTTP)" == "1"
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\http.exe
 !ENDIF
+TARGETS               = $(TARGETS) build\$(CONFIG)\bin\roots.crt
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\sample.json
 
 !IFNDEF SHOW
@@ -209,7 +209,6 @@ clean:
 	if exist "build\$(CONFIG)\bin\expansive.lib" del /Q "build\$(CONFIG)\bin\expansive.lib"
 	if exist "build\$(CONFIG)\bin\expansive.pdb" del /Q "build\$(CONFIG)\bin\expansive.pdb"
 	if exist "build\$(CONFIG)\bin\expansive.exp" del /Q "build\$(CONFIG)\bin\expansive.exp"
-	if exist "build\$(CONFIG)\bin\ca.crt" del /Q "build\$(CONFIG)\bin\ca.crt"
 	if exist "build\$(CONFIG)\bin\http.exe" del /Q "build\$(CONFIG)\bin\http.exe"
 	if exist "build\$(CONFIG)\bin\http.lib" del /Q "build\$(CONFIG)\bin\http.lib"
 	if exist "build\$(CONFIG)\bin\http.pdb" del /Q "build\$(CONFIG)\bin\http.pdb"
@@ -239,6 +238,7 @@ clean:
 	if exist "build\$(CONFIG)\bin\libzlib.lib" del /Q "build\$(CONFIG)\bin\libzlib.lib"
 	if exist "build\$(CONFIG)\bin\libzlib.pdb" del /Q "build\$(CONFIG)\bin\libzlib.pdb"
 	if exist "build\$(CONFIG)\bin\libzlib.exp" del /Q "build\$(CONFIG)\bin\libzlib.exp"
+	if exist "build\$(CONFIG)\bin\roots.crt" del /Q "build\$(CONFIG)\bin\roots.crt"
 	if exist "build\$(CONFIG)\bin\sample.json" del /Q "build\$(CONFIG)\bin\sample.json"
 
 #
@@ -852,22 +852,12 @@ build\$(CONFIG)\bin\expansive.exe: $(DEPS_41)
 	"$(LD)" -nologo -out:$(BUILD)\bin\expansive.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS)  "$(BUILD)\obj\expansive.obj" "$(BUILD)\obj\expParser.obj" $(LIBPATHS_41) $(LIBS_41) $(LIBS_41) $(LIBS)  $(LOG)
 
 #
-#   http-ca-crt
-#
-DEPS_42 = $(DEPS_42) src\http\ca.crt
-
-build\$(CONFIG)\bin\ca.crt: $(DEPS_42)
-	@echo ..... [Copy] build\$(CONFIG)\bin\ca.crt
-	if not exist "build\$(CONFIG)\bin" md "build\$(CONFIG)\bin"
-	copy /Y /B src\http\src\http\ca.crt+modified build\$(CONFIG)\bin\ca.crt $(LOG)
-
-#
 #   http.obj
 #
-DEPS_43 = $(DEPS_43) src\http\http.h
+DEPS_42 = $(DEPS_42) src\http\http.h
 
 build\$(CONFIG)\obj\http.obj: \
-    src\http\http.c $(DEPS_43)
+    src\http\http.c $(DEPS_42)
 	@echo .. [Compile] build\$(CONFIG)\obj\http.obj
 	"$(CC)" -c -Fo$(BUILD)\obj\http.obj -Fd$(BUILD)\obj\http.pdb $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH="$(ME_COM_OPENSSL_PATH)" $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)\include" src\http\http.c $(LOG)
 
@@ -875,37 +865,47 @@ build\$(CONFIG)\obj\http.obj: \
 #
 #   httpcmd
 #
-DEPS_44 = $(DEPS_44) build\$(CONFIG)\bin\libhttp.dll
-DEPS_44 = $(DEPS_44) build\$(CONFIG)\obj\http.obj
+DEPS_43 = $(DEPS_43) build\$(CONFIG)\bin\libhttp.dll
+DEPS_43 = $(DEPS_43) build\$(CONFIG)\obj\http.obj
 
-LIBS_44 = $(LIBS_44) libhttp.lib
+LIBS_43 = $(LIBS_43) libhttp.lib
 !IF "$(ME_COM_PCRE)" == "1"
-LIBS_44 = $(LIBS_44) libpcre.lib
+LIBS_43 = $(LIBS_43) libpcre.lib
 !ENDIF
-LIBS_44 = $(LIBS_44) libmpr.lib
+LIBS_43 = $(LIBS_43) libmpr.lib
 !IF "$(ME_COM_EST)" == "1"
-LIBS_44 = $(LIBS_44) libestssl.lib
+LIBS_43 = $(LIBS_43) libestssl.lib
 !ENDIF
 !IF "$(ME_COM_EST)" == "1"
-LIBS_44 = $(LIBS_44) libest.lib
+LIBS_43 = $(LIBS_43) libest.lib
 !ENDIF
 !IF "$(ME_COM_OPENSSL)" == "1"
-LIBS_44 = $(LIBS_44) libopenssl.lib
-LIBPATHS_44 = $(LIBPATHS_44) -libpath:$(ME_COM_OPENSSL_PATH)
+LIBS_43 = $(LIBS_43) libopenssl.lib
+LIBPATHS_43 = $(LIBPATHS_43) -libpath:$(ME_COM_OPENSSL_PATH)
 !ENDIF
 !IF "$(ME_COM_OPENSSL)" == "1"
-LIBS_44 = $(LIBS_44) libeay32.lib
-LIBPATHS_44 = $(LIBPATHS_44) -libpath:$(ME_COM_OPENSSL_PATH)
+LIBS_43 = $(LIBS_43) libeay32.lib
+LIBPATHS_43 = $(LIBPATHS_43) -libpath:$(ME_COM_OPENSSL_PATH)
 !ENDIF
 !IF "$(ME_COM_OPENSSL)" == "1"
-LIBS_44 = $(LIBS_44) libssleay32.lib
-LIBPATHS_44 = $(LIBPATHS_44) -libpath:$(ME_COM_OPENSSL_PATH)
+LIBS_43 = $(LIBS_43) libssleay32.lib
+LIBPATHS_43 = $(LIBPATHS_43) -libpath:$(ME_COM_OPENSSL_PATH)
 !ENDIF
 
-build\$(CONFIG)\bin\http.exe: $(DEPS_44)
+build\$(CONFIG)\bin\http.exe: $(DEPS_43)
 	@echo ..... [Link] build\$(CONFIG)\bin\http.exe
-	"$(LD)" -nologo -out:$(BUILD)\bin\http.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS)  "$(BUILD)\obj\http.obj" $(LIBPATHS_44) $(LIBS_44) $(LIBS_44) $(LIBS)  $(LOG)
+	"$(LD)" -nologo -out:$(BUILD)\bin\http.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS)  "$(BUILD)\obj\http.obj" $(LIBPATHS_43) $(LIBS_43) $(LIBS_43) $(LIBS)  $(LOG)
 !ENDIF
+
+#
+#   roots.crt
+#
+DEPS_44 = $(DEPS_44) src\certs\roots.crt
+
+build\$(CONFIG)\bin\roots.crt: $(DEPS_44)
+	@echo ..... [Copy] build\$(CONFIG)\bin\roots.crt
+	if not exist "build\$(CONFIG)\bin" md "build\$(CONFIG)\bin"
+	copy /Y /B src\certs\roots.crt+modified build\$(CONFIG)\bin\roots.crt $(LOG)
 
 #
 #   sample

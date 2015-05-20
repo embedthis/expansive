@@ -90,10 +90,10 @@ ifeq ($(ME_COM_EJS),1)
     TARGETS           += $(BUILD)/bin/ejs
 endif
 TARGETS               += $(BUILD)/bin/expansive
-TARGETS               += $(BUILD)/bin/ca.crt
 ifeq ($(ME_COM_HTTP),1)
     TARGETS           += $(BUILD)/bin/http
 endif
+TARGETS               += $(BUILD)/bin/roots.crt
 TARGETS               += $(BUILD)/bin/sample.json
 
 unexport CDPATH
@@ -139,7 +139,6 @@ clean:
 	rm -f "$(BUILD)/bin/ejsc"
 	rm -f "$(BUILD)/bin/ejs"
 	rm -f "$(BUILD)/bin/expansive"
-	rm -f "$(BUILD)/bin/ca.crt"
 	rm -f "$(BUILD)/bin/http"
 	rm -f "$(BUILD)/bin/libejs.so"
 	rm -f "$(BUILD)/bin/libhttp.so"
@@ -147,6 +146,7 @@ clean:
 	rm -f "$(BUILD)/bin/libpcre.so"
 	rm -f "$(BUILD)/bin/libzlib.so"
 	rm -f "$(BUILD)/bin/libopenssl.a"
+	rm -f "$(BUILD)/bin/roots.crt"
 	rm -f "$(BUILD)/bin/sample.json"
 
 clobber: clean
@@ -733,51 +733,51 @@ $(BUILD)/bin/expansive: $(DEPS_38)
 	@echo '      [Link] $(BUILD)/bin/expansive'
 	$(CC) -o $(BUILD)/bin/expansive $(LDFLAGS) $(LIBPATHS)  "$(BUILD)/obj/expansive.o" "$(BUILD)/obj/expParser.o" $(LIBPATHS_38) $(LIBS_38) $(LIBS_38) $(LIBS) $(LIBS) 
 
-#
-#   http-ca-crt
-#
-DEPS_39 += src/http/ca.crt
-
-$(BUILD)/bin/ca.crt: $(DEPS_39)
-	@echo '      [Copy] $(BUILD)/bin/ca.crt'
-	mkdir -p "$(BUILD)/bin"
-	cp src/http/src/http/ca.crt $(BUILD)/bin/ca.crt
-
 ifeq ($(ME_COM_HTTP),1)
 #
 #   httpcmd
 #
-DEPS_40 += $(BUILD)/bin/libhttp.so
-DEPS_40 += $(BUILD)/obj/http.o
+DEPS_39 += $(BUILD)/bin/libhttp.so
+DEPS_39 += $(BUILD)/obj/http.o
 
-LIBS_40 += -lhttp
+LIBS_39 += -lhttp
 ifeq ($(ME_COM_PCRE),1)
-    LIBS_40 += -lpcre
+    LIBS_39 += -lpcre
 endif
-LIBS_40 += -lmpr
+LIBS_39 += -lmpr
 ifeq ($(ME_COM_EST),1)
-    LIBS_40 += -lestssl
+    LIBS_39 += -lestssl
 endif
 ifeq ($(ME_COM_EST),1)
-    LIBS_40 += -lest
+    LIBS_39 += -lest
 endif
 ifeq ($(ME_COM_OPENSSL),1)
-    LIBS_40 += -lopenssl
-    LIBPATHS_40 += -L"$(ME_COM_OPENSSL_PATH)"
+    LIBS_39 += -lopenssl
+    LIBPATHS_39 += -L"$(ME_COM_OPENSSL_PATH)"
 endif
 ifeq ($(ME_COM_OPENSSL),1)
-    LIBS_40 += -lssl
-    LIBPATHS_40 += -L"$(ME_COM_OPENSSL_PATH)"
+    LIBS_39 += -lssl
+    LIBPATHS_39 += -L"$(ME_COM_OPENSSL_PATH)"
 endif
 ifeq ($(ME_COM_OPENSSL),1)
-    LIBS_40 += -lcrypto
-    LIBPATHS_40 += -L"$(ME_COM_OPENSSL_PATH)"
+    LIBS_39 += -lcrypto
+    LIBPATHS_39 += -L"$(ME_COM_OPENSSL_PATH)"
 endif
 
-$(BUILD)/bin/http: $(DEPS_40)
+$(BUILD)/bin/http: $(DEPS_39)
 	@echo '      [Link] $(BUILD)/bin/http'
-	$(CC) -o $(BUILD)/bin/http $(LDFLAGS) $(LIBPATHS)  "$(BUILD)/obj/http.o" $(LIBPATHS_40) $(LIBS_40) $(LIBS_40) $(LIBS) $(LIBS) 
+	$(CC) -o $(BUILD)/bin/http $(LDFLAGS) $(LIBPATHS)  "$(BUILD)/obj/http.o" $(LIBPATHS_39) $(LIBS_39) $(LIBS_39) $(LIBS) $(LIBS) 
 endif
+
+#
+#   roots.crt
+#
+DEPS_40 += src/certs/roots.crt
+
+$(BUILD)/bin/roots.crt: $(DEPS_40)
+	@echo '      [Copy] $(BUILD)/bin/roots.crt'
+	mkdir -p "$(BUILD)/bin"
+	cp src/certs/roots.crt $(BUILD)/bin/roots.crt
 
 #
 #   sample
@@ -829,7 +829,7 @@ installBinary: $(DEPS_44)
 	cp $(BUILD)/bin/libest.so $(ME_VAPP_PREFIX)/bin/libest.so ; \
 	fi ; \
 	mkdir -p "$(ME_VAPP_PREFIX)/bin" ; \
-	cp $(BUILD)/bin/ca.crt $(ME_VAPP_PREFIX)/bin/ca.crt ; \
+	cp src/certs/roots.crt $(ME_VAPP_PREFIX)/bin/roots.crt ; \
 	cp $(BUILD)/bin/ejs.mod $(ME_VAPP_PREFIX)/bin/ejs.mod ; \
 	cp $(BUILD)/bin/expansive.mod $(ME_VAPP_PREFIX)/bin/expansive.mod ; \
 	cp $(BUILD)/bin/sample.json $(ME_VAPP_PREFIX)/bin/sample.json ; \

@@ -11883,7 +11883,7 @@ module ejs {
 
         /** 
             Create a complete absolute URI from "this" URI with all mandatory components present including 
-            scheme and host.  The resulting URI path will be normalized and any missing components will be 
+            scheme and host. The resulting URI path will be normalized and any missing components will be
             completed with values from the given $base URI. If "this" URI path is relative, it will be joined to base 
             URI's path.
             Any query component of "this" URI is discarded in the result. This is because the query component of "this" URI

@@ -133,6 +133,7 @@ PUBLIC int mprSslInit(void *unused, MprModule *module)
     if ((defaultOpenConfig = mprAllocObj(OpenConfig, manageOpenConfig)) == 0) {
         return MPR_ERR_MEMORY;
     }
+//NOGO
     defaultOpenConfig->rsaKey512 = RSA_generate_key(512, RSA_F4, 0, 0);
     defaultOpenConfig->rsaKey1024 = RSA_generate_key(1024, RSA_F4, 0, 0);
     defaultOpenConfig->dhKey512 = get_dh512();
@@ -260,9 +261,6 @@ static OpenConfig *createOpenSslConfig(MprSocket *sp)
         return 0;
     }
     SSL_CTX_set_app_data(context, (void*) ssl);
-    SSL_CTX_sess_set_cache_size(context, 512);
-    RAND_bytes(resume, sizeof(resume));
-    SSL_CTX_set_session_id_context(context, resume, sizeof(resume));
 
     if (ssl->verifyPeer && !(ssl->caFile || ssl->caPath)) {
         sp->errorMsg = sfmt("Cannot verify peer due to undefined CA certificates");
@@ -349,22 +347,9 @@ static OpenConfig *createOpenSslConfig(MprSocket *sp)
 #endif
 
     SSL_CTX_set_options(context, SSL_OP_ALL);
-#ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
-    /* SSL_OP_ALL enables this. Only needed for ancient browsers like IE-6 */
-    SSL_CTX_clear_options(context, SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS);
-#endif
-#ifdef SSL_OP_NO_TICKET
-    SSL_CTX_set_options(context, SSL_OP_NO_TICKET);
-#endif
-#ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
-    SSL_CTX_set_options(context, SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
-#endif
     SSL_CTX_set_mode(context, SSL_MODE_ENABLE_PARTIAL_WRITE | SSL_MODE_AUTO_RETRY | SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
 #ifdef SSL_OP_MSIE_SSLV2_RSA_PADDING
     SSL_CTX_set_options(context, SSL_OP_MSIE_SSLV2_RSA_PADDING);
-#endif
-#ifdef SSL_OP_NO_COMPRESSION
-    SSL_CTX_set_options(context, SSL_OP_NO_COMPRESSION);
 #endif
 #ifdef SSL_MODE_RELEASE_BUFFERS
     SSL_CTX_set_mode(context, SSL_MODE_RELEASE_BUFFERS);
@@ -372,9 +357,47 @@ static OpenConfig *createOpenSslConfig(MprSocket *sp)
 #ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
     SSL_CTX_set_mode(context, SSL_OP_CIPHER_SERVER_PREFERENCE);
 #endif
-#if KEEP
-    SSL_CTX_set_read_ahead(context, 1);
-    SSL_CTX_set_info_callback(context, info_callback);
+
+    /*
+        Options set via main.me mpr.ssl.*
+     */
+#if defined(ME_MPR_SSL_TICKET) && defined(SSL_OP_NO_TICKET)
+    if (ME_MPR_SSL_TICKET) {
+        SSL_CTX_clear_options(context, SSL_OP_NO_TICKET);
+    } else {
+        SSL_CTX_set_options(context, SSL_OP_NO_TICKET);
+    }
+#endif
+#if defined(ME_MPR_SSL_COMPRESSION) && defined(SSL_OP_NO_COMPRESSION)
+    if (ME_MPR_SSL_COMPRESSION) {
+        SSL_CTX_clear_options(context, SSL_OP_NO_COMPRESSION);
+    } else {
+        SSL_CTX_set_options(context, SSL_OP_NO_COMPRESSION);
+    }
+#endif
+#if defined(ME_MPR_SSL_RENEGOTIATE)
+    RAND_bytes(resume, sizeof(resume));
+    SSL_CTX_set_session_id_context(context, resume, sizeof(resume));
+    #if defined(SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION)
+        if (ME_MPR_SSL_RENEGOTIATE) {
+            SSL_CTX_clear_options(context, SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
+        } else {
+            SSL_CTX_set_options(context, SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
+        }
+    #endif
+#endif
+#if defined(ME_MPR_SSL_EMPTY_FRAGMENTS)
+    #if defined(SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS)
+        if (ME_MPR_SSL_EMPTY_FRAGMENTS) {
+            /* SSL_OP_ALL disables empty fragments. Only needed for ancient browsers like IE-6 on SSL-3.0/TLS-1.0 */
+            SSL_CTX_clear_options(context, SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS);
+        } else {
+            SSL_CTX_set_options(context, SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS);
+        }
+    #endif
+#endif
+#if defined(ME_MPR_SSL_CACHE)
+    SSL_CTX_sess_set_cache_size(context, ME_MPR_SSL_CACHE);
 #endif
 
     /*
@@ -464,12 +487,14 @@ static void manageOpenSocket(OpenSocket *osp, int flags)
 static void closeOss(MprSocket *sp, bool gracefully)
 {
     OpenSocket    *osp;
+    int rc;
 
     osp = sp->sslSocket;
     /*
         Locking not really required as use of the socket should be single-threaded on a dispatcher.
      */
     lock(sp);
+    SSL_shutdown(osp->handle);
     sp->service->standardProvider->closeSocket(sp, gracefully);
     SSL_free(osp->handle);
     osp->handle = 0;
@@ -551,7 +576,7 @@ static int upgradeOss(MprSocket *sp, MprSsl *ssl, cchar *requiredPeerName)
     /*
         Disable renegotiation after the initial handshake if renegotiate is explicitly set to false (CVE-2009-3555).
         Note: this really is a bogus CVE as disabling renegotiation is not required nor does it enhance security if
-        used with up-to-date (patched) SSL stacks
+        used with up-to-date (patched) SSL stacks.
      */
     if (osp->handle->s3) {
         osp->handle->s3->flags |= SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS;
@@ -587,6 +612,30 @@ static void parseCertFields(MprBuf *buf, char *prefix, char *prefix2, char *info
 }
 
 
+static char *getOssSession(MprSocket *sp) 
+{
+    SSL_SESSION     *sess;
+    OpenSocket      *osp;
+    MprBuf          *buf;
+    int             i;
+
+    osp = sp->sslSocket;
+
+    if ((sess = SSL_get0_session(osp->handle)) != 0) {
+        if (sess->session_id_length == 0 && osp->handle->tlsext_ticket_expected) {
+            return sclone("ticket");
+        }
+        buf = mprCreateBuf((sess->session_id_length * 2) + 1, 0);
+        assert(buf->start);
+        for (i = 0; i < sess->session_id_length; i++) {
+            mprPutToBuf(buf, "%02X", (uchar) sess->session_id[i]);
+        }
+        return mprBufToString(buf);
+    }
+    return 0;
+}
+
+
 /*
     Get the SSL state of the socket in a buffer
  */
@@ -596,12 +645,13 @@ static char *getOssState(MprSocket *sp)
     MprBuf          *buf;
     X509_NAME       *xSubject;
     X509            *cert;
-    char            *prefix;
-    char            subject[512], issuer[512], peer[512];
+    char            *prefix, subject[512], issuer[512], peer[512];
 
     osp = sp->sslSocket;
     buf = mprCreateBuf(0, 0);
-    mprPutToBuf(buf, "PROVIDER=openssl,CIPHER=%s,", SSL_get_cipher(osp->handle));
+
+    mprPutToBuf(buf, "PROVIDER=openssl,CIPHER=%s,SESSION=%s,REUSE=%d,",
+        SSL_get_cipher(osp->handle), sp->session, (int) SSL_session_reused(osp->handle));
 
     if ((cert = SSL_get_peer_certificate(osp->handle)) == 0) {
         mprPutToBuf(buf, "%s=\"none\",", sp->acceptIp ? "CLIENT_CERT" : "SERVER_CERT");
@@ -644,10 +694,12 @@ static void disconnectOss(MprSocket *sp)
 static int checkCert(MprSocket *sp)
 {
     MprSsl      *ssl;
+    MprBuf      *buf;
     OpenSocket  *osp;
     X509        *cert;
     X509_NAME   *xSubject;
     char        subject[512], issuer[512], peerName[512], *target, *certName, *tp;
+    int         i;
 
     ssl = sp->ssl;
     osp = (OpenSocket*) sp->sslSocket;
@@ -699,6 +751,7 @@ static int checkCert(MprSocket *sp)
             return -1;
         }
     }
+    sp->session = getOssSession(sp);
     return 0;
 }
 

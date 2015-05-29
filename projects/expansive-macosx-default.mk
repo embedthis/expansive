@@ -93,7 +93,9 @@ TARGETS               += $(BUILD)/bin/expansive
 ifeq ($(ME_COM_HTTP),1)
     TARGETS           += $(BUILD)/bin/http
 endif
-TARGETS               += $(BUILD)/bin/roots.crt
+ifeq ($(ME_COM_SSL),1)
+    TARGETS           += $(BUILD)/bin
+endif
 TARGETS               += $(BUILD)/bin/sample.json
 
 unexport CDPATH
@@ -140,13 +142,13 @@ clean:
 	rm -f "$(BUILD)/bin/ejs"
 	rm -f "$(BUILD)/bin/expansive"
 	rm -f "$(BUILD)/bin/http"
+	rm -f "$(BUILD)/bin"
 	rm -f "$(BUILD)/bin/libejs.dylib"
 	rm -f "$(BUILD)/bin/libhttp.dylib"
 	rm -f "$(BUILD)/bin/libmpr.dylib"
 	rm -f "$(BUILD)/bin/libpcre.dylib"
 	rm -f "$(BUILD)/bin/libzlib.dylib"
 	rm -f "$(BUILD)/bin/libopenssl.a"
-	rm -f "$(BUILD)/bin/roots.crt"
 	rm -f "$(BUILD)/bin/sample.json"
 
 clobber: clean
@@ -769,15 +771,35 @@ $(BUILD)/bin/http: $(DEPS_39)
 	$(CC) -o $(BUILD)/bin/http -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS)  "$(BUILD)/obj/http.o" $(LIBPATHS_39) $(LIBS_39) $(LIBS_39) $(LIBS) 
 endif
 
+ifeq ($(ME_COM_SSL),1)
 #
-#   roots.crt
+#   install-certs
 #
-DEPS_40 += src/certs/roots.crt
+DEPS_40 += src/certs/samples/ca.crt
+DEPS_40 += src/certs/samples/ca.key
+DEPS_40 += src/certs/samples/dh.pem
+DEPS_40 += src/certs/samples/ec.crt
+DEPS_40 += src/certs/samples/ec.key
+DEPS_40 += src/certs/samples/roots.crt
+DEPS_40 += src/certs/samples/self.crt
+DEPS_40 += src/certs/samples/self.key
+DEPS_40 += src/certs/samples/test.crt
+DEPS_40 += src/certs/samples/test.key
 
-$(BUILD)/bin/roots.crt: $(DEPS_40)
-	@echo '      [Copy] $(BUILD)/bin/roots.crt'
+$(BUILD)/bin: $(DEPS_40)
+	@echo '      [Copy] $(BUILD)/bin'
 	mkdir -p "$(BUILD)/bin"
-	cp src/certs/roots.crt $(BUILD)/bin/roots.crt
+	cp src/certs/samples/ca.crt $(BUILD)/bin/ca.crt
+	cp src/certs/samples/ca.key $(BUILD)/bin/ca.key
+	cp src/certs/samples/dh.pem $(BUILD)/bin/dh.pem
+	cp src/certs/samples/ec.crt $(BUILD)/bin/ec.crt
+	cp src/certs/samples/ec.key $(BUILD)/bin/ec.key
+	cp src/certs/samples/roots.crt $(BUILD)/bin/roots.crt
+	cp src/certs/samples/self.crt $(BUILD)/bin/self.crt
+	cp src/certs/samples/self.key $(BUILD)/bin/self.key
+	cp src/certs/samples/test.crt $(BUILD)/bin/test.crt
+	cp src/certs/samples/test.key $(BUILD)/bin/test.key
+endif
 
 #
 #   sample
@@ -829,7 +851,7 @@ installBinary: $(DEPS_44)
 	cp $(BUILD)/bin/libest.dylib $(ME_VAPP_PREFIX)/bin/libest.dylib ; \
 	fi ; \
 	mkdir -p "$(ME_VAPP_PREFIX)/bin" ; \
-	cp src/certs/roots.crt $(ME_VAPP_PREFIX)/bin/roots.crt ; \
+	cp $(BUILD)/bin/roots.crt $(ME_VAPP_PREFIX)/bin/roots.crt ; \
 	cp $(BUILD)/bin/ejs.mod $(ME_VAPP_PREFIX)/bin/ejs.mod ; \
 	cp $(BUILD)/bin/expansive.mod $(ME_VAPP_PREFIX)/bin/expansive.mod ; \
 	cp $(BUILD)/bin/sample.json $(ME_VAPP_PREFIX)/bin/sample.json ; \

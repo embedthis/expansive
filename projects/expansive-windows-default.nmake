@@ -152,7 +152,9 @@ TARGETS               = $(TARGETS) build\$(CONFIG)\bin\expansive.exe
 !IF "$(ME_COM_HTTP)" == "1"
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\http.exe
 !ENDIF
-TARGETS               = $(TARGETS) build\$(CONFIG)\bin\roots.crt
+!IF "$(ME_COM_SSL)" == "1"
+TARGETS               = $(TARGETS) build\$(CONFIG)\bin
+!ENDIF
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\sample.json
 
 !IFNDEF SHOW
@@ -213,6 +215,7 @@ clean:
 	if exist "build\$(CONFIG)\bin\http.lib" del /Q "build\$(CONFIG)\bin\http.lib"
 	if exist "build\$(CONFIG)\bin\http.pdb" del /Q "build\$(CONFIG)\bin\http.pdb"
 	if exist "build\$(CONFIG)\bin\http.exp" del /Q "build\$(CONFIG)\bin\http.exp"
+	if exist "build\$(CONFIG)\bin" del /Q "build\$(CONFIG)\bin"
 	if exist "build\$(CONFIG)\bin\libejs.dll" del /Q "build\$(CONFIG)\bin\libejs.dll"
 	if exist "build\$(CONFIG)\bin\libejs.lib" del /Q "build\$(CONFIG)\bin\libejs.lib"
 	if exist "build\$(CONFIG)\bin\libejs.pdb" del /Q "build\$(CONFIG)\bin\libejs.pdb"
@@ -238,7 +241,6 @@ clean:
 	if exist "build\$(CONFIG)\bin\libzlib.lib" del /Q "build\$(CONFIG)\bin\libzlib.lib"
 	if exist "build\$(CONFIG)\bin\libzlib.pdb" del /Q "build\$(CONFIG)\bin\libzlib.pdb"
 	if exist "build\$(CONFIG)\bin\libzlib.exp" del /Q "build\$(CONFIG)\bin\libzlib.exp"
-	if exist "build\$(CONFIG)\bin\roots.crt" del /Q "build\$(CONFIG)\bin\roots.crt"
 	if exist "build\$(CONFIG)\bin\sample.json" del /Q "build\$(CONFIG)\bin\sample.json"
 
 #
@@ -897,15 +899,35 @@ build\$(CONFIG)\bin\http.exe: $(DEPS_43)
 	"$(LD)" -nologo -out:$(BUILD)\bin\http.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS)  "$(BUILD)\obj\http.obj" $(LIBPATHS_43) $(LIBS_43) $(LIBS_43) $(LIBS)  $(LOG)
 !ENDIF
 
+!IF "$(ME_COM_SSL)" == "1"
 #
-#   roots.crt
+#   install-certs
 #
-DEPS_44 = $(DEPS_44) src\certs\roots.crt
+DEPS_44 = $(DEPS_44) src\certs\samples\ca.crt
+DEPS_44 = $(DEPS_44) src\certs\samples\ca.key
+DEPS_44 = $(DEPS_44) src\certs\samples\dh.pem
+DEPS_44 = $(DEPS_44) src\certs\samples\ec.crt
+DEPS_44 = $(DEPS_44) src\certs\samples\ec.key
+DEPS_44 = $(DEPS_44) src\certs\samples\roots.crt
+DEPS_44 = $(DEPS_44) src\certs\samples\self.crt
+DEPS_44 = $(DEPS_44) src\certs\samples\self.key
+DEPS_44 = $(DEPS_44) src\certs\samples\test.crt
+DEPS_44 = $(DEPS_44) src\certs\samples\test.key
 
-build\$(CONFIG)\bin\roots.crt: $(DEPS_44)
-	@echo ..... [Copy] build\$(CONFIG)\bin\roots.crt
+build\$(CONFIG)\bin: $(DEPS_44)
+	@echo ..... [Copy] build\$(CONFIG)\bin
 	if not exist "build\$(CONFIG)\bin" md "build\$(CONFIG)\bin"
-	copy /Y /B src\certs\roots.crt+modified build\$(CONFIG)\bin\roots.crt $(LOG)
+	copy /Y /B src\certs\samples\ca.crt+modified build\$(CONFIG)\bin\ca.crt $(LOG)
+	copy /Y /B src\certs\samples\ca.key+modified build\$(CONFIG)\bin\ca.key $(LOG)
+	copy /Y /B src\certs\samples\dh.pem+modified build\$(CONFIG)\bin\dh.pem $(LOG)
+	copy /Y /B src\certs\samples\ec.crt+modified build\$(CONFIG)\bin\ec.crt $(LOG)
+	copy /Y /B src\certs\samples\ec.key+modified build\$(CONFIG)\bin\ec.key $(LOG)
+	copy /Y /B src\certs\samples\roots.crt+modified build\$(CONFIG)\bin\roots.crt $(LOG)
+	copy /Y /B src\certs\samples\self.crt+modified build\$(CONFIG)\bin\self.crt $(LOG)
+	copy /Y /B src\certs\samples\self.key+modified build\$(CONFIG)\bin\self.key $(LOG)
+	copy /Y /B src\certs\samples\test.crt+modified build\$(CONFIG)\bin\test.crt $(LOG)
+	copy /Y /B src\certs\samples\test.key+modified build\$(CONFIG)\bin\test.key $(LOG)
+!ENDIF
 
 #
 #   sample

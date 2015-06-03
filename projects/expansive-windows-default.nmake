@@ -202,7 +202,6 @@ clean:
 	if exist "build\$(CONFIG)\obj\mprLib.obj" del /Q "build\$(CONFIG)\obj\mprLib.obj"
 	if exist "build\$(CONFIG)\obj\openssl.obj" del /Q "build\$(CONFIG)\obj\openssl.obj"
 	if exist "build\$(CONFIG)\obj\pcre.obj" del /Q "build\$(CONFIG)\obj\pcre.obj"
-	if exist "build\$(CONFIG)\obj\removeFiles.obj" del /Q "build\$(CONFIG)\obj\removeFiles.obj"
 	if exist "build\$(CONFIG)\obj\zlib.obj" del /Q "build\$(CONFIG)\obj\zlib.obj"
 	if exist "build\$(CONFIG)\bin\ejsc.exe" del /Q "build\$(CONFIG)\bin\ejsc.exe"
 	if exist "build\$(CONFIG)\bin\ejsc.lib" del /Q "build\$(CONFIG)\bin\ejsc.lib"
@@ -1021,29 +1020,22 @@ build\$(CONFIG)\bin\http.exe: $(DEPS_45)
 	"$(LD)" -nologo -out:$(BUILD)\bin\http.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\http.obj" $(LIBPATHS_45) $(LIBS_45) $(LIBS_45) $(LIBS)  $(LOG)
 !ENDIF
 
-#
-#   import-certs
-#
-
-import-certs: $(DEPS_46)
-#  Omit build script import-certs
-
 !IF "$(ME_COM_SSL)" == "1"
 #
 #   install-certs
 #
-DEPS_47 = $(DEPS_47) src\certs\samples\ca.crt
-DEPS_47 = $(DEPS_47) src\certs\samples\ca.key
-DEPS_47 = $(DEPS_47) src\certs\samples\dh.pem
-DEPS_47 = $(DEPS_47) src\certs\samples\ec.crt
-DEPS_47 = $(DEPS_47) src\certs\samples\ec.key
-DEPS_47 = $(DEPS_47) src\certs\samples\roots.crt
-DEPS_47 = $(DEPS_47) src\certs\samples\self.crt
-DEPS_47 = $(DEPS_47) src\certs\samples\self.key
-DEPS_47 = $(DEPS_47) src\certs\samples\test.crt
-DEPS_47 = $(DEPS_47) src\certs\samples\test.key
+DEPS_46 = $(DEPS_46) src\certs\samples\ca.crt
+DEPS_46 = $(DEPS_46) src\certs\samples\ca.key
+DEPS_46 = $(DEPS_46) src\certs\samples\dh.pem
+DEPS_46 = $(DEPS_46) src\certs\samples\ec.crt
+DEPS_46 = $(DEPS_46) src\certs\samples\ec.key
+DEPS_46 = $(DEPS_46) src\certs\samples\roots.crt
+DEPS_46 = $(DEPS_46) src\certs\samples\self.crt
+DEPS_46 = $(DEPS_46) src\certs\samples\self.key
+DEPS_46 = $(DEPS_46) src\certs\samples\test.crt
+DEPS_46 = $(DEPS_46) src\certs\samples\test.key
 
-build\$(CONFIG)\bin: $(DEPS_47)
+build\$(CONFIG)\bin: $(DEPS_46)
 	@echo ..... [Copy] build\$(CONFIG)\bin
 	if not exist "build\$(CONFIG)\bin" md "build\$(CONFIG)\bin"
 	copy /Y /B src\certs\samples\ca.crt+modified build\$(CONFIG)\bin\ca.crt $(LOG)
@@ -1059,20 +1051,11 @@ build\$(CONFIG)\bin: $(DEPS_47)
 !ENDIF
 
 #
-#   removeFiles.obj
-#
-
-build\$(CONFIG)\obj\removeFiles.obj: \
-    package\windows\removeFiles.c $(DEPS_48)
-	@echo .. [Compile] build\$(CONFIG)\obj\removeFiles.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\removeFiles.obj -Fd$(BUILD)\obj\removeFiles.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) package\windows\removeFiles.c $(LOG)
-
-#
 #   sample
 #
-DEPS_49 = $(DEPS_49) src\sample.json
+DEPS_47 = $(DEPS_47) src\sample.json
 
-build\$(CONFIG)\bin\sample.json: $(DEPS_49)
+build\$(CONFIG)\bin\sample.json: $(DEPS_47)
 	@echo ..... [Copy] build\$(CONFIG)\bin\sample.json
 	if not exist "build\$(CONFIG)\bin" md "build\$(CONFIG)\bin"
 	copy /Y /B src\sample.json+modified build\$(CONFIG)\bin\sample.json $(LOG)

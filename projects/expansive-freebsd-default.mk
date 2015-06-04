@@ -412,6 +412,7 @@ $(BUILD)/obj/zlib.o: \
 	$(CC) -c -o $(BUILD)/obj/zlib.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/zlib/zlib.c
 
 ifeq ($(ME_COM_SSL),1)
+ifeq ($(ME_COM_OPENSSL),1)
 #
 #   openssl
 #
@@ -420,6 +421,7 @@ DEPS_28 += $(BUILD)/obj/openssl.o
 $(BUILD)/bin/libmpr-openssl.a: $(DEPS_28)
 	@echo '      [Link] $(BUILD)/bin/libmpr-openssl.a'
 	ar -cr $(BUILD)/bin/libmpr-openssl.a "$(BUILD)/obj/openssl.o"
+endif
 endif
 
 #

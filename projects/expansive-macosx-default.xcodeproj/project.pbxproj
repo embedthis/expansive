@@ -2291,7 +2291,7 @@ fi";
 		1DB926561DB9571800000135 /* Debug */ = {
     			isa = XCBuildConfiguration;
     			buildSettings = {
-    				PRODUCT_NAME = bin;
+    				PRODUCT_NAME = install-certs;
     
     				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ME_DEBUG",
@@ -2303,7 +2303,7 @@ fi";
     		1DB926561DB9571800000136 /* Release */ = {
     			isa = XCBuildConfiguration;
     			buildSettings = {
-    				PRODUCT_NAME = bin;
+    				PRODUCT_NAME = install-certs;
     
     
     			};

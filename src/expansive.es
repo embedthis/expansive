@@ -1103,8 +1103,7 @@ public class Expansive {
         } else {
             meta.site ||= 'localhost'
         }
-        // meta.url = Uri(meta.path).complete(meta.site)
-        meta.url = Uri(meta.path)
+        meta.url = Uri(Uri.encode(meta.path))
         meta.mode = package.pak.mode || 'debug'
         meta.date ||= new Date
         meta.date = Date(meta.date)

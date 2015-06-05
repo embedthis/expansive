@@ -828,7 +828,6 @@ ifeq ($(ME_COM_SSL),1)
 #
 DEPS_40 += src/certs/samples/ca.crt
 DEPS_40 += src/certs/samples/ca.key
-DEPS_40 += src/certs/samples/dh.pem
 DEPS_40 += src/certs/samples/ec.crt
 DEPS_40 += src/certs/samples/ec.key
 DEPS_40 += src/certs/samples/roots.crt
@@ -842,7 +841,6 @@ $(BUILD)/.install-certs-modified: $(DEPS_40)
 	mkdir -p "$(BUILD)/bin"
 	cp src/certs/samples/ca.crt $(BUILD)/bin/ca.crt
 	cp src/certs/samples/ca.key $(BUILD)/bin/ca.key
-	cp src/certs/samples/dh.pem $(BUILD)/bin/dh.pem
 	cp src/certs/samples/ec.crt $(BUILD)/bin/ec.crt
 	cp src/certs/samples/ec.key $(BUILD)/bin/ec.key
 	cp src/certs/samples/roots.crt $(BUILD)/bin/roots.crt

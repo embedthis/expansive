@@ -160,7 +160,7 @@
     #define ME_TUNE "speed"
 #endif
 #ifndef ME_VERSION
-    #define ME_VERSION "0.5.2"
+    #define ME_VERSION "0.5.3"
 #endif
 
 /* Prefixes */
@@ -180,7 +180,7 @@
     #define ME_APP_PREFIX "/usr/local/lib/expansive"
 #endif
 #ifndef ME_VAPP_PREFIX
-    #define ME_VAPP_PREFIX "/usr/local/lib/expansive/0.5.2"
+    #define ME_VAPP_PREFIX "/usr/local/lib/expansive/0.5.3"
 #endif
 #ifndef ME_BIN_PREFIX
     #define ME_BIN_PREFIX "/usr/local/bin"
@@ -213,7 +213,7 @@
     #define ME_CACHE_PREFIX "/var/spool/expansive/cache"
 #endif
 #ifndef ME_SRC_PREFIX
-    #define ME_SRC_PREFIX "expansive-0.5.2"
+    #define ME_SRC_PREFIX "expansive-0.5.3"
 #endif
 
 /* Suffixes */
@@ -255,10 +255,10 @@
     #define ME_MINOR_VERSION 5
 #endif
 #ifndef ME_PATCH_VERSION
-    #define ME_PATCH_VERSION 2
+    #define ME_PATCH_VERSION 3
 #endif
 #ifndef ME_VNUM
-    #define ME_VNUM 50002
+    #define ME_VNUM 50003
 #endif
 
 /* Components */
@@ -268,9 +268,6 @@
 #ifndef ME_COM_EJS
     #define ME_COM_EJS 1
 #endif
-#ifndef ME_COM_EST
-    #define ME_COM_EST 0
-#endif
 #ifndef ME_COM_HTTP
     #define ME_COM_HTTP 1
 #endif
@@ -279,9 +276,6 @@
 #endif
 #ifndef ME_COM_MATRIXSSL
     #define ME_COM_MATRIXSSL 0
-#endif
-#ifndef ME_COM_MBEDTLS
-    #define ME_COM_MBEDTLS 0
 #endif
 #ifndef ME_COM_MPR
     #define ME_COM_MPR 1

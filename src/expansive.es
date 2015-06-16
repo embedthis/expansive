@@ -21,6 +21,7 @@ const USAGE = 'Expansive Web Site Generator
   Usage: exp [options] [FILES ...]
     --benchmark          # Show per-plugin stats
     --chdir dir          # Change to directory before running
+    --clean              # Clean "dist" first
     --keep               # Keep intermediate transform results
     --listen IP:PORT     # Endpoint to listen on
     --log path:level     # Trace to logfile
@@ -31,7 +32,7 @@ const USAGE = 'Expansive Web Site Generator
     --trace path:level   # Trace http requests
     --verbose            # Verbose mode
     --version            # Output version information
-  Commands :
+  Commands:
     clean                # Clean "dist" output directory
     deploy [directory]   # Deploy required production files
     edit key[=value]     # Get and set expansive.json values
@@ -393,7 +394,7 @@ public class Expansive {
         if (!pkg) {
             throw 'Cannot find plugin package.json at: ' + path
         }
-        for (let [name, requiredVersion] in pkg.dependencies) {
+        for (let [name, requiredVersion] in pkg.installedDependencies) {
             loadPlugin(name, requiredVersion)
         }
     }
@@ -403,7 +404,7 @@ public class Expansive {
         let stat = stats.services.exp
         stat.parse = stat.eval = stat.run = 0
 
-        for (let [name, requiredVersion] in package.dependencies) {
+        for (let [name, requiredVersion] in package.installedDependencies) {
             loadPlugin(name, requiredVersion)
         }
         buildMetaCache()
@@ -431,12 +432,25 @@ public class Expansive {
         }
     }
 
+    function getInstalledPaks() {
+        let deps = {}
+        for each (path in directories.paks.files('*')) {
+            if (path.isDir && path.join('package.json').exists) {
+                let name = path.basename
+                deps[name] = true
+            }
+        }
+        return deps
+    }
+
     function readPackage(dir: Path) {
         let path = dir.join(PACKAGE)
-        if (path.exists) {
-            return path.readJSON()
+        if (!path.exists) {
+            return null
         }
-        return null
+        let pkg = path.readJSON()
+        pkg.installedDependencies = getInstalledPaks()
+        return pkg
     }
 
     function loadPackage() {
@@ -605,6 +619,7 @@ public class Expansive {
             }
         }
 
+        //  Better to have a name that did not confuse with package.dependencies
         for (let [path, dependencies] in control.dependencies) {
             path = directories.contents.join(path)
             let deps = directories.contents.files(dependencies)

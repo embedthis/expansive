@@ -194,8 +194,13 @@ public class Expansive {
         }
         package = loadPackage()
         config = readConfig('.')
-        if (config.expansive && !Version(Config.Version).acceptable(config.expansive)) {
-            throw 'Requires Expansive ' + config.expansive + '. Expansive version ' + Config.Version +
+        let criteria
+        if (package.devDependencies) {
+            criteria = package.devDependencies.expansive
+        }
+        criteria ||= config.expansive
+        if (criteria && !Version(Config.Version).acceptable(criteria)) {
+            throw 'Requires Expansive ' + criteria + '. Expansive version ' + Config.Version +
                             ' is not compatible with this requirement.' + '\n'
         }
         loadConfig('.', topMeta)

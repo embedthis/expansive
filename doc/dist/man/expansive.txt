@@ -9,6 +9,7 @@ NAME
 SYNOPSIS
        exp
            --chdir directory
+           --clean
            --keep
            --listen IP:PORT
            --log path:level
@@ -636,6 +637,9 @@ COMMANDS
 OPTIONS
        --chdir directory
                  Change to directory before running.
+
+
+       --clean   Clean output "dist" directory first.
 
 
        --keep URI

@@ -31,8 +31,8 @@
     ],
     "dependencies": {
         "certs": "^0.1",
-        "ejs": "^2.5",
         "ejs-version": "^0.8",
+        "ejscript": "^2.6",
         "mpr": "^6.0",
         "ssl": "^0.9"
     },

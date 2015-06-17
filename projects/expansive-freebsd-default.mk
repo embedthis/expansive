@@ -16,6 +16,7 @@ PATH                  := $(LBIN):$(PATH)
 
 ME_COM_COMPILER       ?= 1
 ME_COM_EJS            ?= 1
+ME_COM_EJSCRIPT       ?= 1
 ME_COM_HTTP           ?= 1
 ME_COM_LIB            ?= 1
 ME_COM_MATRIXSSL      ?= 0
@@ -42,9 +43,12 @@ endif
 ifeq ($(ME_COM_EJS),1)
     ME_COM_ZLIB := 1
 endif
+ifeq ($(ME_COM_EJSCRIPT),1)
+    ME_COM_ZLIB := 1
+endif
 
 CFLAGS                += -fPIC -w
-DFLAGS                += -D_REENTRANT -DPIC $(patsubst %,-D%,$(filter ME_%,$(MAKEFLAGS))) -DME_COM_COMPILER=$(ME_COM_COMPILER) -DME_COM_EJS=$(ME_COM_EJS) -DME_COM_HTTP=$(ME_COM_HTTP) -DME_COM_LIB=$(ME_COM_LIB) -DME_COM_MATRIXSSL=$(ME_COM_MATRIXSSL) -DME_COM_MBEDTLS=$(ME_COM_MBEDTLS) -DME_COM_MPR=$(ME_COM_MPR) -DME_COM_NANOSSL=$(ME_COM_NANOSSL) -DME_COM_OPENSSL=$(ME_COM_OPENSSL) -DME_COM_OSDEP=$(ME_COM_OSDEP) -DME_COM_PCRE=$(ME_COM_PCRE) -DME_COM_SQLITE=$(ME_COM_SQLITE) -DME_COM_SSL=$(ME_COM_SSL) -DME_COM_VXWORKS=$(ME_COM_VXWORKS) -DME_COM_WINSDK=$(ME_COM_WINSDK) -DME_COM_ZLIB=$(ME_COM_ZLIB) 
+DFLAGS                += -D_REENTRANT -DPIC $(patsubst %,-D%,$(filter ME_%,$(MAKEFLAGS))) -DME_COM_COMPILER=$(ME_COM_COMPILER) -DME_COM_EJS=$(ME_COM_EJS) -DME_COM_EJSCRIPT=$(ME_COM_EJSCRIPT) -DME_COM_HTTP=$(ME_COM_HTTP) -DME_COM_LIB=$(ME_COM_LIB) -DME_COM_MATRIXSSL=$(ME_COM_MATRIXSSL) -DME_COM_MBEDTLS=$(ME_COM_MBEDTLS) -DME_COM_MPR=$(ME_COM_MPR) -DME_COM_NANOSSL=$(ME_COM_NANOSSL) -DME_COM_OPENSSL=$(ME_COM_OPENSSL) -DME_COM_OSDEP=$(ME_COM_OSDEP) -DME_COM_PCRE=$(ME_COM_PCRE) -DME_COM_SQLITE=$(ME_COM_SQLITE) -DME_COM_SSL=$(ME_COM_SSL) -DME_COM_VXWORKS=$(ME_COM_VXWORKS) -DME_COM_WINSDK=$(ME_COM_WINSDK) -DME_COM_ZLIB=$(ME_COM_ZLIB) 
 IFLAGS                += "-I$(BUILD)/inc"
 LDFLAGS               += 
 LIBPATHS              += -L$(BUILD)/bin
@@ -80,10 +84,10 @@ ME_CACHE_PREFIX       ?= $(ME_ROOT_PREFIX)/var/spool/$(NAME)/cache
 ME_SRC_PREFIX         ?= $(ME_ROOT_PREFIX)$(NAME)-$(VERSION)
 
 
-ifeq ($(ME_COM_EJS),1)
+ifeq ($(ME_COM_EJSCRIPT),1)
     TARGETS           += $(BUILD)/bin/ejs.mod
 endif
-ifeq ($(ME_COM_EJS),1)
+ifeq ($(ME_COM_EJSCRIPT),1)
     TARGETS           += $(BUILD)/bin/ejs
 endif
 TARGETS               += $(BUILD)/bin/expansive
@@ -196,7 +200,7 @@ $(BUILD)/inc/http.h: $(DEPS_4)
 #   ejs.slots.h
 #
 
-src/ejs/ejs.slots.h: $(DEPS_5)
+src/ejscript/ejs.slots.h: $(DEPS_5)
 
 #
 #   pcre.h
@@ -222,39 +226,39 @@ $(BUILD)/inc/zlib.h: $(DEPS_7)
 #
 #   ejs.h
 #
-DEPS_8 += src/ejs/ejs.h
+DEPS_8 += src/ejscript/ejs.h
 DEPS_8 += $(BUILD)/inc/me.h
 DEPS_8 += $(BUILD)/inc/osdep.h
 DEPS_8 += $(BUILD)/inc/mpr.h
 DEPS_8 += $(BUILD)/inc/http.h
-DEPS_8 += src/ejs/ejs.slots.h
+DEPS_8 += src/ejscript/ejs.slots.h
 DEPS_8 += $(BUILD)/inc/pcre.h
 DEPS_8 += $(BUILD)/inc/zlib.h
 
 $(BUILD)/inc/ejs.h: $(DEPS_8)
 	@echo '      [Copy] $(BUILD)/inc/ejs.h'
 	mkdir -p "$(BUILD)/inc"
-	cp src/ejs/ejs.h $(BUILD)/inc/ejs.h
+	cp src/ejscript/ejs.h $(BUILD)/inc/ejs.h
 
 #
 #   ejs.slots.h
 #
-DEPS_9 += src/ejs/ejs.slots.h
+DEPS_9 += src/ejscript/ejs.slots.h
 
 $(BUILD)/inc/ejs.slots.h: $(DEPS_9)
 	@echo '      [Copy] $(BUILD)/inc/ejs.slots.h'
 	mkdir -p "$(BUILD)/inc"
-	cp src/ejs/ejs.slots.h $(BUILD)/inc/ejs.slots.h
+	cp src/ejscript/ejs.slots.h $(BUILD)/inc/ejs.slots.h
 
 #
 #   ejsByteGoto.h
 #
-DEPS_10 += src/ejs/ejsByteGoto.h
+DEPS_10 += src/ejscript/ejsByteGoto.h
 
 $(BUILD)/inc/ejsByteGoto.h: $(DEPS_10)
 	@echo '      [Copy] $(BUILD)/inc/ejsByteGoto.h'
 	mkdir -p "$(BUILD)/inc"
-	cp src/ejs/ejsByteGoto.h $(BUILD)/inc/ejsByteGoto.h
+	cp src/ejscript/ejsByteGoto.h $(BUILD)/inc/ejsByteGoto.h
 
 #
 #   expansive.h
@@ -266,40 +270,40 @@ $(BUILD)/inc/expansive.h: $(DEPS_11)
 #   ejs.h
 #
 
-src/ejs/ejs.h: $(DEPS_12)
+src/ejscript/ejs.h: $(DEPS_12)
 
 #
 #   ejs.o
 #
-DEPS_13 += src/ejs/ejs.h
+DEPS_13 += src/ejscript/ejs.h
 
 $(BUILD)/obj/ejs.o: \
-    src/ejs/ejs.c $(DEPS_13)
+    src/ejscript/ejs.c $(DEPS_13)
 	@echo '   [Compile] $(BUILD)/obj/ejs.o'
-	$(CC) -c -o $(BUILD)/obj/ejs.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH="$(ME_COM_OPENSSL_PATH)" $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)/include" src/ejs/ejs.c
+	$(CC) -c -o $(BUILD)/obj/ejs.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH="$(ME_COM_OPENSSL_PATH)" $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)/include" src/ejscript/ejs.c
 
 #
 #   ejsLib.o
 #
-DEPS_14 += src/ejs/ejs.h
+DEPS_14 += src/ejscript/ejs.h
 DEPS_14 += $(BUILD)/inc/mpr.h
 DEPS_14 += $(BUILD)/inc/pcre.h
 DEPS_14 += $(BUILD)/inc/me.h
 
 $(BUILD)/obj/ejsLib.o: \
-    src/ejs/ejsLib.c $(DEPS_14)
+    src/ejscript/ejsLib.c $(DEPS_14)
 	@echo '   [Compile] $(BUILD)/obj/ejsLib.o'
-	$(CC) -c -o $(BUILD)/obj/ejsLib.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH="$(ME_COM_OPENSSL_PATH)" $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)/include" src/ejs/ejsLib.c
+	$(CC) -c -o $(BUILD)/obj/ejsLib.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH="$(ME_COM_OPENSSL_PATH)" $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)/include" src/ejscript/ejsLib.c
 
 #
 #   ejsc.o
 #
-DEPS_15 += src/ejs/ejs.h
+DEPS_15 += src/ejscript/ejs.h
 
 $(BUILD)/obj/ejsc.o: \
-    src/ejs/ejsc.c $(DEPS_15)
+    src/ejscript/ejsc.c $(DEPS_15)
 	@echo '   [Compile] $(BUILD)/obj/ejsc.o'
-	$(CC) -c -o $(BUILD)/obj/ejsc.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH="$(ME_COM_OPENSSL_PATH)" $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)/include" src/ejs/ejsc.c
+	$(CC) -c -o $(BUILD)/obj/ejsc.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH="$(ME_COM_OPENSSL_PATH)" $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)/include" src/ejscript/ejsc.c
 
 #
 #   expParser.o
@@ -540,7 +544,7 @@ $(BUILD)/bin/libhttp.so: $(DEPS_32)
 	$(CC) -shared -o $(BUILD)/bin/libhttp.so $(LDFLAGS) $(LIBPATHS)  "$(BUILD)/obj/httpLib.o" $(LIBPATHS_32) $(LIBS_32) $(LIBS_32) $(LIBS) 
 endif
 
-ifeq ($(ME_COM_EJS),1)
+ifeq ($(ME_COM_EJSCRIPT),1)
 #
 #   libejs
 #
@@ -603,7 +607,7 @@ $(BUILD)/bin/libejs.so: $(DEPS_33)
 	$(CC) -shared -o $(BUILD)/bin/libejs.so $(LDFLAGS) $(LIBPATHS)  "$(BUILD)/obj/ejsLib.o" $(LIBPATHS_33) $(LIBS_33) $(LIBS_33) $(LIBS) 
 endif
 
-ifeq ($(ME_COM_EJS),1)
+ifeq ($(ME_COM_EJSCRIPT),1)
 #
 #   ejsc
 #
@@ -655,22 +659,23 @@ $(BUILD)/bin/ejsc: $(DEPS_34)
 	$(CC) -o $(BUILD)/bin/ejsc $(LDFLAGS) $(LIBPATHS)  "$(BUILD)/obj/ejsc.o" $(LIBPATHS_34) $(LIBS_34) $(LIBS_34) $(LIBS) $(LIBS) 
 endif
 
-ifeq ($(ME_COM_EJS),1)
+ifeq ($(ME_COM_EJSCRIPT),1)
 #
 #   ejs.mod
 #
-DEPS_35 += src/ejs/ejs.es
+DEPS_35 += src/ejscript/ejs.es
 DEPS_35 += $(BUILD)/bin/ejsc
 
 $(BUILD)/bin/ejs.mod: $(DEPS_35)
 	( \
-	cd src/ejs; \
+	cd src/ejscript; \
 	echo '   [Compile] ejs.mod' ; \
+	"../../$(BUILD)/bin/ejsc" --out "../../$(BUILD)/bin/ejs.mod" --optimize 9 --bind --require null ejs.es ; \
 	"../../$(BUILD)/bin/ejsc" --out "../../$(BUILD)/bin/ejs.mod" --optimize 9 --bind --require null ejs.es ; \
 	)
 endif
 
-ifeq ($(ME_COM_EJS),1)
+ifeq ($(ME_COM_EJSCRIPT),1)
 #
 #   ejscmd
 #
@@ -728,7 +733,7 @@ endif
 DEPS_37 += src/expansive.es
 DEPS_37 += src/ExpParser.es
 DEPS_37 += paks/ejs-version/Version.es
-ifeq ($(ME_COM_EJS),1)
+ifeq ($(ME_COM_EJSCRIPT),1)
     DEPS_37 += $(BUILD)/bin/ejs.mod
 endif
 
@@ -743,7 +748,7 @@ DEPS_38 += $(BUILD)/bin/libmpr.so
 ifeq ($(ME_COM_HTTP),1)
     DEPS_38 += $(BUILD)/bin/libhttp.so
 endif
-ifeq ($(ME_COM_EJS),1)
+ifeq ($(ME_COM_EJSCRIPT),1)
     DEPS_38 += $(BUILD)/bin/libejs.so
 endif
 DEPS_38 += $(BUILD)/bin/expansive.mod
@@ -785,7 +790,7 @@ ifeq ($(ME_COM_PCRE),1)
     LIBS_38 += -lpcre
 endif
 LIBS_38 += -lmpr
-ifeq ($(ME_COM_EJS),1)
+ifeq ($(ME_COM_EJSCRIPT),1)
     LIBS_38 += -lejs
 endif
 ifeq ($(ME_COM_HTTP),1)

@@ -1123,16 +1123,17 @@ public class Expansive {
         } else {
             meta.site ||= 'localhost'
         }
+        let dir = meta.path.dirname
+        let count = (dir == '.') ? 0 : dir.components.length
+        meta.top = '../'.times(count)
+        global.top = meta.top
+
         meta.url = Uri(Uri.encode(meta.path))
         meta.mode = package.pak.mode || 'debug'
         meta.date ||= new Date
         meta.date = Date(meta.date)
         meta.isoDate = meta.date.toISOString()
 
-        let dir = meta.path.dirname
-        let count = (dir == '.') ? 0 : dir.components.length
-        meta.top = '../'.times(count)
-        global.top = meta.top
     }
 
     function renderContents(contents, meta) {

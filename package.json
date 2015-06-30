@@ -1,7 +1,7 @@
 {
     "name": "expansive",
     "description": "Embedthis Expansive",
-    "version": "0.5.4",
+    "version": "0.5.5",
     "keywords": [
         "expansive"
     ],
@@ -30,14 +30,14 @@
         }
     ],
     "dependencies": {
-        "certs": "^0.1",
-        "ejs-version": "^0.8",
-        "ejscript": "^2.6",
-        "mpr": "^6.0",
-        "ssl": "^0.9"
+        "certs": "~0.1",
+        "ejs-version": "~0.8",
+        "ejscript": "~2.6",
+        "mpr": "~6.0",
+        "ssl": "~0.9"
     },
     "optionalDependencies": {
-        "mpr-openssl": "^0.3"
+        "mpr-openssl": "~0.3"
     },
     "devDependencies": {
         "makeme": ">=0.9.0",

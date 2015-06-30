@@ -86,7 +86,7 @@ public class Expansive {
         options: {
             benchmark: { alias: 'b' },        /* Undocumented */
             chdir:     { range: Path },       /* Implemented in expansive.c */
-            clean:     { },
+            clean:     { alias: 'c' },
             debug:     { alias: 'd' },        /* Undocumented */
             keep:      { alias: 'k' },
             listen:    { range: String },
@@ -94,6 +94,7 @@ public class Expansive {
             noclean:   { },
             norender:  { },
             nowatch:   { },
+            rebuild:   { alias: 'r' },
             quiet:     { alias: 'q' },
             trace:     { alias: 't', range: String },
             verbose:   { alias: 'v' },
@@ -124,6 +125,7 @@ public class Expansive {
             copy: ['images'],                   /* Directory relative to 'sources' */
             dependencies: {},
             directories: {
+                cache:      Path('cache'),
                 contents:   Path('contents'),
                 deploy:     Path('deploy'),
                 dist:       Path('dist'),
@@ -501,6 +503,7 @@ public class Expansive {
 
         switch (task) {
         case 'clean':
+            options.clean = true
             clean(meta)
             break
 
@@ -546,9 +549,11 @@ public class Expansive {
 
     function runWatchers() {
         modified = { file: {} }
-        if (options.clean) {
+        if (options.clean || options.rebuild) {
             modified.everything ||= {}
+            modified.any = true
             options.clean = false
+            options.rebuild = false
         }
         for each (watch in watchers) {
             watch.call(this)
@@ -1544,9 +1549,11 @@ public class Expansive {
     }
 
     function clean() {
-        if (options.clean && !options.noclean) {
+        if ((options.clean || options.rebuild) && !options.noclean) {
             trace('Clean', directories.dist)
             directories.dist.removeAll()
+            trace('Clean', directories.cache)
+            directories.cache.removeAll()
             LAST_GEN.remove()
         }
     }

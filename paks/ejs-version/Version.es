@@ -429,4 +429,16 @@ assert(!Version('1.2.4rc1').acceptable('^*'))
 assert(!Version('1.0a').acceptable('1.0.0'))
 */
 
-
+/*
+require ejs.version
+function t(v, c) {
+    printf("%10s %10s %6s\n", c, v, Version(v).acceptable(c))
+}
+c = '^1.2'
+t('1.1', c)
+t('1.2.3', c)
+t('1.2.3-rc1', c)
+t('1.2.99', c)
+t('1.3', c)
+t('2.0', c)
+*/

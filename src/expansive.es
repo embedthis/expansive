@@ -1587,6 +1587,8 @@ public class Expansive {
             package.pak.mode = newMode[0].toString()
             PACKAGE.write(serialize(package, {pretty: true, indent: 4}) + '\n')
             trace('Set', 'Mode to "' + package.pak.mode + '"')
+            options.clean = true
+            clean(topMeta)
         }
     }
 

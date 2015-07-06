@@ -33,7 +33,7 @@
         "certs": "~0.1",
         "ejs-version": "~0.8",
         "ejscript": "~2.6",
-        "mpr": "~6.0",
+        "mpr": "~6.1",
         "ssl": "~0.9"
     },
     "optionalDependencies": {

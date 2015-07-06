@@ -10,7 +10,7 @@ Me.load({
     ],
 
     configure: {
-        requires:  [ 'osdep', 'ejs', 'mpr', 'http', 'pcre', 'zlib' ],
+        requires:  [ 'osdep', 'ejscript', 'mpr', 'http', 'pcre', 'zlib' ],
         discovers: [ 'ssl' ],
         extras:    [ 'sqlite' ]
     },
@@ -29,13 +29,10 @@ Me.load({
         integrate: true,
 
         ejscript: {
-            /*
-                Control if ejs.* is enabled or disabled
-             */
             db: true,
             mail: true,
             mapper: true,
-            shell: true,
+            shell: false,
             tar: true,
             template: true,
             web: true,
@@ -43,6 +40,7 @@ Me.load({
         },
 
         http: {
+            cmd: false,
             /* Use PAM (Plugable Authentication Module) to store passwords */
             pam: false,
         },
@@ -66,7 +64,7 @@ Me.load({
             path: '${BIN}/expansive.mod',
             files: [ 'src/expansive.es', 'src/ExpParser.es', 'paks/ejs-version/Version.es' ],
             build: `
-                run('"${LBIN}/ejsc" --debug --out "${BIN}/expansive.mod" --optimize 9 ${FILES}')
+                run('"${LBIN}/expansive-ejsc" ${settings.ejscript.compile} --out "${BIN}/expansive.mod" --optimize 9 ${FILES}')
             `,
             message: 'Compile: expansive.mod',
             depends: [ 'ejs.mod' ],

@@ -15,7 +15,6 @@ LBIN                  ?= $(BUILD)/bin
 PATH                  := $(LBIN):$(PATH)
 
 ME_COM_COMPILER       ?= 1
-ME_COM_EJS            ?= 1
 ME_COM_EJSCRIPT       ?= 1
 ME_COM_HTTP           ?= 1
 ME_COM_LIB            ?= 1
@@ -40,15 +39,12 @@ endif
 ifeq ($(ME_COM_OPENSSL),1)
     ME_COM_SSL := 1
 endif
-ifeq ($(ME_COM_EJS),1)
-    ME_COM_ZLIB := 1
-endif
 ifeq ($(ME_COM_EJSCRIPT),1)
     ME_COM_ZLIB := 1
 endif
 
 CFLAGS                += -g -w
-DFLAGS                +=  $(patsubst %,-D%,$(filter ME_%,$(MAKEFLAGS))) -DME_COM_COMPILER=$(ME_COM_COMPILER) -DME_COM_EJS=$(ME_COM_EJS) -DME_COM_EJSCRIPT=$(ME_COM_EJSCRIPT) -DME_COM_HTTP=$(ME_COM_HTTP) -DME_COM_LIB=$(ME_COM_LIB) -DME_COM_MATRIXSSL=$(ME_COM_MATRIXSSL) -DME_COM_MBEDTLS=$(ME_COM_MBEDTLS) -DME_COM_MPR=$(ME_COM_MPR) -DME_COM_NANOSSL=$(ME_COM_NANOSSL) -DME_COM_OPENSSL=$(ME_COM_OPENSSL) -DME_COM_OSDEP=$(ME_COM_OSDEP) -DME_COM_PCRE=$(ME_COM_PCRE) -DME_COM_SQLITE=$(ME_COM_SQLITE) -DME_COM_SSL=$(ME_COM_SSL) -DME_COM_VXWORKS=$(ME_COM_VXWORKS) -DME_COM_WINSDK=$(ME_COM_WINSDK) -DME_COM_ZLIB=$(ME_COM_ZLIB) 
+DFLAGS                +=  $(patsubst %,-D%,$(filter ME_%,$(MAKEFLAGS))) -DME_COM_COMPILER=$(ME_COM_COMPILER) -DME_COM_EJSCRIPT=$(ME_COM_EJSCRIPT) -DME_COM_HTTP=$(ME_COM_HTTP) -DME_COM_LIB=$(ME_COM_LIB) -DME_COM_MATRIXSSL=$(ME_COM_MATRIXSSL) -DME_COM_MBEDTLS=$(ME_COM_MBEDTLS) -DME_COM_MPR=$(ME_COM_MPR) -DME_COM_NANOSSL=$(ME_COM_NANOSSL) -DME_COM_OPENSSL=$(ME_COM_OPENSSL) -DME_COM_OSDEP=$(ME_COM_OSDEP) -DME_COM_PCRE=$(ME_COM_PCRE) -DME_COM_SQLITE=$(ME_COM_SQLITE) -DME_COM_SSL=$(ME_COM_SSL) -DME_COM_VXWORKS=$(ME_COM_VXWORKS) -DME_COM_WINSDK=$(ME_COM_WINSDK) -DME_COM_ZLIB=$(ME_COM_ZLIB) 
 IFLAGS                += "-I$(BUILD)/inc"
 LDFLAGS               += '-Wl,-rpath,@executable_path/' '-Wl,-rpath,@loader_path/'
 LIBPATHS              += -L$(BUILD)/bin
@@ -87,13 +83,7 @@ ME_SRC_PREFIX         ?= $(ME_ROOT_PREFIX)$(NAME)-$(VERSION)
 ifeq ($(ME_COM_EJSCRIPT),1)
     TARGETS           += $(BUILD)/bin/ejs.mod
 endif
-ifeq ($(ME_COM_EJSCRIPT),1)
-    TARGETS           += $(BUILD)/bin/ejs
-endif
 TARGETS               += $(BUILD)/bin/expansive
-ifeq ($(ME_COM_HTTP),1)
-    TARGETS           += $(BUILD)/bin/http
-endif
 ifeq ($(ME_COM_SSL),1)
     TARGETS           += $(BUILD)/.install-certs-modified
 endif
@@ -140,10 +130,8 @@ clean:
 	rm -f "$(BUILD)/obj/openssl.o"
 	rm -f "$(BUILD)/obj/pcre.o"
 	rm -f "$(BUILD)/obj/zlib.o"
-	rm -f "$(BUILD)/bin/ejsc"
-	rm -f "$(BUILD)/bin/ejs"
+	rm -f "$(BUILD)/bin/expansive-ejsc"
 	rm -f "$(BUILD)/bin/expansive"
-	rm -f "$(BUILD)/bin/http"
 	rm -f "$(BUILD)/.install-certs-modified"
 	rm -f "$(BUILD)/bin/libejs.dylib"
 	rm -f "$(BUILD)/bin/libhttp.dylib"
@@ -280,7 +268,7 @@ DEPS_13 += src/ejscript/ejs.h
 $(BUILD)/obj/ejs.o: \
     src/ejscript/ejs.c $(DEPS_13)
 	@echo '   [Compile] $(BUILD)/obj/ejs.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/ejs.o -arch $(CC_ARCH) $(CFLAGS) -DME_COM_OPENSSL_PATH=$(ME_COM_OPENSSL_PATH) $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)/include" src/ejscript/ejs.c
+	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/ejs.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/ejscript/ejs.c
 
 #
 #   ejsLib.o
@@ -341,7 +329,7 @@ DEPS_19 += src/http/http.h
 $(BUILD)/obj/http.o: \
     src/http/http.c $(DEPS_19)
 	@echo '   [Compile] $(BUILD)/obj/http.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/http.o -arch $(CC_ARCH) $(CFLAGS) -DME_COM_OPENSSL_PATH=$(ME_COM_OPENSSL_PATH) $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)/include" src/http/http.c
+	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/http.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/http/http.c
 
 #
 #   httpLib.o
@@ -654,9 +642,9 @@ ifeq ($(ME_COM_HTTP),1)
     LIBS_34 += -lhttp
 endif
 
-$(BUILD)/bin/ejsc: $(DEPS_34)
-	@echo '      [Link] $(BUILD)/bin/ejsc'
-	$(CC) -o $(BUILD)/bin/ejsc -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS)  "$(BUILD)/obj/ejsc.o" $(LIBPATHS_34) $(LIBS_34) $(LIBS_34) $(LIBS) 
+$(BUILD)/bin/expansive-ejsc: $(DEPS_34)
+	@echo '      [Link] $(BUILD)/bin/expansive-ejsc'
+	$(CC) -o $(BUILD)/bin/expansive-ejsc -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS)  "$(BUILD)/obj/ejsc.o" $(LIBPATHS_34) $(LIBS_34) $(LIBS_34) $(LIBS) 
 endif
 
 ifeq ($(ME_COM_EJSCRIPT),1)
@@ -664,14 +652,13 @@ ifeq ($(ME_COM_EJSCRIPT),1)
 #   ejs.mod
 #
 DEPS_35 += src/ejscript/ejs.es
-DEPS_35 += $(BUILD)/bin/ejsc
+DEPS_35 += $(BUILD)/bin/expansive-ejsc
 
 $(BUILD)/bin/ejs.mod: $(DEPS_35)
 	( \
 	cd src/ejscript; \
 	echo '   [Compile] ejs.mod' ; \
-	"../../$(BUILD)/bin/ejsc" --out "../../$(BUILD)/bin/ejs.mod" --optimize 9 --bind --require null ejs.es ; \
-	"../../$(BUILD)/bin/ejsc" --out "../../$(BUILD)/bin/ejs.mod" --optimize 9 --bind --require null ejs.es ; \
+	"../../$(BUILD)/bin/expansive-ejsc" --out "../../$(BUILD)/bin/ejs.mod" --optimize 9 --optimize 9 --bind --require null ejs.es ; \
 	)
 endif
 
@@ -722,9 +709,9 @@ ifeq ($(ME_COM_HTTP),1)
     LIBS_36 += -lhttp
 endif
 
-$(BUILD)/bin/ejs: $(DEPS_36)
-	@echo '      [Link] $(BUILD)/bin/ejs'
-	$(CC) -o $(BUILD)/bin/ejs -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS)  "$(BUILD)/obj/ejs.o" $(LIBPATHS_36) $(LIBS_36) $(LIBS_36) $(LIBS) -ledit 
+$(BUILD)/bin/expansive-ejs: $(DEPS_36)
+	@echo '      [Link] $(BUILD)/bin/expansive-ejs'
+	$(CC) -o $(BUILD)/bin/expansive-ejs -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/ejs.o" $(LIBPATHS_36) $(LIBS_36) $(LIBS_36) $(LIBS) -ledit 
 endif
 
 #
@@ -739,7 +726,7 @@ endif
 
 $(BUILD)/bin/expansive.mod: $(DEPS_37)
 	echo '   [Compile] expansive.mod' ; \
-	"./$(BUILD)/bin/ejsc" --debug --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs-version/Version.es
+	"./$(BUILD)/bin/expansive-ejsc" --optimize 9 --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs-version/Version.es
 
 #
 #   expansive
@@ -844,7 +831,7 @@ LIBS_39 += -lmpr
 
 $(BUILD)/bin/http: $(DEPS_39)
 	@echo '      [Link] $(BUILD)/bin/http'
-	$(CC) -o $(BUILD)/bin/http -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS)  "$(BUILD)/obj/http.o" $(LIBPATHS_39) $(LIBS_39) $(LIBS_39) $(LIBS) 
+	$(CC) -o $(BUILD)/bin/http -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/http.o" $(LIBPATHS_39) $(LIBS_39) $(LIBS_39) $(LIBS) 
 endif
 
 ifeq ($(ME_COM_SSL),1)
@@ -912,7 +899,9 @@ installBinary: $(DEPS_44)
 	ln -s "$(VERSION)" "$(ME_APP_PREFIX)/latest" ; \
 	mkdir -p "$(ME_VAPP_PREFIX)/bin" ; \
 	cp $(BUILD)/bin/expansive $(ME_VAPP_PREFIX)/bin/expansive ; \
+	chmod 755 "$(ME_VAPP_PREFIX)/bin/expansive" ; \
 	mkdir -p "$(ME_BIN_PREFIX)" ; \
+	chmod 755 "$(ME_BIN_PREFIX)" ; \
 	rm -f "$(ME_BIN_PREFIX)/expansive" ; \
 	ln -s "$(ME_VAPP_PREFIX)/bin/expansive" "$(ME_BIN_PREFIX)/expansive" ; \
 	mkdir -p "$(ME_VAPP_PREFIX)/bin" ; \

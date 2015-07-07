@@ -33,9 +33,6 @@ LBIN                  = $(BUILD)\bin
 !IF "$(ME_COM_COMPILER)" == ""
 ME_COM_COMPILER       = 1
 !ENDIF
-!IF "$(ME_COM_EJS)" == ""
-ME_COM_EJS            = 1
-!ENDIF
 !IF "$(ME_COM_EJSCRIPT)" == ""
 ME_COM_EJSCRIPT       = 1
 !ENDIF
@@ -88,7 +85,7 @@ ME_COM_WINSDK         = 1
 ME_COM_ZLIB           = 1
 !ENDIF
 
-!IF "$(ME_COM_EJS)" == ""
+!IF "$(ME_COM_EJSCRIPT)" == ""
 ME_COM_OPENSSL_PATH   = ""
 !ENDIF
 
@@ -112,16 +109,12 @@ ME_COM_WINSDK         = 1
 ME_COM_ZLIB           = 1
 !ENDIF
 
-!IF "$(ME_COM_ZLIB)" == ""
-ME_COM_ZLIB           = 1
-!ENDIF
-
 
 CC                    = cl
 LD                    = link
 RC                    = rc
 CFLAGS                = -nologo -GR- -W3 -Zi -Od -MDd
-DFLAGS                = -D_REENTRANT -D_MT -DME_COM_COMPILER=$(ME_COM_COMPILER) -DME_COM_EJS=$(ME_COM_EJS) -DME_COM_EJSCRIPT=$(ME_COM_EJSCRIPT) -DME_COM_HTTP=$(ME_COM_HTTP) -DME_COM_LIB=$(ME_COM_LIB) -DME_COM_LINK=$(ME_COM_LINK) -DME_COM_MATRIXSSL=$(ME_COM_MATRIXSSL) -DME_COM_MBEDTLS=$(ME_COM_MBEDTLS) -DME_COM_MPR=$(ME_COM_MPR) -DME_COM_NANOSSL=$(ME_COM_NANOSSL) -DME_COM_OPENSSL=$(ME_COM_OPENSSL) -DME_COM_OSDEP=$(ME_COM_OSDEP) -DME_COM_PCRE=$(ME_COM_PCRE) -DME_COM_RC=$(ME_COM_RC) -DME_COM_SQLITE=$(ME_COM_SQLITE) -DME_COM_SSL=$(ME_COM_SSL) -DME_COM_VXWORKS=$(ME_COM_VXWORKS) -DME_COM_WINSDK=$(ME_COM_WINSDK) -DME_COM_ZLIB=$(ME_COM_ZLIB) 
+DFLAGS                = -D_REENTRANT -D_MT -DME_COM_COMPILER=$(ME_COM_COMPILER) -DME_COM_EJSCRIPT=$(ME_COM_EJSCRIPT) -DME_COM_HTTP=$(ME_COM_HTTP) -DME_COM_LIB=$(ME_COM_LIB) -DME_COM_LINK=$(ME_COM_LINK) -DME_COM_MATRIXSSL=$(ME_COM_MATRIXSSL) -DME_COM_MBEDTLS=$(ME_COM_MBEDTLS) -DME_COM_MPR=$(ME_COM_MPR) -DME_COM_NANOSSL=$(ME_COM_NANOSSL) -DME_COM_OPENSSL=$(ME_COM_OPENSSL) -DME_COM_OSDEP=$(ME_COM_OSDEP) -DME_COM_PCRE=$(ME_COM_PCRE) -DME_COM_RC=$(ME_COM_RC) -DME_COM_SQLITE=$(ME_COM_SQLITE) -DME_COM_SSL=$(ME_COM_SSL) -DME_COM_VXWORKS=$(ME_COM_VXWORKS) -DME_COM_WINSDK=$(ME_COM_WINSDK) -DME_COM_ZLIB=$(ME_COM_ZLIB) 
 IFLAGS                = -Ibuild\$(CONFIG)\inc
 LDFLAGS               = -nologo -nodefaultlib -incremental:no -debug -machine:$(ARCH)
 LIBPATHS              = "-libpath:$(BUILD)\bin"
@@ -148,13 +141,7 @@ ME_SRC_PREFIX         = $(ME_VAPP_PREFIX)\src
 !IF "$(ME_COM_EJSCRIPT)" == "1"
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\ejs.mod
 !ENDIF
-!IF "$(ME_COM_EJSCRIPT)" == "1"
-TARGETS               = $(TARGETS) build\$(CONFIG)\bin\ejs.exe
-!ENDIF
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\expansive.exe
-!IF "$(ME_COM_HTTP)" == "1"
-TARGETS               = $(TARGETS) build\$(CONFIG)\bin\http.exe
-!ENDIF
 !IF "$(ME_COM_SSL)" == "1"
 TARGETS               = $(TARGETS) build\$(CONFIG)\.install-certs-modified
 !ENDIF
@@ -201,22 +188,14 @@ clean:
 	if exist "build\$(CONFIG)\obj\openssl.obj" del /Q "build\$(CONFIG)\obj\openssl.obj"
 	if exist "build\$(CONFIG)\obj\pcre.obj" del /Q "build\$(CONFIG)\obj\pcre.obj"
 	if exist "build\$(CONFIG)\obj\zlib.obj" del /Q "build\$(CONFIG)\obj\zlib.obj"
-	if exist "build\$(CONFIG)\bin\ejsc.exe" del /Q "build\$(CONFIG)\bin\ejsc.exe"
-	if exist "build\$(CONFIG)\bin\ejsc.lib" del /Q "build\$(CONFIG)\bin\ejsc.lib"
-	if exist "build\$(CONFIG)\bin\ejsc.pdb" del /Q "build\$(CONFIG)\bin\ejsc.pdb"
-	if exist "build\$(CONFIG)\bin\ejsc.exp" del /Q "build\$(CONFIG)\bin\ejsc.exp"
-	if exist "build\$(CONFIG)\bin\ejs.exe" del /Q "build\$(CONFIG)\bin\ejs.exe"
-	if exist "build\$(CONFIG)\bin\ejs.lib" del /Q "build\$(CONFIG)\bin\ejs.lib"
-	if exist "build\$(CONFIG)\bin\ejs.pdb" del /Q "build\$(CONFIG)\bin\ejs.pdb"
-	if exist "build\$(CONFIG)\bin\ejs.exp" del /Q "build\$(CONFIG)\bin\ejs.exp"
+	if exist "build\$(CONFIG)\bin\expansive-ejsc.exe" del /Q "build\$(CONFIG)\bin\expansive-ejsc.exe"
+	if exist "build\$(CONFIG)\bin\expansive-ejsc.lib" del /Q "build\$(CONFIG)\bin\expansive-ejsc.lib"
+	if exist "build\$(CONFIG)\bin\expansive-ejsc.pdb" del /Q "build\$(CONFIG)\bin\expansive-ejsc.pdb"
+	if exist "build\$(CONFIG)\bin\expansive-ejsc.exp" del /Q "build\$(CONFIG)\bin\expansive-ejsc.exp"
 	if exist "build\$(CONFIG)\bin\expansive.exe" del /Q "build\$(CONFIG)\bin\expansive.exe"
 	if exist "build\$(CONFIG)\bin\expansive.lib" del /Q "build\$(CONFIG)\bin\expansive.lib"
 	if exist "build\$(CONFIG)\bin\expansive.pdb" del /Q "build\$(CONFIG)\bin\expansive.pdb"
 	if exist "build\$(CONFIG)\bin\expansive.exp" del /Q "build\$(CONFIG)\bin\expansive.exp"
-	if exist "build\$(CONFIG)\bin\http.exe" del /Q "build\$(CONFIG)\bin\http.exe"
-	if exist "build\$(CONFIG)\bin\http.lib" del /Q "build\$(CONFIG)\bin\http.lib"
-	if exist "build\$(CONFIG)\bin\http.pdb" del /Q "build\$(CONFIG)\bin\http.pdb"
-	if exist "build\$(CONFIG)\bin\http.exp" del /Q "build\$(CONFIG)\bin\http.exp"
 	if exist "build\$(CONFIG)\.install-certs-modified" del /Q "build\$(CONFIG)\.install-certs-modified"
 	if exist "build\$(CONFIG)\bin\libejs.dll" del /Q "build\$(CONFIG)\bin\libejs.dll"
 	if exist "build\$(CONFIG)\bin\libejs.lib" del /Q "build\$(CONFIG)\bin\libejs.lib"
@@ -699,9 +678,9 @@ LIBS_29 = $(LIBS_29) libejs.lib
 LIBS_29 = $(LIBS_29) libhttp.lib
 !ENDIF
 
-build\$(CONFIG)\bin\ejsc.exe: $(DEPS_29)
-	@echo ..... [Link] build\$(CONFIG)\bin\ejsc.exe
-	"$(LD)" -nologo -out:$(BUILD)\bin\ejsc.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS)  "$(BUILD)\obj\ejsc.obj" $(LIBPATHS_29) $(LIBS_29) $(LIBS_29) $(LIBS)  $(LOG)
+build\$(CONFIG)\bin\expansive-ejsc.exe: $(DEPS_29)
+	@echo ..... [Link] build\$(CONFIG)\bin\expansive-ejsc.exe
+	"$(LD)" -nologo -out:$(BUILD)\bin\expansive-ejsc.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS)  "$(BUILD)\obj\ejsc.obj" $(LIBPATHS_29) $(LIBS_29) $(LIBS_29) $(LIBS)  $(LOG)
 !ENDIF
 
 !IF "$(ME_COM_EJSCRIPT)" == "1"
@@ -709,13 +688,12 @@ build\$(CONFIG)\bin\ejsc.exe: $(DEPS_29)
 #   ejs.mod
 #
 DEPS_30 = $(DEPS_30) src\ejscript\ejs.es
-DEPS_30 = $(DEPS_30) build\$(CONFIG)\bin\ejsc.exe
+DEPS_30 = $(DEPS_30) build\$(CONFIG)\bin\expansive-ejsc.exe
 
 build\$(CONFIG)\bin\ejs.mod: $(DEPS_30)
 	cd src\ejscript
 	@echo .. [Compile] ejs.mod
-	"../../$(BUILD)/bin/ejsc" --out "../../$(BUILD)/bin/ejs.mod" --optimize 9 --bind --require null ejs.es
-	"../../$(BUILD)/bin/ejsc" --out "../../$(BUILD)/bin/ejs.mod" --optimize 9 --bind --require null ejs.es
+	"../../$(BUILD)/bin/expansive-ejsc" --out "../../$(BUILD)/bin/ejs.mod" --optimize 9 --optimize 9 --bind --require null ejs.es
 	cd ..\..
 !ENDIF
 
@@ -727,7 +705,7 @@ DEPS_31 = $(DEPS_31) src\ejscript\ejs.h
 build\$(CONFIG)\obj\ejs.obj: \
     src\ejscript\ejs.c $(DEPS_31)
 	@echo .. [Compile] build\$(CONFIG)\obj\ejs.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\ejs.obj -Fd$(BUILD)\obj\ejs.pdb $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH=$(ME_COM_OPENSSL_PATH) $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)\include" src\ejscript\ejs.c $(LOG)
+	"$(CC)" -c -Fo$(BUILD)\obj\ejs.obj -Fd$(BUILD)\obj\ejs.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\ejscript\ejs.c $(LOG)
 
 !IF "$(ME_COM_EJSCRIPT)" == "1"
 #
@@ -778,9 +756,9 @@ LIBS_32 = $(LIBS_32) libejs.lib
 LIBS_32 = $(LIBS_32) libhttp.lib
 !ENDIF
 
-build\$(CONFIG)\bin\ejs.exe: $(DEPS_32)
-	@echo ..... [Link] build\$(CONFIG)\bin\ejs.exe
-	"$(LD)" -nologo -out:$(BUILD)\bin\ejs.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS)  "$(BUILD)\obj\ejs.obj" $(LIBPATHS_32) $(LIBS_32) $(LIBS_32) $(LIBS)  $(LOG)
+build\$(CONFIG)\bin\expansive-ejs.exe: $(DEPS_32)
+	@echo ..... [Link] build\$(CONFIG)\bin\expansive-ejs.exe
+	"$(LD)" -nologo -out:$(BUILD)\bin\expansive-ejs.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\ejs.obj" $(LIBPATHS_32) $(LIBS_32) $(LIBS_32) $(LIBS)  $(LOG)
 !ENDIF
 
 #
@@ -795,7 +773,7 @@ DEPS_33 = $(DEPS_33) build\$(CONFIG)\bin\ejs.mod
 
 build\$(CONFIG)\bin\expansive.mod: $(DEPS_33)
 	@echo .. [Compile] expansive.mod
-	"./$(BUILD)/bin/ejsc" --debug --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs-version/Version.es
+	"./$(BUILD)/bin/expansive-ejsc" --optimize 9 --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs-version/Version.es
 
 #
 #   expansive.h
@@ -895,7 +873,7 @@ DEPS_38 = $(DEPS_38) src\http\http.h
 build\$(CONFIG)\obj\http.obj: \
     src\http\http.c $(DEPS_38)
 	@echo .. [Compile] build\$(CONFIG)\obj\http.obj
-	"$(CC)" -c -Fo$(BUILD)\obj\http.obj -Fd$(BUILD)\obj\http.pdb $(CFLAGS) $(DFLAGS) -DME_COM_OPENSSL_PATH=$(ME_COM_OPENSSL_PATH) $(IFLAGS) "-I$(ME_COM_OPENSSL_PATH)\include" src\http\http.c $(LOG)
+	"$(CC)" -c -Fo$(BUILD)\obj\http.obj -Fd$(BUILD)\obj\http.pdb $(CFLAGS) $(DFLAGS) $(IFLAGS) src\http\http.c $(LOG)
 
 !IF "$(ME_COM_HTTP)" == "1"
 #
@@ -942,7 +920,7 @@ LIBS_39 = $(LIBS_39) libmpr.lib
 
 build\$(CONFIG)\bin\http.exe: $(DEPS_39)
 	@echo ..... [Link] build\$(CONFIG)\bin\http.exe
-	"$(LD)" -nologo -out:$(BUILD)\bin\http.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS)  "$(BUILD)\obj\http.obj" $(LIBPATHS_39) $(LIBS_39) $(LIBS_39) $(LIBS)  $(LOG)
+	"$(LD)" -nologo -out:$(BUILD)\bin\http.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\http.obj" $(LIBPATHS_39) $(LIBS_39) $(LIBS_39) $(LIBS)  $(LOG)
 !ENDIF
 
 !IF "$(ME_COM_SSL)" == "1"

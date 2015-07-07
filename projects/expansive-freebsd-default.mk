@@ -658,7 +658,7 @@ $(BUILD)/bin/ejs.mod: $(DEPS_35)
 	( \
 	cd src/ejscript; \
 	echo '   [Compile] ejs.mod' ; \
-	"../../$(BUILD)/bin/expansive-ejsc" --out "../../$(BUILD)/bin/ejs.mod" --optimize 9 --optimize 9 --bind --require null ejs.es ; \
+	"../../$(BUILD)/bin/expansive-ejsc" --out "../../$(BUILD)/bin/ejs.mod" --optimize 9 --bind --require null ejs.es ; \
 	)
 endif
 

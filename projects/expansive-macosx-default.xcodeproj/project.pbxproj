@@ -994,7 +994,7 @@
     			shellPath = /bin/bash;
     			shellScript = "PATH=$PATH:/usr/local/bin
 cd ../src/ejscript
-	\"../${OUT_DIR}/bin/expansive-ejsc\" --out \"../${OUT_DIR}/bin/ejs.mod\" --optimize 9 --optimize 9 --bind --require null ejs.es
+	\"../${OUT_DIR}/bin/expansive-ejsc\" --out \"../${OUT_DIR}/bin/ejs.mod\" --optimize 9 --bind --require null ejs.es
 ";
     		};
 		1DB926561DB957180000000C /* ShellScript for expansive.mod */ = {

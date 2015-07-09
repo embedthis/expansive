@@ -70,7 +70,7 @@
     #define ME_EJS_ONE_MODULE 1
 #endif
 #ifndef ME_EJSCRIPT_COMPILE
-    #define ME_EJSCRIPT_COMPILE "--optimize 9"
+    #define ME_EJSCRIPT_COMPILE "--debug --optimize 9"
 #endif
 #ifndef ME_EJSCRIPT_DB
     #define ME_EJSCRIPT_DB 1
@@ -205,7 +205,7 @@
 
 /* Profile */
 #ifndef ME_CONFIG_CMD
-    #define ME_CONFIG_CMD "me -d -q -platform windows-x86-default -configure . --without ssl -gen vs"
+    #define ME_CONFIG_CMD "me -d -q -platform windows-x86-default -configure . -without ssl -gen vs"
 #endif
 #ifndef ME_EXPANSIVE_PRODUCT
     #define ME_EXPANSIVE_PRODUCT 1

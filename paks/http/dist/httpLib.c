@@ -14550,12 +14550,35 @@ PUBLIC void httpFinalizeRoute(HttpRoute *route)
 }
 
 
+PUBLIC cchar *httpGetRouteTop(HttpConn *conn)
+{
+    HttpRx  *rx;
+    char   *pp, *top;
+    int     count;
+
+    rx = conn->rx;
+    if (sstarts(rx->pathInfo, rx->route->prefix)) {
+        pp = &rx->pathInfo[rx->route->prefixLen];
+    } else {
+        pp = rx->pathInfo;
+    }
+    top = MPR->emptyString;
+    for (count = 0; *pp; pp++) {
+        if (*pp == '/' && count++ > 0) {
+            top = sjoin(top, "../", NULL);
+        }
+    }
+    if (*top) {
+        top[slen(top) - 1] = '\0';
+    }
+    return top;
+}
+
+
 /*
     Expect a template with embedded tokens of the form: "/${controller}/${action}/${other}"
     Understands the following aliases:
         ~   For ${PREFIX}
-        |   For ${PREFIX}${SERVER_PREFIX}
-
     The options is a hash of token values.
  */
 PUBLIC char *httpTemplate(HttpConn *conn, cchar *template, MprHash *options)
@@ -14574,7 +14597,11 @@ PUBLIC char *httpTemplate(HttpConn *conn, cchar *template, MprHash *options)
     buf = mprCreateBuf(-1, -1);
     for (cp = template; *cp; cp++) {
         if (cp == template && *cp == '~') {
+#if UNUSED
             mprPutStringToBuf(buf, route->prefix);
+#else
+            mprPutStringToBuf(buf, httpGetRouteTop(conn));
+#endif
 
 #if DEPRECATED || 1
         } else if (cp == template && *cp == '|') {
@@ -14591,6 +14618,9 @@ PUBLIC char *httpTemplate(HttpConn *conn, cchar *template, MprHash *options)
                     mprPutStringToBuf(buf, value);
 
                 } else if ((value = mprReadJson(rx->params, key)) != 0) {
+                    mprPutStringToBuf(buf, value);
+
+                } else if ((value = mprLookupKey(route->vars, key)) != 0) {
                     mprPutStringToBuf(buf, value);
                 }
                 if (value == 0) {
@@ -20109,10 +20139,12 @@ PUBLIC void httpOmitBody(HttpConn *conn)
 }
 
 
+#if UNUSED
 static bool localEndpoint(cchar *host)
 {
     return smatch(host, "localhost") || smatch(host, "127.0.0.1") || smatch(host, "::1");
 }
+#endif
 
 
 /*
@@ -20122,10 +20154,13 @@ PUBLIC void httpRedirect(HttpConn *conn, int status, cchar *targetUri)
 {
     HttpTx          *tx;
     HttpRx          *rx;
-    HttpUri         *target, *base;
+    HttpUri         *base, *canonical;
+#if UNUSED
+    HttpUri         *target;
     HttpEndpoint    *endpoint;
-    cchar           *msg;
     char            *dir, *cp;
+#endif
+    cchar           *msg;
 
     assert(targetUri);
     rx = conn->rx;
@@ -20137,15 +20172,30 @@ PUBLIC void httpRedirect(HttpConn *conn, int status, cchar *targetUri)
         return;
     }
     tx->status = status;
-
-    /*
-        Expand the target for embedded tokens. Resolve relative to the current request URI
-        This may add "localhost" if the host is missing in the targetUri.
-     */
-    targetUri = httpLink(conn, targetUri);
     msg = httpLookupStatus(status);
 
+    canonical = conn->host->canonical;
+    if (canonical) {
+        base = httpCloneUri(conn->rx->parsedUri, 0);
+        if (canonical->host) {
+            base->host = canonical->host;
+        }
+        if (canonical->port) {
+            base->port = canonical->port;
+        }
+    } else {
+        base = conn->rx->parsedUri;
+    }
+    /*
+        Expand the target for embedded tokens. Resolve relative to the current request URI.
+     */
+    targetUri = httpUriToString(httpResolveUri(conn, base, httpLinkUri(conn, targetUri, 0)), 0);
+
     if (300 <= status && status <= 399) {
+#if UNUSED
+/*
+MOB - is this needed anymore or does the resolve above do it all
+*/
         if (targetUri == 0) {
             targetUri = "/";
         }
@@ -20156,7 +20206,8 @@ PUBLIC void httpRedirect(HttpConn *conn, int status, cchar *targetUri)
             different scheme. So find a suitable local endpoint to supply the port for the scheme.
         */
         if (!target->port && (target->scheme && !smatch(target->scheme, base->scheme))) {
-            if (!target->host || smatch(base->host, target->host) || (localEndpoint(base->host) && localEndpoint(target->host))) {
+            if (!target->host || smatch(base->host, target->host) || 
+                (localEndpoint(base->host) && localEndpoint(target->host))) {
                 endpoint = smatch(target->scheme, "https") ? conn->host->secureEndpoint : conn->host->defaultEndpoint;
                 if (endpoint) {
                     target->port = endpoint->port;
@@ -20177,7 +20228,9 @@ PUBLIC void httpRedirect(HttpConn *conn, int status, cchar *targetUri)
             target->path = sjoin(dir, "/", target->path, NULL);
         }
         target = httpCompleteUri(target, base);
+assert(smatch(targetUri, httpUriToString(target, 0)));
         targetUri = httpUriToString(target, 0);
+#endif
         httpSetHeader(conn, "Location", "%s", targetUri);
         httpFormatResponse(conn,
             "<!DOCTYPE html>\r\n"
@@ -22109,71 +22162,75 @@ PUBLIC char *httpNormalizeUriPath(cchar *pathArg)
 }
 
 
-PUBLIC HttpUri *httpResolveUri(HttpUri *base, int argc, HttpUri **others, bool local)
+PUBLIC HttpUri *httpResolveUri(HttpConn *conn, HttpUri *base, HttpUri *other)
 {
-    HttpUri     *current, *other;
-    int         i;
+    HttpHost        *host;
+    HttpEndpoint    *endpoint;
+    HttpUri         *current;
 
-    if ((current = httpCloneUri(base, 0)) == 0) {
-        return 0;
+    if (!base || !base->valid) {
+        return other;
     }
-    if (!current->valid) {
-        return current;
+    if (!other || !other->valid) {
+        return base;
     }
-    if (local) {
-        current->host = 0;
-        current->scheme = 0;
-        current->port = 0;
-    }
+    current = httpCloneUri(base, 0);
+
     /*
         Must not inherit the query or reference
      */
     current->query = 0;
     current->reference = 0;
 
-    for (i = 0; i < argc && others; i++) {
-        other = others[i];
-        if (other->scheme && !smatch(current->scheme, other->scheme)) {
-            current->scheme = sclone(other->scheme);
-            /*
-                If the scheme is changed (test above), then accept an explict port.
-                If no port, then must not use the current port as the scheme has changed.
-             */
-            if (other->port) {
-                current->port = other->port;
-            } else if (current->port) {
-                current->port = 0;
-            }
-        }
-        if (other->host) {
-            current->host = sclone(other->host);
-        }
+    if (other->scheme && !smatch(current->scheme, other->scheme)) {
+        current->scheme = sclone(other->scheme);
+        /*
+            If the scheme is changed (test above), then accept an explict port.
+            If no port, then must not use the current port as the scheme has changed.
+         */
         if (other->port) {
             current->port = other->port;
+#if UNUSED
+        } else if (current->port) {
+            current->port = 0;
+#endif
+        } else {
+            host = conn ? conn->host : httpGetDefaultHost();
+            endpoint = smatch(current->scheme, "https") ? host->secureEndpoint : host->defaultEndpoint;
+            current->port = endpoint->port;
         }
-        if (other->path) {
-            trimPathToDirname(current);
-            httpJoinUriPath(current, current, other);
-        }
-        if (other->reference) {
-            current->reference = sclone(other->reference);
-        }
-        if (other->query) {
-            current->query = sclone(other->query);
-        }
+    }
+    if (other->host) {
+        current->host = sclone(other->host);
+    }
+    if (other->port) {
+        current->port = other->port;
+    }
+    if (other->path) {
+        trimPathToDirname(current);
+        httpJoinUriPath(current, current, other);
+    }
+    if (other->reference) {
+        current->reference = sclone(other->reference);
+    }
+    if (other->query) {
+        current->query = sclone(other->query);
     }
     current->ext = mprGetPathExt(current->path);
     return current;
 }
 
 
+
 PUBLIC HttpUri *httpLinkUri(HttpConn *conn, cchar *target, MprHash *options)
 {
     HttpRoute       *route, *lroute;
     HttpRx          *rx;
-    HttpUri         *base, *uri, *canonical;
+    HttpUri         *uri;
     cchar           *routeName, *action, *controller, *originalAction, *tplate;
     char            *rest;
+
+    assert(conn);
 
     rx = conn->rx;
     route = rx->route;
@@ -22261,30 +22318,13 @@ PUBLIC HttpUri *httpLinkUri(HttpConn *conn, cchar *target, MprHash *options)
         }
     }
     target = httpTemplate(conn, tplate, options);
+
     if ((uri = httpCreateUri(target, 0)) == 0) {
         return 0;
     }
     if (!uri->valid) {
         return uri;
     }
-    /*
-        This was changed from: httpCreateUri(rx->uri) to rx->parsedUri because we must extract the existing host and 
-        port from the prior request. The use case was appweb: 
-            /auth/form/login which redirects using: https:///auth/form/login on localhost:4443
-     */
-    canonical = conn->host->canonical;
-    if (canonical) {
-        base = httpCloneUri(rx->parsedUri, 0);
-        if (canonical->host) {
-            base->host = canonical->host;
-        }
-        if (canonical->port) {
-            base->port = canonical->port;
-        }
-    } else {
-        base = rx->parsedUri;
-    }
-    uri = httpResolveUri(base, 1, &uri, 0);
     return httpNormalizeUri(uri);
 }
 
@@ -22398,7 +22438,7 @@ static void trimPathToDirname(HttpUri *uri)
 
 
 /*
-    Limited expansion of route names. Support ~/, |/ and ${app} at the start of the route name
+    Limited expansion of route names. Support ~ and ${app} at the start of the route name
  */
 static cchar *expandRouteName(HttpConn *conn, cchar *routeName)
 {
@@ -22406,10 +22446,10 @@ static cchar *expandRouteName(HttpConn *conn, cchar *routeName)
 
     route = conn->rx->route;
     if (routeName[0] == '~') {
-        return sjoin(route->prefix, &routeName[1], NULL);
+        return sjoin(httpGetRouteTop(conn), &routeName[1], NULL);
     }
     if (sstarts(routeName, "${app}")) {
-        return sjoin(route->prefix, &routeName[6], NULL);
+        return sjoin(httpGetRouteTop(conn), &routeName[6], NULL);
     }
 #if DEPRECATED || 1
     //  DEPRECATED in version 6

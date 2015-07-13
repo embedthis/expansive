@@ -6,7 +6,7 @@
 PRODUCT=expansive
 XCODE=/usr/bin/xcodebuild
 PROFILE=default
-BINARIES="ejs ejsc expansive http"
+BINARIES="ejsc expansive http"
 LIBRARIES="libejs libhttp libmpr libpcre libzlib"
 
 # Just for VS

@@ -1118,19 +1118,25 @@ public class Expansive {
         top        - Relative URL to application home page.
      */
     function initMeta(path, meta) {
-        meta.document = path
-        meta.source = path
-        meta.sourcePath = getSourcePath(meta.source)
-        meta.dest = getDest(meta.sourcePath)
-        meta.path = trimPath(meta.dest, directories.dist)
         if (options.serve) {
             meta.site = options.listen || control.listen || meta.site || 'localhost:4000'
         } else {
             meta.site ||= 'localhost'
         }
-        let dir = meta.path.dirname
-        let count = (dir == '.') ? 0 : dir.components.length
-        meta.top = '../'.times(count)
+        meta.document = path
+        meta.source = path
+        meta.sourcePath = getSourcePath(meta.source)
+        meta.dest = getDest(meta.sourcePath)
+        /*
+            Pages may define own path
+         */
+        meta.path ||= trimPath(meta.dest, directories.dist)
+        meta.path = Path(meta.path)
+        meta.dir ||= meta.path.dirname
+        meta.dir = Path(meta.dir)
+
+        let count = (meta.dir == '.') ? 0 : meta.dir.components.length
+        meta.top = Path('/..'.times(count).slice(1))
         global.top = meta.top
 
         meta.url = Uri(Uri.encode(meta.path))
@@ -1279,7 +1285,12 @@ public class Expansive {
             stat.run += mark.elapsed
         } catch (e) {
             trace('Error', 'Error when processing ' + meta.source)
-            print('CODE \n' + code + '\n')
+            if (code) {
+                print('Code: \n' + code + '\n')
+            } else {
+                print('Contents \n' + contents + '\n')
+            }
+            dump("Meta", meta)
             fatal(e)
         }
         let results = obuf.toString()
@@ -1695,6 +1706,9 @@ public class Expansive {
     public function getFileMeta(file: Path) {
         let [fileMeta, contents] = splitMetaContents(file, file.readString())
         let meta = blend(topMeta.clone(true), fileMeta || {})
+        if (!fileMeta) {
+            meta.default = true
+        }
         return meta
     }
 

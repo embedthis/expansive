@@ -1505,6 +1505,7 @@ PUBLIC cchar *httpLookupMimeType(cchar *ext);
 /**
     Normalize a URI
     @description Validate and canonicalize a URI. This invokes httpNormalizeUriPath to normalize the URI path.
+        This removes redundant ./ and ../ segments. It does not make the URI absolute.
     @param uri URI object to normalize
     @return The supplied uri so it can be used in chaining. Returns null if the URI cannot be normalized.
     @ingroup HttpUri
@@ -1552,13 +1553,11 @@ PUBLIC HttpUri *httpMakeUriLocal(HttpUri *uri);
 /**
     Resolve URIs relative to a base
     @param base Base URI to begin with
-    @param argc Count of URIs in the others array
-    @param others Array of URIs that are sucessively resolved relative to the base
-    @param local If true, the base scheme, host and port are ignored
+    @param target URI to resolve relative to the base
     @ingroup HttpUri
-    @stability Stable
+    @stability Evolving
   */
-PUBLIC HttpUri *httpResolveUri(HttpUri *base, int argc, HttpUri **others, bool local);
+PUBLIC HttpUri *httpResolveUri(struct HttpConn *conn, HttpUri *base, HttpUri *target);
 
 /**
     Create a URI link
@@ -5145,11 +5144,20 @@ PUBLIC cchar *httpGetRouteHome(HttpRoute *route);
 /**
     Get the route method list
     @param route Route to examine
-    @return The the list of support methods. Return NULL if not method list is defined.
+    @return The list of support methods. Return NULL if not method list is defined.
     @ingroup HttpRoute
     @stability Evolving
  */
 PUBLIC cchar *httpGetRouteMethods(HttpRoute *route);
+
+/**
+    Get a URL path to the top of the route from the current request (rx->pathInfo)
+    @param conn Current connection object
+    @return A relative URL path to the top of the route.
+    @ingroup HttpRoute
+    @stability Prototype
+ */
+PUBLIC cchar *httpGetRouteTop(HttpConn *conn);
 
 /**
     Get a path token variable

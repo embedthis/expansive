@@ -73,6 +73,7 @@ public class Expansive {
     var server: Cmd
     var services: Object = {}
     var sitemaps: Array = []
+    var skipFilter: Object = {}
     var stats: Object
     var topMeta: Object
     var transforms: Object = {}
@@ -574,10 +575,14 @@ public class Expansive {
         event('onchange', file)
     }
 
+    public function skip(path) {
+        skipFilter[path] = true
+    }
+
     public function getLastRendered(source): Date {
         let sourcePath = getSourcePath(source)
         let dest = getDest(sourcePath)
-        return dest.modified ? dest.modified : lastGen
+        return dest.modified ? dest.modified : Date(0)
     }
 
     public function touchDir(dir: Path) {
@@ -699,6 +704,10 @@ public class Expansive {
             runWatchers()
             render()
             if (modified.any && options.serving) {
+                trace('Restart', 'Content modified')
+                if (options.debug) {
+                    dump('Modified', modified)
+                }
                 restartServer(true)
             }
             if (modified.any) {
@@ -925,9 +934,12 @@ public class Expansive {
     }
 
     /*
-        Test if a path should be processed according to command line filters
+        Test if a path should be processed according to filters
      */
     function filter(path: Path): Boolean {
+        if (skipFilter[path]) {
+            return false
+        }
         let base = path.basename
         if (base == 'expansive.json' || base == 'expansive.es') {
             return false
@@ -1072,7 +1084,7 @@ public class Expansive {
             return null
         }
         let dest = destCache[source]
-        if (dest) {
+        if (dest != null) {
             return dest
         }
         let dest = directories.dist.join(source)
@@ -1109,7 +1121,7 @@ public class Expansive {
         Initialize meta
 
         source     - Current source file being processed. Relative path including 'contents|lib|layouts|partials'.
-        sourcePath - Current source file being processed. Relative path excluding 'contents|lib|layouts|partials'.
+        sourcePath - Current source file being processed. Relative path EXCLUDING 'contents|lib|layouts|partials'.
         dest       - Destination filename being created. Relative path including 'dist'.
         base       - Source file without 'contents/lib'.
         document   - Source of the document being processed. For partials/layouts, it is the invoking document.
@@ -1234,7 +1246,9 @@ public class Expansive {
                             throw e
                         }
                     }
-                    destCache[meta.source] = meta.dest
+                    if (destCache[meta.source] == null) {
+                        destCache[meta.source] = meta.dest
+                    }
                     stats.services[service.name].count++
                     stats.services[service.name].elapsed += started.elapsed
                 }

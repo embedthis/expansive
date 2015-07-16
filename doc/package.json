@@ -6,6 +6,6 @@
     },
     "pak": {
         "import": true,
-        "mode": "release"
+        "mode": "debug"
     }
 }

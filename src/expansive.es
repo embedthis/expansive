@@ -1148,7 +1148,7 @@ public class Expansive {
         meta.dir = Path(meta.dir)
 
         let count = (meta.dir == '.') ? 0 : meta.dir.components.length
-        meta.top = Path('/..'.times(count).slice(1))
+        meta.top = Path(count ? '/..'.times(count).slice(1) : '.')
         global.top = meta.top
 
         meta.url = Uri(Uri.encode(meta.path))

@@ -1562,11 +1562,9 @@ PUBLIC HttpUri *httpResolveUri(struct HttpConn *conn, HttpUri *base, HttpUri *ta
 /**
     Create a URI link
     @description Create a URI link based on a given target relative to the current request.
-        This API expands embedded tokens based on the current request and route state.
-        The target URI parameter may contain partial or complete URI information. The missing parts are
-        supplied using the current request and route tables. The resulting URI is a normalized, server-local URI (that
-        begins with "/"). The URI will include a required application route prefix, but will not include scheme, host or
-        port components.
+        This API expands embedded tokens based on the current request and route state. The target URI parameter 
+        may contain partial or complete URI information. The missing parts are supplied using the current request 
+        and route tables.
     @param [in] conn HttpConn connection object
     @param target The URI target. The target parameter can be a URI string or JSON style set of options.
         The target will have any embedded "{tokens}" expanded by using token values from the request parameters.
@@ -1629,18 +1627,38 @@ PUBLIC HttpUri *httpResolveUri(struct HttpConn *conn, HttpUri *base, HttpUri *ta
 PUBLIC char *httpLink(struct HttpConn *conn, cchar *target);
 
 /**
+    Create an absolute link that includes scheme and host
+    @param conn HttpConn connection object
+    @param target 
+    @param target The URI target. See $httpLink for details of the target parameter.
+    @return A normalized Uri string.
+    @ingroup HttpUri
+    @stability Prototype
+ */
+PUBLIC char *httpLinkAbs(struct HttpConn *conn, cchar *target);
+
+/**
     Extended URI link creation.
     @description Extended httpLink with custom options. This routine extends the #httpLink API with an options hash
         of token values.
     @param [in] conn HttpConn connection object
     @param target The URI target. See #httpLink for details.
     @param options Hash of option values for embedded tokens. This hash is blended with the route variables.
-    @return A normalized, server-local Uri string.
+    @return A normalized Uri string.
     @ingroup HttpUri
     @stability Evolving
  */
 PUBLIC char *httpLinkEx(struct HttpConn *conn, cchar *target, MprHash *options);
 
+/*
+    Create a URI link and return a URI object.
+    @param [in] conn HttpConn connection object
+    @param target The URI target. See #httpLink for details.
+    @param options Hash of option values for embedded tokens. This hash is blended with the route variables.
+    @return A normalized Uri string.
+    @ingroup HttpUri
+    @stability Evolving
+ */
 PUBLIC HttpUri *httpLinkUri(struct HttpConn *conn, cchar *target, MprHash *options);
 
 /**

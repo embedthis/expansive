@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Plugins</title>
+    <!-- Copyright Embedthis Software. All Rights Reserved. -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="Plugins" />
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700'
+        rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
+    <link href="../images/favicon.ico" rel="shortcut icon" />
+    <link href="../semantic-ui/semantic.css" rel="stylesheet" type="text/css" />
+    <link href="../css/all.css" rel="stylesheet" type="text/css" />
+    
+
+</head>
+<body class="show-sidebar">
+         <div class="sidebar">
+        <div class="ui large left vertical inverted labeled menu">
+            <div class="item">
+                <a href="../index.html" class="logo">Expansive<br/>Docs</a>
+            </div>
+            <div class="item">
+                <div class="menu">
+                    <a class="header item" href="../index.html">Home</a>
+                    <a class="item" href="../users/features.html">Expansive Features</a>
+                    <a class="item" href="https://embedthis.com/expansive/download.html">Download</a>
+                    <a class="item" href="../licensing/index.html">Licensing</a>
+                </div>
+            </div>
+            <div class="item">
+                <div class="menu">
+                    <a class="header item" href="../start/index.html">Getting Started</a>
+                    <a class="item" href="../start/quick.html">Quick Start</a>
+                    <a class="item" href="../start/installing.html">Installing Expansive</a>
+                    <a class="item" href="../start/releaseNotes.html">Release Notes</a>
+                    <a class="item" href="../start/source.html">Building from Source</a>
+                </div>
+            </div>
+
+
+            <div class="item">
+                <a href="../users/index.html"><b>User's Guide</b></a>
+                <div class="menu">
+                    <a class="item" href="../users/tour.html">Quick Tour</a>
+                    <a class="item" href="../users/commands.html">Commands</a>
+                    <a class="item" href="../users/files.html">Files and Directories</a>
+
+                    <a class="item" href="../users/packages.html">Packages</a>
+                    <a class="item" href="../users/skeletons.html">Skeletons</a>
+                    <a class="item" href="../users/plugins.html">Plugins</a>
+
+                    <a class="item" href="../users/meta.html">Meta Data</a>
+                    <a class="item" href="../users/partials.html">Partials</a>
+                    <a class="item" href="../users/layouts.html">Layouts</a>
+                    <a class="item" href="../users/assets.html">Assets and Raw Files</a>
+
+                    <a class="item" href="../users/stylescripts.html">Scripts and Stylesheets</a>
+                    <a class="item" href="../users/collections.html">Collections</a>
+                    <a class="item" href="../users/scripting.html">Scripting</a>
+
+                    <a class="item" href="../users/rendering.html">Rendering</a>
+
+                    <a class="item" href="../users/serving.html">Serving Content</a>
+                    <a class="item" href="../users/deploying.html">Deploying a Site</a>
+                    <a class="item" href="../users/configuration.html">Configuration</a>
+
+                    <!-- query engine -->
+                    <a class="item" href="../users/sitemaps.html">Sitemaps</a>
+                    <a class="item" href="../users/troubleshoot.html">Troubleshooting</a>
+                </div>
+            </div>
+            <div class="item">
+                <a href="../developers/index.html">Developer's Guide</a>
+                <div class="menu">
+                    <a class="item" href="../developers/plugins.html">Creating Plugins</a>
+                    <a class="item" href="../developers/skeletons.html">Creating Skeletons</a>
+                    <a class="item" href="../man/expansive.txt">Manual Page</a>
+                </div>
+            </div>
+            <div class="item">
+                <a href="../developers/project.html">Project Resources</a>
+                <div class="menu">
+                    <!-- MOB -->
+                    <a class="item" href="http://goo.gl/ynBrjA">Official Expansive News</a>
+                    <a class="item" href="https://embedthis.com/expansive/">Expansive Web Site</a>
+                    <a class="item" href="https://github.com/embedthis/exp">Source Code Repository</a>
+                    <a class="item" href="https://github.com/embedthis/exp/issues">Project Issue Database</a>
+                    <a class="item" href="https://github.com/embedthis/exp/releases">Change Log</a>
+                    <a class="item" href="https://github.com/embedthis/exp/milestones">Roadmap</a>
+                    <a class="item" href="https://embedthis.com/developers/contributors.html">Contributors Agreement</a>
+                </div>
+            </div>
+            <div class="item">
+                <b>Links</b>
+                <div class="menu">
+                    <a class="item" href="https://embedthis.com/">Embedthis Web Site</a>
+                    <a class="item" href="https://embedthis.com/blog/">Embedthis Blog</a>
+                    <a class="item" href="http://twitter.com/mobstream">Twitter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+
+    <div class="ui inverted masthead">
+         
+        <div class="ui fixed inverted menu">
+            <div class="ui sidebar-launch button">
+                <i class="icon list layout"></i>
+            </div>
+            <div class="right menu">
+                  
+                    <a class="item" href="https://embedthis.com/">Embedthis</a>
+                    <a class="item" href="https://embedthis.com/expansive/">Expansive Site</a>
+                    <span class="desktop-only">
+                        <a class="item" href="http://goo.gl/dGRDl4">Expansive News</a>
+                        <a class="item" href="https://github.com/embedthis/expansive">Repository</a>
+                        <a class="item" href="https://embedthis.com/blog/">Blog</a>
+                        <a class="item" href="https://twitter.com/mobstream">Twitter</a>
+                    </span>
+
+            </div>
+        </div>
+        
+        <div class="ui breadcrumb">
+            <a class="section" href="../">Home</a>
+            
+            <div class="divider">/</div>
+            <a class="section" href="index.html">
+                Developer's Guide
+            </a>
+            
+            
+            <div class="divider">/</div>
+            <a class="active section" href="plugins.html">Plugins</a>
+            
+        </div>
+        
+        <iframe class="version desktop-only" src="../version.html"></iframe>
+
+    </div>
+    <div class="content">
+
+            <h1>Creating Plugins</h1>
+
+			<p>Plugins are a special type of package that provides extended processing for the Expansive 
+			pipeline. Plugins provide <em>services</em> that are used to transform a file from one format 
+			to another. For example: the <em>exp-md</em> plugin provides the <em>compile-markdown-html</em> 
+            service that transforms Markdown files with a <em>.md</em> extension into HTML files with a 
+            <em>.html</em> extension.</p>
+
+            <h2>Plugin Structure</h2>
+            <p>Plugins are delivered as <a href="http://embedthis.com/pak">Pak</a> packages. They always contain 
+            a minimum of two files:</p>
+            <ul>
+                <li>package.json &mdash; that describes the package</li>
+                <li>expansive.es &mdash; that implements the plugin</li>
+            </ul>
+
+            <p>The <em>package.json</em>file contains the name of the plugin, the current version and the list
+            of dependent packages required for the plugin.</p>
+            <p>The <em>expansive.es</em> file is a Javascript file that typically contains just one call to 
+            <em>Expansive.load</em> to define the services provided by the plugin. For example:</p>
+            <code class="inverted">Expansive.load({ 
+    transforms: [ {
+        name: 'my-markdown',
+        mappings: {
+            'md': 'html'
+        },
+        script: `
+            function transform(contents, meta, service) {
+                return contents
+            }
+            function post(meta, service) {
+            }
+        `
+    } ]
+})</code>
+
+            <p>The plugin calls <em>Expansive.load</em> and provides a <em>transforms</em> array of one or more
+            service definitions. Each service is a hash of properties that contains a <em>name</em> and 
+            <em>mappings</em> that defines the file types for which the service applies. The <em>script</em> 
+            property defines <em>transform</em> and <em>post</em> processing functions to perform 
+            rendering of content. </p>
+
+            <h2>Expansive Pipeline</h2>
+            <p>The Expansive pipeline calls plugin services to transform files from one format to another. It 
+            does this by calling the <em>transform</em> service function giving it the current file contents, meta 
+            data and service property definitions. The order of transformations is determined by the content filename 
+            extensions. For example, consider the file:</p>
+
+            <code class="inverted">index.html.md.exp</code>
+            <p>This file uses embedded Javascript (<em>exp</em>) that is run to generate a Markdown file 
+            (<em>md</em>), that is to be converted to HTML (<em>html</em>). Note extensions are read right to left.
+            To implement this, the pipeline will use the transformations:</p>
+            <ul>
+                <li>exp &rarr; md</li>
+                <li>md &rarr; html</li>
+            </ul>
+
+            <p>The pipeline performs these transformations by invoking the plugin services that have the 
+                requisite mappings:</p>
+            <ul>
+                <li>compile-exp</li>
+                <li>compile-markdown-html</li>
+            </ul>
+
+            <h3>Null Transforms</h3>
+            <p>Plugins can also define a service for that maps a file type to itself. For example: <em>html</em> &rarr; 
+            <em>html</em>. This "null" transformation can be used for the last extension in a filename to perform
+            final stage processing when the contents are mutated, but the file type does not change. For example: 
+            to minify a script file.</p>
+
+            <h2>Mappings</h2>
+            <p>A service defines the file types for which it should apply via the <em>mappings</em> property.
+            The mappings takes the following format:</p>
+            <code class="inverted">mappings: {
+    'from': 'to',
+    'from': [ 'to' ],
+}</code>
+            <p>The <em>from</em> property is the original (outer-most) file extension. The <em>to</em> property is 
+            the destination (inner) file extension. It may also be an array of destination extensions. Expansive supports
+            two abbreviated mappings syntax. Mapping entries may be set to a single string if the <em>from</em> and
+            <em>to</em> values are the same. The Mappings property may be also set to a file extension string if 
+            only one extension is supported and the <em>from</em> and <em>to</em> file extensions are the same. For 
+            example:</p>
+            <code class="inverted">mappings: 'html'
+
+mappings: {
+    'html'
+}</code>
+
+            <h2>Transform Function</h2>
+            <p>The <em>transform</em> function is invoked to transform the file contents. It is passed three arguments:</p>
+            <ul>
+                <li>contents &mdash; The current file contents as an in-memory string.</li>
+                <li>meta &mdash; Meta data properties for the file.</li>
+                <li>service &mdash; The service data object containing the service properties.</li>
+            </ul>
+            <p>The transform function should process and return the new contents. The service can instruct the pipeline
+            to delete the file by returning null.</p>
+
+            <h2>Pre Function</h2>
+            <p>If a service defines a <em>pre</em> function, it will be invoked before all pipeline processing. 
+            This "pre-processor" is useful to configure the environment or dynamically create pages.
+            It is passed two arguments:</p>
+            <ul>
+                <li>meta &mdash; Meta data properties for the file.</li>
+                <li>service &mdash; The service data object containing the service properties.</li>
+            </ul>
+
+            <h2>Post Function</h2>
+            <p>If a service defines a <em>post</em> function, it will be invoked after all pipeline processing to 
+            perform "post" processing. It is passed two arguments:</p>
+            <ul>
+                <li>meta &mdash; Meta data properties for the file.</li>
+                <li>service &mdash; The service data object containing the service properties.</li>
+            </ul>
+
+            <h2>Using Meta Data</h2>
+            <p>Expansive defines various meta data properties for the original filename, destination filename
+                and various other useful path properties.</p>
+
+            <table class="ui celled table" title="properties">
+                <thead>
+                    <tr><th>Property</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>source</td><td>Current source file being processed. Relative path including 
+                        <em>contents</em>, <em>lib</em>, <em>layouts</em> or <em>partials</em> directory prefix.
+                        For example: <em>contents/sub/index.html</em>.</td></tr>
+                    <tr><td>dest</td><td>Destination filename being created. Relative path including 
+                        <em>dist</em>. For example: <em>dist/sub/index.html</em>.</td></tr>
+                    <tr><td>base</td><td>Source file without <em>contents</em> or <em>lib</em>. For example: 
+                        <em>sub/index.html</em>.</td></tr>
+                    <tr><td>document</td><td>Source of the document being processed. For partials or layouts, it is 
+                        set to the invoking document. For example: <em>sub/index.html</em>.</td></tr>
+                    <tr><td>path</td><td>Destination without <em>dist</em>. Note: may have different extensions to 
+                        base. For example: <em>sub/index.html</em>.</td></tr>
+                    <tr><td>url</td><td>Url reference made from <em>path</em>. For example: 
+                        <em>sub/index.html</em>.</td></tr>
+                    <tr><td>top</td><td>Relative URL to application home page. For example: <em>../</em>.</td></tr>
+                </tbody>
+            </table>
+
+            <p>See <a href="../users/meta.html#properties">Meta Data</a> for the full list of meta data properties.</p>
+
+            <h3>Installing Plugins</h3>
+            <p>Some plugins need to rely on external programs. If these external programs are delivered via
+            <a href="http://embedthis.com/pak/">Pak</a> packages, then the plugin can simply specify the other 
+            package in its dependency list. If the plugin needs to configure the environment or run other 
+            external commands before it can run, then some installation setup may be needed.</p>
+
+            <p>The plugin <em>package.json</em> file may specify a script to run once the plugin package is installed.
+            This script can then perform any required plugin configuration. Packages can "hook" two key package events:</p>
+            <ul>
+                <li>postcache &mdash; run after the package is installed in the ~/.paks package cache</li>
+                <li>install &mdash; run after the package is locally installed under ./paks</li>
+            </ul>
+            <p>For example, the <em>exp-js</em> package.json file contains the following event script:</p>
+            <code class="inverted">"scripts": {
+    "postcache": {
+        "script": "Cmd.locate('uglifyjs') || run('npm install -g uglifyjs')" 
+    }
+}</code>
+            <p>This will try to locate the <em>uglifyjs</em> command and if not found, will use <em>npm</em> to
+            install it globally.</p>
+
+            <h3>Plugin Configuration</h3>
+            <p>The Plugin services may define default configuration in their service definition that may then be
+            overridden by user configuration in the top level expansive.json. 
+            A service may define any custom property in the service transform definition. For example:</p>
+            <code class="inverted">Expansive.load({ 
+    transforms: {
+        name: 'minify-html',
+        mappings: 'html'
+        options:  '--remove-comments'
+        ...
+    }
+})</code>
+            <p>The <em>options</em> property defines the default HTML minification options. The user can then
+            override in the <em>expansive.json</em> via:</p>
+            <code class="inverted">{
+    services: {
+        'minify-html': {
+            options: '--remove-comments --remove-attribute-quotes'
+        }
+    }
+}</code>
+            <p>Expansive creates an <em>enable</em> property for all services so the service does not need to 
+            explicitly create it.</p>
+
+            <h2>Example</h2>
+            <p>Here is a sample plugin that transforms shell scripts and captures their output. This plugin
+            implements the <em>shell</em> service and will handle files with a <em>.bash</em> and <em>.sh</em>
+            extension.</p>
+            <code class="inverted">Expansive.load({
+    transforms: {
+        name: 'shell',
+        mappings: {
+            'bash',
+            'sh'
+        },
+        script: `
+            function transform(contents, meta, service)
+                run(file.extension, contents)
+        `
+    }
+})</code>
+            <p>Here is a sample plugin that implements the <em>compress</em> service to post-process
+            files using <em>gzip</em>.</p>
+
+            <code class="inverted">Expansive.load({
+    transforms: {
+        name:   'compress',
+        <b>files:  [ '**.html', '**.css', '**.js' ]</b>,
+        script: `
+            function post(meta, service) {
+                let gzip = Cmd.locate('gzip')
+                if (!gzip) {
+                    trace('Warn', 'Cannot find gzip')
+                    return
+                }
+                for each (file in directories.dist.files(<b>service.files</b>, {directories: false})) {
+                    file.joinExt('gz', true).remove()
+                    Cmd.run('gzip ' + file, {filter: true})
+                }
+            }
+        `
+    }
+})</code>
+            <p>In this example, the plugin access the service <em>files</em> property for the set of file patterns
+            to match.</p>
+
+            <h2>Plugin Scripting</h2>
+            <p>Expansive provides full access to the entire <a href="http://embedthis.com/ejscript">Ejscript</a>
+            Javascript language. See the <a href="http://embedthis.com/ejscript/doc/">Ejscript API Documentation</a>
+            and <a href="http://embedthis.com/ejscript/doc/ref/api/ejscript/index.html">Ejscript Script Library</a>
+            for full details.</p>
+
+            <h3>Expansive Convenience Functions</h3>
+            <p>Expansive provides several convenience routines to make writing plugins easier.</p>
+
+            <table class="ui celled table" title="functions">
+            <thead>
+                <tr><th class="eight wide column">Syntax</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>addItems(collection: String, items: String|Array)</td>
+                    <td>Add items to the named collection.</td>
+                </tr>
+                <tr>
+                    <td>getFiles(patterns: String|Array, query: Object): Array</td>
+                    <td>Query the meta data for matching files and return list of matching filenames.</td>
+                </tr>
+                <tr>
+                    <td>getFileMeta(path: String): String</td>
+                    <td>Get the file meta data for the given path.</td>
+                </tr>
+                <tr>
+                    <td>getItems(collection: String): String</td>
+                    <td>Return the items for a named collection.</td>
+                </tr>
+                <tr>
+                    <td>removeItems(collection: String, items: String | Array)</td>
+                    <td>Remove items from the named collection</td>
+                </tr>
+                <tr>
+                    <td>trace(tag: String, ...args)</td>
+                    <td>Emit trace to the console.</td>
+                </tr>
+                <tr>
+                    <td>vtrace(tag: String, ...args)</td>
+                    <td>Emit trace to the console if expansive is run in verbose mode.</td>
+                </tr>
+                <tr>
+                    <td>run(cmd: String, contents: String): String</td>
+                    <td>Run the command with the contents as standard input and return the output of the command.</td>
+                </tr>
+            </tbody>
+            </table>
+
+            <h2>Popular Plugins</h2>
+            <p>Here are some sample plugin implementations</p>
+            <ul>
+                <li><a href="http://github.com/embedthis/exp-babel">exp-babel</a> &mdash; Babel for ES6 support.</li>
+                <li><a href="http://github.com/embedthis/exp-css">exp-css</a> &mdash; CSS management.</li>
+                <li><a href="http://github.com/embedthis/exp-gzip">exp-gzip</a> &mdash; File compression.</li>
+                <li><a href="http://github.com/embedthis/exp-js">exp-js</a> &mdash; JS file management.</li>
+                <li><a href="http://github.com/embedthis/exp-less">exp-less</a> &mdash; Less stylesheet processing.</li>
+                <li><a href="http://github.com/embedthis/exp-md">exp-md</a> &mdash; Markdown file processing.</li>
+                <li><a href="http://github.com/embedthis/exp-sass">exp-sass</a> &mdash; Sass stylesheet processing.</li>
+                <li><a href="http://github.com/embedthis/exp-shell">exp-shell</a> &mdash; Shell script processing.</li>
+            </ul>
+
+    </div>
+    <div class="terms ui basic center aligned segment">
+        <p>&copy; Embedthis Software, 2003-2015. All rights reserved.</p>
+    </div>
+
+    <script src="../jquery/jquery.min.js"></script>
+    <script src="../semantic-ui/semantic.js"></script>
+    <script>
+        var sl = $('.sidebar-launch');
+        $('.sidebar-launch').click(function() {
+            var body = $('body');
+            if (!body.hasClass('show-sidebar')) {
+                body.addClass('show-sidebar');
+                $('.sidebar').css('visibility', 'visible');
+            } else {
+                body.removeClass('show-sidebar');
+                $('.sidebar').css('visibility', 'hidden');
+            }
+        });
+        $('.sidebar a.item').click(function(e) {
+            sessionStorage.setItem('scroll-top', $('.sidebar').scrollTop());
+        });
+        $(function() {
+            var url = '..developers/plugins.html';
+            var active = $('.sidebar a[href="' + url +'"]');
+            active.addClass('active');
+            $('.sidebar').scrollTop(sessionStorage.getItem('scroll-top'));
+        });
+    </script> 
+
+        
+
+</body>
+</html>

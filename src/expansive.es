@@ -1305,6 +1305,7 @@ public class Expansive {
                 print('Contents \n' + contents + '\n')
             }
             dump("Meta", meta)
+            print("In document", meta.document)
             fatal(e)
         }
         let results = obuf.toString()

@@ -84,9 +84,7 @@ ifeq ($(ME_COM_EJSCRIPT),1)
     TARGETS           += $(BUILD)/bin/ejs.mod
 endif
 TARGETS               += $(BUILD)/bin/expansive
-ifeq ($(ME_COM_SSL),1)
-    TARGETS           += $(BUILD)/.install-certs-modified
-endif
+TARGETS               += $(BUILD)/.install-certs-modified
 TARGETS               += $(BUILD)/bin/sample.json
 
 unexport CDPATH
@@ -834,7 +832,6 @@ $(BUILD)/bin/http: $(DEPS_39)
 	$(CC) -o $(BUILD)/bin/http -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/http.o" $(LIBPATHS_39) $(LIBS_39) $(LIBS_39) $(LIBS) 
 endif
 
-ifeq ($(ME_COM_SSL),1)
 #
 #   install-certs
 #
@@ -861,7 +858,6 @@ $(BUILD)/.install-certs-modified: $(DEPS_40)
 	cp src/certs/samples/test.crt $(BUILD)/bin/test.crt
 	cp src/certs/samples/test.key $(BUILD)/bin/test.key
 	touch "$(BUILD)/.install-certs-modified"
-endif
 
 #
 #   sample

@@ -142,9 +142,7 @@ ME_SRC_PREFIX         = $(ME_VAPP_PREFIX)\src
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\ejs.mod
 !ENDIF
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\expansive.exe
-!IF "$(ME_COM_SSL)" == "1"
 TARGETS               = $(TARGETS) build\$(CONFIG)\.install-certs-modified
-!ENDIF
 TARGETS               = $(TARGETS) build\$(CONFIG)\bin\sample.json
 
 !IFNDEF SHOW
@@ -873,7 +871,6 @@ build\$(CONFIG)\bin\http.exe: $(DEPS_39)
 	"$(LD)" -nologo -out:$(BUILD)\bin\http.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\http.obj" $(LIBPATHS_39) $(LIBS_39) $(LIBS_39) $(LIBS)  $(LOG)
 !ENDIF
 
-!IF "$(ME_COM_SSL)" == "1"
 #
 #   install-certs
 #
@@ -900,7 +897,6 @@ build\$(CONFIG)\.install-certs-modified: $(DEPS_40)
 	copy /Y /B src\certs\samples\test.crt+modified build\$(CONFIG)\bin\test.crt $(LOG)
 	copy /Y /B src\certs\samples\test.key+modified build\$(CONFIG)\bin\test.key $(LOG)
 	copy /Y /B nul+modified build\$(CONFIG)\.install-certs-modified $(LOG)
-!ENDIF
 
 #
 #   sample

@@ -1196,6 +1196,10 @@ public class Expansive {
             delete meta.layout
         }
         contents = renderContents(contents, meta)
+        if (meta.redirect) {
+            contents = '<html><body><script type="text/javascript">window.location="' + meta.redirect + 
+                '"</script></body></html>\n'
+        }
         writeDest(contents, meta)
     }
 

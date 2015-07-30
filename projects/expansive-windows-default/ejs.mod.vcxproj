@@ -91,6 +91,9 @@
         <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ObjDir)\ejs.mod\</IntDir>
         <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PreBuildEvent</CustomBuildBeforeTargets>
   </PropertyGroup>
+    <PropertyGroup>
+        <TargetName>ejs</TargetName>
+    </PropertyGroup>
 
       <ItemDefinitionGroup>
       <Link>

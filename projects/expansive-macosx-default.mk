@@ -505,14 +505,16 @@ ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_35 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_35 += -lmpr-mbedtls
+    LIBS_35 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_35 += -lmbedtls
 endif
 ifeq ($(ME_COM_OPENSSL),1)
-    LIBS_35 += -lmpr-openssl
+ifeq ($(ME_COM_OPENSSL),1)
+    LIBS_35 += -lopenssl
     LIBPATHS_35 += -L"$(ME_COM_OPENSSL_PATH)"
+endif
 endif
 ifeq ($(ME_COM_OPENSSL),1)
 ifeq ($(ME_COM_SSL),1)
@@ -524,13 +526,10 @@ ifeq ($(ME_COM_OPENSSL),1)
     LIBS_35 += -lcrypto
     LIBPATHS_35 += -L"$(ME_COM_OPENSSL_PATH)"
 endif
-ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_35 += -lmpr-mbedtls
-endif
 
 $(BUILD)/bin/libmpr.dylib: $(DEPS_35)
 	@echo '      [Link] $(BUILD)/bin/libmpr.dylib'
-	$(CC) -dynamiclib -o $(BUILD)/bin/libmpr.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libmpr.dylib -compatibility_version 0.5 -current_version 0.5 "$(BUILD)/obj/mprLib.o" $(LIBPATHS_35) $(LIBS_35) $(LIBS_35) $(LIBS) 
+	$(CC) -dynamiclib -o $(BUILD)/bin/libmpr.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libmpr.dylib -compatibility_version 0.5 -current_version 0.5 "$(BUILD)/obj/mprLib.o" -lmpr-mbedtls $(LIBPATHS_35) $(LIBS_35) $(LIBS_35) $(LIBS) 
 
 ifeq ($(ME_COM_PCRE),1)
 #
@@ -559,14 +558,16 @@ ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_37 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_37 += -lmpr-mbedtls
+    LIBS_37 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_37 += -lmbedtls
 endif
 ifeq ($(ME_COM_OPENSSL),1)
-    LIBS_37 += -lmpr-openssl
+ifeq ($(ME_COM_OPENSSL),1)
+    LIBS_37 += -lopenssl
     LIBPATHS_37 += -L"$(ME_COM_OPENSSL_PATH)"
+endif
 endif
 ifeq ($(ME_COM_OPENSSL),1)
 ifeq ($(ME_COM_SSL),1)
@@ -579,9 +580,6 @@ ifeq ($(ME_COM_OPENSSL),1)
     LIBPATHS_37 += -L"$(ME_COM_OPENSSL_PATH)"
 endif
 LIBS_37 += -lmpr
-ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_37 += -lmpr-mbedtls
-endif
 ifeq ($(ME_COM_PCRE),1)
     LIBS_37 += -lpcre
 endif
@@ -592,7 +590,7 @@ LIBS_37 += -lmpr
 
 $(BUILD)/bin/libhttp.dylib: $(DEPS_37)
 	@echo '      [Link] $(BUILD)/bin/libhttp.dylib'
-	$(CC) -dynamiclib -o $(BUILD)/bin/libhttp.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libhttp.dylib -compatibility_version 0.5 -current_version 0.5 "$(BUILD)/obj/httpLib.o" $(LIBPATHS_37) $(LIBS_37) $(LIBS_37) $(LIBS) 
+	$(CC) -dynamiclib -o $(BUILD)/bin/libhttp.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libhttp.dylib -compatibility_version 0.5 -current_version 0.5 "$(BUILD)/obj/httpLib.o" $(LIBPATHS_37) $(LIBS_37) $(LIBS_37) $(LIBS) -lmpr-mbedtls 
 endif
 
 ifeq ($(ME_COM_ZLIB),1)
@@ -630,14 +628,16 @@ ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_39 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_39 += -lmpr-mbedtls
+    LIBS_39 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_39 += -lmbedtls
 endif
 ifeq ($(ME_COM_OPENSSL),1)
-    LIBS_39 += -lmpr-openssl
+ifeq ($(ME_COM_OPENSSL),1)
+    LIBS_39 += -lopenssl
     LIBPATHS_39 += -L"$(ME_COM_OPENSSL_PATH)"
+endif
 endif
 ifeq ($(ME_COM_OPENSSL),1)
 ifeq ($(ME_COM_SSL),1)
@@ -650,9 +650,6 @@ ifeq ($(ME_COM_OPENSSL),1)
     LIBPATHS_39 += -L"$(ME_COM_OPENSSL_PATH)"
 endif
 LIBS_39 += -lmpr
-ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_39 += -lmpr-mbedtls
-endif
 ifeq ($(ME_COM_PCRE),1)
     LIBS_39 += -lpcre
 endif
@@ -675,7 +672,7 @@ endif
 
 $(BUILD)/bin/libejs.dylib: $(DEPS_39)
 	@echo '      [Link] $(BUILD)/bin/libejs.dylib'
-	$(CC) -dynamiclib -o $(BUILD)/bin/libejs.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libejs.dylib -compatibility_version 0.5 -current_version 0.5 "$(BUILD)/obj/ejsLib.o" $(LIBPATHS_39) $(LIBS_39) $(LIBS_39) $(LIBS) 
+	$(CC) -dynamiclib -o $(BUILD)/bin/libejs.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libejs.dylib -compatibility_version 0.5 -current_version 0.5 "$(BUILD)/obj/ejsLib.o" $(LIBPATHS_39) $(LIBS_39) $(LIBS_39) $(LIBS) -lmpr-mbedtls 
 endif
 
 ifeq ($(ME_COM_EJSCRIPT),1)
@@ -689,14 +686,16 @@ ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_40 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_40 += -lmpr-mbedtls
+    LIBS_40 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_40 += -lmbedtls
 endif
 ifeq ($(ME_COM_OPENSSL),1)
-    LIBS_40 += -lmpr-openssl
+ifeq ($(ME_COM_OPENSSL),1)
+    LIBS_40 += -lopenssl
     LIBPATHS_40 += -L"$(ME_COM_OPENSSL_PATH)"
+endif
 endif
 ifeq ($(ME_COM_OPENSSL),1)
 ifeq ($(ME_COM_SSL),1)
@@ -709,9 +708,6 @@ ifeq ($(ME_COM_OPENSSL),1)
     LIBPATHS_40 += -L"$(ME_COM_OPENSSL_PATH)"
 endif
 LIBS_40 += -lmpr
-ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_40 += -lmpr-mbedtls
-endif
 ifeq ($(ME_COM_PCRE),1)
     LIBS_40 += -lpcre
 endif
@@ -735,7 +731,7 @@ endif
 
 $(BUILD)/bin/expansive-ejsc: $(DEPS_40)
 	@echo '      [Link] $(BUILD)/bin/expansive-ejsc'
-	$(CC) -o $(BUILD)/bin/expansive-ejsc -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/ejsc.o" $(LIBPATHS_40) $(LIBS_40) $(LIBS_40) $(LIBS) 
+	$(CC) -o $(BUILD)/bin/expansive-ejsc -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/ejsc.o" $(LIBPATHS_40) $(LIBS_40) $(LIBS_40) $(LIBS) -lmpr-mbedtls 
 endif
 
 ifeq ($(ME_COM_EJSCRIPT),1)
@@ -764,14 +760,16 @@ ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_42 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_42 += -lmpr-mbedtls
+    LIBS_42 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_42 += -lmbedtls
 endif
 ifeq ($(ME_COM_OPENSSL),1)
-    LIBS_42 += -lmpr-openssl
+ifeq ($(ME_COM_OPENSSL),1)
+    LIBS_42 += -lopenssl
     LIBPATHS_42 += -L"$(ME_COM_OPENSSL_PATH)"
+endif
 endif
 ifeq ($(ME_COM_OPENSSL),1)
 ifeq ($(ME_COM_SSL),1)
@@ -784,9 +782,6 @@ ifeq ($(ME_COM_OPENSSL),1)
     LIBPATHS_42 += -L"$(ME_COM_OPENSSL_PATH)"
 endif
 LIBS_42 += -lmpr
-ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_42 += -lmpr-mbedtls
-endif
 ifeq ($(ME_COM_PCRE),1)
     LIBS_42 += -lpcre
 endif
@@ -845,14 +840,16 @@ ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_44 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_44 += -lmpr-mbedtls
+    LIBS_44 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_44 += -lmbedtls
 endif
 ifeq ($(ME_COM_OPENSSL),1)
-    LIBS_44 += -lmpr-openssl
+ifeq ($(ME_COM_OPENSSL),1)
+    LIBS_44 += -lopenssl
     LIBPATHS_44 += -L"$(ME_COM_OPENSSL_PATH)"
+endif
 endif
 ifeq ($(ME_COM_OPENSSL),1)
 ifeq ($(ME_COM_SSL),1)
@@ -865,9 +862,6 @@ ifeq ($(ME_COM_OPENSSL),1)
     LIBPATHS_44 += -L"$(ME_COM_OPENSSL_PATH)"
 endif
 LIBS_44 += -lmpr
-ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_44 += -lmpr-mbedtls
-endif
 ifeq ($(ME_COM_PCRE),1)
     LIBS_44 += -lpcre
 endif
@@ -893,7 +887,7 @@ endif
 
 $(BUILD)/bin/expansive: $(DEPS_44)
 	@echo '      [Link] $(BUILD)/bin/expansive'
-	$(CC) -o $(BUILD)/bin/expansive -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/expansive.o" "$(BUILD)/obj/expParser.o" $(LIBPATHS_44) $(LIBS_44) $(LIBS_44) $(LIBS) 
+	$(CC) -o $(BUILD)/bin/expansive -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/expansive.o" "$(BUILD)/obj/expParser.o" $(LIBPATHS_44) $(LIBS_44) $(LIBS_44) $(LIBS) -lmpr-mbedtls 
 
 ifeq ($(ME_COM_HTTP),1)
 #
@@ -906,14 +900,16 @@ ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_45 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_45 += -lmpr-mbedtls
+    LIBS_45 += -lmbedtls
 endif
 ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_45 += -lmbedtls
 endif
 ifeq ($(ME_COM_OPENSSL),1)
-    LIBS_45 += -lmpr-openssl
+ifeq ($(ME_COM_OPENSSL),1)
+    LIBS_45 += -lopenssl
     LIBPATHS_45 += -L"$(ME_COM_OPENSSL_PATH)"
+endif
 endif
 ifeq ($(ME_COM_OPENSSL),1)
 ifeq ($(ME_COM_SSL),1)
@@ -926,9 +922,6 @@ ifeq ($(ME_COM_OPENSSL),1)
     LIBPATHS_45 += -L"$(ME_COM_OPENSSL_PATH)"
 endif
 LIBS_45 += -lmpr
-ifeq ($(ME_COM_MBEDTLS),1)
-    LIBS_45 += -lmpr-mbedtls
-endif
 ifeq ($(ME_COM_PCRE),1)
     LIBS_45 += -lpcre
 endif

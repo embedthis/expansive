@@ -726,7 +726,7 @@ DEPS_36 = $(DEPS_36) build\$(CONFIG)\bin\expansive-ejsc.exe
 build\$(CONFIG)\bin\ejs.mod: $(DEPS_36)
 	cd src\ejscript
 	@echo .. [Compile] ejs.mod
-	"../../$(BUILD)/bin/expansive-ejsc" --out "../../$(BUILD)/bin/ejs.mod" --debug --optimize 9 --bind --require null ejs.es
+	"../../$(BUILD)/bin/expansive-ejsc" --out "../../$(BUILD)/bin/ejs.mod"  --bind --require null ejs.es
 	cd ..\..
 !ENDIF
 
@@ -794,14 +794,14 @@ build\$(CONFIG)\bin\expansive-ejs.exe: $(DEPS_38)
 #
 DEPS_39 = $(DEPS_39) src\expansive.es
 DEPS_39 = $(DEPS_39) src\ExpParser.es
-DEPS_39 = $(DEPS_39) paks\ejs-version\Version.es
+DEPS_39 = $(DEPS_39) paks\ejs.version\Version.es
 !IF "$(ME_COM_EJSCRIPT)" == "1"
 DEPS_39 = $(DEPS_39) build\$(CONFIG)\bin\ejs.mod
 !ENDIF
 
 build\$(CONFIG)\bin\expansive.mod: $(DEPS_39)
 	@echo .. [Compile] expansive.mod
-	"./$(BUILD)/bin/expansive-ejsc" --debug --optimize 9 --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs-version/Version.es
+	"./$(BUILD)/bin/expansive-ejsc"  --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs.version/Version.es
 
 #
 #   expansive.h

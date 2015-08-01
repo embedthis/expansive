@@ -29,7 +29,6 @@ Me.load({
         integrate: true,
 
         ejscript: {
-            compile: '--debug --optimize 9',
             db: true,
             mail: true,
             mapper: true,
@@ -63,7 +62,7 @@ Me.load({
     targets: {
         'expansive.mod': {
             path: '${BIN}/expansive.mod',
-            files: [ 'src/expansive.es', 'src/ExpParser.es', 'paks/ejs-version/Version.es' ],
+            files: [ 'src/expansive.es', 'src/ExpParser.es', 'paks/ejs.version/Version.es' ],
             build: `
                 run('"${LBIN}/expansive-ejsc" ${settings.ejscript.compile} --out "${BIN}/expansive.mod" --optimize 9 ${FILES}')
             `,

@@ -698,7 +698,7 @@ $(BUILD)/bin/ejs.mod: $(DEPS_41)
 	( \
 	cd src/ejscript; \
 	echo '   [Compile] ejs.mod' ; \
-	"../../$(BUILD)/bin/expansive-ejsc" --out "../../$(BUILD)/bin/ejs.mod" --debug --optimize 9 --bind --require null ejs.es ; \
+	"../../$(BUILD)/bin/expansive-ejsc" --out "../../$(BUILD)/bin/ejs.mod"  --bind --require null ejs.es ; \
 	)
 endif
 
@@ -756,14 +756,14 @@ endif
 #
 DEPS_43 += src/expansive.es
 DEPS_43 += src/ExpParser.es
-DEPS_43 += paks/ejs-version/Version.es
+DEPS_43 += paks/ejs.version/Version.es
 ifeq ($(ME_COM_EJSCRIPT),1)
     DEPS_43 += $(BUILD)/bin/ejs.mod
 endif
 
 $(BUILD)/bin/expansive.mod: $(DEPS_43)
 	echo '   [Compile] expansive.mod' ; \
-	"./$(BUILD)/bin/expansive-ejsc" --debug --optimize 9 --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs-version/Version.es
+	"./$(BUILD)/bin/expansive-ejsc"  --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs.version/Version.es
 
 #
 #   expansive

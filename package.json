@@ -31,7 +31,7 @@
     ],
     "dependencies": {
         "certs": "~0.1",
-        "ejs-version": "~0.8",
+        "ejs.version": "~0.8",
         "ejscript": "~2.6",
         "mpr": "~6.1",
         "mpr-mbedtls": "^0.3",

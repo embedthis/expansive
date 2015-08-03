@@ -95,20 +95,6 @@
         <TargetName>expansive</TargetName>
     </PropertyGroup>
 
-      <ItemDefinitionGroup>
-      <Link>
-        <AdditionalDependencies>libejs.lib;libzlib.lib;libhttp.lib;libpcre.lib;libmpr.lib;libmpr-mbedtls.lib;libmbedtls.lib;%(AdditionalDependencies)</AdditionalDependencies>
-        <AdditionalLibraryDirectories>$(OutDir);build\$(Cfg)\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      </Link>
-
-      <CustomBuildStep>
-        <Command>cd ..\..
-"./build/windows-x86-default/bin/expansive-ejsc"  --out "./build/windows-x86-default/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs.version/Version.es
-cd projects\expansive-windows-default</Command>
-        <Outputs>$(BinDir)\expansive.mod</Outputs>
-      </CustomBuildStep>
-  </ItemDefinitionGroup>
-
   <Import Project="$(VCTargetsPath)Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

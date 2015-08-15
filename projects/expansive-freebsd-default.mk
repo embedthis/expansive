@@ -3,7 +3,7 @@
 #
 
 NAME                  := expansive
-VERSION               := 0.5.6
+VERSION               := 0.5.7
 PROFILE               ?= default
 ARCH                  ?= $(shell uname -m | sed 's/i.86/x86/;s/x86_64/x64/;s/arm.*/arm/;s/mips.*/mips/')
 CC_ARCH               ?= $(shell echo $(ARCH) | sed 's/x86/i686/;s/x64/x86_64/')
@@ -698,7 +698,7 @@ $(BUILD)/bin/ejs.mod: $(DEPS_41)
 	( \
 	cd src/ejscript; \
 	echo '   [Compile] ejs.mod' ; \
-	"../../$(BUILD)/bin/expansive-ejsc" --out "../../$(BUILD)/bin/ejs.mod"  --bind --require null ejs.es ; \
+	"../../$(BUILD)/bin/expansive-ejsc" --out "../../$(BUILD)/bin/ejs.mod" --debug --bind --require null ejs.es ; \
 	)
 endif
 
@@ -763,7 +763,7 @@ endif
 
 $(BUILD)/bin/expansive.mod: $(DEPS_43)
 	echo '   [Compile] expansive.mod' ; \
-	"./$(BUILD)/bin/expansive-ejsc"  --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs.version/Version.es
+	"./$(BUILD)/bin/expansive-ejsc" --debug --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs.version/Version.es
 
 #
 #   expansive

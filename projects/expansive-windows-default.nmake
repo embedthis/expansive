@@ -3,7 +3,7 @@
 #
 
 NAME                  = expansive
-VERSION               = 0.5.6
+VERSION               = 0.5.7
 
 OS                    = windows
 PA                    = $(PROCESSOR_ARCHITECTURE)
@@ -726,7 +726,7 @@ DEPS_36 = $(DEPS_36) build\$(CONFIG)\bin\expansive-ejsc.exe
 build\$(CONFIG)\bin\ejs.mod: $(DEPS_36)
 	cd src\ejscript
 	@echo .. [Compile] ejs.mod
-	"../../$(BUILD)/bin/expansive-ejsc" --out "../../$(BUILD)/bin/ejs.mod"  --bind --require null ejs.es
+	"../../$(BUILD)/bin/expansive-ejsc" --out "../../$(BUILD)/bin/ejs.mod" --debug --bind --require null ejs.es
 	cd ..\..
 !ENDIF
 
@@ -801,7 +801,7 @@ DEPS_39 = $(DEPS_39) build\$(CONFIG)\bin\ejs.mod
 
 build\$(CONFIG)\bin\expansive.mod: $(DEPS_39)
 	@echo .. [Compile] expansive.mod
-	"./$(BUILD)/bin/expansive-ejsc"  --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs.version/Version.es
+	"./$(BUILD)/bin/expansive-ejsc" --debug --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs.version/Version.es
 
 #
 #   expansive.h

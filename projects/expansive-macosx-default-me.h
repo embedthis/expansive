@@ -84,6 +84,9 @@
 #ifndef ME_EJS_ONE_MODULE
     #define ME_EJS_ONE_MODULE 1
 #endif
+#ifndef ME_EJSCRIPT_COMPILE
+    #define ME_EJSCRIPT_COMPILE "--debug"
+#endif
 #ifndef ME_EJSCRIPT_DB
     #define ME_EJSCRIPT_DB 1
 #endif
@@ -139,7 +142,7 @@
     #define ME_TUNE "speed"
 #endif
 #ifndef ME_VERSION
-    #define ME_VERSION "0.5.6"
+    #define ME_VERSION "0.5.7"
 #endif
 
 /* Prefixes */
@@ -159,7 +162,7 @@
     #define ME_APP_PREFIX "/usr/local/lib/expansive"
 #endif
 #ifndef ME_VAPP_PREFIX
-    #define ME_VAPP_PREFIX "/usr/local/lib/expansive/0.5.6"
+    #define ME_VAPP_PREFIX "/usr/local/lib/expansive/0.5.7"
 #endif
 #ifndef ME_BIN_PREFIX
     #define ME_BIN_PREFIX "/usr/local/bin"
@@ -192,7 +195,7 @@
     #define ME_CACHE_PREFIX "/var/spool/expansive/cache"
 #endif
 #ifndef ME_SRC_PREFIX
-    #define ME_SRC_PREFIX "expansive-0.5.6"
+    #define ME_SRC_PREFIX "expansive-0.5.7"
 #endif
 
 /* Suffixes */
@@ -234,10 +237,10 @@
     #define ME_MINOR_VERSION 5
 #endif
 #ifndef ME_PATCH_VERSION
-    #define ME_PATCH_VERSION 6
+    #define ME_PATCH_VERSION 7
 #endif
 #ifndef ME_VNUM
-    #define ME_VNUM 50006
+    #define ME_VNUM 50007
 #endif
 
 /* Components */

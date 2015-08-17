@@ -14,11 +14,9 @@ Third Party Licenses
 
 The Software contains third party software under the agreements that follow.
 
-### EST License
+### MbedTLS License
 
-The optional EST SSL stack includes code from TropicSSL.
-
-TropicSSL - [BSD License](http://opensource.org/licenses/BSD-2-Clause
+MbedTLS - [GPL License](http://www.gnu.org/licenses/gpl-2.0.html)
 
 
 ###Perl Regular Expressions License

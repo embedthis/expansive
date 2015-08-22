@@ -417,7 +417,7 @@ public class Expansive {
         }
         buildMetaCache()
         for each (service in services) {
-            if (service.script) {
+            if (service.script && service.enable) {
                 try {
                     eval(service.script)
                     service.render = global.transform

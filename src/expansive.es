@@ -998,6 +998,9 @@ public class Expansive {
     function postProcess() {
         if (modified.any) {
             control.post ||= []
+            /*
+                Control.post provides the required order
+             */
             for each (service in postProcessors) {
                 if (!control.post.contains(service.name)) {
                     control.post.push(service.name)
@@ -1005,12 +1008,11 @@ public class Expansive {
             }
             for each (name in control.post) {
                 let service = postProcessors[name]
-                if (!service) {
-                    throw 'Post processing service "' + name + '" cannot be found'
-                }
-                trace('Post', service.name)
-                if (service.enable !== false) {
-                    service.post.call(this, meta, service)
+                if (service) {
+                    trace('Post', service.name)
+                    if (service.enable !== false) {
+                        service.post.call(this, meta, service)
+                    }
                 }
             }
         }

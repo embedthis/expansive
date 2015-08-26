@@ -731,13 +731,19 @@ public class Expansive {
         }
     }
 
-    function externalServer() {
+    public function stopExternalServer() {
         if (server) {
             if (server.pid) {
                 server.off('readable', externalWatch)
                 vtrace('Kill', 'Server', server.pid)
                 try { Cmd.kill(server.pid) } catch {}
             }
+        }
+    }
+
+    function externalServer() {
+        if (server && server.pid) {
+            stopExternalServer()
         }
         server = new Cmd
         externalWatch.bind(this)
@@ -1835,6 +1841,7 @@ try {
     expansive.process()
 } catch (e) {
     App.log.error(e)
+    expansive.stopExternalServer()
     App.exit(1)
 }
 } /* module exp */

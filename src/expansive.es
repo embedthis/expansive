@@ -62,7 +62,7 @@ public class Expansive {
     var lastGen: Date
     var log: Logger = App.log
     var metaCache: Object
-    var modified: Object
+    var modified: Object = {file: {}}
     var obuf: ByteArray?
     var options: Object
     var package: Object
@@ -528,6 +528,10 @@ public class Expansive {
             render()
             break
 
+        case 'serve':
+            serve(topMeta)
+            break
+
         case 'watch':
             if (rest.length > 0) {
                 filters = rest
@@ -536,10 +540,10 @@ public class Expansive {
             break
 
         default:
-            if (task && task != 'serve') {
-                /* Process only specified files. If not, process all */
-                filters = [task] + rest
+            if (task) {
+                /* Process only specified files */
                 runWatchers()
+                filters = [task] + rest
                 render()
             } else {
                 serve(topMeta)
@@ -694,6 +698,10 @@ public class Expansive {
     }
 
     function watch(meta) {
+        if (package.pak.mode != 'debug') {
+            trace('Warn', 'Watching for changes only supported in debug mode')
+            return
+        }
         trace('Watching', 'for changes every ' + control.watch + ' msec ...')
         options.watching = true
         if (control.watch < 1000) {
@@ -852,7 +860,7 @@ public class Expansive {
         }
         if (filters) {
             if (stats.files == 0) {
-                trace('Warn', 'No matching files for filter: ' + filters)
+                trace('Warn', 'No matching files need rendering for: ' + filters)
             }
         } else if (!options.watching) {
             trace('Info', 'Rendered ' + stats.files + ' files to "' + directories.dist + '". ' +

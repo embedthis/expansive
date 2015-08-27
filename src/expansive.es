@@ -825,6 +825,9 @@ public class Expansive {
         }
         options.serving = true
         let address = options.listen || control.listen || '127.0.0.1:4000'
+        if (package.pak.mode == 'release') {
+            options.nowatch = true
+        }
         if (options.nowatch) {
             trace('Listen', address)
             App.run()

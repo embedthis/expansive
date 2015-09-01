@@ -658,10 +658,13 @@ public class Expansive {
                 continue
             }
             if (file.isDir) {
+/* UNUSED
+        Too costly if using vim which creates temp files and modifies directory
                 if (file.modified > getLastRendered(file)) {
                     modify(file, 'file', 'everything')
                     touchDir(getDest(getSourcePath(file)))
                 }
+*/
             } else if (file.modified > getLastRendered(file)) {
                 let meta = getFileMeta(file)
                 if (!meta || !meta.draft) {
@@ -679,7 +682,8 @@ public class Expansive {
                     if (!filter(file)) {
                         continue
                     }
-                    if (file.modified > getLastRendered(file)) {
+                    let dest = directories.dist.join(getSourcePath(file))
+                    if (!file.isDir && file.modified > dest.modified) {
                         modify(file, 'file')
                     }
                 }

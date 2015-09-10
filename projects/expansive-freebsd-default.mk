@@ -314,7 +314,7 @@ DEPS_17 += $(BUILD)/inc/me.h
 $(BUILD)/obj/ejsLib.o: \
     src/ejscript/ejsLib.c $(DEPS_17)
 	@echo '   [Compile] $(BUILD)/obj/ejsLib.o'
-	$(CC) -c -o $(BUILD)/obj/ejsLib.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE="embedtls.h" $(IFLAGS) src/ejscript/ejsLib.c
+	$(CC) -c -o $(BUILD)/obj/ejsLib.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/ejscript/ejsLib.c
 
 #
 #   ejsc.o
@@ -324,7 +324,7 @@ DEPS_18 += src/ejscript/ejs.h
 $(BUILD)/obj/ejsc.o: \
     src/ejscript/ejsc.c $(DEPS_18)
 	@echo '   [Compile] $(BUILD)/obj/ejsc.o'
-	$(CC) -c -o $(BUILD)/obj/ejsc.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE="embedtls.h" $(IFLAGS) src/ejscript/ejsc.c
+	$(CC) -c -o $(BUILD)/obj/ejsc.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/ejscript/ejsc.c
 
 #
 #   expParser.o
@@ -335,7 +335,7 @@ DEPS_19 += $(BUILD)/inc/expansive.h
 $(BUILD)/obj/expParser.o: \
     src/expParser.c $(DEPS_19)
 	@echo '   [Compile] $(BUILD)/obj/expParser.o'
-	$(CC) -c -o $(BUILD)/obj/expParser.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE="embedtls.h" $(IFLAGS) src/expParser.c
+	$(CC) -c -o $(BUILD)/obj/expParser.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/expParser.c
 
 #
 #   expansive.o
@@ -346,7 +346,7 @@ DEPS_20 += $(BUILD)/inc/expansive.h
 $(BUILD)/obj/expansive.o: \
     src/expansive.c $(DEPS_20)
 	@echo '   [Compile] $(BUILD)/obj/expansive.o'
-	$(CC) -c -o $(BUILD)/obj/expansive.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE="embedtls.h" $(IFLAGS) src/expansive.c
+	$(CC) -c -o $(BUILD)/obj/expansive.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/expansive.c
 
 #
 #   http.h
@@ -373,7 +373,7 @@ DEPS_23 += $(BUILD)/inc/pcre.h
 $(BUILD)/obj/httpLib.o: \
     src/http/httpLib.c $(DEPS_23)
 	@echo '   [Compile] $(BUILD)/obj/httpLib.o'
-	$(CC) -c -o $(BUILD)/obj/httpLib.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE="embedtls.h" $(IFLAGS) src/http/httpLib.c
+	$(CC) -c -o $(BUILD)/obj/httpLib.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/http/httpLib.c
 
 #
 #   mbedtls.h
@@ -389,7 +389,7 @@ DEPS_25 += src/mbedtls/mbedtls.h
 $(BUILD)/obj/mbedtls.o: \
     src/mbedtls/mbedtls.c $(DEPS_25)
 	@echo '   [Compile] $(BUILD)/obj/mbedtls.o'
-	$(CC) -c -o $(BUILD)/obj/mbedtls.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -DMBEDTLS_USER_CONFIG_FILE="embedtls.h" $(IFLAGS) src/mbedtls/mbedtls.c
+	$(CC) -c -o $(BUILD)/obj/mbedtls.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/mbedtls/mbedtls.c
 
 #
 #   mpr-mbedtls.o
@@ -399,7 +399,7 @@ DEPS_26 += $(BUILD)/inc/mpr.h
 $(BUILD)/obj/mpr-mbedtls.o: \
     src/mpr-mbedtls/mpr-mbedtls.c $(DEPS_26)
 	@echo '   [Compile] $(BUILD)/obj/mpr-mbedtls.o'
-	$(CC) -c -o $(BUILD)/obj/mpr-mbedtls.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE="embedtls.h" $(IFLAGS) src/mpr-mbedtls/mpr-mbedtls.c
+	$(CC) -c -o $(BUILD)/obj/mpr-mbedtls.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/mpr-mbedtls/mpr-mbedtls.c
 
 #
 #   mpr-openssl.o
@@ -425,7 +425,7 @@ DEPS_29 += src/mpr/mpr.h
 $(BUILD)/obj/mprLib.o: \
     src/mpr/mprLib.c $(DEPS_29)
 	@echo '   [Compile] $(BUILD)/obj/mprLib.o'
-	$(CC) -c -o $(BUILD)/obj/mprLib.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE="embedtls.h" $(IFLAGS) src/mpr/mprLib.c
+	$(CC) -c -o $(BUILD)/obj/mprLib.o $(LDFLAGS) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/mpr/mprLib.c
 
 #
 #   pcre.h

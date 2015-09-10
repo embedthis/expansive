@@ -22,7 +22,7 @@
     #define ME_COMPANY "embedthis"
 #endif
 #ifndef ME_COMPATIBLE
-    #define ME_COMPATIBLE "0.5"
+    #define ME_COMPATIBLE "0.6"
 #endif
 #ifndef ME_COMPILER_HAS_ATOMIC
     #define ME_COMPILER_HAS_ATOMIC 0
@@ -127,7 +127,7 @@
     #define ME_TUNE "speed"
 #endif
 #ifndef ME_VERSION
-    #define ME_VERSION "0.5.8"
+    #define ME_VERSION "0.6.0"
 #endif
 
 /* Prefixes */
@@ -222,13 +222,13 @@
     #define ME_MAJOR_VERSION 0
 #endif
 #ifndef ME_MINOR_VERSION
-    #define ME_MINOR_VERSION 5
+    #define ME_MINOR_VERSION 6
 #endif
 #ifndef ME_PATCH_VERSION
-    #define ME_PATCH_VERSION 8
+    #define ME_PATCH_VERSION 0
 #endif
 #ifndef ME_VNUM
-    #define ME_VNUM 50008
+    #define ME_VNUM 60000
 #endif
 
 /* Components */

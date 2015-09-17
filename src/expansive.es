@@ -1833,7 +1833,7 @@ public class Expansive {
                 }
             }
         }
-        return result.unique()
+        return (result + files).unique()
     }
 }
 

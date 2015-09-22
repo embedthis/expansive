@@ -8,6 +8,7 @@ NAME
 
 SYNOPSIS
        exp
+           --abort
            --chdir directory
            --clean
            --keep
@@ -635,6 +636,9 @@ COMMANDS
 
 
 OPTIONS
+       --abort   Abort processing on render errors.
+
+
        --chdir directory
                  Change to directory before running.
 

@@ -1184,7 +1184,6 @@ public class Expansive {
         meta.date ||= new Date
         meta.date = Date(meta.date)
         meta.isoDate = meta.date.toISOString()
-
     }
 
     function renderContents(contents, meta) {

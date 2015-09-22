@@ -19,7 +19,7 @@ const LAST_GEN = Path('.expansive-lastgen')
 
 const USAGE = 'Expansive Web Site Generator
   Usage: exp [options] [FILES ...]
-    --benchmark          # Show per-plugin stats
+    --abort              # Abort rendering on errors
     --chdir dir          # Change to directory before running
     --clean              # Clean "dist" first
     --keep               # Keep intermediate transform results
@@ -55,6 +55,7 @@ public class Expansive {
     var currentConfig: Object
     var directories: Object
     var dirTokens: Object
+    var errors: Number = 0
     var filters: Array
     var destCache: Object
     var impliedUpdates: Object
@@ -63,7 +64,7 @@ public class Expansive {
     var log: Logger = App.log
     var metaCache: Object
     var modified: Object = {file: {}}
-    var obuf: ByteArray?
+    var obuf: ByteArray?                    /* Output buffer for render data */
     var options: Object
     var package: Object
     var paks: Object = {}
@@ -85,6 +86,7 @@ public class Expansive {
 
     let argsTemplate = {
         options: {
+            abort:     { alias: 'a' },
             benchmark: { alias: 'b' },        /* Undocumented */
             chdir:     { range: Path },       /* Implemented in expansive.c */
             clean:     { alias: 'c' },
@@ -872,6 +874,9 @@ public class Expansive {
         } else if (!options.watching) {
             trace('Info', 'Rendered ' + stats.files + ' files to "' + directories.dist + '". ' +
                 'Elapsed time %.2f' % ((stats.started.elapsed / 1000)) + ' secs.')
+            if (errors) {
+                fatal('Error', 'Render had ' + errors + ' errors')
+            }
         }
     }
 
@@ -1188,11 +1193,20 @@ public class Expansive {
          */
         collections = (control.collections || {}).clone()
         initMeta(meta.document, meta)
-        contents = transformContents(contents, meta)
-        if (meta.layout) {
-            contents = blendLayout(contents, meta)
+        try {
+            contents = transformContents(contents, meta)
+            if (meta.layout) {
+                contents = blendLayout(contents, meta)
+            }
+            return pipeline(contents, '* -> *', meta.dest, meta)
+        } catch (e) {
+            errors++
+            if (options.abort) {
+                fatal(e)
+            }
+            print(e)
+            return null
         }
-        return pipeline(contents, '* -> *', meta.dest, meta)
     }
 
     function writeDest(contents, meta) {
@@ -1223,7 +1237,9 @@ public class Expansive {
             contents = '<html><body><script type="text/javascript">window.location="' + meta.redirect + 
                 '"</script></body></html>\n'
         }
-        writeDest(contents, meta)
+        if (contents !== null) {
+            writeDest(contents, meta)
+        }
     }
 
     function transformContents(contents, meta) {
@@ -1265,7 +1281,6 @@ public class Expansive {
                     try {
                         contents = service.render.call(this, contents, meta, service)
                     } catch (e) {
-                        print(e)
                         if (options.serving) {
                             trace('Error', 'Cannot render ' + file)
                             print(e)
@@ -1326,14 +1341,16 @@ public class Expansive {
             stat.run += mark.elapsed
         } catch (e) {
             trace('Error', 'Error when processing ' + meta.source)
-            if (code) {
-                print('Code: \n' + code + '\n')
-            } else {
-                print('Contents \n' + contents + '\n')
+            if (options.debug) {
+                if (code) {
+                    print('Code: \n' + code.slice(0, 160) + '\n')
+                } else {
+                    print('Contents \n' + contents.slice(0, 160) + '\n')
+                }
+                dump("Meta", meta)
+                print("In document", meta.document)
             }
-            dump("Meta", meta)
-            print("In document", meta.document)
-            fatal(e)
+            throw e
         }
         let results = obuf.toString()
         this.obuf = priorBuf

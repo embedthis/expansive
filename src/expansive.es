@@ -22,7 +22,6 @@ const USAGE = 'Expansive Web Site Generator
     --abort              # Abort rendering on errors
     --chdir dir          # Change to directory before running
     --clean              # Clean "dist" first
-    --keep               # Keep intermediate transform results
     --listen IP:PORT     # Endpoint to listen on
     --log path:level     # Trace to logfile
     --noclean            # Do not clean "dist" directory before render
@@ -70,6 +69,7 @@ public class Expansive {
     var paks: Object = {}
     var plugins: Object = {}
     var reload: Array = []
+    var resolveCache: Object
     var restarts = []
     var server: Cmd
     var services: Object = {}
@@ -80,6 +80,7 @@ public class Expansive {
     var transforms: Object = {}
     var preProcessors: Object = {}
     var postProcessors: Object = {}
+    var resolvers: Object = {}
     var using: Object = {}
     var verbosity: Number = 0
     var watchers: Object = {}
@@ -115,6 +116,9 @@ public class Expansive {
         pak: {
             mode: 'debug',
             import: true,
+        },
+        directories: {
+            export: 'contents/lib'
         }
     }
 
@@ -125,7 +129,7 @@ public class Expansive {
          */
         control = {
             collections: {},
-            copy: ['images'],                   /* Directory relative to 'sources' */
+            copy: ['images'],                       /* Directory relative to 'contents' */
             dependencies: {},
             directories: {
                 cache:      Path('cache'),
@@ -134,23 +138,29 @@ public class Expansive {
                 dist:       Path('dist'),
                 files:      Path('files'),
                 layouts:    Path('layouts'),
-                lib:        Path('lib'),
+                lib:        Path('contents/lib'),   /* Exported pak contents */
                 paks:       Path('paks'),
                 partials:   Path('partials'),
-                /*
-                    Top is absolute so that render properties can use ${TOP} to bypass the join with directories.lib
-                 */
-                top:        Path().absolute,
+                top:        Path('.'),
             },
-            documents: [ 'lib', 'contents' ],
             listen: LISTEN,
             watch: 1500,
             services: {},
             transforms: {}
         }
         directories = control.directories
+        //  DEPRECATE
+        if (!directories.lib.exists && Path('lib').exists) {
+            trace('Error', 'Legacy "lib" directory present. Must be moved to contents/lib and')
+            trace('Error', 'add "directories": { "exports": "contents/lib" } to package.json')
+        }
+        /*  DEPRECATE
+        control.documents = directories.contents
+        */
+
         impliedUpdates = {}
         destCache = {}
+        resolveCache = {}
         stats = {services: {}}
         topMeta = {
             layout: 'default',
@@ -209,11 +219,11 @@ public class Expansive {
                             ' is not compatible with this requirement.' + '\n'
         }
         loadConfig('.', topMeta)
-        checkPaks()
+        computePackageOrder()
         loadPlugins()
         setupEjsTransformer()
         clean(meta)
-        if (options.debug) {
+        if (false && options.debug) {
             dump('Directories', directories)
             dump('Meta', topMeta)
             dump('Control', control)
@@ -278,6 +288,14 @@ public class Expansive {
                 }
             }
             blend(services, cfg.services, {combine: true})
+            if (cfg.meta.blog) {
+                if (cfg.meta.blog.description) {
+                    meta.description = cfg.meta.blog.description
+                }
+                if (cfg.meta.blog.title) {
+                    meta.title = cfg.meta.blog.title
+                }
+            }
         }
         if (cfg.control && cfg.control.script) {
             delete control.script
@@ -309,13 +327,13 @@ public class Expansive {
                 services[def.name].plugin + ' to ' + def.plugin)
         }
         blend(service, def, {overwrite: false})
-        service.render = def.render
+        service.transform = def.render
         if (service.enable == null) {
             service.enable = true
         }
         stats.services[def.name] = { elapsed: 0, count: 0}
 
-        //  DEPRECATE input/output
+/*  DEPRECATE input/output
         if (def.output && !(def.output is Array)) {
             def.output = [def.output]
         }
@@ -323,7 +341,7 @@ public class Expansive {
             def.input = [def.input]
         }
         if (def.input) {
-            //DEPRECATE
+            //  DEPRECATE
             trace('Warn', 'Using deprecated input/output. Use mappings instead.')
             dump("DEF", def)
         }
@@ -337,6 +355,7 @@ public class Expansive {
                 vtrace('Plugin', def.plugin + ' provides "' + def.name + '" for ' + mapping)
             }
         }
+        */
         if (def.mappings is String) {
             let v = {}
             v[def.mappings] = def.mappings
@@ -422,8 +441,17 @@ public class Expansive {
             if (service.script && service.enable) {
                 try {
                     eval(service.script)
-                    service.render = global.transform
-                    delete global.transform
+                    if (global.transform) {
+                        service.transform = global.transform
+                        delete global.transform
+                    }
+                    if (global.resolve) {
+                        service.resolve = global.resolve
+                        for (let [key, value]in service.mappings) {
+                            resolvers[key] = service
+                        }
+                        delete global.resolve
+                    }
                     if (global.pre) {
                         service.pre = global.pre
                         preProcessors[service.name] = service
@@ -544,8 +572,8 @@ public class Expansive {
         default:
             if (task) {
                 /* Process only specified files */
-                runWatchers()
                 filters = [task] + rest
+                runWatchers()
                 render()
             } else {
                 serve(topMeta)
@@ -571,7 +599,11 @@ public class Expansive {
         }
     }
 
+    /*
+        File is a path without 'contents', 'layouts' etc.
+     */
     public function modify(file, ...kinds) {
+        // throw new Error('modify')
         for each (kind in kinds) {
             modified[kind] ||= {}
             modified[kind][file] = true
@@ -581,13 +613,25 @@ public class Expansive {
         event('onchange', file)
     }
 
+    /*
+        Path is contents relative
+     */
     public function skip(path) {
-        skipFilter[path] = true
+        //  DEPRECATE
+        if (path.startsWith('contents/')) {
+            print("WARNING SKIP", path)
+        }
+        skipFilter[directories.contents.join(path)] = true
     }
 
     public function getLastRendered(source): Date {
         let sourcePath = getSourcePath(source)
         let dest = getDest(sourcePath)
+        if (!dest) {
+            /* Destination will not exist - return now */
+            return Date()
+        }
+        /* If destination does not exist, but will exist, then return a very early date */
         return dest.modified ? dest.modified : Date(0)
     }
 
@@ -640,37 +684,40 @@ public class Expansive {
             }
         }
 
-        //  Better to have a name that did not confuse with package.dependencies
         for (let [path, dependencies] in control.dependencies) {
             path = directories.contents.join(path)
             let deps = directories.contents.files(dependencies)
             for each (let file: Path in deps) {
-                if (file.modified > getLastRendered(path)) {
+                if (file != path && file.modified > getLastRendered(path)) {
                     modify(file, 'file')
                     modify(path, 'file')
                 }
             }
         }
 
-        let files = directories.top.files(control.documents, {contents: true, relative: true})
-        files.push(directories.contents)
-        files.push(directories.lib)
+        let files = directories.top.files('contents/**', {contents: true, relative: true})
         for (let [index,file] in files) {
             if (!filter(file)) {
                 continue
             }
-            if (file.isDir) {
-/* UNUSED
-        Too costly if using vim which creates temp files and modifies directory
-                if (file.modified > getLastRendered(file)) {
-                    modify(file, 'file', 'everything')
-                    touchDir(getDest(getSourcePath(file)))
-                }
-*/
-            } else if (file.modified > getLastRendered(file)) {
+            if (!file.isDir && (file.modified > getLastRendered(file))) {
                 let meta = getFileMeta(file)
                 if (!meta || !meta.draft) {
                     modify(file, 'file')
+                }
+            }
+        }
+        if (false) {
+            let files = directories.top.files('contents/**', {contents: true, relative: true})
+            for (let [index,file] in files) {
+                if (!filter(file)) {
+                    continue
+                }
+                if (!file.isDir && (file.modified > getLastRendered(file))) {
+                    let meta = getFileMeta(file)
+                    if (!meta || !meta.draft) {
+                        modify(file, 'file')
+                    }
                 }
             }
         }
@@ -698,7 +745,7 @@ public class Expansive {
                 modify(path, 'config', 'everything')
             }
         }
-        if (options.debug) {
+        if (false && options.debug) {
             dump('Modified', modified)
         }
     }
@@ -849,6 +896,7 @@ public class Expansive {
         }
         stats.started = new Date
         stats.files = 0
+        collections = control.collections.clone()
         if (modified.everything || modified.partial) {
             cache = {}
         }
@@ -881,9 +929,8 @@ public class Expansive {
     }
 
     /*
-        Render 'files' and 'lib'. These are rendered without processing by a simple copy.
-        Note: the paths under files do not copy the first directory portion, whereas the files under lib do.
-        Note: files and lib are not watched for changes.
+        Render 'files'. These are rendered without processing by a simple copy.
+        Note: the paths under files do not copy the first directory portion.
      */
     function renderFiles() {
         if (!filters) {
@@ -892,7 +939,7 @@ public class Expansive {
                     if (modified.file[file]) {
                         let dest = directories.dist.join(getSourcePath(file))
                         cp(file, dest)
-                        trace('Copy', dest)
+                        trace('Copy', file)
                         stats.files++
                     }
                 }
@@ -908,7 +955,7 @@ public class Expansive {
             let trimmed = trimPath(file, directories.contents)
             let dest = directories.dist.join(trimmed)
             cp(file, dest)
-            trace('Copy', dest)
+            trace('Copy', file)
             stats.files++
         }
     }
@@ -938,8 +985,8 @@ public class Expansive {
     function buildMetaCache() {
         if (!metaCache || modified.everything) {
             metaCache ||= {}
-            let dirs = [ Path('.'), directories.contents, directories.lib ]
-            dirs += directories.top.files(control.documents, {contents: true, include: /\/$/, relative: true})
+            let dirs = [ Path('.') ] + [directories.contents]
+            dirs += directories.top.files(directories.contents, {contents: true, include: /\/$/, relative: true})
 
             sitemaps = []
             for each (dir in dirs) {
@@ -960,7 +1007,8 @@ public class Expansive {
     }
 
     /*
-        Test if a path should be processed according to filters
+        Test if a file should be processed according to filters
+        Path is relative to 'top'
      */
     function filter(path: Path): Boolean {
         if (skipFilter[path]) {
@@ -986,7 +1034,7 @@ public class Expansive {
         for each (item in directories.contents.files(control.copy, {contents: true})) {
             copy[item] = true
         }
-        let files = directories.top.files(control.documents, {contents: true, directories: false, relative: true})
+        let files = directories.top.files(directories.contents, {contents: true, directories: false, relative: true})
         for (let [index,file] in files) {
             if (!filter(file)) {
                 continue
@@ -1045,7 +1093,7 @@ public class Expansive {
     }
 
     function renderSitemaps() {
-        if (modified.everything) {
+        if (modified.everything && !filters) {
             for each (map in sitemaps) {
                 sitemap(map)
             }
@@ -1056,6 +1104,9 @@ public class Expansive {
         if (!file.extension) {
             return ''
         }
+        /*
+            Try to find the longest set of extensions that matches a transform
+         */
         let extensions = file.basename.name.split('.').slice(1)
         while (extensions.length) {
             for (let [key,value] in transforms) {
@@ -1070,7 +1121,7 @@ public class Expansive {
         return file.extension
     }
 
-    function getMapping(file, wild = false) {
+    function getMapping(file: Path, wild = false) {
         let ext = getExt(file)
         let next = getExt(file.trimEnd('.' + ext))
         if (next) {
@@ -1084,62 +1135,88 @@ public class Expansive {
         return mapping
     }
 
-    function getMappingDest(file, mapping) {
-        let dest
-        if (!file.startsWith(directories.dist)) {
-            dest = directories.dist.join(file)
-        } else {
-            dest = file
-        }
-        if (transforms[mapping]) {
+    /*
+        Get the next path name after applying a transformation mapping
+     */
+    function getNextPath(path: Path, mapping, meta): Path? {
+        let next: Path? = path
+        assert(path)
+        if (path && transforms[mapping]) {
             let extensions = mapping.split(' -> ')
+            let service = resolvers[extensions[0]]
+            if (service) {
+                let destPath
+                if (resolveCache[path.name] !== undefined) {
+                    destPath = resolveCache[path]
+                } else {
+                    destPath = service.resolve.call(this, path, service)
+                    resolveCache[path.name] = destPath
+                }
+                if (destPath == null) {
+                    return null
+                } else if (destPath != path) {
+                    if (meta) {
+                        meta.destPath = destPath
+                        //  MOB DEPRECATE
+                        meta.path = meta.destPath
+                        meta.dest = directories.dist.join(meta.destPath)
+                    }
+                }
+            }
             if (extensions[0] != extensions[1]) {
-                dest = dest.trimExt()
+                next = path.trimEnd('.' + extensions[0])
             }
         }
-        return dest
+        return next
     }
 
     public function trimPath(file, dir) {
-        let count = dir.components.length
-        return file.trimComponents(count)
+        return file.trimComponents(dir.components.length)
     }
 
-    public function getDest(file, meta) {
-        meta ||= topMeta
-        let source = file || meta.sourcePath
-        if (!source) {
-            return null
-        }
-        let dest = destCache[source]
+    /*
+        Convert an input source path into a destination path relative to 'dist'
+        This resolves all extension mappings.
+     */
+    public function getDestPath(sourcePath) {
+        let dest = destCache[sourcePath]
         if (dest != null) {
             return dest
         }
-        let dest = directories.dist.join(source)
-        let mapping = getMapping(file)
+        let nextPath = sourcePath
+        let dest = sourcePath
+        let mapping = getMapping(dest)
         while (transforms[mapping]) {
-            dest = getMappingDest(file, mapping)
-            if (dest == file) {
+            if ((dest = getNextPath(nextPath, mapping, null)) == null) {
+                return null
+            }
+            if (dest == nextPath) {
                 break
             }
             mapping = getMapping(dest)
-            file = dest
+            nextPath = dest
         }
-        destCache[source] = dest
+        destCache[sourcePath] = dest
         return dest
     }
 
+    public function getDest(sourcePath) {
+        let path = getDestPath(sourcePath)
+        return path ? directories.dist.join(path) : path
+    }
+
+    /* 
+        Convert a source file by stripping the 'contents' prefixes
+     */
     function getSourcePath(source) {
-        //  TODO - optimize
-        if (source.startsWith(directories.contents)) {
+        let sep = FileSystem('/').separators[0]
+        if (source.startsWith(directories.contents + sep)) {
             return source.trimComponents(directories.contents.components.length)
-        } else if (source.startsWith(directories.lib)) {
-            return source.trimComponents(directories.lib.components.length)
-        } else if (source.startsWith(directories.layouts)) {
+        } else if (source.startsWith(directories.layouts + sep)) {
             return source.trimComponents(directories.layouts.components.length)
-        } else if (source.startsWith(directories.partials)) {
+        } else if (source.startsWith(directories.partials + sep)) {
             return source.trimComponents(directories.partials.components.length)
-        } else if (source.startsWith(directories.files)) {
+        } else if (source.startsWith(directories.files + sep)) {
             return source.trimComponents(directories.files.components.length)
         }
         return source
@@ -1148,76 +1225,79 @@ public class Expansive {
     /*
         Initialize meta
 
-        source     - Current source file being processed. Relative path including 'contents|lib|layouts|partials'.
+        document   - Original source of the document being processed. For partials/layouts, it is the invoking document.
         sourcePath - Current source file being processed. Relative path EXCLUDING 'contents|lib|layouts|partials'.
-        dest       - Destination filename being created. Relative path including 'dist'.
-        base       - Source file without 'contents/lib'.
-        document   - Source of the document being processed. For partials/layouts, it is the invoking document.
-        path       - Destination without 'dist'. Note: may have different extensions to base.
+        source     - Current source file being processed. Relative path including 'contents|lib|layouts|partials'.
+        destPath   - Final destination filename being created. Relative path excluding 'dist'.
+        dest       - Final destination filename being created. Relative path including 'dist'.
+        path       - Final destination without 'dist'.
         url        - Url made from 'path'.
-        top        - Relative URL to application home page.
+        top        - Relative URL path to application home page.
+        abstop     - Absolute URL path to the application home page.
+        abs        - Absolute URL path to the page.
+        site       - Canonical absolute URL to the site. Includes scheme and host
      */
     function initMeta(path, meta) {
-        if (options.serve) {
-            meta.site = options.listen || control.listen || meta.site || 'localhost:4000'
-        } else {
-            meta.site ||= 'localhost'
+        meta.sourcePath = getSourcePath(path)
+        if ((meta.destPath = getDestPath(meta.sourcePath)) == null) {
+            /* This document is not required - resolver returned null */
+            return null
         }
+        //  MOB - DEPRECATE meta.path
+        meta.path = meta.destPath
+
+        meta.dest = directories.dist.join(meta.destPath)
         meta.document = path
         meta.source = path
-        meta.sourcePath = getSourcePath(meta.source)
-        meta.dest = getDest(meta.sourcePath)
-        /*
-            Pages may define own path
-         */
-        meta.path ||= trimPath(meta.dest, directories.dist)
-        meta.path = Path(meta.path)
-        meta.dir ||= meta.path.dirname
+        meta.dir ||= meta.destPath.dirname
         meta.dir = Path(meta.dir)
 
+        if (options.serve) {
+            let original: Uri? = meta.site
+            meta.site = Uri(options.listen || control.listen || meta.site || 'http://localhost:4000').complete()
+            if (original && original.path && meta.site.path == '/') {
+                meta.site.path = original.path
+            }
+        } else {
+            meta.site ||= Uri('http://localhost')
+        }
+        meta.site = Uri(meta.site)
+        meta.abstop = Uri(meta.site.path)
+
         let count = (meta.dir == '.') ? 0 : meta.dir.components.length
-        meta.top = Path(count ? '/..'.times(count).slice(1) : '.')
+        meta.top = Uri(count ? '/..'.times(count).slice(1) : '.')
         global.top = meta.top
 
-        meta.url = Uri(Uri.encode(meta.path))
+        if (meta.destPath.basename == 'index.html' && !control.keepIndex) {
+            meta.url = Uri(Uri.encode(meta.destPath.dirname + '/'))
+        } else {
+            meta.url = Uri(Uri.encode(meta.destPath))
+        }
+        //  DEPRECATE MOB
+        meta.abs =    meta.abstop.join(meta.url).normalize
+        meta.absurl = meta.abstop.join(meta.url).normalize
         meta.mode = package.pak.mode || 'debug'
         meta.date ||= new Date
         meta.date = Date(meta.date)
         meta.isoDate = meta.date.toISOString()
+        return meta
     }
 
-    function renderContents(contents, meta) {
-        /*
-            Collections reset at the start of each document so layouts/partials can modify
-         */
-        collections = (control.collections || {}).clone()
-        initMeta(meta.document, meta)
-        try {
-            contents = transformContents(contents, meta)
-            if (meta.layout) {
-                contents = blendLayout(contents, meta)
-            }
-            return pipeline(contents, '* -> *', meta.dest, meta)
-        } catch (e) {
-            errors++
-            if (options.abort) {
-                fatal(e)
-            }
-            print(e)
-            return null
-        }
-    }
 
     function writeDest(contents, meta) {
         if (contents != null) {
             let dest = meta.dest
             dest.dirname.makeDir()
             dest.write(contents)
-            trace('Render', dest)
+            trace('Render', meta.source)
             stats.files++
         }
     }
 
+    /*
+        Render a document by preparing the meta data, reading the contents and running the transformation pipeline.
+        This includes applying layouts.
+     */
     function renderDocument(file, meta) {
         /*
             Collections reset at the start of each document so layouts/partials can modify
@@ -1233,32 +1313,60 @@ public class Expansive {
         }
         contents = renderContents(contents, meta)
         if (meta.redirect) {
-            contents = '<html><body><script type="text/javascript">window.location="' + meta.redirect + 
-                '"</script></body></html>\n'
+            contents = '<html><head><meta http-equiv="refresh" content="0; url=' + meta.redirect + '"/></head></html>\n'
         }
         if (contents !== null) {
             writeDest(contents, meta)
         }
     }
 
-    function transformContents(contents, meta) {
-        let file = meta.source
-        let mapping, nextMapping = getMapping(file)
-        let transform
+    /*
+        Render in-memory contents. Invoke the transform pipeline.
+     */
+    function renderContents(contents, meta) {
+        if (!initMeta(meta.document, meta)) {
+            return null
+        }
+        try {
+            contents = pipeline(contents, meta)
+            if (meta.layout) {
+                contents = blendLayout(contents, meta)
+            }
+            return transform(contents, '* -> *', meta.dest, meta)
+        } catch (e) {
+            errors++
+            if (options.abort) {
+                fatal(e)
+            }
+            print(e)
+            return null
+        }
+    }
+
+    /*
+        Run the transformation pipeline on the contents applying all mappings.
+     */
+    function pipeline(contents, meta) {
+        let path = meta.sourcePath
+        let mapping, nextMapping = getMapping(path)
         do {
             mapping = nextMapping
-            transform = transforms[mapping]
-            if (transform) {
-                contents = pipeline(contents, mapping, file, meta)
+            if (transforms[mapping]) {
+                contents = transform(contents, mapping, path, meta)
             }
-            file = getMappingDest(file, mapping)
-            nextMapping = getMapping(file)
+            if ((path = getNextPath(path, mapping, meta)) == null) {
+                return null
+            }
+            nextMapping = getMapping(path)
         } while (nextMapping != mapping && contents != null)
         return contents
     }
 
-    function pipeline(contents, mapping, file, meta) {
-        meta.extensions = getAllExtensions(file)
+    /*
+        Transform content from one extension to another. Invoke all required services.
+     */
+    function transform(contents, mapping, path, meta) {
+        meta.extensions = getAllExtensions(path)
         meta.extension = meta.extensions.slice(-1)[0]
         let transform = transforms[mapping]
         vtrace('Transform', meta.source + ' (' + mapping + ')')
@@ -1270,7 +1378,7 @@ public class Expansive {
             }
             meta.service = service
             if (service.enable !== false) {
-                if (service.render) {
+                if (service.transform) {
                     if (service.files && !meta.source.glob(service.files)) {
                         App.log.debug(3, 'Document "' + meta.source + '" does not match "' + service.files + '"')
                     }
@@ -1278,17 +1386,14 @@ public class Expansive {
                     vtrace('Service', service.name + ' from "' + service.plugin + '"')
                     let started = new Date
                     try {
-                        contents = service.render.call(this, contents, meta, service)
+                        contents = service.transform.call(this, contents, meta, service)
                     } catch (e) {
                         if (options.serving) {
-                            trace('Error', 'Cannot render ' + file)
+                            trace('Error', 'Cannot render ' + path)
                             print(e)
                         } else {
                             throw e
                         }
-                    }
-                    if (destCache[meta.source] == null) {
-                        destCache[meta.source] = meta.dest
                     }
                     stats.services[service.name].count++
                     stats.services[service.name].elapsed += started.elapsed
@@ -1300,14 +1405,12 @@ public class Expansive {
                 break
             }
         }
-        if (options.keep && file.startsWith(directories.dist)) {
-            trace('Keep', file, mapping)
-            file.dirname.makeDir()
-            file.write(contents)
-        }
         return contents
     }
 
+    /*
+        Get list of extensions
+     */
     function getAllExtensions(file) {
         let extensions = []
         while (transforms[file.extension]) {
@@ -1319,6 +1422,9 @@ public class Expansive {
         return extensions.reverse()
     }
 
+    /*
+        Expansive ".exp" transformer
+     */
     function transformExp(contents, meta, service) {
         let priorBuf = this.obuf
         this.obuf = new ByteArray
@@ -1428,11 +1534,13 @@ public class Expansive {
     function blendLayout(contents, meta) {
         meta = meta.clone(true)
         if (!meta.layout) {
-            contents = transformContents(contents, meta)
+            contents = pipeline(contents, meta)
         } else {
             while (meta.layout) {
                 let layout = findFile(directories.layouts, meta.layout, meta)
-                useFile('layouts', layout, meta.document)
+                if (meta.once) {
+                    useFile('layouts', layout, meta.document)
+                }
                 if (!layout) {
                     fatal('Cannot find layout "' + meta.layout + '"')
                 }
@@ -1440,11 +1548,12 @@ public class Expansive {
                 let layoutContents
                 [meta, layoutContents] = getCached(layout, meta)
                 meta.source = layout
+                meta.sourcePath = getSourcePath(meta.source)
                 meta.isLayout = true
                 contents = contents.replace(/\$/mg, '$$$$')
                 contents = layoutContents.replace(/ *<@ *content *@> */, contents)
                 vtrace('Blend', layout + ' + ' + meta.source)
-                contents = transformContents(contents, meta)
+                contents = pipeline(contents, meta)
             }
         }
         return contents
@@ -1459,7 +1568,9 @@ public class Expansive {
         if (!partial) {
             fatal('Cannot find partial "' + name + '"' + ' for ' + meta.source)
         }
-        useFile('partials', partial, meta.document)
+        if (!meta.once) {
+            useFile('partials', partial, meta.document)
+        }
         blend(meta, options)
         if (meta.partial == name) {
             fatal('Recursive partial in "' + partial + '"')
@@ -1468,10 +1579,11 @@ public class Expansive {
         meta.isPartial = true
         meta.isLayout = false
         meta.source = partial
+        meta.sourcePath = getSourcePath(meta.source)
         try {
             let contents
             [meta, contents] = getCached(partial, meta)
-            contents = transformContents(contents, meta)
+            contents = pipeline(contents, meta)
             write(contents)
         }
         catch (e) {
@@ -1503,8 +1615,8 @@ public class Expansive {
     function splitMetaContents(file, contents): Array {
         let meta
         try {
-            //  DEPRECATE
             if (contents[0] == '-') {
+                /* Legacy format of meta data */
                 let parts = contents.split('---')
                 if (parts) {
                     let mdata = parts[1].trim()
@@ -1520,10 +1632,10 @@ public class Expansive {
                     }
                 }
             } else {
-                //  TEMP - need something better
+                //  TODO - need something better
                 if (contents[0] == '{' && file.extension != 'json' && file.extension != 'map') {
                     let parts = contents.split('\n}')
-                    //  TEMP - need something better
+                    //  TODO - need something better
                     if (parts && parts.length > 1) {
                         try {
                             meta = deserialize(parts[0] + '}')
@@ -1636,8 +1748,7 @@ public class Expansive {
         trace('Create', path)
         path.write(App.exeDir.join('sample.json').readString())
 
-        //  TODO - these names should come from directories
-        for each (p in [ 'contents', 'dist', 'layouts', 'partials' ]) {
+        for each (p in [ directories.contents, directories.dist, directories.layouts, directories.partials ]) {
             Path(p).makeDir()
         }
         if (!PACKAGE.exists) {
@@ -1654,6 +1765,10 @@ public class Expansive {
         } else {
             package.pak ||= {}
             package.pak.mode = newMode[0].toString()
+            delete package.installedDependencies
+            if (package.pak && Object.getOwnPropertyCount(package.pak.render) == 0) {
+                delete package.pak.render
+            }
             PACKAGE.write(serialize(package, {pretty: true, indent: 4}) + '\n')
             trace('Set', 'Mode to "' + package.pak.mode + '"')
             options.clean = true
@@ -1674,15 +1789,18 @@ public class Expansive {
         if (!meta.site) {
             throw 'Must define a meta "site" URL'
         }
-        let url = meta.site.trimEnd('/')
+        let site: Uri = meta.site.trimEnd('/')
         let base = dir.trimStart(directories.dist).trimStart('/')
-        for each (file in list) {
+        for each (let file: Path in list) {
             if (!filter(file)) {
                 continue
             }
-            let filename = base.join(file.name).trimEnd('.gz')
+            if (file.basename == 'index.html' && !control.keepIndex) {
+                file = file.dirname + '/'
+            }
+            let url: Uri = site.join(base, Uri.encode(file.name)).trimEnd('.gz')
             fp.write('    <url>\n' +
-                '        <loc>' + url + '/' + filename + '</loc>\n' +
+                '        <loc>' + url + '</loc>\n' +
                 '        <lastmod>' + dir.join(file).modified.format('%F') + '</lastmod>\n' +
                 '        <changefreq>weekly</changefreq>\n' +
                 '        <priority>0.5</priority>\n' +
@@ -1715,7 +1833,7 @@ public class Expansive {
     //////// Public API
 
     public function trace(tag: String, ...args): Void {
-        if (!options.quiet) {
+        if (!options || !options.quiet) {
             log.activity(tag, ...args)
         }
     }
@@ -1782,6 +1900,23 @@ public class Expansive {
         collections[collection] -= items
     }
 
+    public function resetItems(collection) {
+        if (!collections[collection]) {
+            return
+        }
+        collections[collection] = []
+    }
+
+    public function setItems(collection, items) {
+        if (!items || !collections[collection]) {
+            return
+        }
+        if (!(items is Array)) {
+            items = [items]
+        }
+        collections[collection] = items.unique()
+    }
+
     function castDirectories() {
         for (let [key,value] in directories) {
             directories[key] = Path(value)
@@ -1799,7 +1934,10 @@ public class Expansive {
         }
     }
 
-    private function checkPaks(name = null) {
+    /*
+        Compute the render order requirements for packages.
+     */
+    private function computePackageOrder(name = null) {
         let pak, path
         if (paks[name]) {
             return
@@ -1814,18 +1952,31 @@ public class Expansive {
             pak = path.readJSON()
         }
         for (dname in pak.dependencies) {
-            checkPaks(dname)
+            /* Depth first traversal */
+            computePackageOrder(dname)
         }
         paks[pak.name] = pak
         blend(pak, {pak: {render:{}}}, {overwrite: false})
+        /*
+            package.json  pak.render.js contains an ordered list of files to render
+         */
         let render = pak.pak.render
-        let dir = name ? directories.lib.join(pak.name) : directories.top
+
+        /*
+            Render patterns are computed relative to the containing package under contents/lib/NAME
+         */
+        let lib = getSourcePath(directories.lib)
+        let dir = name ? lib.join(pak.name) : directories.contents
         for (let [kind, patterns] in render) {
             for (let [index,pattern] in patterns) {
-                /* Expand first to permit ${TOP} which is absolute to override directories.lib */
+                //  DEPRECATE - here just to strip 'contents'
+                if (pattern.startsWith('contents')) {
+                    print("WARNING - render values start with contents/")
+                }
+                pattern = getSourcePath(pattern)
                 patterns[index] = dir.join(pattern.expand(expansive.dirTokens, { fill: '.' }))
             }
-            render[kind] = Path().files(patterns, {relative: true})
+            render[kind] = directories.contents.files(patterns, {relative: true})
         }
     }
 
@@ -1841,7 +1992,7 @@ public class Expansive {
                     result.push(path)
                 }
             } else {
-                let pdir = directories.lib.join(pak.name)
+                let pdir = getSourcePath(directories.lib).join(pak.name)
                 for each (file in files) {
                     if (file.name.startsWith(pdir.name + pdir.separator)) {
                         result.push(file)

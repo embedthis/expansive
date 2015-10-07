@@ -11,7 +11,6 @@ SYNOPSIS
            --abort
            --chdir directory
            --clean
-           --keep
            --listen IP:PORT
            --log path:level
            --noclean
@@ -644,11 +643,6 @@ OPTIONS
 
 
        --clean   Clean output "dist" directory first.
-
-
-       --keep URI
-                 Keep intermediate files when transforming content. Useful for
-                 debugging.
 
 
        --listen IP:PORT URI

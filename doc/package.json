@@ -7,6 +7,9 @@
         "exp-less": "~0.2",
         "me-docstyle": "~0.9"
     },
+    "directories": {
+        "export": "contents/lib"
+    },
     "pak": {
         "import": true,
         "mode": "debug"

@@ -1966,7 +1966,11 @@ print("Path", path)
         if (!name) {
             pak = package
             pak._expansive_ = config.clone()
-            dependencies = pak._installedDependencies_
+            /*
+                Blend with the documented dependencies then add any locally installed dependencies
+             */
+            dependencies = pak.dependencies.clone()
+            blend(dependencies, pak._installedDependencies_)
         } else {
             path = directories.paks.join(name, PACKAGE)
             if (!path.exists) {
@@ -1978,6 +1982,15 @@ print("Path", path)
                 pak._expansive_ = path.readJSON()
             }
             dependencies = pak.dependencies
+            if (pak.devDependencies) {
+                let criteria = pak.devDependencies.expansive
+                if (criteria) {
+                    if (!Version(Config.Version).acceptable(criteria)) {
+                        throw 'Package ' + pak.name + ' requires Expansive ' + criteria + 
+                              '. Expansive version ' + Config.Version + ' is not compatible with this requirement.' + '\n'
+                    }
+                }
+            }
         }
         blend(pak, {_expansive_: {control:{render:{}}}}, {overwrite: false})
 

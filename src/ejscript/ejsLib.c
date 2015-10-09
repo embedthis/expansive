@@ -33850,16 +33850,20 @@ static EjsArray *fs_drives(Ejs *ejs, EjsFileSystem *unused, int argc, EjsObj **a
 /*
     Constructor
 
-    function FileSystem(path: String)
+    function FileSystem(path: Path)
  */
 static EjsFileSystem *fileSystemConstructor(Ejs *ejs, EjsFileSystem *fp, int argc, EjsObj **argv)
 {
     cchar   *path;
 
-    assert(argc == 1 && ejsIs(ejs, argv[0], Path));
-    path = ((EjsPath*) argv[0])->value;
-    fp->path = mprNormalizePath(path);
-    fp->fs = mprLookupFileSystem(path);
+    if (argc == 0) {
+        fp->path = mprNormalizePath("/");
+        fp->fs = mprLookupFileSystem("/");
+    } else {
+        path = ((EjsPath*) argv[0])->value;
+        fp->path = mprNormalizePath(path);
+        fp->fs = mprLookupFileSystem(path);
+    }
     return fp;
 }
 

@@ -10,6 +10,7 @@ require ejs.web
 require ejs.version
 require expansive.template
 
+//  MOB - deprecate expansive.es? - allow script file property
 const CONFIG: Path = Path('expansive')
 const HOME = Path(App.getenv('HOME') || App.getenv('USERPROFILE') || '.')
 const LISTEN = '127.0.0.1:4000'
@@ -148,11 +149,23 @@ public class Expansive {
             services: {},
             transforms: {}
         }
+        topMeta = {
+            layout: 'default',
+            control: control,
+        }
         directories = control.directories
         //  DEPRECATE
         if (!directories.lib.exists && Path('lib').exists) {
-            trace('Error', 'Legacy "lib" directory present. Must be moved to contents/lib and')
-            trace('Error', 'add "directories": { "exports": "contents/lib" } to package.json')
+            trace('Upgrade', 'Move lib directory to ' + directories.lib)
+            let package = loadPackage()
+            if (!package.directories || !package.directories.export) {
+                Path('lib').rename(directories.lib)
+                package.directories ||= {}
+                package.directories.export = directories.lib
+                delete package._installedDependencies_
+                trace('Upgrade', 'Add package.json directories.export')
+                PACKAGE.write(serialize(package, {pretty: true, indent: 4}) + '\n')
+            }
         }
         /*  DEPRECATE
         control.documents = directories.contents
@@ -162,10 +175,6 @@ public class Expansive {
         destCache = {}
         resolveCache = {}
         stats = {services: {}}
-        topMeta = {
-            layout: 'default',
-            control: control,
-        }
         if (App.config.expansive) {
             /* From ejsrc */
             blendMeta(topMeta, App.config.expansive)
@@ -327,7 +336,11 @@ public class Expansive {
                 services[def.name].plugin + ' to ' + def.plugin)
         }
         blend(service, def, {overwrite: false})
-        service.transform = def.render
+
+//  MOB - is this used
+        assert(!def.render)
+
+        service.transform = def.transform
         if (service.enable == null) {
             service.enable = true
         }
@@ -359,7 +372,7 @@ public class Expansive {
         if (def.mappings is String) {
             let v = {}
             v[def.mappings] = def.mappings
-            def.mappings = v
+            service.mappings = def.mappings = v
         }
         for (let [key,value] in def.mappings) {
             if (!value) {
@@ -423,17 +436,17 @@ public class Expansive {
         if (!pkg) {
             throw 'Cannot find plugin package.json at: ' + path
         }
-        for (let [name, requiredVersion] in pkg.installedDependencies) {
+        for (let [name, requiredVersion] in pkg._installedDependencies_) {
             loadPlugin(name, requiredVersion)
         }
     }
 
     function loadPlugins() {
-        createService({ plugin: 'compile-exp', name: 'exp', mappings: { exp: '*' }, render: transformExp } )
+        createService({ plugin: 'compile-exp', name: 'exp', mappings: { exp: '*' }, transform: transformExp } )
         let stat = stats.services.exp
         stat.parse = stat.eval = stat.run = 0
 
-        for (let [name, requiredVersion] in package.installedDependencies) {
+        for (let [name, requiredVersion] in package._installedDependencies_) {
             loadPlugin(name, requiredVersion)
         }
         buildMetaCache()
@@ -447,8 +460,8 @@ public class Expansive {
                     }
                     if (global.resolve) {
                         service.resolve = global.resolve
-                        for (let [key, value]in service.mappings) {
-                            resolvers[key] = service
+                        for (let ext in service.mappings) {
+                            resolvers[ext] = service
                         }
                         delete global.resolve
                     }
@@ -487,7 +500,7 @@ public class Expansive {
             return null
         }
         let pkg = path.readJSON()
-        pkg.installedDependencies = getInstalledPaks()
+        pkg._installedDependencies_ = getInstalledPaks()
         return pkg
     }
 
@@ -618,6 +631,8 @@ public class Expansive {
      */
     public function skip(path) {
         //  DEPRECATE
+print("Path", path)
+        throw new Error('SKIP')
         if (path.startsWith('contents/')) {
             print("WARNING SKIP", path)
         }
@@ -1137,6 +1152,7 @@ public class Expansive {
 
     /*
         Get the next path name after applying a transformation mapping
+        Meta may be null when called from getLastRendered from the standardWatcher
      */
     function getNextPath(path: Path, mapping, meta): Path? {
         let next: Path? = path
@@ -1208,7 +1224,7 @@ public class Expansive {
     /* 
         Convert a source file by stripping the 'contents' prefixes
      */
-    function getSourcePath(source) {
+    function getSourcePath(source: Path): Path {
         let sep = FileSystem('/').separators[0]
         if (source.startsWith(directories.contents + sep)) {
             return source.trimComponents(directories.contents.components.length)
@@ -1253,7 +1269,11 @@ public class Expansive {
         meta.dir = Path(meta.dir)
 
         if (options.serve) {
-            let original: Uri? = meta.site
+            //  DEPRECATE meta.url - was used before meta.site
+            if (meta.url) {
+                trace('Warn', 'Rename meta.url to meta.site in expansive.json')
+            }
+            let original: Uri? = meta.site || meta.url
             meta.site = Uri(options.listen || control.listen || meta.site || 'http://localhost:4000').complete()
             if (original && original.path && meta.site.path == '/') {
                 meta.site.path = original.path
@@ -1348,15 +1368,17 @@ public class Expansive {
      */
     function pipeline(contents, meta) {
         let path = meta.sourcePath
-        let mapping, nextMapping = getMapping(path)
+        let nextPath, mapping
+        let nextMapping = getMapping(path)
         do {
             mapping = nextMapping
+            if ((nextPath = getNextPath(path, mapping, meta)) == null) {
+                return null
+            }
             if (transforms[mapping]) {
                 contents = transform(contents, mapping, path, meta)
             }
-            if ((path = getNextPath(path, mapping, meta)) == null) {
-                return null
-            }
+            path = nextPath
             nextMapping = getMapping(path)
         } while (nextMapping != mapping && contents != null)
         return contents
@@ -1765,10 +1787,8 @@ public class Expansive {
         } else {
             package.pak ||= {}
             package.pak.mode = newMode[0].toString()
-            delete package.installedDependencies
-            if (package.pak && Object.getOwnPropertyCount(package.pak.render) == 0) {
-                delete package.pak.render
-            }
+            delete package._installedDependencies_
+            delete package._expansive_
             PACKAGE.write(serialize(package, {pretty: true, indent: 4}) + '\n')
             trace('Set', 'Mode to "' + package.pak.mode + '"')
             options.clean = true
@@ -1944,37 +1964,38 @@ public class Expansive {
         }
         if (!name) {
             pak = package
+            pak._expansive_ = config.clone()
         } else {
             path = directories.paks.join(name, PACKAGE)
             if (!path.exists) {
                 return
             }
             pak = path.readJSON()
+            path = directories.paks.join(name, CONFIG).joinExt('json')
+            if (path.exists) {
+                pak._expansive_ = path.readJSON()
+            }
         }
+        blend(pak, {_expansive_: {control:{render:{}}}}, {overwrite: false})
+
         for (dname in pak.dependencies) {
             /* Depth first traversal */
             computePackageOrder(dname)
         }
         paks[pak.name] = pak
-        blend(pak, {pak: {render:{}}}, {overwrite: false})
-        /*
-            package.json  pak.render.js contains an ordered list of files to render
-         */
-        let render = pak.pak.render
 
         /*
             Render patterns are computed relative to the containing package under contents/lib/NAME
          */
-        let lib = getSourcePath(directories.lib)
-        let dir = name ? lib.join(pak.name) : directories.contents
+        let render = pak._expansive_.control.render
         for (let [kind, patterns] in render) {
             for (let [index,pattern] in patterns) {
-                //  DEPRECATE - here just to strip 'contents'
                 if (pattern.startsWith('contents')) {
                     print("WARNING - render values start with contents/")
                 }
+                //  DEPRECATE - getSourcePath just here to strip 'contents'
                 pattern = getSourcePath(pattern)
-                patterns[index] = dir.join(pattern.expand(expansive.dirTokens, { fill: '.' }))
+                patterns[index] = pattern.name.expand(expansive.dirTokens, { fill: '.' })
             }
             render[kind] = directories.contents.files(patterns, {relative: true})
         }
@@ -1986,7 +2007,7 @@ public class Expansive {
     public function orderFiles(files: Array, kind): Array {
         let result = []
         for each (pak in paks) {
-            let render = pak.pak.render[kind]
+            let render = pak._expansive_.control.render[kind]
             if (render) {
                 for each (path in render) {
                     result.push(path)

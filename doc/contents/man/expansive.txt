@@ -646,17 +646,17 @@ OPTIONS
 
 
        --listen IP:PORT URI
-                 Change  the port on which Expansive will listen. Can omit the
+                 Change the port on which Expansive will listen. Can omit  the
                  IP portion and only specify a port.
 
 
        --log filename:level
-                 Emit trace to the specified file. The level  is  a  verbosity
+                 Emit  trace  to  the specified file. The level is a verbosity
                  level from 0-5 with 5 being the most verbose.
 
 
-       --noclean Do  not  clean  the  'dist'  directory  before  rendering. By
-                 default Expansive will remove all the  content  under  'dist'
+       --noclean Do not  clean  the  'dist'  directory  before  rendering.  By
+                 default  Expansive  will  remove all the content under 'dist'
                  first.
 
 
@@ -671,7 +671,7 @@ OPTIONS
 
 
        --trace filename:level
-                 Trace HTTP requests to the specified file.  The  level  is  a
+                 Trace  HTTP  requests  to  the specified file. The level is a
                  verbosity level from 0-5 with 5 being the most verbose.  HTTP
                  requests and HTTP headers will be traced at levels 2-4.
 
@@ -684,8 +684,8 @@ OPTIONS
 
 
        --DIGIT   Emit log and HTTP trace to stderr at the specified level. The
-                 DIGIT  must  be  0  to 5 with 5 being the most verbose.  This
-                 option  is  the   same   as   "--log   stderr:DIGIT   --trace
+                 DIGIT must be 0 to 5 with 5 being  the  most  verbose.   This
+                 option   is   the   same   as   "--log  stderr:DIGIT  --trace
                  stderr:DIGIT"
 
 

@@ -278,9 +278,9 @@ public class Expansive {
     function loadConfig(path: Path, meta = {}): Object {
         let cfg = readConfig(path)
         vtrace('Info', 'Using mode:', package.pak.mode)
+        blend(cfg, { meta: {}, control: {}, services: {}}, {combine: true})
         let mode = cfg[package ? package.pak.mode : '']
         if (mode) {
-            blend(cfg, { meta: {}, control: {}, services: {}}, {combine: true})
             blend(cfg.meta, mode.meta, {combine: true})
             if (!initialized) {
                 blend(cfg.control, mode.control, {combine: true})
@@ -1962,9 +1962,11 @@ print("Path", path)
         if (paks[name]) {
             return
         }
+        let dependencies
         if (!name) {
             pak = package
             pak._expansive_ = config.clone()
+            dependencies = pak._installedDependencies_
         } else {
             path = directories.paks.join(name, PACKAGE)
             if (!path.exists) {
@@ -1975,10 +1977,11 @@ print("Path", path)
             if (path.exists) {
                 pak._expansive_ = path.readJSON()
             }
+            dependencies = pak.dependencies
         }
         blend(pak, {_expansive_: {control:{render:{}}}}, {overwrite: false})
 
-        for (dname in pak.dependencies) {
+        for (dname in dependencies) {
             /* Depth first traversal */
             computePackageOrder(dname)
         }

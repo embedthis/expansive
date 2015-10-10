@@ -49,7 +49,7 @@ public class Expansive {
     var args: Args
     var cache: Object
     var config: Object
-    var collections: Object = {}
+    var collections: Object
     var control: Object
     var copy: Object
     var currentConfig: Object
@@ -129,7 +129,10 @@ public class Expansive {
             Updated with expansive {} properties from expansive.es files
          */
         control = {
-            collections: {},
+            collections: {
+                scripts: [],
+                styles:  [],
+            },
             copy: ['images'],                       /* Directory relative to 'contents' */
             dependencies: {},
             directories: {
@@ -1328,6 +1331,7 @@ print("Path", path)
             return
         }
         meta.document = file
+        meta.isDocument = true
         if (!fileMeta) {
             delete meta.layout
         }
@@ -1572,6 +1576,7 @@ print("Path", path)
                 meta.source = layout
                 meta.sourcePath = getSourcePath(meta.source)
                 meta.isLayout = true
+                delete meta.isDocument
                 contents = contents.replace(/\$/mg, '$$$$')
                 contents = layoutContents.replace(/ *<@ *content *@> */, contents)
                 vtrace('Blend', layout + ' + ' + meta.source)
@@ -1599,6 +1604,7 @@ print("Path", path)
         }
         meta.partial = name
         meta.isPartial = true
+        delete meta.isDocument
         meta.isLayout = false
         meta.source = partial
         meta.sourcePath = getSourcePath(meta.source)

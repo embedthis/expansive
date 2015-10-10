@@ -5326,17 +5326,6 @@ PUBLIC void httpResetRouteIndexes(HttpRoute *route);
  */
 PUBLIC void httpResetRoutePipeline(HttpRoute *route);
 
-#if DEPRECATED
-/**
-    Define the default directory route variables
-    @description This defines the default directories for the 'cache', 'client', 'pak' and 'public' directories.
-    @param route Route to modify
-    @ingroup HttpRoute
-    @stability Prototype
- */
-PUBLIC void httpSetDefaultDirs(HttpRoute *route);
-#endif
-
 /**
     Define a route directory path variable
     @description This creates an upper case route variable with a _DIR suffix for the given name.

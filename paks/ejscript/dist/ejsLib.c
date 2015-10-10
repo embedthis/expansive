@@ -50587,7 +50587,11 @@ static EjsObj *uri_set_path(Ejs *ejs, EjsUri *up, int argc, EjsObj **argv)
         up->uri->path = 0;
         up->uri->ext = 0;
     } else {
+#if UNUSED
         up->uri->path = httpNormalizeUriPath(ejsToMulti(ejs, argv[0]));
+#else
+        up->uri->path = ejsToMulti(ejs, argv[0]);
+#endif
         up->uri->ext = mprGetPathExt(up->uri->path);
     }
     return 0;

@@ -1273,7 +1273,7 @@ print("Path", path)
 
         if (options.serve) {
             //  DEPRECATE meta.url - was used before meta.site
-            if (meta.url) {
+            if (meta.url && !meta.site) {
                 trace('Warn', 'Rename meta.url to meta.site in expansive.json')
             }
             let original: Uri? = meta.site || meta.url

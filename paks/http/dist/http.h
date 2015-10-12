@@ -1505,7 +1505,7 @@ PUBLIC cchar *httpLookupMimeType(cchar *ext);
 /**
     Normalize a URI
     @description Validate and canonicalize a URI. This invokes httpNormalizeUriPath to normalize the URI path.
-        This removes redundant ./ and ../ segments. It does not make the URI absolute.
+        This removes redundant ./ and ../ segments including leading ../ segments. It does not make the URI absolute.
     @param uri URI object to normalize
     @return The supplied uri so it can be used in chaining. Returns null if the URI cannot be normalized.
     @ingroup HttpUri
@@ -1515,8 +1515,8 @@ PUBLIC HttpUri *httpNormalizeUri(HttpUri *uri);
 
 /**
     Normalize a URI
-    @description Validate and canonicalize a URI path. This removes redundant "./" sequences and simplifies "../dir"
-        references.
+    @description Validate and canonicalize a URI path. This removes redundant "./" and "../dir"
+        sequences including leading "../" segments.
     @param uri Uri path string to normalize. This is the URI path portion without scheme, host and port components.
     @return A new validated uri string. Returns null if the URI cannot be normalized.
     @ingroup HttpUri

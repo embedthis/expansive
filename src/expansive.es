@@ -10,7 +10,6 @@ require ejs.web
 require ejs.version
 require expansive.template
 
-//  MOB - deprecate expansive.es? - allow script file property
 const CONFIG: Path = Path('expansive')
 const HOME = Path(App.getenv('HOME') || App.getenv('USERPROFILE') || '.')
 const LISTEN = '127.0.0.1:4000'
@@ -46,44 +45,46 @@ const USAGE = 'Expansive Web Site Generator
 '
 
 public class Expansive {
-    var args: Args
+    public var args: Args
     var cache: Object
     var config: Object
-    var collections: Object
-    var control: Object
+    public var collections: Object
+    public var control: Object
     var copy: Object
     var currentConfig: Object
-    var directories: Object
+    public var directories: Object
     var dirTokens: Object
     var errors: Number = 0
     var filters: Array
-    var destCache: Object
+    var destPathCache: Object
     var impliedUpdates: Object
     var initialized: Boolean
-    var lastGen: Date
-    var log: Logger = App.log
-    var metaCache: Object
-    var modified: Object = {file: {}}
+    public var lastGen: Date
+    public var log: Logger = App.log
+    public var metaCache: Object
+    public var modified: Object = {file: {}}
     var obuf: ByteArray?                    /* Output buffer for render data */
-    var options: Object
-    var package: Object
+    public var options: Object
+    public var package: Object
     var paks: Object = {}
     var plugins: Object = {}
     var reload: Array = []
     var resolveCache: Object
     var restarts = []
     var server: Cmd
-    var services: Object = {}
+    public var services: Object = {}
+    var serviceConfig: Object = {}
     var sitemaps: Array = []
     var skipFilter: Object = {}
     var stats: Object
-    var topMeta: Object
-    var transforms: Object = {}
+    public var topMeta: Object
+    var mappings: Object = {}
     var preProcessors: Object = {}
     var postProcessors: Object = {}
     var resolvers: Object = {}
+    public var transforms: Object = {}
     var using: Object = {}
-    var verbosity: Number = 0
+    public var verbosity: Number = 0
     var watchers: Object = {}
 
     let argsTemplate = {
@@ -104,6 +105,7 @@ public class Expansive {
             trace:     { alias: 't', range: String },
             verbose:   { alias: 'v' },
             version:   { },
+            why:       { alias: 'w' },
         },
         unknown: unknown,
         usage: usage,
@@ -149,8 +151,6 @@ public class Expansive {
             },
             listen: LISTEN,
             watch: 1500,
-            services: {},
-            transforms: {}
         }
         topMeta = {
             layout: 'default',
@@ -170,14 +170,11 @@ public class Expansive {
                 PACKAGE.write(serialize(package, {pretty: true, indent: 4}) + '\n')
             }
         }
-        /*  DEPRECATE
-        control.documents = directories.contents
-        */
 
         impliedUpdates = {}
-        destCache = {}
+        destPathCache = {}
         resolveCache = {}
-        stats = {services: {}}
+        stats = {transforms: {}}
         if (App.config.expansive) {
             /* From ejsrc */
             blendMeta(topMeta, App.config.expansive)
@@ -240,6 +237,7 @@ public class Expansive {
             dump('Meta', topMeta)
             dump('Control', control)
             dump('Transforms', transforms)
+            dump('Mappings', mappings)
             dump('Services', services)
         }
         initialized = true
@@ -299,7 +297,9 @@ public class Expansive {
                     cfg.services[key] = { enable: value }
                 }
             }
-            blend(services, cfg.services, {combine: true})
+            blend(serviceConfig, cfg.services)
+
+            //  TODO - somehow move back to exp-blog
             if (cfg.meta.blog) {
                 if (cfg.meta.blog.description) {
                     meta.description = cfg.meta.blog.description
@@ -322,76 +322,40 @@ public class Expansive {
         return meta
     }
 
-    function createService(def) {
-        if (def.from) {
-            trace('Warn', 'Service ' + def.name + ' is using the legacy "from" property. Use "input" instead')
-            def.input = def.from
-            delete def.from
+    function createService(service) {
+        if (services[service.name]) {
+            vtrace('Warn', 'Redefining service ' + service.name)
+        } else {
+            vtrace('Create', 'Service ' + service.name)
         }
-        if (def.to) {
-            trace('Warn', 'Service ' + def.name + ' is using the legacy "to" property. Use "output" instead')
-            def.output = def.to
-            delete def.to
+        services[service.name] = service
+        if (serviceConfig[service.name] && serviceConfig[service.name].enable !== null) {
+            service.enable = serviceConfig[service.name].enable
         }
-        let service = services[def.name] ||= {}
-        if (service.name) {
-            vtrace('Warn', 'Redefining service "' + def.name + '"" from ' +
-                services[def.name].plugin + ' to ' + def.plugin)
-        }
-        blend(service, def, {overwrite: false})
-
-//  MOB - is this used
-        assert(!def.render)
-
-        service.transform = def.transform
         if (service.enable == null) {
             service.enable = true
         }
-        stats.services[def.name] = { elapsed: 0, count: 0}
+        if (service.transforms) {
+            if (!(service.transforms is Array)) {
+                service.transforms = [service.transforms]
+            }
+            for each (transform in service.transforms) {
+                if (transform.name) {
+                    transform.name = service.name + '-' + transform.name
+                } else {
+                    transform.name = service.name
+                }
+                vtrace('Create', 'Transform ' + transform.name)
+                transforms[transform.name] = transform
+                transform.service = service
 
-/*  DEPRECATE input/output
-        if (def.output && !(def.output is Array)) {
-            def.output = [def.output]
-        }
-        if (def.input && !(def.input is Array)) {
-            def.input = [def.input]
-        }
-        if (def.input) {
-            //  DEPRECATE
-            trace('Warn', 'Using deprecated input/output. Use mappings instead.')
-            dump("DEF", def)
-        }
-        for each (input in def.input) {
-            for each (output in def.output) {
-                let mapping = input + ' -> ' + output
-                let transform = transforms[mapping] ||= []
-                if (!transform.contains(def.name)) {
-                    transform.push(def.name)
+                if (!service.enable || transform.enable == null) {
+                    transform.enable = service.enable
                 }
-                vtrace('Plugin', def.plugin + ' provides "' + def.name + '" for ' + mapping)
+                stats.transforms[transform.name] = { elapsed: 0, count: 0}
             }
         }
-        */
-        if (def.mappings is String) {
-            let v = {}
-            v[def.mappings] = def.mappings
-            service.mappings = def.mappings = v
-        }
-        for (let [key,value] in def.mappings) {
-            if (!value) {
-                value = [key]
-            } else if (!(value is Array)) {
-                value = [value]
-            }
-            for each (to in value) {
-                let mapping = key + ' -> ' + to
-                let transform = transforms[mapping] ||= []
-                if (!transform.contains(def.name)) {
-                    transform.push(def.name)
-                }
-                vtrace('Plugin', def.plugin + ' provides "' + def.name + '" for ' + mapping)
-            }
-        }
+        return service
     }
 
     function loadPlugin(name, requiredVersion) {
@@ -405,33 +369,23 @@ public class Expansive {
             trace('Warn', 'Cannot load plugin ' + name + ' ' + requiredVersion)
             return
         }
-        vtrace('Load', 'Plugin', path)
         checkEngines(name, path)
 
         let epath = findConfig(path)
-        if (epath && epath.exists) {
-            if (epath.extension == 'json') {
-                currentConfig = epath.readJSON()
-            } else {
-                global.load(epath)
-            }
-            let pluginMeta = currentConfig
-            if (pluginMeta.expansive) {
-                trace('Warn', 'Plugin ' + path + ' is using deprecated expansive property')
-                if (pluginMeta.expansive.transforms) {
-                    trace('Warn', 'Plugin ' + path + ' is using deprecated expansive.transforms property')
-                    pluginMeta.transforms = pluginMeta.expansive.transforms
-                }
-            }
-            let defs = (pluginMeta.transforms)
-            if (defs) {
-                if (!(defs is Array)) {
-                    defs = [defs]
-                }
-                for each (def in defs) {
-                    def.plugin = name
-                    def.path = path
-                    createService(def)
+        if (epath && epath.exists && epath.extension == 'es') {
+            vtrace('Load', 'Plugin', path)
+            global.load(epath)
+            let plugin = currentConfig
+            if (plugin && plugin.services) {
+                let services = plugin.services
+                if (services) {
+                    if (!(services is Array)) {
+                        services = [services]
+                    }
+                    for each (service in services) {
+                        service.name ||= name
+                        createService(service, path)
+                    }
                 }
             }
         }
@@ -445,43 +399,69 @@ public class Expansive {
     }
 
     function loadPlugins() {
-        createService({ plugin: 'compile-exp', name: 'exp', mappings: { exp: '*' }, transform: transformExp } )
-        let stat = stats.services.exp
+        let exp = createService({name: 'exp', transforms: [{ mappings: { exp: '*' }, render: renderExp }]})
+        let stat = stats.transforms.exp
         stat.parse = stat.eval = stat.run = 0
 
         for (let [name, requiredVersion] in package._installedDependencies_) {
             loadPlugin(name, requiredVersion)
         }
         buildMetaCache()
+        blend(services, serviceConfig, {combine: true})
+
         for each (service in services) {
-            if (service.script && service.enable) {
-                try {
-                    eval(service.script)
-                    if (global.transform) {
-                        service.transform = global.transform
-                        delete global.transform
-                    }
-                    if (global.resolve) {
-                        service.resolve = global.resolve
-                        for (let ext in service.mappings) {
-                            resolvers[ext] = service
-                        }
-                        delete global.resolve
-                    }
-                    if (global.pre) {
-                        service.pre = global.pre
-                        preProcessors[service.name] = service
-                        delete global.pre
-                    }
-                    if (global.post) {
-                        service.post = global.post
-                        postProcessors[service.name] = service
-                        delete global.post
-                    }
-                    delete service.script
-                } catch (e) {
-                    fatal('Plugin script error in "' + service.name + '"\n' + e)
+            if (service.enable) {
+                if (service.init) {
+                    service.init.call(this, service)
                 }
+                for each (transform in service.transforms) {
+                    try {
+                        if (transform.init) {
+                            transform.init.call(this, transform)
+                        }
+                        if (transform.script) {
+                            eval(transform.script)
+                            delete service.script
+                        }
+                    } catch (e) {
+                        fatal('Plugin script error in "' + transform.name + '"\n' + e)
+                    }
+                    if (transform.enable) {
+                        if (transform.mappings is String) {
+                            let v = {}
+                            v[transform.mappings] = transform.mappings
+                            transform.mappings = v
+                        }
+                        for (let [key,value] in transform.mappings) {
+                            if (!value) {
+                                value = [key]
+                            } else if (!(value is Array)) {
+                                value = [value]
+                            }
+                            for each (to in value) {
+                                let mapping = key + ' -> ' + to
+                                let stages = mappings[mapping] ||= []
+                                if (!stages.contains(transform.name)) {
+                                    stages.push(transform)
+                                }
+                                vtrace('Plugin', service.name + ' provides transform "' + 
+                                    transform.name + '" for ' + mapping)
+                            }
+                        }
+                        if (transform.resolve) {
+                            for (let ext in transform.mappings) {
+                                resolvers[ext] = transform
+                            }
+                        }
+                        if (transform.pre) {
+                            preProcessors[transform.name] = transform
+                        }
+                        if (transform.post) {
+                            postProcessors[transform.name] = transform
+                        }
+                    }
+                }
+                delete service.transforms
             }
         }
     }
@@ -607,7 +587,7 @@ public class Expansive {
             options.rebuild = false
         }
         for each (watch in watchers) {
-            watch.call(this)
+            watch.call(this, topMeta)
         }
         if (modified.any) {
             lastGen = Date()
@@ -625,21 +605,10 @@ public class Expansive {
             modified[kind][file] = true
         }
         modified.any = true
-        vtrace('Modified', file)
-        event('onchange', file)
-    }
-
-    /*
-        Path is contents relative
-     */
-    public function skip(path) {
-        //  DEPRECATE
-print("Path", path)
-        throw new Error('SKIP')
-        if (path.startsWith('contents/')) {
-            print("WARNING SKIP", path)
+        if (options.why) {
+            trace('Modified', file)
         }
-        skipFilter[directories.contents.join(path)] = true
+        event('onchange', file)
     }
 
     public function getLastRendered(source): Date {
@@ -721,6 +690,8 @@ print("Path", path)
             if (!file.isDir && (file.modified > getLastRendered(file))) {
                 let meta = getFileMeta(file)
                 if (!meta || !meta.draft) {
+// print("FILE", file)
+// print("DEST", getDest(getSourcePath(file)))
                     modify(file, 'file')
                 }
             }
@@ -928,7 +899,7 @@ print("Path", path)
         if (options.benchmark) {
             trace('Debug', '\n' + serialize(stats, {pretty: true, indent: 4, quotes: false}))
             let total = 0
-            for each (service in stats.services) {
+            for each (service in stats.transforms) {
                 total += service.elapsed
             }
             trace('Debug', 'Total plugin time %.2f' % ((total / 1000) + ' secs.'))
@@ -1028,7 +999,7 @@ print("Path", path)
         Test if a file should be processed according to filters
         Path is relative to 'top'
      */
-    function filter(path: Path): Boolean {
+    public function filter(path: Path): Boolean {
         if (skipFilter[path]) {
             return false
         }
@@ -1070,19 +1041,19 @@ print("Path", path)
 
     function preProcess() {
         control.pre ||= []
-        for each (service in preProcessors) {
-            if (!control.pre.contains(service.name)) {
-                control.pre.push(service.name)
+        for each (transform in preProcessors) {
+            if (!control.pre.contains(transform.name)) {
+                control.pre.push(transform.name)
             }
         }
         for each (name in control.pre) {
-            let service = preProcessors[name]
-            if (!service) {
-                throw 'Pre processing service "' + name + '" cannot be found'
+            let transform = preProcessors[name]
+            if (!transform) {
+                throw 'Pre processing transform "' + name + '" cannot be found'
             }
-            vtrace('PreProcess', service.name)
-            if (service.enable !== false) {
-                service.pre.call(this, meta, service)
+            vtrace('PreProcess', transform.name)
+            if (transform.enable !== false) {
+                transform.pre.call(this, transform)
             }
         }
     }
@@ -1093,17 +1064,17 @@ print("Path", path)
             /*
                 Control.post provides the required order
              */
-            for each (service in postProcessors) {
-                if (!control.post.contains(service.name)) {
-                    control.post.push(service.name)
+            for each (transform in postProcessors) {
+                if (!control.post.contains(transform.name)) {
+                    control.post.push(transform.name)
                 }
             }
             for each (name in control.post) {
-                let service = postProcessors[name]
-                if (service) {
-                    trace('Post', service.name)
-                    if (service.enable !== false) {
-                        service.post.call(this, meta, service)
+                let transform = postProcessors[name]
+                if (transform) {
+                    trace('Post', transform.name)
+                    if (transform.enable !== false) {
+                        transform.post.call(this, transform)
                     }
                 }
             }
@@ -1123,11 +1094,11 @@ print("Path", path)
             return ''
         }
         /*
-            Try to find the longest set of extensions that matches a transform
+            Try to find the longest set of extensions that matches a mapping
          */
         let extensions = file.basename.name.split('.').slice(1)
         while (extensions.length) {
-            for (let [key,value] in transforms) {
+            for (let [key,value] in mappings) {
                 let [from] = key.split(' -> ')
                 let joined = extensions.join('.')
                 if (from == joined) {
@@ -1139,12 +1110,12 @@ print("Path", path)
         return file.extension
     }
 
-    function getMapping(file: Path, wild = false) {
+    function getMapping(file: Path?, wild = false) {
         let ext = getExt(file)
         let next = getExt(file.trimEnd('.' + ext))
         if (next) {
             mapping = ext + ' -> ' + next
-            if (!transforms[mapping]) {
+            if (!mappings[mapping]) {
                 mapping = ext + ' -> *'
             }
         } else {
@@ -1154,69 +1125,34 @@ print("Path", path)
     }
 
     /*
-        Get the next path name after applying a transformation mapping
-        Meta may be null when called from getLastRendered from the standardWatcher
+        Get the next (virtual) path after removing the mapping
+        Returns [nextPath, terminal] where terminal will be true if a resolver is called for a terminal path.
      */
-    function getNextPath(path: Path, mapping, meta): Path? {
-        let next: Path? = path
-        assert(path)
-        if (path && transforms[mapping]) {
-            let extensions = mapping.split(' -> ')
-            let service = resolvers[extensions[0]]
-            if (service) {
-                let destPath
-                if (resolveCache[path.name] !== undefined) {
-                    destPath = resolveCache[path]
-                } else {
-                    destPath = service.resolve.call(this, path, service)
-                    resolveCache[path.name] = destPath
-                }
-                if (destPath == null) {
-                    return null
-                } else if (destPath != path) {
-                    if (meta) {
-                        meta.destPath = destPath
-                        //  MOB DEPRECATE
-                        meta.path = meta.destPath
-                        meta.dest = directories.dist.join(meta.destPath)
-                    }
-                }
+    function resolvePath(path: Path?, mapping) {
+        let terminalPath = false
+        let extensions = mapping.split(' -> ')
+        let transform = resolvers[extensions[0]]
+        if (transform) {
+            if (resolveCache[path.name] === undefined) {
+                resolveCache[path.name] = transform.resolve.call(this, path, transform)
             }
-            if (extensions[0] != extensions[1]) {
-                next = path.trimEnd('.' + extensions[0])
+            path = resolveCache[path.name]
+            if (path && path.name[0] == '|') {
+                terminalPath = true
+                path = Path(path.name.slice(1))
             }
         }
-        return next
+        if (path && extensions[0] != extensions[1]) {
+            path = path.trimEnd('.' + extensions[0])
+        }
+        if (!path) {
+            terminalPath = true
+        }
+        return [ path, terminalPath ]
     }
 
     public function trimPath(file, dir) {
         return file.trimComponents(dir.components.length)
-    }
-
-    /*
-        Convert an input source path into a destination path relative to 'dist'
-        This resolves all extension mappings.
-     */
-    public function getDestPath(sourcePath) {
-        let dest = destCache[sourcePath]
-        if (dest != null) {
-            return dest
-        }
-        let nextPath = sourcePath
-        let dest = sourcePath
-        let mapping = getMapping(dest)
-        while (transforms[mapping]) {
-            if ((dest = getNextPath(nextPath, mapping, null)) == null) {
-                return null
-            }
-            if (dest == nextPath) {
-                break
-            }
-            mapping = getMapping(dest)
-            nextPath = dest
-        }
-        destCache[sourcePath] = dest
-        return dest
     }
 
     public function getDest(sourcePath) {
@@ -1249,34 +1185,16 @@ print("Path", path)
         source     - Current source file being processed. Relative path including 'contents|lib|layouts|partials'.
         destPath   - Final destination filename being created. Relative path excluding 'dist'.
         dest       - Final destination filename being created. Relative path including 'dist'.
-        path       - Final destination without 'dist'.
+        current    - Current virtual path being transformed.
         url        - Url made from 'path'.
         top        - Relative URL path to application home page.
         abstop     - Absolute URL path to the application home page.
         abs        - Absolute URL path to the page.
         site       - Canonical absolute URL to the site. Includes scheme and host
      */
-    function initMeta(path, meta) {
-        meta.sourcePath = getSourcePath(path)
-        if ((meta.destPath = getDestPath(meta.sourcePath)) == null) {
-            /* This document is not required - resolver returned null */
-            return null
-        }
-        //  MOB - DEPRECATE meta.path
-        meta.path = meta.destPath
-
-        meta.dest = directories.dist.join(meta.destPath)
-        meta.document = path
-        meta.source = path
-        meta.dir ||= meta.destPath.dirname
-        meta.dir = Path(meta.dir)
-
+    public function initMeta(path, meta) {
         if (options.serve) {
-            //  DEPRECATE meta.url - was used before meta.site
-            if (meta.url && !meta.site) {
-                trace('Warn', 'Rename meta.url to meta.site in expansive.json')
-            }
-            let original: Uri? = meta.site || meta.url
+            let original: Uri? = meta.site
             meta.site = Uri(options.listen || control.listen || meta.site || 'http://localhost:4000').complete()
             if (original && original.path && meta.site.path == '/') {
                 meta.site.path = original.path
@@ -1287,32 +1205,45 @@ print("Path", path)
         meta.site = Uri(meta.site)
         meta.abstop = Uri(meta.site.path)
 
+        meta.sourcePath = getSourcePath(path)
+        if ((meta.destPath = getDestPath(meta.sourcePath)) == null) {
+            /* This document is not required - resolver returned null */
+            return null
+        }
+        meta.dest = directories.dist.join(meta.destPath)
+        meta.document = path
+        meta.source = path
+
+        /*
+            Documents may define their own "dir" and "url". Dir is used to calculate the meta.top.
+         */
+        meta.dir ||= meta.destPath.dirname
+        meta.dir = Path(meta.dir)
         let count = (meta.dir == '.') ? 0 : meta.dir.components.length
         meta.top = Uri(count ? '/..'.times(count).slice(1) : '.')
         global.top = meta.top
 
         if (meta.destPath.basename == 'index.html' && !control.keepIndex) {
-            meta.url = Uri(Uri.encode(meta.destPath.dirname + '/'))
+            meta.url ||= Uri(Uri.encode(meta.destPath.dirname + '/'))
         } else {
-            meta.url = Uri(Uri.encode(meta.destPath))
+            meta.url ||= Uri(Uri.encode(meta.destPath))
         }
-        //  DEPRECATE MOB
-        meta.abs =    meta.abstop.join(meta.url).normalize
         meta.absurl = meta.abstop.join(meta.url).normalize
+
         meta.mode = package.pak.mode || 'debug'
         meta.date ||= new Date
         meta.date = Date(meta.date)
         meta.isoDate = meta.date.toISOString()
+        meta.services ||= {}
         return meta
     }
 
-
-    function writeDest(contents, meta) {
+    public function writeDest(contents, meta) {
         if (contents != null) {
             let dest = meta.dest
             dest.dirname.makeDir()
             dest.write(contents)
-            trace('Render', meta.source)
+            trace('Render', meta.destPath)
             stats.files++
         }
     }
@@ -1322,9 +1253,6 @@ print("Path", path)
         This includes applying layouts.
      */
     function renderDocument(file, meta) {
-        /*
-            Collections reset at the start of each document so layouts/partials can modify
-         */
         let [fileMeta, contents] = splitMetaContents(file, file.readString())
         meta = blendMeta(meta.clone(true), fileMeta || {})
         if (meta.draft) {
@@ -1347,7 +1275,11 @@ print("Path", path)
     /*
         Render in-memory contents. Invoke the transform pipeline.
      */
-    function renderContents(contents, meta) {
+    public function renderContents(contents, meta) {
+        /*
+            Collections reset at the start of each document so layouts/partials can modify
+         */
+        collections = (control.collections || {}).clone()
         if (!initMeta(meta.document, meta)) {
             return null
         }
@@ -1356,7 +1288,7 @@ print("Path", path)
             if (meta.layout) {
                 contents = blendLayout(contents, meta)
             }
-            return transform(contents, '* -> *', meta.dest, meta)
+            return contents
         } catch (e) {
             errors++
             if (options.abort) {
@@ -1368,51 +1300,74 @@ print("Path", path)
     }
 
     /*
+        Convert an input source path into a destination path relative to 'dist'
+        This resolves all extension mappings.
+     */
+    public function getDestPath(sourcePath) {
+        let path = destPathCache[sourcePath]
+        if (path != null) {
+            return path
+        }
+        let terminalPath
+        let path = sourcePath
+        let visited = {}
+        while (!terminalPath && !visited[path]) {
+            visited[path] = true
+            [ path, terminalPath ] = resolvePath(path, getMapping(path))
+        }
+        destPathCache[sourcePath] = path
+        return path
+    }
+
+    /*
         Run the transformation pipeline on the contents applying all mappings.
      */
     function pipeline(contents, meta) {
+        let terminalPath, mapping
         let path = meta.sourcePath
-        let nextPath, mapping
-        let nextMapping = getMapping(path)
-        do {
-            mapping = nextMapping
-            if ((nextPath = getNextPath(path, mapping, meta)) == null) {
-                return null
-            }
-            if (transforms[mapping]) {
-                contents = transform(contents, mapping, path, meta)
-            }
-            path = nextPath
-            nextMapping = getMapping(path)
-        } while (nextMapping != mapping && contents != null)
+        let visited = {}
+        while (contents && !terminalPath && !visited[path]) {
+            mapping = getMapping(path)
+            contents = transform(contents, mapping, path, meta)
+            visited[path] = true
+            [ path, terminalPath ] = resolvePath(path, mapping)
+        }
+        if (terminalPath) {
+            meta.destPath = path
+            meta.dest = directories.dist.join(meta.destPath)
+        }
         return contents
+    }
+
+    public function terminal(path: Path?): Path? {
+        if (path) {
+            return Path('|' + path.name)
+        }
+        return path
     }
 
     /*
         Transform content from one extension to another. Invoke all required services.
      */
     function transform(contents, mapping, path, meta) {
+        vtrace('Transform', meta.source + ' (' + mapping + ')')
         meta.extensions = getAllExtensions(path)
         meta.extension = meta.extensions.slice(-1)[0]
-        let transform = transforms[mapping]
-        vtrace('Transform', meta.source + ' (' + mapping + ')')
+        meta.current = path
 
-        for each (serviceName in transform) {
-            let service = meta.service = services[serviceName]
-            if (!service) {
-                fatal('Cannot find service "' + serviceName + '" for transform "' + mapping)
-            }
-            meta.service = service
-            if (service.enable !== false) {
-                if (service.transform) {
-                    if (service.files && !meta.source.glob(service.files)) {
-                        App.log.debug(3, 'Document "' + meta.source + '" does not match "' + service.files + '"')
-                    }
+        let stages = mappings[mapping]
+        for each (transform in stages) {
+            if (transform.enable !== false) {
+                if (transform.render) {
                     [meta.input, meta.output] = mapping.split(' -> ')
-                    vtrace('Service', service.name + ' from "' + service.plugin + '"')
                     let started = new Date
                     try {
-                        contents = service.transform.call(this, contents, meta, service)
+                        vtrace('Transform', transform.name)
+                        /*
+                            Override service configuration with per-document meta.services 
+                         */
+                        meta.service = blend(meta.service || {}, transform.service, {overwrite: false})
+                        contents = transform.render.call(this, contents, meta, transform)
                     } catch (e) {
                         if (options.serving) {
                             trace('Error', 'Cannot render ' + path)
@@ -1421,11 +1376,11 @@ print("Path", path)
                             throw e
                         }
                     }
-                    stats.services[service.name].count++
-                    stats.services[service.name].elapsed += started.elapsed
+                    stats.transforms[transform.name].count++
+                    stats.transforms[transform.name].elapsed += started.elapsed
                 }
             } else {
-                vtrace('Skip', service.name + ' for ' + meta.source + ' (disabled)')
+                vtrace('Skip', transform.name + ' for ' + meta.source + ' (disabled)')
             }
             if (contents == null) {
                 break
@@ -1439,7 +1394,7 @@ print("Path", path)
      */
     function getAllExtensions(file) {
         let extensions = []
-        while (transforms[file.extension]) {
+        while (mappings[file.extension]) {
             ext = file.extension
             extensions.push(ext)
             file = file.trimExt()
@@ -1449,14 +1404,14 @@ print("Path", path)
     }
 
     /*
-        Expansive ".exp" transformer
+        Render .exp content
      */
-    function transformExp(contents, meta, service) {
+    function renderExp(contents, meta, transform) {
         let priorBuf = this.obuf
         this.obuf = new ByteArray
         let parser = new ExpansiveParser
         let code
-        let stat = stats.services.exp
+        let stat = stats.transforms.exp
         let priorMeta = global.meta
         try {
             let mark = new Date
@@ -1468,7 +1423,8 @@ print("Path", path)
 
             mark = new Date
             global.meta = meta
-            global._export_.call(this)
+            /* Exported from expParser */
+            global._exp_parser_.call(this)
             stat.run += mark.elapsed
         } catch (e) {
             trace('Error', 'Error when processing ' + meta.source)
@@ -1489,7 +1445,7 @@ print("Path", path)
         return results
     }
 
-    function runFile(cmd, contents, meta) {
+    public function runFile(cmd, contents, meta) {
         let file = meta.source
         let path = file.dirname.join('.expansive.tmp').joinExt(file.extension, true)
         let results
@@ -1506,7 +1462,7 @@ print("Path", path)
         return results
     }
 
-    function run(cmd, contents = null) {
+    public function run(cmd, contents = null) {
         if (cmd is Array) {
             vtrace('Run', cmd.join(' '))
         } else {
@@ -1523,7 +1479,7 @@ print("Path", path)
 
     /*
         Find a layout or partial.
-        Find the first matching file using the order of transforms
+        Find the first matching file using the order of mappings
      */
     function findFile(dir: Path, pattern: String, meta) {
         let path
@@ -1531,7 +1487,7 @@ print("Path", path)
             if (f.extension == 'html') {
                 return f
             }
-            for (let mapping in transforms) {
+            for (let mapping in mappings) {
                 let extensions = mapping.split(' -> ')
                 if (f.extension == extensions[0]) {
                     return f
@@ -1640,7 +1596,7 @@ print("Path", path)
         obuf.write(...args)
     }
 
-    function splitMetaContents(file, contents): Array {
+    public function splitMetaContents(file, contents): Array {
         let meta
         try {
             if (contents[0] == '-') {
@@ -1683,7 +1639,7 @@ print("Path", path)
         return [meta, contents]
     }
 
-    function blendMeta(meta, add): Object {
+    public function blendMeta(meta, add): Object {
         blend(meta, add)
         for (let [key, value] in directories) {
             directories[key] = Path(value)
@@ -2015,9 +1971,7 @@ print("Path", path)
                 if (pattern.startsWith('contents')) {
                     print("WARNING - render values start with contents/")
                 }
-                //  DEPRECATE - getSourcePath just here to strip 'contents'
-                pattern = getSourcePath(pattern)
-                patterns[index] = pattern.name.expand(expansive.dirTokens, { fill: '.' })
+                patterns[index] = Path(pattern).name.expand(expansive.dirTokens, { fill: '.' })
             }
             render[kind] = directories.contents.files(patterns, {relative: true})
         }

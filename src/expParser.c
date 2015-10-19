@@ -91,7 +91,7 @@ static char *buildScript(Ejs *ejs, cchar *contents, cchar *delims)
     state.delims = delims;
     tid = getToken(ejs, &state);
 
-    mprPutStringToBuf(body, "global._export_ = function() { ");
+    mprPutStringToBuf(body, "global._exp_parser_ = function() { ");
 
     while (tid != EXP_TOK_EOF) {
         token = mprGetBufStart(state.token);

@@ -1931,7 +1931,7 @@ public class Expansive {
             /*
                 Blend with the documented dependencies then add any locally installed dependencies
              */
-            dependencies = pak.dependencies.clone()
+            dependencies = (pak.dependencies.clone() || {})
             blend(dependencies, pak._installedDependencies_)
         } else {
             path = directories.paks.join(name, PACKAGE)

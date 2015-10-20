@@ -79,8 +79,8 @@ public class Expansive {
     var stats: Object
     public var topMeta: Object
     var mappings: Object = {}
-    var preProcessors: Object = {}
-    var postProcessors: Object = {}
+    var preProcessors: Array = []
+    var postProcessors: Array = []
     var resolvers: Object = {}
     public var transforms: Object = {}
     var using: Object = {}
@@ -239,6 +239,8 @@ public class Expansive {
             dump('Transforms', transforms)
             dump('Mappings', mappings)
             dump('Services', services)
+            dump('PreProcessors', preProcessors)
+            dump('PostProcessors', postProcessors)
         }
         initialized = true
         return topMeta
@@ -309,14 +311,14 @@ public class Expansive {
                 }
             }
         }
-        if (cfg.control && cfg.control.script) {
-            delete control.script
+        if (control.script) {
             try {
                 vtrace('Eval', 'Script for ' + path)
-                eval(cfg.control.script)
+                eval(control.script)
             } catch (e) {
                 fatal('Script error in "' + path + '"\n' + e)
             }
+            delete control.script
         }
         castDirectories()
         return meta
@@ -400,6 +402,10 @@ public class Expansive {
 
     function fixMappings() {
         for each (service in services) {
+            /*
+                Overwrite transform mappings with user configuration from 'services.*.mappings'
+                This may be a String, Array or Object
+             */
             if (service.mappings) {
                 if (service.mappings is String || service.mappings is Array) {
                     let transform = transforms[service.name]
@@ -444,6 +450,29 @@ public class Expansive {
         blend(services, serviceConfig, {combine: true})
         fixMappings()
 
+        if (control.pipeline) {
+            for (let [key,value] in control.pipeline) {
+                let stages = mappings[key] ||= []
+                if (!(value is Array)) {
+                    value = [value]
+                }
+                for each (name in value) {
+                    let transform = transforms[name]
+                    if (!transform) {
+                        fatal('Cannot find transform', name, 'in control.pipeline.' + key)
+                    }
+                    if (key == 'pre') {
+                        preProcessors.push(transform)
+                    } else if (key == 'post') {
+                        postProcessors.push(transform)
+                    } else {
+                        if (!stages.contains(transform.name)) {
+                            stages.push(transform)
+                        }
+                    }
+                }
+            }
+        }
         for each (service in services) {
             if (service.enable) {
                 if (service.init) {
@@ -484,10 +513,10 @@ public class Expansive {
                             }
                         }
                         if (transform.pre) {
-                            preProcessors[transform.name] = transform
+                            preProcessors.push(transform)
                         }
                         if (transform.post) {
-                            postProcessors[transform.name] = transform
+                            postProcessors.push(transform)
                         }
                     }
                 }
@@ -720,8 +749,6 @@ public class Expansive {
             if (!file.isDir && (file.modified > getLastRendered(file))) {
                 let meta = getFileMeta(file)
                 if (!meta || !meta.draft) {
-// print("FILE", file)
-// print("DEST", getDest(getSourcePath(file)))
                     modify(file, 'file')
                 }
             }
@@ -1070,17 +1097,10 @@ public class Expansive {
     }
 
     function preProcess() {
-        control.pre ||= []
-        for each (transform in preProcessors) {
-            if (!control.pre.contains(transform.name)) {
-                control.pre.push(transform.name)
-            }
+        if (control.pre) {
+            trace('Warn', 'Using legacy control.pre, use control.pipeline.pre instead')
         }
-        for each (name in control.pre) {
-            let transform = preProcessors[name]
-            if (!transform) {
-                throw 'Pre processing transform "' + name + '" cannot be found'
-            }
+        for each (transform in preProcessors) {
             vtrace('PreProcess', transform.name)
             if (transform.enable !== false) {
                 transform.pre.call(this, transform)
@@ -1089,23 +1109,14 @@ public class Expansive {
     }
 
     function postProcess() {
+        if (control.post) {
+            trace('Warn', 'Using legacy control.post, use control.pipeline.post instead')
+        }
         if (modified.any) {
-            control.post ||= []
-            /*
-                Control.post provides the required order
-             */
             for each (transform in postProcessors) {
-                if (!control.post.contains(transform.name)) {
-                    control.post.push(transform.name)
-                }
-            }
-            for each (name in control.post) {
-                let transform = postProcessors[name]
-                if (transform) {
-                    trace('Post', transform.name)
-                    if (transform.enable !== false) {
-                        transform.post.call(this, transform)
-                    }
+                trace('Post', transform.name)
+                if (transform.enable !== false) {
+                    transform.post.call(this, transform)
                 }
             }
         }
@@ -1211,12 +1222,13 @@ public class Expansive {
         Initialize meta
 
         document   - Original source of the document being processed. For partials/layouts, it is the invoking document.
-        sourcePath - Current source file being processed. Relative path EXCLUDING 'contents|lib|layouts|partials'.
-        source     - Current source file being processed. Relative path including 'contents|lib|layouts|partials'.
+        sourcePath - Current source file being processed. Relative path EXCLUDING 'contents|layouts|partials'.
+        source     - Current source file being processed. Relative path including 'contents|layouts|partials'.
         destPath   - Final destination filename being created. Relative path excluding 'dist'.
         dest       - Final destination filename being created. Relative path including 'dist'.
         current    - Current virtual path being transformed.
         url        - Url made from 'path'.
+        absurl     - Absolute Url made from 'path'.
         top        - Relative URL path to application home page.
         abstop     - Absolute URL path to the application home page.
         abs        - Absolute URL path to the page.

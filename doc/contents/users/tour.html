@@ -43,7 +43,7 @@ $ <b>expansive init</b>
             </thead>
             <tbody>
                 <tr><td>paks</td><td>Installed packages &mdash; full contents.</td></tr>
-                <tr><td>lib</td><td>Package script code and assets.</td></tr>
+                <tr><td>contents/lib</td><td>Exported package library files.</td></tr>
             </tbody>
         </table>
 
@@ -63,7 +63,7 @@ $ <b>expansive init</b>
         <h2>Running Expansive</h2>
         <p>Now you can run expansive to create the new site.</p>
         <code>$ <b>expansive render</b>
-   [Created] dist/index.html</code>
+   [Created] index.html</code>
 
         <p>This process all the files under <em>contents</em> and creates a complete, rendered web site 
             under the <em>dist</em> directory.
@@ -72,7 +72,7 @@ $ <b>expansive init</b>
         <pre class="code">$ <b>expansive serve</b>
     [Listen] 127.0.0.1:4000
     [Render] Initial render ...
-   [Created] dist/index.html
+   [Created] index.html
   [Watching] for changes every 1 sec ...
 </pre>
 
@@ -102,7 +102,11 @@ $ <b>expansive init</b>
 </pre>
         <p>The <em>.exp</em> extension indicates that this page contains embedded Expansive script that 
         must be processed. More on this a little later on. The renderScripts() and renderStyles() calls 
-        will generate the required script HTML elements and stylesheet references.</p>
+        will generate the required script HTML elements and stylesheet references. To use these functions, we need
+        to install two Expansive plugins: <em>exp-css</em> and <em>exp-js</em>.</p>
+
+            <pre class="code">pak install exp-css exp-js</pre>
+
 
         <p>Now we can change the <em>contents/index.html</em> home page to remove the layout HTML and 
         focus just on the unique content for this page:</p>
@@ -172,8 +176,9 @@ $ <b>expansive init</b>
             web sites. Skeletons include all required dependencies and provide an easy, one-step creation 
             of your web site.</p>
         <p>For example, to create a web site that will use <a href="http://sementic-ui.com">Semantic-UI</a>,
-            a modern alternative to <a href="http://getbootstrap.com">Bootstrap</a>:</p>
-        <pre class="code">$ <b>pak install exp-semantic-skeleton</b>
+            a modern alternative to <a href="http://getbootstrap.com">Bootstrap</a>, use this command in an empty
+            directory:</p>
+        <pre class="code">$ <b>pak -i install exp-semantic-skeleton</b>
 [Install] jquery 1.11.1
 [Install] semantic 0.50.0
 [Install] exp-semantic-skeleton 0.1.0
@@ -299,19 +304,13 @@ Expansive **expands** your mind.
  }
 }
         </pre>
-        <p>The Meta property section defines the default public URL for the site via the <em>site</em> property. 
-        The <em>control.copy</em> property provides a hint to Expansive that anything under the 'images' directory 
-        should be copied and not processed by the Expansive pipeline. 
-        The <em>services</em> property set provides configuration for the plugin services to control their 
-        operation and enable/disable minification and compression services.</p> 
+        <p>The Meta property section defines the default public URL for the site via the <em>site</em> property. The <em>control.copy</em> property provides a hint to Expansive that anything under the 'images' directory should be copied and not processed by the Expansive pipeline. The <em>services</em> property set provides configuration for the plugin services to control their operation and enable/disable minification and compression services.</p> 
 
-        <p>If you require a scripted configuration, you can alternatively use an <em>expansive.es</em> script file 
-        instead of the expansive.json. For more details, see the reference configuration section.</p>
+        <p>If you require a scripted configuration, you can alternatively use an <em>expansive.es</em> script file instead of the expansive.json. For more details, see the reference configuration section.</p>
 
         <h2>Queries and Collections</h2>
-        <p>Expansive provides a Collections facility for managing lists of items. It uses collections to manage a list of
-        required stylesheets and scripts. However you can create your own collections. To create a collection via the 
-        configuration file:</p>
+        <p>Expansive provides a <em>Collections</em> facility for managing lists of items. It uses collections to manage a list of required stylesheets and scripts. However you can create your own collections. To create a collection via the configuration file:</p>
+
         <pre class="code">
 {
   control: {
@@ -348,14 +347,14 @@ Expansive **expands** your mind.
 {
   "debug": {
     "services": {
-      "compress": false,
-      "minify-css": false,
-      "minify-js": false,
+      "gzip": false,
+      "css": false,
+      "js": false,
     }
   },
   "release": {
     "services": {
-      "minify-css": true
+      "css": true
     }
   }
 }

@@ -77,39 +77,33 @@ package.json
                 <li><em>contents</em> &mdash; for content web pages</li>
                 <li><em>scripts</em> &mdash; for content web pages</li>
             </ul>
-            <p>The <em>lib</em> directory should be reserved for Paks to export their libraries and you should not 
-            distribute skeleton content in the lib directory. There is no firm rule regarding where to put scripts or
-            stylesheet, but many packages put stylesheets under <em>contents/css</em> and scripts under 
-            <em>contents/js</em>. Similarly for fonts, images and other assets.</p>
+            <p>The <em>contents/lib</em> directory should be reserved for Paks to export their libraries and you should not distribute skeleton content in the lib directory. There is no firm rule regarding where to put scripts or stylesheet, but many packages put stylesheets under <em>contents/css</em> and scripts under <em>contents/script</em>.</p>
 
             <h2>Skeleton Configuration</h2>
-            <p>The skeleton should supply the default <em>expansive.json</em> for the user's web site and it should provide
-            appropriate configuration for all the Expansive services used by the skeleton. Where possible, the
-            skeleton should configure a <em>debug</em> and <em>release</em> configurations. For example, the
-            <em>esp-angular-skeleton</em> provides the following default configuration.</p>
+            <p>The skeleton should supply the default <em>expansive.json</em> for the user's web site and it should provide appropriate configuration for all the Expansive services used by the skeleton. Where possible, the skeleton should configure a <em>debug</em> and <em>release</em> configurations. For example, the <em>esp-angular-skeleton</em> provides the following default configuration.</p>
+
             <code class="inverted">{
     debug: {
         services: {
-            "ng-compile-html": false,
-            "ng-package": false
+            "angular": false,
         }
     },
     release: {
         services: {
-            "minify-js": {
+            "js": {
                 "usemap": false
             },
-            "minify-css": {
+            "css": {
                 "minify": true
             },
-            "ng-compile-js": {
-                "files": [
-                    "contents/**.js",
-                    "lib/esp*/**.js",
-                    "lib/angular*/**.js"
+            "angular": {
+                "package": true,
+                "scripts": [
+                    "**.js",
+                    "lib/angular*/**.js",
+                    "lib/esp*/**.js"
                 ]
-            },
-            "ng-package": true
+            }
         }
     }
 }</code>
@@ -131,7 +125,6 @@ package.json
     "blend": {
         "pak": {
             "theme": "sunny",
-
             "?mode": "debug",
             "?import": true,
         }
@@ -185,7 +178,7 @@ package.json
                 <li><a href="https://github.com/embedthis/exp-semantic-skeleton">exp-semantic-skeleton</a> &mdash; 
                     Expansive <a href="http://semantic-ui.com/">Semantic-UI</a> Skeleton</li>
                 <li><a href="https://github.com/embedthis/esp-angular-skeleton">esp-angular-skeleton</a> &mdash; 
-                    ESP <a href="http://angularjs.org/">AngularJS</a> Skeleton</li>
+                    <a href="https://embedthis.com/esp/">ESP</a> <a href="http://angularjs.org/">AngularJS</a> Skeleton</li>
                 <li><a href="https://github.com/embedthis/esp-html-skeleton">esp-html-skeleton</a> &mdash; 
-                    ESP HTML5 Skeleton</li>
+                    <a href="https://embedthis.com/esp/">ESP</a> HTML5 Skeleton</li>
             </ul>

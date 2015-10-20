@@ -25,32 +25,38 @@
             <p>The <em>expansive.es</em> file is a Javascript file that typically contains just one call to 
             <em>Expansive.load</em> to define the services provided by the plugin. For example:</p>
             <code class="inverted">Expansive.load({ 
-    transforms: [ {
+    services: [ {
         name: 'my-markdown',
-        mappings: {
-            'md': 'html'
+        options: 'my configuration options',
+        init: function(transform) {
         },
-        script: `
-            function transform(contents, meta, service) {
+
+        transforms: [ {
+            name: 'compile',
+            mappings: {
+                'md': 'html'
+            },
+            init: function(transform) {
+            },
+            resolve: function(path) {
+                return path
+            },
+            render: function(contents, meta, transform) {
                 return contents
-            }
-            function post(meta, service) {
-            }
-        `
+            },
+            pre: function(transform) {
+            },
+            post: function(transform) {
+            },
+        } ]
     } ]
 })</code>
 
-            <p>The plugin calls <em>Expansive.load</em> and provides a <em>transforms</em> array of one or more
-            service definitions. Each service is a hash of properties that contains a <em>name</em> and 
-            <em>mappings</em> that defines the file types for which the service applies. The <em>script</em> 
-            property defines <em>transform</em> and <em>post</em> processing functions to perform 
-            rendering of content. </p>
+            <p>The plugin calls <em>Expansive.load</em> and provides a <em>services</em> array of one or more service definitions. Each service is a hash of properties that contains a <em>name</em> and a set of transforms. The transforms applied to specific content <em>mappings</em> that defines the file types for which the transform applies.</p>
+            <p>Transforms can provide a set of callback functions that will be invoked by the Expansive transformation pipeline as required. A transform may provide a <em>name</em> property that is appended to the service name to create a unique transform name. If omitted, the name of the service is used for the transformation name.</p>
 
             <h2>Expansive Pipeline</h2>
-            <p>The Expansive pipeline calls plugin services to transform files from one format to another. It 
-            does this by calling the <em>transform</em> service function giving it the current file contents, meta 
-            data and service property definitions. The order of transformations is determined by the content filename 
-            extensions. For example, consider the file:</p>
+            <p>The Expansive pipeline calls plugin services to transform files from one format to another. It does this by calling a transform <em>render</em> function and providing it with the current file contents, meta data and service configuration. The order of transformations is determined by the content filename extensions. For example, consider the file:</p>
 
             <code class="inverted">index.html.md.exp</code>
             <p>This file uses embedded Javascript (<em>exp</em>) that is run to generate a Markdown file 
@@ -61,11 +67,11 @@
                 <li>md &rarr; html</li>
             </ul>
 
-            <p>The pipeline performs these transformations by invoking the plugin services that have the 
+            <p>The pipeline performs these transformations by invoking the plugin service transforms have the 
                 requisite mappings:</p>
             <ul>
-                <li>compile-exp</li>
-                <li>compile-markdown-html</li>
+                <li>exp</li>
+                <li>markdown</li>
             </ul>
 
             <h3>Null Transforms</h3>
@@ -93,31 +99,37 @@ mappings: {
     'html'
 }</code>
 
-            <h2>Transform Function</h2>
-            <p>The <em>transform</em> function is invoked to transform the file contents. It is passed three arguments:</p>
+            <h2>Init Function</h2>
+            <p>A service may define an <em>init</em> function to be invoked before processing commences. A transform may also define an init function for a similar purpose.</p>
+
+            <h2>Resolve Function</h2>
+            <p>Some transformations may need to alter the destination filename. For example, a Javascript minifier may change the output filename by using a <em>.min.js</em> extension. The resolve function is invoked to determine the final destination filename for the contents. The filename may be prefixed with a "|" (pipe) character to signifiy that this is the end of the pipeline processing and not more analysis of the filename extensions should take place. Returning null signifies that this content is not required.</p>
+
+            <h2>Render Function</h2>
+            <p>The <em>render</em> function is invoked to transform the file contents. It is passed three arguments:</p>
             <ul>
                 <li>contents &mdash; The current file contents as an in-memory string.</li>
                 <li>meta &mdash; Meta data properties for the file.</li>
-                <li>service &mdash; The service data object containing the service properties.</li>
+                <li>transform &mdash; The transform data object containing a reference to the service configuration.</li>
             </ul>
-            <p>The transform function should process and return the new contents. The service can instruct the pipeline
+            <p>The render function should process and return the new contents. The transform can instruct the pipeline
             to delete the file by returning null.</p>
 
             <h2>Pre Function</h2>
-            <p>If a service defines a <em>pre</em> function, it will be invoked before all pipeline processing. 
+            <p>If a transform defines a <em>pre</em> function, it will be invoked before all pipeline processing. 
             This "pre-processor" is useful to configure the environment or dynamically create pages.
             It is passed two arguments:</p>
             <ul>
                 <li>meta &mdash; Meta data properties for the file.</li>
-                <li>service &mdash; The service data object containing the service properties.</li>
+                <li>transform &mdash; The transform data object containing the service configuration.</li>
             </ul>
 
             <h2>Post Function</h2>
-            <p>If a service defines a <em>post</em> function, it will be invoked after all pipeline processing to 
+            <p>If a transform defines a <em>post</em> function, it will be invoked after all pipeline processing to 
             perform "post" processing. It is passed two arguments:</p>
             <ul>
                 <li>meta &mdash; Meta data properties for the file.</li>
-                <li>service &mdash; The service data object containing the service properties.</li>
+                <li>transform &mdash; The transform data object containing the service properties.</li>
             </ul>
 
             <h2>Using Meta Data</h2>
@@ -130,16 +142,19 @@ mappings: {
                 </thead>
                 <tbody>
                     <tr><td>source</td><td>Current source file being processed. Relative path including 
-                        <em>contents</em>, <em>lib</em>, <em>layouts</em> or <em>partials</em> directory prefix.
+                        <em>contents</em>, <em>layouts</em> or <em>partials</em> directory prefix.
                         For example: <em>contents/sub/index.html</em>.</td></tr>
+                    <tr><td>sourcePath</td><td>Current source file being processed. Relative path excluding 
+                        <em>contents</em>, <em>layouts</em> or <em>partials</em> directory prefix.
+                        For example: <em>sub/index.html</em>.</td></tr>
                     <tr><td>dest</td><td>Destination filename being created. Relative path including 
                         <em>dist</em>. For example: <em>dist/sub/index.html</em>.</td></tr>
+                    <tr><td>destPath</td><td>Destination filename being created. Relative path excluding 
+                        <em>dist</em>. For example: <em>sub/index.html</em>.</td></tr>
                     <tr><td>base</td><td>Source file without <em>contents</em> or <em>lib</em>. For example: 
                         <em>sub/index.html</em>.</td></tr>
                     <tr><td>document</td><td>Source of the document being processed. For partials or layouts, it is 
                         set to the invoking document. For example: <em>sub/index.html</em>.</td></tr>
-                    <tr><td>path</td><td>Destination without <em>dist</em>. Note: may have different extensions to 
-                        base. For example: <em>sub/index.html</em>.</td></tr>
                     <tr><td>url</td><td>Url reference made from <em>path</em>. For example: 
                         <em>sub/index.html</em>.</td></tr>
                     <tr><td>top</td><td>Relative URL to application home page. For example: <em>../</em>.</td></tr>
@@ -174,9 +189,8 @@ mappings: {
             overridden by user configuration in the top level expansive.json. 
             A service may define any custom property in the service transform definition. For example:</p>
             <code class="inverted">Expansive.load({ 
-    transforms: {
+    services: {
         name: 'minify-html',
-        mappings: 'html'
         options:  '--remove-comments'
         ...
     }
@@ -198,33 +212,34 @@ mappings: {
             implements the <em>shell</em> service and will handle files with a <em>.bash</em> and <em>.sh</em>
             extension.</p>
             <code class="inverted">Expansive.load({
-    transforms: {
+    services: {
         name: 'shell',
-        mappings: {
-            'bash',
-            'sh'
-        },
-        script: `
-            function transform(contents, meta, service)
-                run(file.extension, contents)
-        `
+        transforms: {
+            mappings: {
+                'bash',
+                'sh'
+            },
+            render: function(contents, meta, transform) {
+                return run(file.extension, contents)
+            }
+        }
     }
 })</code>
             <p>Here is a sample plugin that implements the <em>compress</em> service to post-process
             files using <em>gzip</em>.</p>
 
             <code class="inverted">Expansive.load({
-    transforms: {
+    services: {
         name:   'compress',
         <b>files:  [ '**.html', '**.css', '**.js' ]</b>,
-        script: `
-            function post(meta, service) {
+        transforms: {
+            post: function(transform) {
                 let gzip = Cmd.locate('gzip')
                 if (!gzip) {
                     trace('Warn', 'Cannot find gzip')
                     return
                 }
-                for each (file in directories.dist.files(<b>service.files</b>, {directories: false})) {
+                for each (file in directories.dist.files(<b>transform.service.files</b>, {directories: false})) {
                     file.joinExt('gz', true).remove()
                     Cmd.run('gzip ' + file, {filter: true})
                 }
@@ -292,7 +307,7 @@ mappings: {
                 <li><a href="http://github.com/embedthis/exp-gzip">exp-gzip</a> &mdash; File compression.</li>
                 <li><a href="http://github.com/embedthis/exp-js">exp-js</a> &mdash; JS file management.</li>
                 <li><a href="http://github.com/embedthis/exp-less">exp-less</a> &mdash; Less stylesheet processing.</li>
-                <li><a href="http://github.com/embedthis/exp-md">exp-md</a> &mdash; Markdown file processing.</li>
+                <li><a href="http://github.com/embedthis/exp-markdown">exp-markdown</a> &mdash; Markdown file processing.</li>
                 <li><a href="http://github.com/embedthis/exp-sass">exp-sass</a> &mdash; Sass stylesheet processing.</li>
                 <li><a href="http://github.com/embedthis/exp-shell">exp-shell</a> &mdash; Shell script processing.</li>
             </ul>

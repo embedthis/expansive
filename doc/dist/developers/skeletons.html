@@ -1,1 +1,346 @@
-<!DOCTYPE html><html lang="en"><head><title>Creating Skeletons</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="description" content="Creating Skeletons"><link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700' rel='stylesheet' type='text/css'><link href='https://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'><link href="../images/favicon.ico" rel="shortcut icon"><link href="../lib/semantic-ui/semantic.min.css" rel="stylesheet" type="text/css"><link href="../css/all.min.css" rel="stylesheet" type="text/css"><link href="../css/api.min.css" rel="stylesheet" type="text/css"><body class="show-sidebar"><div class="sidebar"><div class="ui large left vertical inverted labeled menu"><div class="item"><a href="../index.html" class="logo">Expansive<br>Docs</a></div><div class="item"><div class="menu"><a class="header item" href="../index.html">Home</a> <a class="item" href="../users/features.html">Expansive Features</a> <a class="item" href="https://embedthis.com/expansive/download.html">Download</a> <a class="item" href="../licensing/index.html">Licensing</a></div></div><div class="item"><div class="menu"><a class="header item" href="../start/index.html">Getting Started</a> <a class="item" href="../start/quick.html">Quick Start</a> <a class="item" href="../start/installing.html">Installing Expansive</a> <a class="item" href="../start/releaseNotes.html">Release Notes</a> <a class="item" href="../start/source.html">Building from Source</a></div></div><div class="item"><a href="../users/index.html"><b>User's Guide</b></a><div class="menu"><a class="item" href="../users/tour.html">Quick Tour</a> <a class="item" href="../users/commands.html">Commands</a> <a class="item" href="../users/files.html">Files and Directories</a> <a class="item" href="../users/packages.html">Packages</a> <a class="item" href="../users/skeletons.html">Skeletons</a> <a class="item" href="../users/plugins.html">Plugins</a> <a class="item" href="../users/meta.html">Meta Data</a> <a class="item" href="../users/partials.html">Partials</a> <a class="item" href="../users/layouts.html">Layouts</a> <a class="item" href="../users/assets.html">Assets and Raw Files</a> <a class="item" href="../users/stylescripts.html">Scripts and Stylesheets</a> <a class="item" href="../users/collections.html">Collections</a> <a class="item" href="../users/scripting.html">Scripting</a> <a class="item" href="../users/rendering.html">Rendering</a> <a class="item" href="../users/serving.html">Serving Content</a> <a class="item" href="../users/deploying.html">Deploying a Site</a> <a class="item" href="../users/configuration.html">Configuration</a> <a class="item" href="../users/sitemaps.html">Sitemaps</a> <a class="item" href="../users/troubleshoot.html">Troubleshooting</a></div></div><div class="item"><a href="../developers/index.html">Developer's Guide</a><div class="menu"><a class="item" href="../developers/plugins.html">Creating Plugins</a> <a class="item" href="../developers/skeletons.html">Creating Skeletons</a> <a class="item" href="../man/expansive.txt">Manual Page</a></div></div><div class="item"><a href="../developers/project.html">Project Resources</a><div class="menu"><a class="item" href="http://goo.gl/ynBrjA">Official Expansive News</a> <a class="item" href="https://embedthis.com/expansive/">Expansive Web Site</a> <a class="item" href="https://github.com/embedthis/exp">Source Code Repository</a> <a class="item" href="https://github.com/embedthis/exp/issues">Project Issue Database</a> <a class="item" href="https://github.com/embedthis/exp/releases">Change Log</a> <a class="item" href="https://github.com/embedthis/exp/milestones">Roadmap</a> <a class="item" href="https://embedthis.com/developers/contributors.html">Contributors Agreement</a></div></div><div class="item"><b>Links</b><div class="menu"><a class="item" href="https://embedthis.com/">Embedthis Web Site</a> <a class="item" href="https://embedthis.com/blog/">Embedthis Blog</a> <a class="item" href="http://twitter.com/mobstream">Twitter</a></div></div></div></div><div class="ui inverted masthead"><div class="ui fixed inverted menu"><div class="ui sidebar-launch button"><i class="icon list layout"></i></div><div class="right menu"><a class="item" href="https://embedthis.com/">Embedthis</a> <a class="item" href="https://embedthis.com/expansive/">Expansive Site</a> <span class="desktop-only"><a class="item" href="http://goo.gl/dGRDl4">Expansive News</a> <a class="item" href="https://github.com/embedthis/expansive">Repository</a> <a class="item" href="https://embedthis.com/blog/">Blog</a> <a class="item" href="https://twitter.com/mobstream">Twitter</a></span></div></div><div class="ui breadcrumb"><a class="section" href="../">Home</a><div class="divider">/</div><a class="section" href="index.html">Developer's Guide</a><div class="divider">/</div><a class="active section" href="skeletons.html">Creating Skeletons</a></div><iframe class="version desktop-only" src="../version.html"></iframe></div><div class="content"><h1>Creating Skeletons</h1><p>Expansive skeletons are integrated packages that provide starting points for web sites or web applications for specific environments. Skeletons often include starter web pages, layouts, partial pages, stylesheets, scripts and other required packages &mdash; everything a user needs to start using a given environment. For example: the <em>exp-semantic-skeleton</em> is an ideal starter when creating a web site using the <a href="http://semantic-ui.com/">Semantic-UI</a> client library.</p><h2>Packaged for Delivery</h2><p>Skeletons are packaged as a single <a href="http://embedthis.com/pak/">Pak</a> package and are installed by a simple <em>pak install</em> command. However skeletons may depend on other packages, plugins or skeletons. This flexibility of Expansive skeletons is provided by the <a href="http://embedthis.com/pak/">Pak</a> package manager and its ability reference and manage dependent packages. Please read the following as background to understand the capabilities of <a href="http://embedthis.com/pak/">Pak</a> and packages.</p><ul><li><a href="http://embedthis.com/pak/doc/developers/creating.html">Creating Packages</a>, and</li><li><a href="http://embedthis.com/pak/doc/developers/publishing.html">Publishing Packages</a></li></ul><p>Note that skeletons are used to start web sites or applications instead of the user running <em>expansive init</em>. Skeletons are not installed into existing web sites or applications.</p><h2>Initializing a Skeleton</h2><p>To get started building a skeleton, create a directory with the same name as the name of your skeleton. By convention, the name should use a <em>-skeleton</em> suffix. Then run <em>expansive init</em> in that directory. For example:</p><code class="inverted">$ mkdir my-bootstrap-skeleton $ cd my-bootstrap-skeleton $ expansive init</code><p>This will create the following files and directories:</p><code class="inverted">expansive.json package.json ./ contents/ dist/ layouts/ partials/</code><h2>Package Dependencies</h2><p>A skeleton may provide everything itself, or it may build upon other skeletons or packages. These other packages are called dependencies. A skeleton can specify all its required dependencies so that when users install the skeleton with <em>pak install</em>, Pak will automatically download and install all dependent packages.</p><p>A skeleton specifies dependent packages in the <em>dependencies</em> property of its <em>package.json</em> file. In this example, we'll specify the <a href="http://getbootstrap.com">Bootstrap</a> client library as a dependency. Bootstrap in-turn, depends on <a href="http://jquery.com">jQuery</a>, so we don't need to explicitly specify jQuery as a dependency. In fact, it is better that we do not, so that Bootstrap can control the version of jQuery it requires. For example:</p><code class="inverted">"dependencies": { "bootstrap": "^3.3" }</code><p>The bootstrap dependency version is a <a href="http://semver.org/">SemVer</a> compliant version expression that defines what versions of Bootstrap are acceptable for our skeleton. The leading <em>^</em> prefix indicates that public releases that are compatible with Bootstrap <em>3.3</em> are acceptable. See the <a href="http://embedthis.com/pak/doc/users/versions.html">Pak Versions</a> documentation for more information. In general, try to specify the most liberal version criteria, while still ensuring compatibility and correct operation of your skeleton, should new versions of dependencies be released. i.e. You don't want the skeleton to break because Bootstrap 4.0 is released and it introduces breaking changes.</p><h2>Skeleton Files</h2><p>The skeleton can provide layouts, partial pages, content pages, scripts, stylesheets, assets and fonts. Use the appropriate directories:</p><ul><li><em>layouts</em> &mdash; for layout pages</li><li><em>partials</em> &mdash; for partial pages</li><li><em>contents</em> &mdash; for content web pages</li><li><em>scripts</em> &mdash; for content web pages</li></ul><p>The <em>lib</em> directory should be reserved for Paks to export their libraries and you should not distribute skeleton content in the lib directory. There is no firm rule regarding where to put scripts or stylesheet, but many packages put stylesheets under <em>contents/css</em> and scripts under <em>contents/js</em>. Similarly for fonts, images and other assets.</p><h2>Skeleton Configuration</h2><p>The skeleton should supply the default <em>expansive.json</em> for the user's web site and it should provide appropriate configuration for all the Expansive services used by the skeleton. Where possible, the skeleton should configure a <em>debug</em> and <em>release</em> configurations. For example, the <em>esp-angular-skeleton</em> provides the following default configuration.</p><code class="inverted">{ debug: { services: { "ng-compile-html": false, "ng-package": false } }, release: { services: { "minify-js": { "usemap": false }, "minify-css": { "minify": true }, "ng-compile-js": { "files": [ "contents/**.js", "lib/esp*/**.js", "lib/angular*/**.js" ] }, "ng-package": true } } }</code><h2>Blending Package.json</h2><p>When Pak installs a skeleton, it will first install the dependent packages. As such, subsequent packages and the skeleton itself may need to blend configuration from its own package.json into the web site package.json. Pak provides three facilities to assist blending package configuration.</p><ul><li>pak.blend &mdash; to blend properties into another package.json.</li><li>pak.manage &mdash; to blend other JSON files.</li><li>pak.export &mdash; to export files from the package to another location.</li></ul><h3>pak.blend</h3><p>Blending is a process of merging a package's JSON properties into the application. The <em>pak.blend</em> property specifies a collection of properties that are to be blended into the top level of the web site's package.json. For example:</p><code class="inverted">"pak": { "blend": { "pak": { "theme": "sunny", "?mode": "debug", "?import": true, } } }</code><p>This will blend all the properties under, and including "pak" into the top level of the package.json. A question <em>?</em> prefix may be used to signify that the property should be blended only if it does not already exist. See <a href="http://embedthis.com/pak/doc/developers/creating.html#blending">Blending Properties</a> in the Pak documentation for more details about blending.</p><h3>pak.manage</h3><p>The pak.manage property can list an array of file to blend. For example:</p><code class="inverted">"pak": { "manage": [ "expansive.json", "esp.json" ] }</code><p>This instructs Pak to also blend the properties in the <em>expansive.json</em> and <em>esp.json</em> files. If the files do not exist, they will be created.</p><h3>pak.export</h3><p>During installation, files may be exported from the <em>paks</em> directory into the <em>lib</em> directory. This can be useful to select a subset of package files that must be deployed with the application. For example, a package or skeleton may export library scripts that are needed at runtime into the <em>lib</em> directory.</p><p>See <a href="http://embedthis.com/pak/doc/developers/creating.html#exporting">Exporting Runtime Files</a> in the Pak documentation for more details about exporting.</p><h2>Publishing Skeletons</h2><p>To publish a skeleton first commit to <a href="http://github.com/">GitHub</a> or a similar Git repository. Then tag a release with the version of the release. After this, the package can be installed using Pak via:</p><code class="inverted">pak install account/repository</code><h3>Register in the Pak Catalog</h3><p>You may optionally register your skeleton in the Pak catalog, thereafter you can install the skeleton by your chosen skeleton name. For example:</p><code class="inverted">pak install my-bootstrap-skeleton</code><p>See <a href="http://embedthis.com:8080/pak/doc/developers/publishing.html">Publishing Packages</a> for more information about publishing in the Pak catalog.</p><h2>Sample Skeletons</h2><ul><li><a href="https://github.com/embedthis/exp-html-skeleton">exp-html-skeleton</a> &mdash; Expansive HTML5 Skeleton</li><li><a href="https://github.com/embedthis/exp-bootstrap-skeleton">exp-bootstrap-skeleton</a> &mdash; Expansive <a href="http://getbootstrap.com/">Bootstrap</a> Skeleton</li><li><a href="https://github.com/embedthis/exp-semantic-skeleton">exp-semantic-skeleton</a> &mdash; Expansive <a href="http://semantic-ui.com/">Semantic-UI</a> Skeleton</li><li><a href="https://github.com/embedthis/esp-angular-skeleton">esp-angular-skeleton</a> &mdash; ESP <a href="http://angularjs.org/">AngularJS</a> Skeleton</li><li><a href="https://github.com/embedthis/esp-html-skeleton">esp-html-skeleton</a> &mdash; ESP HTML5 Skeleton</li></ul></div><div class="terms ui basic center aligned segment"><p>&copy; Embedthis Software, 2003-2015. All rights reserved.</p></div><script src="../lib/jquery/jquery.min.js"></script><script src="../lib/semantic-ui/semantic.min.js"></script><script src="../scripts/sidebar.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Creating Skeletons</title>
+    <!-- Copyright Embedthis Software. All Rights Reserved. -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="Creating Skeletons" />
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700'
+        rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
+    
+    <link href="../images/favicon.ico" rel="shortcut icon" />
+    <link href="../lib/semantic-ui/semantic.css" rel="stylesheet" type="text/css" />
+    <link href="../css/all.css" rel="stylesheet" type="text/css" />
+    <link href="../css/api.css" rel="stylesheet" type="text/css" />
+    
+
+</head>
+<body class="show-sidebar">
+         <div class="sidebar">
+        <div class="ui large left vertical inverted labeled menu">
+            <div class="item">
+                <a href="../index.html" class="logo">Expansive<br/>Docs</a>
+            </div>
+            <div class="item">
+                <div class="menu">
+                    <a class="header item" href="../index.html">Home</a>
+                    <a class="item" href="../users/features.html">Expansive Features</a>
+                    <a class="item" href="https://embedthis.com/expansive/download.html">Download</a>
+                    <a class="item" href="../licensing/index.html">Licensing</a>
+                </div>
+            </div>
+            <div class="item">
+                <div class="menu">
+                    <a class="header item" href="../start/index.html">Getting Started</a>
+                    <a class="item" href="../start/quick.html">Quick Start</a>
+                    <a class="item" href="../start/installing.html">Installing Expansive</a>
+                    <a class="item" href="../start/releaseNotes.html">Release Notes</a>
+                    <a class="item" href="../start/source.html">Building from Source</a>
+                </div>
+            </div>
+
+
+            <div class="item">
+                <a href="../users/index.html"><b>User's Guide</b></a>
+                <div class="menu">
+                    <a class="item" href="../users/tour.html">Quick Tour</a>
+                    <a class="item" href="../users/commands.html">Commands</a>
+                    <a class="item" href="../users/files.html">Files and Directories</a>
+
+                    <a class="item" href="../users/packages.html">Packages</a>
+                    <a class="item" href="../users/skeletons.html">Skeletons</a>
+                    <a class="item" href="../users/plugins.html">Plugins</a>
+
+                    <a class="item" href="../users/meta.html">Meta Data</a>
+                    <a class="item" href="../users/partials.html">Partials</a>
+                    <a class="item" href="../users/layouts.html">Layouts</a>
+                    <a class="item" href="../users/assets.html">Assets and Raw Files</a>
+
+                    <a class="item" href="../users/stylescripts.html">Scripts and Stylesheets</a>
+                    <a class="item" href="../users/collections.html">Collections</a>
+                    <a class="item" href="../users/scripting.html">Scripting</a>
+
+                    <a class="item" href="../users/rendering.html">Rendering</a>
+
+                    <a class="item" href="../users/serving.html">Serving Content</a>
+                    <a class="item" href="../users/deploying.html">Deploying a Site</a>
+                    <a class="item" href="../users/configuration.html">Configuration</a>
+
+                    <!-- query engine -->
+                    <a class="item" href="../users/sitemaps.html">Sitemaps</a>
+                    <a class="item" href="../users/troubleshoot.html">Troubleshooting</a>
+                </div>
+            </div>
+            <div class="item">
+                <a href="../developers/index.html">Developer's Guide</a>
+                <div class="menu">
+                    <a class="item" href="../developers/plugins.html">Creating Plugins</a>
+                    <a class="item" href="../developers/skeletons.html">Creating Skeletons</a>
+                    <a class="item" href="../man/expansive.txt">Manual Page</a>
+                </div>
+            </div>
+            <div class="item">
+                <a href="../developers/project.html">Project Resources</a>
+                <div class="menu">
+                    <!-- MOB -->
+                    <a class="item" href="http://goo.gl/ynBrjA">Official Expansive News</a>
+                    <a class="item" href="https://embedthis.com/expansive/">Expansive Web Site</a>
+                    <a class="item" href="https://github.com/embedthis/exp">Source Code Repository</a>
+                    <a class="item" href="https://github.com/embedthis/exp/issues">Project Issue Database</a>
+                    <a class="item" href="https://github.com/embedthis/exp/releases">Change Log</a>
+                    <a class="item" href="https://github.com/embedthis/exp/milestones">Roadmap</a>
+                    <a class="item" href="https://embedthis.com/developers/contributors.html">Contributors Agreement</a>
+                </div>
+            </div>
+            <div class="item">
+                <b>Links</b>
+                <div class="menu">
+                    <a class="item" href="https://embedthis.com/">Embedthis Web Site</a>
+                    <a class="item" href="https://embedthis.com/expansive/">Expansive Web Site</a>
+                    <a class="item" href="https://embedthis.com/blog/">Embedthis Blog</a>
+                    <a class="item" href="http://twitter.com/mobstream">Twitter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+
+    <div class="ui inverted masthead">
+         
+        <div class="ui fixed inverted menu">
+            <div class="ui sidebar-launch button">
+                <i class="icon list layout"></i>
+            </div>
+            <div class="right menu">
+                  
+                    <a class="item" href="https://embedthis.com/">Embedthis</a>
+                    <a class="item" href="https://embedthis.com/expansive/">Expansive Site</a>
+                    <span class="desktop-only">
+                        <a class="item" href="http://goo.gl/dGRDl4">Expansive News</a>
+                        <a class="item" href="https://github.com/embedthis/expansive">Repository</a>
+                        <a class="item" href="https://embedthis.com/blog/">Blog</a>
+                        <a class="item" href="https://twitter.com/mobstream">Twitter</a>
+                    </span>
+
+            </div>
+        </div>
+        
+        <div class="ui breadcrumb">
+            <a class="section" href="../">Home</a>
+            
+            <div class="divider">/</div>
+            <a class="section" href="index.html">
+                Developer's Guide
+            </a>
+            
+            
+            <div class="divider">/</div>
+            <a class="active section" href="skeletons.html">Creating Skeletons</a>
+            
+        </div>
+        
+        <iframe class="version desktop-only" src="../version.html"></iframe>
+
+    </div>
+    <div class="content">
+
+            <h1>Creating Skeletons</h1>
+
+            <p>Expansive skeletons are integrated packages that provide starting points for web sites or web 
+            applications for specific environments. Skeletons often include starter web pages, layouts, partial 
+            pages, stylesheets, scripts and other required packages &mdash; everything a user needs to start 
+            using a given environment. For example: the <em>exp-semantic-skeleton</em> is an ideal starter when
+            creating a web site using the <a href="http://semantic-ui.com/">Semantic-UI</a> client library.</p>
+
+            <h2>Packaged for Delivery</h2>
+            <p>Skeletons are packaged as a single <a href="http://embedthis.com/pak/">Pak</a> package and are
+            installed by a simple <em>pak install</em> command. However skeletons may depend on other packages, 
+            plugins or skeletons. This flexibility of Expansive skeletons is provided by the 
+            <a href="http://embedthis.com/pak/">Pak</a> package manager and its ability reference and manage 
+            dependent packages. Please read the following as background to understand the capabilities of 
+            <a href="http://embedthis.com/pak/">Pak</a> and packages.</p>
+            <ul>
+                <li><a href="http://embedthis.com/pak/doc/developers/creating.html">Creating Packages</a>, and</li>
+                <li><a href="http://embedthis.com/pak/doc/developers/publishing.html">Publishing Packages</a></li>
+            </ul>
+
+            <p>Note that skeletons are used to start web sites or applications instead of the user running 
+            <em>expansive init</em>. Skeletons are not installed into existing web sites or applications. </p>
+
+            <h2>Initializing a Skeleton</h2>
+
+            <p>To get started building a skeleton, create a directory with the same name as the name of your skeleton. 
+            By convention, the name should use a <em>-skeleton</em> suffix. Then run <em>expansive init</em> 
+            in that directory. For example:</p>
+            <code class="inverted">$ mkdir my-bootstrap-skeleton
+$ cd my-bootstrap-skeleton
+$ expansive init
+</code>
+            <p>This will create the following files and directories:</p>
+            <code class="inverted">expansive.json
+package.json
+
+./
+    contents/
+    dist/
+    layouts/
+    partials/</code>
+
+            <h2>Package Dependencies</h2>
+            <p>A skeleton may provide everything itself, or it may build upon other skeletons or packages. These
+            other packages are called dependencies. A skeleton can specify all its required dependencies so that when 
+            users install the skeleton with <em>pak install</em>, Pak will automatically download and install all 
+            dependent packages.</p>
+
+            <p>A skeleton specifies dependent packages in the <em>dependencies</em> property of its <em>package.json</em>
+            file. In this example, we'll specify the <a href="http://getbootstrap.com">Bootstrap</a> client library
+            as a dependency. Bootstrap in-turn, depends on <a href="http://jquery.com">jQuery</a>, so we don't need
+            to explicitly specify jQuery as a dependency. In fact, it is better that we do not, so that Bootstrap 
+            can control the version of jQuery it requires. For example:</p>
+            <code class="inverted">"dependencies": {
+    "bootstrap": "^3.3"
+}</code>
+            <p>The bootstrap dependency version is a <a href="http://semver.org/">SemVer</a> compliant version expression
+            that defines what versions of Bootstrap are acceptable for our skeleton. The leading <em>^</em> 
+            prefix indicates that public releases that are compatible with Bootstrap <em>3.3</em> are acceptable. See the 
+            <a href="http://embedthis.com/pak/doc/users/versions.html">Pak Versions</a> documentation for 
+            more information. In general, try to specify the most liberal version criteria, while still ensuring
+            compatibility and correct operation of your skeleton, should new versions of dependencies be released. i.e.
+            You don't want the skeleton to break because Bootstrap 4.0 is released and it introduces breaking changes.</p>
+
+            <h2>Skeleton Files</h2>
+            <p>The skeleton can provide layouts, partial pages, content pages, scripts, stylesheets, assets and fonts.
+            Use the appropriate directories:</p>
+            <ul>
+                <li><em>layouts</em> &mdash; for layout pages</li>
+                <li><em>partials</em> &mdash; for partial pages</li>
+                <li><em>contents</em> &mdash; for content web pages</li>
+                <li><em>scripts</em> &mdash; for content web pages</li>
+            </ul>
+            <p>The <em>contents/lib</em> directory should be reserved for Paks to export their libraries and you should not distribute skeleton content in the lib directory. There is no firm rule regarding where to put scripts or stylesheet, but many packages put stylesheets under <em>contents/css</em> and scripts under <em>contents/script</em>.</p>
+
+            <h2>Skeleton Configuration</h2>
+            <p>The skeleton should supply the default <em>expansive.json</em> for the user's web site and it should provide appropriate configuration for all the Expansive services used by the skeleton. Where possible, the skeleton should configure a <em>debug</em> and <em>release</em> configurations. For example, the <em>esp-angular-skeleton</em> provides the following default configuration.</p>
+
+            <code class="inverted">{
+    debug: {
+        services: {
+            "angular": false,
+        }
+    },
+    release: {
+        services: {
+            "js": {
+                "usemap": false
+            },
+            "css": {
+                "minify": true
+            },
+            "angular": {
+                "package": true,
+                "scripts": [
+                    "**.js",
+                    "lib/angular*/**.js",
+                    "lib/esp*/**.js"
+                ]
+            }
+        }
+    }
+}</code>
+            <h2>Blending Package.json</h2>
+            <p>When Pak installs a skeleton, it will first install the dependent packages. As such,
+            subsequent packages and the skeleton itself may need to blend configuration from its own package.json
+            into the web site package.json. Pak provides three facilities to assist blending package configuration.</p>
+            <ul>
+                <li>pak.blend &mdash; to blend properties into another package.json.</li>
+                <li>pak.manage &mdash; to blend other JSON files.</li>
+                <li>pak.export &mdash; to export files from the package to another location.</li>
+            </ul>
+
+            <h3>pak.blend</h3>
+            <p>Blending is a process of merging a package's JSON properties into the application. 
+            The <em>pak.blend</em> property specifies a collection of properties that are to be blended into the 
+            top level of the web site's package.json. For example:</p>
+            <code class="inverted">"pak": {
+    "blend": {
+        "pak": {
+            "theme": "sunny",
+            "?mode": "debug",
+            "?import": true,
+        }
+    }
+}</code>
+            <p>This will blend all the properties under, and including "pak" into the top level of the package.json.
+            A question <em>?</em> prefix may be used to signify that the property should be blended only if it does
+            not already exist. See <a href="http://embedthis.com/pak/doc/developers/creating.html#blending">Blending
+            Properties</a> in the Pak documentation for more details about blending.</p>
+
+
+            <h3>pak.manage</h3>
+            <p>The pak.manage property can list an array of file to blend. For example:</p>
+            <code class="inverted">"pak": {
+    "manage": [
+        "expansive.json",
+        "esp.json"
+    ] 
+}</code>
+            <p>This instructs Pak to also blend the properties in the <em>expansive.json</em> and <em>esp.json</em>
+            files. If the files do not exist, they will be created.</p>
+
+
+            <h3>pak.export</h3>
+            <p>During installation, files may be exported from the <em>paks</em> directory into the <em>lib</em>
+            directory. This can be useful to select a subset of package files that must be deployed with the application.
+            For example, a package or skeleton may export library scripts that are needed at runtime into the <em>lib</em>
+            directory.</p>
+            <p>See <a href="http://embedthis.com/pak/doc/developers/creating.html#exporting">Exporting Runtime Files</a>
+            in the Pak documentation for more details about exporting.</p>
+
+            <h2>Publishing Skeletons</h2>
+            <p>To publish a skeleton first commit to <a href="http://github.com/">GitHub</a> or a similar Git repository.
+            Then tag a release with the version of the release. After this, the package can be installed using Pak via:</p>
+            <code class="inverted">pak install account/repository</code>
+
+            <h3>Register in the Pak Catalog</h3>
+            <p>You may optionally register your skeleton in the Pak catalog, thereafter you can install the skeleton by
+            your chosen skeleton name. For example:</p>
+            <code class="inverted">pak install my-bootstrap-skeleton</code>
+
+            <p>See <a href="http://embedthis.com:8080/pak/doc/developers/publishing.html">Publishing Packages</a> 
+            for more information about publishing in the Pak catalog.</p>
+
+            <h2>Sample Skeletons</h2>
+            <ul>
+                <li><a href="https://github.com/embedthis/exp-html-skeleton">exp-html-skeleton</a> &mdash; 
+                    Expansive HTML5 Skeleton</li>
+                <li><a href="https://github.com/embedthis/exp-bootstrap-skeleton">exp-bootstrap-skeleton</a> &mdash; 
+                    Expansive <a href="http://getbootstrap.com/">Bootstrap</a> Skeleton</li>
+                <li><a href="https://github.com/embedthis/exp-semantic-skeleton">exp-semantic-skeleton</a> &mdash; 
+                    Expansive <a href="http://semantic-ui.com/">Semantic-UI</a> Skeleton</li>
+                <li><a href="https://github.com/embedthis/esp-angular-skeleton">esp-angular-skeleton</a> &mdash; 
+                    <a href="https://embedthis.com/esp/">ESP</a> <a href="http://angularjs.org/">AngularJS</a> Skeleton</li>
+                <li><a href="https://github.com/embedthis/esp-html-skeleton">esp-html-skeleton</a> &mdash; 
+                    <a href="https://embedthis.com/esp/">ESP</a> HTML5 Skeleton</li>
+            </ul>
+
+    </div>
+    <div class="terms ui basic center aligned segment">
+        <p>&copy; Embedthis Software, 2003-2015. All rights reserved.</p>
+    </div>
+
+        
+
+    <script src="../lib/jquery/jquery.min.js"></script>
+    <script src="../lib/semantic-ui/semantic.js"></script>
+    <script src="../scripts/sidebar.js"></script>
+    <script src="../scripts/reload.js"></script>
+     
+
+</body>
+</html>

@@ -13,7 +13,7 @@
         <@ content @>
     </div>
     <@ partial('terms') @>
-    <@ partial('scripts') @>
     <@ partial('reload') @>
+    <@ partial('scripts') @>
 </body>
 </html>

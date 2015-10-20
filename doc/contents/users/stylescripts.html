@@ -18,22 +18,23 @@
         <em><a href="https://github.com/embedthis/exp-js">exp-js</a></em>.</p>
 
         <h2>exp-css</h2>
-        <p>The <em>exp-css</em> plugin manages CSS files and provides the Expansive services:</p>
+        <p>The <em>exp-css</em> plugin manages CSS files and provides the Expansive transformations:</p>
         <ul>
-            <li>prefix-css &mdash; Add browser vendor prefixes to CSS rules</li>
-            <li>render-css &mdash; Generate HTML link elements for required CSS files</li>
-            <li>minify-css &mdash; Minify CSS files to compress</li>
+            <li>prefix &mdash; Add browser vendor prefixes to CSS rules</li>
+            <li>render &mdash; Generate HTML link elements for required CSS files</li>
+            <li>minify &mdash; Minify CSS files to compress</li>
+            <li>extract &mdash; Extract inline styles to support CSP</li>
         </ul>
-        <p>The <em>prefix-css</em> service automatically adds vendor prefixes, such as <em>webkit-</em> to 
+        <p>The <em>prefix</em> service automatically adds vendor prefixes, such as <em>webkit-</em> to 
         CSS rules. In this way, you can use only the standard, portable CSS rules and prefixes will be 
-        prepended as required. The prefix-css plugin uses the <em>autoprefixer</em> tool.</p>
+        prepended as required. The prefix plugin uses the <em>autoprefixer</em> tool.</p>
 
-        <p>The <em>render-css</em> service will intelligently select raw, minified and map files as required. 
+        <p>The <em>render</em> service will intelligently select raw, minified and map files as required. 
         The default configuration is set for a debug mode where minified files will be used if a corresponding
         map file exists, otherwise the raw CSS file is used. A release mode can be selected via configuration
         properties a minified version can be selected.</p>
 
-        <p>The <em>minify-css</em> service will minify CSS files to reduce their size.</p>
+        <p>The <em>minify</em> service will minify CSS files to reduce their size.</p>
 
         <h2>Configuration Properties</h2>
         <p>The exp-css services can be enabled and configured via properties in the 
@@ -41,32 +42,21 @@
 
         <table class="ui celled table" title="exp-css">
             <thead>
-                <tr><th class="two wide column">Service</th><th>Property</th><th>Description</th></tr>
+                <tr><th>Property</th><th>Description</th></tr>
             </thead>
             <tbody>
-                <tr><td>prefix-css</td><td>enable</td><td>Enable the service.</td></tr>
-
-                <tr><td>render-css</td><td>enable</td><td>Enable the service.</td></tr>
-                <tr><td>render-css</td><td>files</td><td>Array of file patterns to process. Defaults to 
-                    <em>['**.css', '**.css.map']</em> files under <em>lib</em> and <em>contents</em> directories. 
-                    May include negated patterns beginning with <em>!</em>.</td></tr>
-                <tr><td>render-css</td><td>mappings</td><td>Set of extensions to transform for this service.
-                    Defaults to <em>{ 'css', 'min.css', 'css.map' }</em></td></tr>
-                <tr><td>render-css</td><td>usemap</td><td>Use minified stylesheet if corresponding source maps 
-                    is present. Defaults to true.</td></tr>
-                <tr><td>render-css</td><td>usemin</td><td>Use minified stylesheet if present. Defaults to null. 
-                    Set explicitly to false to disable the use of minified resources.</td></tr>
-
-                <tr><td>minify-css</td><td>enable</td><td>Enable the service</td></tr>
-                <tr><td>minify-css</td><td>files</td><td>Array of file patterns to process. Defaults to 
-                    <em>['**.css', '**.css.map']</em> files under <em>lib</em> and <em>contents</em> directories. 
-                    May include negated patterns beginning with <em>!</em>.</td></tr>
-                <tr><td>minify-css</td><td>dotmin</td><td>Use <em>.min.css</em> as the output file extension 
+                <tr><td>dotmin</td><td>Use <em>.min.css</em> as the output file extension 
                     after minification. Otherwise will be <em>.css</em>. Default to true.</td></tr>
-                <tr><td>minify-css</td><td>mappings</td><td>Set of extensions to transform for this service.
-                    Defaults to <em>{ 'css', 'min.css', 'css.map' }</em></td></tr>
-                <tr><td>minify-css</td><td>minify</td><td>Enable minifying of Javascript files. 
+                <tr><td>enable</td><td>Enable the service.</td></tr>
+                <tr><td>files</td><td>Array of file patterns to process. Defaults to 
+                    <em>['**.css', '!**.css.map', '!*.less']</em>. May include negated patterns beginning with <em>!</em>.</td></tr>
+                <tr><td>minify</td><td>Enable minifying of Javascript files. 
                     Default to false.</td></tr>
+                <tr><td>prefix</td><td>Autoprefix styles using vendor specific browser prefixes. Defaults to true.</td></tr>
+                <tr><td>usemap</td><td>Use minified stylesheet if corresponding source maps 
+                    is present. Defaults to true.</td></tr>
+                <tr><td>usemin</td><td>Use minified stylesheet if present. Defaults to null. 
+                    Set explicitly to false to disable the use of minified resources.</td></tr>
             </tbody>
         </table>
 
@@ -77,7 +67,7 @@
         <pre class="code">{
     "release": {
         "services": {
-            "minify-css": {
+            "css": {
                 "minify": true
             }
         }
@@ -89,8 +79,9 @@
         <h2>exp-js</h2>
         <p>The <em>exp-js</em> plugin managed JS script files and provides the Expansive services:</p>
         <ul>
-            <li>minify-js &mdash; Minify JS files to compress</li>
-            <li>render-js &mdash; Generate HTML link elements for required JS files</li>
+            <li>minify&mdash; Minify JS files to compress</li>
+            <li>render&mdash; Generate HTML link elements for required JS files</li>
+            <li>extract &mdash; Extract inline scripts to support CSP</li>
         </ul>
 
         <h2>Configuration Properties</h2>
@@ -99,32 +90,22 @@
 
         <table class="ui celled table" title="exp-js">
             <thead>
-                <tr><th class="two wide column">Service</th><th>Property</th><th>Description</th></tr>
+                <tr><th>Property</th><th>Description</th></tr>
             </thead>
             <tbody>
-                <tr><td>render-js</td><td>enable</td><td>Enable the service.</td></tr>
-                <tr><td>render-js</td><td>files</td><td>Array of file patterns to process. Defaults to 
-                    <em>['**.js', '**.min.map', **.min.js.map']</em> files under the
-                    <em>lib</em> and <em>contents</em> directories.  
-                    May include negated patterns beginning with <em>!</em>.</td></tr>
-                <tr><td>render-js</td><td>mappings</td><td>Set of extensions to transform for this service.
-                    Defaults to <em>{ 'js', 'min.js', 'min.map', 'min.js.map' }</em>.</td></tr>
-                <tr><td>render-js</td><td>usemap</td><td>Use minified stylesheet if corresponding source maps 
-                    is present. Defaults to true.</td></tr>
-                <tr><td>render-js</td><td>usemin</td><td>Use minified stylesheet if present. Defaults to null. 
-                    Set explicitly to false to disable the use of minified resources.</td></tr>
-
-                <tr><td>minify-js</td><td>enable</td><td>Enable the service.</td></tr>
-                <tr><td>minify-js</td><td>files</td><td>Array of file patterns to process. Defaults to 
-                    <em>['**.js', '**.min.js.map', '**.min.js.map']</em>
-                    files under <em>lib</em> and <em>contents</em> directories. 
-                    May include negated patterns beginning with <em>!</em>.</td></tr>
-                <tr><td>minify-js</td><td>dotmin</td><td>Use <em>.min.js</em> as the output file extension 
+                <tr><td>dotmin</td><td>Use <em>.min.js</em> as the output file extension 
                     after minification. Otherwise will be <em>.js</em>. Default to true.</td></tr>
-                <tr><td>minify-js</td><td>mappings</td><td>Set of extensions to transform for this service.
-                    Defaults to <em>{ 'js', 'min.js', 'min.map', 'min.js.map' }</em>.</td></tr>
-                <tr><td>minify-js</td><td>minify</td><td>Enable minifying of Javascript files. 
+                <tr><td>enable</td><td>Enable the service.</td></tr>
+                <tr><td>files</td><td>Array of file patterns to process. Defaults to 
+                    <em>['lib/**.js', '!lib/**.min.map']</em>.
+                    May include negated patterns beginning with <em>!</em>.</td></tr>
+                <tr><td>force</td><td>Always minify even if a minified version exists in contents. Default to false</td></tr>
+                <tr><td>minify</td><td>Enable minifying of Javascript files. 
                     Default to false.</td></tr>
+                <tr><td>usemap</td><td>Use minified stylesheet if corresponding source maps 
+                    is present. Defaults to true.</td></tr>
+                <tr><td>usemin</td><td>Use minified stylesheet if present. Defaults to null. 
+                    Set explicitly to false to disable the use of minified resources.</td></tr>
             </tbody>
         </table>
 
@@ -135,7 +116,7 @@
         <pre class="code">{
     "release": {
         "services": {
-            "minify-js": {
+            "js": {
                 "minify": true,
                 "usemap": false
             }

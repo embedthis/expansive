@@ -65,8 +65,8 @@
 				<tr><th>Name</th><th>Description</th></tr>
 			</thead>
 			<tbody>
-				<tr><td>lib</td><td>Installed package script code and assets.</td></tr>
 				<tr><td>paks</td><td>Installed packages &mdash; full contents.</td></tr>
+                <tr><td>contents/lib</td><td>Exported package library code and assets.</td></tr>
 			</tbody>
 		</table>
 
@@ -132,7 +132,8 @@ $ expansive mode debug</code>
         	<tr><th>Option</th><th>Description</th></tr>
         </thead>
         <tbody>
-        	<tr><td>--benchmark</td><td>Show per-plugin statistics</td></tr>
+        	<tr><td>--abort</td><td>Abort rendering on errors</td></tr>
+            <tr><td>--benchmark</td><td>Show per-plugin statistics</td></tr>
         	<tr><td>--chdir directory</td><td>Change to directory before running</td></tr>
         	<tr><td>--listen IP:PORT</td><td>Listen endpoint to serve on</td></tr>
         	<tr><td>--log path:level</td><td>Log messages to log file at verbosity level (0-5)</td></tr>

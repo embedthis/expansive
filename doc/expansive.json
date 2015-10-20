@@ -5,6 +5,18 @@
     "control": {
         "listen": "127.0.0.1:4000"
     },
+    "debug": {
+        "services": {
+            "compress": false,
+            "html": false,
+            "js": {
+                "minify": false,
+                "usemin": true,
+                "usemap": true
+            },
+            "gzip": false
+        }
+    },
     "release": {
         "services": {
             "reload": {
@@ -22,18 +34,6 @@
                 "usemap": false
             },
             "gzip": true
-        }
-    },
-    "debug": {
-        "services": {
-            "compress": false,
-            "html": false,
-            "js": {
-                "minify": false,
-                "usemin": true,
-                "usemap": true
-            },
-            "gzip": false
         }
     }
 }

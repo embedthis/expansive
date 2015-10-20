@@ -13,11 +13,11 @@
 				</thead>
 				<tbody>
 				<tr><td>contents</td><td>Source content for the web site including web pages, images and assets.</td></tr>
+                <tr><td>contents/lib</td><td>Exported package library script code and assets.</td></tr>
 				<tr><td>dist</td><td>Distribution directory where the final public documents of the web 
 	                site will be placed.</td></tr>
 				<tr><td>expansive.json</td><td>Expansive configuration file.</td></tr>
 				<tr><td>layouts</td><td>Directory for master page layouts.</td></tr>
-				<tr><td>lib</td><td>Installed package script code and assets.</td></tr>
 				<tr><td>package.json</td><td>Web site package description file.</td></tr>
 				<tr><td>paks</td><td>Installed packages &mdash; full contents.</td></tr>
 				<tr><td>partials</td><td>Directory for partial pages.</td></tr>
@@ -27,10 +27,10 @@
 			<p>The names of the directories can be mapped via the <em>directories</em> property in the package.json file.
 			For example:</p>
 <code>"directories": {
-    "contents": "source",
+    "contents": "public",
+    "lib": "public/lib",
     "dist":     "deploy",
     "layouts":  "layouts",
-    "lib":      "libraries",
     "paks":     "paks",
     "partials": "partials"
 }

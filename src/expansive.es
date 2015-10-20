@@ -232,7 +232,7 @@ public class Expansive {
         loadPlugins()
         setupEjsTransformer()
         clean(meta)
-        if (false && options.debug) {
+        if (options.debug) {
             dump('Directories', directories)
             dump('Meta', topMeta)
             dump('Control', control)
@@ -398,6 +398,40 @@ public class Expansive {
         }
     }
 
+    function fixMappings() {
+        for each (service in services) {
+            if (service.mappings) {
+                if (service.mappings is String || service.mappings is Array) {
+                    let transform = transforms[service.name]
+                    if (transform) {
+                        transform.mappings = service.mappings
+                    }
+                } else {
+                    for (let [name,mapping] in service.mappings) {
+                        let transform = transforms[service.name + '-' + name]
+                        if (transform) {
+                            transform.mappings = mapping
+                        }
+                    }
+                }
+            }
+            for each (transform in service.transforms) {
+                if (transform.mappings is String) {
+                    let v = {}
+                    v[transform.mappings] = transform.mappings
+                    transform.mappings = v
+                }
+                if (transform.mappings is Array) {
+                    let v = {}
+                    for each (mapping in transform.mappings) {
+                        v[mapping] = mapping
+                    }
+                    transform.mappings = v
+                }
+            }
+        }
+    }
+
     function loadPlugins() {
         let exp = createService({name: 'exp', transforms: [{ mappings: { exp: '*' }, render: renderExp }]})
         let stat = stats.transforms.exp
@@ -408,6 +442,7 @@ public class Expansive {
         }
         buildMetaCache()
         blend(services, serviceConfig, {combine: true})
+        fixMappings()
 
         for each (service in services) {
             if (service.enable) {
@@ -427,11 +462,6 @@ public class Expansive {
                         fatal('Plugin script error in "' + transform.name + '"\n' + e)
                     }
                     if (transform.enable) {
-                        if (transform.mappings is String) {
-                            let v = {}
-                            v[transform.mappings] = transform.mappings
-                            transform.mappings = v
-                        }
                         for (let [key,value] in transform.mappings) {
                             if (!value) {
                                 value = [key]
@@ -1283,7 +1313,9 @@ public class Expansive {
         if (!initMeta(meta.document, meta)) {
             return null
         }
+        let priorMeta = global.meta
         try {
+            global.meta = meta
             contents = pipeline(contents, meta)
             if (meta.layout) {
                 contents = blendLayout(contents, meta)
@@ -1296,6 +1328,8 @@ public class Expansive {
             }
             print(e)
             return null
+        } finally {
+            global.meta = priorMeta
         }
     }
 
@@ -1412,7 +1446,6 @@ public class Expansive {
         let parser = new ExpansiveParser
         let code
         let stat = stats.transforms.exp
-        let priorMeta = global.meta
         try {
             let mark = new Date
             code = parser.parse(contents)
@@ -1422,7 +1455,6 @@ public class Expansive {
             stat.eval += mark.elapsed
 
             mark = new Date
-            global.meta = meta
             /* Exported from expParser */
             global._exp_parser_.call(this)
             stat.run += mark.elapsed
@@ -1441,7 +1473,6 @@ public class Expansive {
         }
         let results = obuf.toString()
         this.obuf = priorBuf
-        global.meta = priorMeta
         return results
     }
 

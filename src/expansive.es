@@ -1103,7 +1103,11 @@ public class Expansive {
         for each (transform in preProcessors) {
             vtrace('PreProcess', transform.name)
             if (transform.enable !== false) {
+                let mark = new Date
                 transform.pre.call(this, transform)
+                let stat = stats.transforms[transform.name + ':post'] ||= { elapsed: 0, count: 0}
+                stat.count++
+                stat.elapsed += mark.elapsed
             }
         }
     }
@@ -1116,7 +1120,11 @@ public class Expansive {
             for each (transform in postProcessors) {
                 trace('Post', transform.name)
                 if (transform.enable !== false) {
+                    let mark = new Date
                     transform.post.call(this, transform)
+                    let stat = stats.transforms[transform.name + ':post'] ||= { elapsed: 0, count: 0 }
+                    stat.count++
+                    stat.elapsed += mark.elapsed
                 }
             }
         }
@@ -1557,7 +1565,8 @@ public class Expansive {
     }
 
     function blendLayout(contents, meta) {
-        meta = meta.clone(true)
+        let priorMeta = meta
+        global.meta = meta = meta.clone(true)
         if (!meta.layout) {
             contents = pipeline(contents, meta)
         } else {
@@ -1582,6 +1591,7 @@ public class Expansive {
                 contents = pipeline(contents, meta)
             }
         }
+        global.meta = priorMeta
         return contents
     }
 
@@ -1589,7 +1599,8 @@ public class Expansive {
         This is the partial() global function
      */
     public function blendPartial(name: Path, options = {}) {
-        let meta = global.meta.clone(true)
+        let priorMeta = global.meta
+        let meta = global.meta = global.meta.clone(true)
         let partial = findFile(directories.partials, name, meta)
         if (!partial) {
             fatal('Cannot find partial "' + name + '"' + ' for ' + meta.source)
@@ -1617,6 +1628,7 @@ public class Expansive {
             trace('Error', 'Cannot process partial "' + name + '"')
             fatal(e)
         }
+        global.meta = priorMeta
     }
 
     function setupEjsTransformer() {

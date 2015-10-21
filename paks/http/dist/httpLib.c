@@ -6400,6 +6400,9 @@ PUBLIC void httpSetupWaitHandler(HttpConn *conn, int eventMask)
             mprSetSocketDispatcher(sp, conn->dispatcher);
             mprEnableSocketEvents(sp, eventMask);
         }
+        if (sp->flags & (MPR_SOCKET_BUFFERED_READ | MPR_SOCKET_BUFFERED_WRITE)) {
+            mprRecallWaitHandler(sp->handler);
+        }
     } else if (sp->handler) {
         mprWaitOn(sp->handler, eventMask);
     }
@@ -20175,7 +20178,7 @@ PUBLIC void httpRedirect(HttpConn *conn, int status, cchar *targetUri)
 
     if (tx->finalized) {
         /* A response has already been formulated */
-        mprLog("error", 0, "Response already prepared, so redirect ignored: %s", targetUri);
+        mprLog("error", 0, "Response already finalized, so redirect ignored: %s", targetUri);
         return;
     }
     tx->status = status;

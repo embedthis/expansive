@@ -3,7 +3,7 @@
 #
 
 NAME                  := expansive
-VERSION               := 0.6.1
+VERSION               := 0.7.0
 PROFILE               ?= default
 ARCH                  ?= $(shell uname -m | sed 's/i.86/x86/;s/x86_64/x64/;s/arm.*/arm/;s/mips.*/mips/')
 CC_ARCH               ?= $(shell echo $(ARCH) | sed 's/x86/i686/;s/x64/x86_64/')
@@ -46,7 +46,7 @@ ifeq ($(ME_COM_EJSCRIPT),1)
 endif
 
 CFLAGS                += -g -w
-DFLAGS                +=  $(patsubst %,-D%,$(filter ME_%,$(MAKEFLAGS))) -DME_COM_COMPILER=$(ME_COM_COMPILER) -DME_COM_EJSCRIPT=$(ME_COM_EJSCRIPT) -DME_COM_HTTP=$(ME_COM_HTTP) -DME_COM_LIB=$(ME_COM_LIB) -DME_COM_MATRIXSSL=$(ME_COM_MATRIXSSL) -DME_COM_MBEDTLS=$(ME_COM_MBEDTLS) -DME_COM_MPR=$(ME_COM_MPR) -DME_COM_NANOSSL=$(ME_COM_NANOSSL) -DME_COM_OPENSSL=$(ME_COM_OPENSSL) -DME_COM_OSDEP=$(ME_COM_OSDEP) -DME_COM_PCRE=$(ME_COM_PCRE) -DME_COM_SQLITE=$(ME_COM_SQLITE) -DME_COM_SSL=$(ME_COM_SSL) -DME_COM_VXWORKS=$(ME_COM_VXWORKS) -DME_COM_ZLIB=$(ME_COM_ZLIB) 
+DFLAGS                += -DME_DEBUG=0 $(patsubst %,-D%,$(filter ME_%,$(MAKEFLAGS))) -DME_COM_COMPILER=$(ME_COM_COMPILER) -DME_COM_EJSCRIPT=$(ME_COM_EJSCRIPT) -DME_COM_HTTP=$(ME_COM_HTTP) -DME_COM_LIB=$(ME_COM_LIB) -DME_COM_MATRIXSSL=$(ME_COM_MATRIXSSL) -DME_COM_MBEDTLS=$(ME_COM_MBEDTLS) -DME_COM_MPR=$(ME_COM_MPR) -DME_COM_NANOSSL=$(ME_COM_NANOSSL) -DME_COM_OPENSSL=$(ME_COM_OPENSSL) -DME_COM_OSDEP=$(ME_COM_OSDEP) -DME_COM_PCRE=$(ME_COM_PCRE) -DME_COM_SQLITE=$(ME_COM_SQLITE) -DME_COM_SSL=$(ME_COM_SSL) -DME_COM_VXWORKS=$(ME_COM_VXWORKS) -DME_COM_ZLIB=$(ME_COM_ZLIB) 
 IFLAGS                += "-I$(BUILD)/inc"
 LDFLAGS               += '-Wl,-rpath,@executable_path/' '-Wl,-rpath,@loader_path/'
 LIBPATHS              += -L$(BUILD)/bin
@@ -301,7 +301,7 @@ DEPS_16 += src/ejscript/ejs.h
 $(BUILD)/obj/ejs.o: \
     src/ejscript/ejs.c $(DEPS_16)
 	@echo '   [Compile] $(BUILD)/obj/ejs.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/ejs.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/ejscript/ejs.c
+	$(CC) -c -o $(BUILD)/obj/ejs.o -arch $(CC_ARCH) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/ejscript/ejs.c
 
 #
 #   ejsLib.o
@@ -314,7 +314,7 @@ DEPS_17 += $(BUILD)/inc/me.h
 $(BUILD)/obj/ejsLib.o: \
     src/ejscript/ejsLib.c $(DEPS_17)
 	@echo '   [Compile] $(BUILD)/obj/ejsLib.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/ejsLib.o -arch $(CC_ARCH) $(CFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/ejscript/ejsLib.c
+	$(CC) -c -o $(BUILD)/obj/ejsLib.o -arch $(CC_ARCH) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/ejscript/ejsLib.c
 
 #
 #   ejsc.o
@@ -324,7 +324,7 @@ DEPS_18 += src/ejscript/ejs.h
 $(BUILD)/obj/ejsc.o: \
     src/ejscript/ejsc.c $(DEPS_18)
 	@echo '   [Compile] $(BUILD)/obj/ejsc.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/ejsc.o -arch $(CC_ARCH) $(CFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/ejscript/ejsc.c
+	$(CC) -c -o $(BUILD)/obj/ejsc.o -arch $(CC_ARCH) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/ejscript/ejsc.c
 
 #
 #   expParser.o
@@ -335,7 +335,7 @@ DEPS_19 += $(BUILD)/inc/expansive.h
 $(BUILD)/obj/expParser.o: \
     src/expParser.c $(DEPS_19)
 	@echo '   [Compile] $(BUILD)/obj/expParser.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/expParser.o -arch $(CC_ARCH) $(CFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/expParser.c
+	$(CC) -c -o $(BUILD)/obj/expParser.o -arch $(CC_ARCH) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/expParser.c
 
 #
 #   expansive.o
@@ -346,7 +346,7 @@ DEPS_20 += $(BUILD)/inc/expansive.h
 $(BUILD)/obj/expansive.o: \
     src/expansive.c $(DEPS_20)
 	@echo '   [Compile] $(BUILD)/obj/expansive.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/expansive.o -arch $(CC_ARCH) $(CFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/expansive.c
+	$(CC) -c -o $(BUILD)/obj/expansive.o -arch $(CC_ARCH) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/expansive.c
 
 #
 #   http.h
@@ -362,7 +362,7 @@ DEPS_22 += src/http/http.h
 $(BUILD)/obj/http.o: \
     src/http/http.c $(DEPS_22)
 	@echo '   [Compile] $(BUILD)/obj/http.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/http.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/http/http.c
+	$(CC) -c -o $(BUILD)/obj/http.o -arch $(CC_ARCH) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/http/http.c
 
 #
 #   httpLib.o
@@ -373,7 +373,7 @@ DEPS_23 += $(BUILD)/inc/pcre.h
 $(BUILD)/obj/httpLib.o: \
     src/http/httpLib.c $(DEPS_23)
 	@echo '   [Compile] $(BUILD)/obj/httpLib.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/httpLib.o -arch $(CC_ARCH) $(CFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/http/httpLib.c
+	$(CC) -c -o $(BUILD)/obj/httpLib.o -arch $(CC_ARCH) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/http/httpLib.c
 
 #
 #   mbedtls.h
@@ -389,7 +389,7 @@ DEPS_25 += src/mbedtls/mbedtls.h
 $(BUILD)/obj/mbedtls.o: \
     src/mbedtls/mbedtls.c $(DEPS_25)
 	@echo '   [Compile] $(BUILD)/obj/mbedtls.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/mbedtls.o -arch $(CC_ARCH) $(CFLAGS) -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/mbedtls/mbedtls.c
+	$(CC) -c -o $(BUILD)/obj/mbedtls.o -arch $(CC_ARCH) $(CFLAGS) $(DFLAGS) -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/mbedtls/mbedtls.c
 
 #
 #   mpr-mbedtls.o
@@ -399,7 +399,7 @@ DEPS_26 += $(BUILD)/inc/mpr.h
 $(BUILD)/obj/mpr-mbedtls.o: \
     src/mpr-mbedtls/mpr-mbedtls.c $(DEPS_26)
 	@echo '   [Compile] $(BUILD)/obj/mpr-mbedtls.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/mpr-mbedtls.o -arch $(CC_ARCH) $(CFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/mpr-mbedtls/mpr-mbedtls.c
+	$(CC) -c -o $(BUILD)/obj/mpr-mbedtls.o -arch $(CC_ARCH) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/mpr-mbedtls/mpr-mbedtls.c
 
 #
 #   mpr-openssl.o
@@ -409,7 +409,7 @@ DEPS_27 += $(BUILD)/inc/mpr.h
 $(BUILD)/obj/mpr-openssl.o: \
     src/mpr-openssl/mpr-openssl.c $(DEPS_27)
 	@echo '   [Compile] $(BUILD)/obj/mpr-openssl.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/mpr-openssl.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/mpr-openssl/mpr-openssl.c
+	$(CC) -c -o $(BUILD)/obj/mpr-openssl.o -arch $(CC_ARCH) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/mpr-openssl/mpr-openssl.c
 
 #
 #   mpr.h
@@ -425,7 +425,7 @@ DEPS_29 += src/mpr/mpr.h
 $(BUILD)/obj/mprLib.o: \
     src/mpr/mprLib.c $(DEPS_29)
 	@echo '   [Compile] $(BUILD)/obj/mprLib.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/mprLib.o -arch $(CC_ARCH) $(CFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/mpr/mprLib.c
+	$(CC) -c -o $(BUILD)/obj/mprLib.o -arch $(CC_ARCH) $(CFLAGS) $(DFLAGS) -D_FILE_OFFSET_BITS=64 -DMBEDTLS_USER_CONFIG_FILE=\"embedtls.h\" $(IFLAGS) src/mpr/mprLib.c
 
 #
 #   pcre.h
@@ -442,7 +442,7 @@ DEPS_31 += src/pcre/pcre.h
 $(BUILD)/obj/pcre.o: \
     src/pcre/pcre.c $(DEPS_31)
 	@echo '   [Compile] $(BUILD)/obj/pcre.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/pcre.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/pcre/pcre.c
+	$(CC) -c -o $(BUILD)/obj/pcre.o -arch $(CC_ARCH) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/pcre/pcre.c
 
 #
 #   zlib.h
@@ -459,7 +459,7 @@ DEPS_33 += src/zlib/zlib.h
 $(BUILD)/obj/zlib.o: \
     src/zlib/zlib.c $(DEPS_33)
 	@echo '   [Compile] $(BUILD)/obj/zlib.o'
-	$(CC) -c $(DFLAGS) -o $(BUILD)/obj/zlib.o -arch $(CC_ARCH) $(CFLAGS) $(IFLAGS) src/zlib/zlib.c
+	$(CC) -c -o $(BUILD)/obj/zlib.o -arch $(CC_ARCH) $(CFLAGS) $(DFLAGS) $(IFLAGS) src/zlib/zlib.c
 
 ifeq ($(ME_COM_MBEDTLS),1)
 #
@@ -533,7 +533,7 @@ endif
 
 $(BUILD)/bin/libmpr.dylib: $(DEPS_37)
 	@echo '      [Link] $(BUILD)/bin/libmpr.dylib'
-	$(CC) -dynamiclib -o $(BUILD)/bin/libmpr.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libmpr.dylib -compatibility_version 0.6 -current_version 0.6 "$(BUILD)/obj/mprLib.o" $(LIBPATHS_37) $(LIBS_37) $(LIBS_37) $(LIBS) 
+	$(CC) -dynamiclib -o $(BUILD)/bin/libmpr.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libmpr.dylib -compatibility_version 0.7 -current_version 0.7 "$(BUILD)/obj/mprLib.o" $(LIBPATHS_37) $(LIBS_37) $(LIBS_37) $(LIBS) 
 
 ifeq ($(ME_COM_PCRE),1)
 #
@@ -544,7 +544,7 @@ DEPS_38 += $(BUILD)/obj/pcre.o
 
 $(BUILD)/bin/libpcre.dylib: $(DEPS_38)
 	@echo '      [Link] $(BUILD)/bin/libpcre.dylib'
-	$(CC) -dynamiclib -o $(BUILD)/bin/libpcre.dylib -arch $(CC_ARCH) $(LDFLAGS) -compatibility_version 0.6 -current_version 0.6 $(LIBPATHS) -install_name @rpath/libpcre.dylib -compatibility_version 0.6 -current_version 0.6 "$(BUILD)/obj/pcre.o" $(LIBS) 
+	$(CC) -dynamiclib -o $(BUILD)/bin/libpcre.dylib -arch $(CC_ARCH) $(LDFLAGS) -compatibility_version 0.7 -current_version 0.7 $(LIBPATHS) -install_name @rpath/libpcre.dylib -compatibility_version 0.7 -current_version 0.7 "$(BUILD)/obj/pcre.o" $(LIBS) 
 endif
 
 ifeq ($(ME_COM_HTTP),1)
@@ -584,7 +584,7 @@ LIBS_39 += -lmpr
 
 $(BUILD)/bin/libhttp.dylib: $(DEPS_39)
 	@echo '      [Link] $(BUILD)/bin/libhttp.dylib'
-	$(CC) -dynamiclib -o $(BUILD)/bin/libhttp.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libhttp.dylib -compatibility_version 0.6 -current_version 0.6 "$(BUILD)/obj/httpLib.o" $(LIBPATHS_39) $(LIBS_39) $(LIBS_39) $(LIBS) 
+	$(CC) -dynamiclib -o $(BUILD)/bin/libhttp.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libhttp.dylib -compatibility_version 0.7 -current_version 0.7 "$(BUILD)/obj/httpLib.o" $(LIBPATHS_39) $(LIBS_39) $(LIBS_39) $(LIBS) 
 endif
 
 ifeq ($(ME_COM_ZLIB),1)
@@ -596,7 +596,7 @@ DEPS_40 += $(BUILD)/obj/zlib.o
 
 $(BUILD)/bin/libzlib.dylib: $(DEPS_40)
 	@echo '      [Link] $(BUILD)/bin/libzlib.dylib'
-	$(CC) -dynamiclib -o $(BUILD)/bin/libzlib.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libzlib.dylib -compatibility_version 0.6 -current_version 0.6 "$(BUILD)/obj/zlib.o" $(LIBS) 
+	$(CC) -dynamiclib -o $(BUILD)/bin/libzlib.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libzlib.dylib -compatibility_version 0.7 -current_version 0.7 "$(BUILD)/obj/zlib.o" $(LIBS) 
 endif
 
 ifeq ($(ME_COM_EJSCRIPT),1)
@@ -656,7 +656,7 @@ endif
 
 $(BUILD)/bin/libejs.dylib: $(DEPS_41)
 	@echo '      [Link] $(BUILD)/bin/libejs.dylib'
-	$(CC) -dynamiclib -o $(BUILD)/bin/libejs.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libejs.dylib -compatibility_version 0.6 -current_version 0.6 "$(BUILD)/obj/ejsLib.o" $(LIBPATHS_41) $(LIBS_41) $(LIBS_41) $(LIBS) 
+	$(CC) -dynamiclib -o $(BUILD)/bin/libejs.dylib -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) -install_name @rpath/libejs.dylib -compatibility_version 0.7 -current_version 0.7 "$(BUILD)/obj/ejsLib.o" $(LIBPATHS_41) $(LIBS_41) $(LIBS_41) $(LIBS) 
 endif
 
 ifeq ($(ME_COM_EJSCRIPT),1)

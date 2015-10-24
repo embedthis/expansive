@@ -312,7 +312,7 @@ PUBLIC void httpStopConnections(void *data)
  */
 PUBLIC void httpDestroy()
 {
-    Http            *http;
+    Http        *http;
 
     if ((http = HTTP) == 0) {
         return;
@@ -329,6 +329,9 @@ PUBLIC void httpDestroy()
         mprRemoveEvent(http->timestamp);
         http->timestamp = 0;
     }
+    http->hosts = NULL;
+    http->clientRoute = NULL;
+    http->endpoints = NULL;
     MPR->httpService = NULL;
 }
 
@@ -3749,25 +3752,24 @@ static void blendMode(HttpRoute *route, MprJson *config)
     mode = mprGetJson(route->config, "pak.mode");
     if (!mode) {
         mode = mprGetJson(config, "pak.mode");
-        if (!mode) {
-            mode = sclone("debug");
+    }
+    if (mode) {
+        if ((route->debug = smatch(mode, "debug")) != 0) {
+            httpSetRouteShowErrors(route, 1);
+            route->keepSource = 1;
         }
-    }
-    route->mode = mode;
-    if ((route->debug = smatch(mode, "debug")) != 0) {
-        httpSetRouteShowErrors(route, 1);
-        route->keepSource = 1;
-    }
-    /*
-        Http uses top level modes
-        Pak uses top level pak.modes
-     */
-    if ((modeObj = mprGetJsonObj(config, sfmt("modes.%s", mode))) == 0) {
-        modeObj = mprGetJsonObj(config, sfmt("pak.modes.%s", mode));
-    }
-    if (modeObj) {
-        mprBlendJson(route->config, modeObj, MPR_JSON_OVERWRITE);
-        httpParseAll(route, 0, modeObj);
+        /*
+            Http uses top level modes
+            Pak uses top level pak.modes
+         */
+        if ((modeObj = mprGetJsonObj(config, sfmt("modes.%s", mode))) == 0) {
+            modeObj = mprGetJsonObj(config, sfmt("pak.modes.%s", mode));
+        }
+        if (modeObj) {
+            mprBlendJson(route->config, modeObj, MPR_JSON_OVERWRITE);
+            httpParseAll(route, 0, modeObj);
+        }
+        route->mode = mode;
     }
 }
 
@@ -5908,9 +5910,9 @@ static void connTimeout(HttpConn *conn, MprEvent *mprEvent)
             msg = sfmt("%s exceeded parse headers timeout of %lld sec", prefix, limits->requestParseTimeout  / 1000);
             event = "timeout.parse";
 
-#if UNUSED
-        /* Too noisy */
+#if KEEP
         } else if (conn->timeout == HTTP_INACTIVITY_TIMEOUT) {
+            /* Too noisy */
             msg = sfmt("%s exceeded inactivity timeout of %lld sec", prefix, limits->inactivityTimeout / 1000);
             event = "timeout.inactivity";
 #endif
@@ -13604,6 +13606,7 @@ PUBLIC void httpAddRouteParam(HttpRoute *route, cchar *field, cchar *value, int 
     if ((op->mdata = pcre_compile2(value, 0, 0, &errMsg, &column, NULL)) == 0) {
         mprLog("error http route", 0, "Cannot compile field pattern. Error %s at column %d", errMsg, column);
     } else {
+        op->flags |= HTTP_ROUTE_FREE;
         mprAddItem(route->params, op);
     }
 }
@@ -13629,6 +13632,7 @@ PUBLIC void httpAddRouteRequestHeaderCheck(HttpRoute *route, cchar *header, ccha
     if ((op->mdata = pcre_compile2(pattern, 0, 0, &errMsg, &column, NULL)) == 0) {
         mprLog("error http route", 0, "Cannot compile header pattern. Error %s at column %d", errMsg, column);
     } else {
+        op->flags |= HTTP_ROUTE_FREE;
         mprAddItem(route->requestHeaders, op);
     }
 }
@@ -16240,9 +16244,7 @@ PUBLIC void httpProtocol(HttpConn *conn)
             canProceed = 0;
             break;
         }
-        /*
-            This may block briefly if GC is due
-         */
+
         httpServiceQueues(conn, HTTP_BLOCK);
 
         /*
@@ -16912,7 +16914,7 @@ static bool parseHeaders(HttpConn *conn, HttpPacket *packet)
             "Request form of %lld bytes is too big. Limit %lld", rx->length, conn->limits->rxFormSize);
     }
     if (conn->error) {
-        /* Cannot continue with keep-alive as the headers have not been correctly parsed */
+        /* Cannot reliably continue with keep-alive as the headers have not been correctly parsed */
         conn->keepAliveCount = 0;
         conn->connError = 1;
     }
@@ -18389,7 +18391,7 @@ static void adjustSendVec(HttpQueue *q, MprOff written)
 
 #else
 PUBLIC int httpOpenSendConnector() { return 0; }
-PUBLIC int httpSendOpen(HttpQueue *q) {}
+PUBLIC int httpSendOpen(HttpQueue *q) { return 0; }
 PUBLIC void httpSendOutgoingService(HttpQueue *q) {}
 #endif /* !ME_ROM */
 
@@ -20176,9 +20178,8 @@ PUBLIC void httpRedirect(HttpConn *conn, int status, cchar *targetUri)
     rx = conn->rx;
     tx = conn->tx;
 
-    if (tx->finalized) {
-        /* A response has already been formulated */
-        mprLog("error", 0, "Response already finalized, so redirect ignored: %s", targetUri);
+    if (tx->flags & HTTP_TX_HEADERS_CREATED) {
+        mprLog("error", 0, "Headers already created, so redirect ignored: %s", targetUri);
         return;
     }
     tx->status = status;
@@ -20497,6 +20498,7 @@ PUBLIC bool httpSetFilename(HttpConn *conn, cchar *filename, int flags)
         info->checked = info->valid = 0;
         return 0;
     }
+#if !ME_ROM
     if (!(tx->flags & HTTP_TX_NO_CHECK)) {
         if (!mprIsAbsPathContained(filename, conn->rx->route->documents)) {
             info->checked = 1;
@@ -20505,6 +20507,7 @@ PUBLIC bool httpSetFilename(HttpConn *conn, cchar *filename, int flags)
             return 0;
         }
     }
+#endif
     if (!tx->ext || tx->ext[0] == '\0') {
         tx->ext = httpGetPathExt(filename);
     }

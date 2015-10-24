@@ -975,10 +975,17 @@ static ME_INLINE void triggerGC(int always)
 PUBLIC int mprGC(int flags)
 {
     heap->freedBlocks = 0;
+    if (!(flags & MPR_GC_NO_BLOCK)) {
+        /*
+            Yield here, so the sweeper wont abort because this thread is not yielded
+         */
+        mprYield(MPR_YIELD_STICKY);
+    }
     if ((flags & (MPR_GC_FORCE | MPR_GC_COMPLETE)) || (heap->workDone > heap->workQuota)) {
         triggerGC(flags & (MPR_GC_FORCE | MPR_GC_COMPLETE));
     }
     if (!(flags & MPR_GC_NO_BLOCK)) {
+        mprResetYield();
         mprYield((flags & MPR_GC_COMPLETE) ? MPR_YIELD_COMPLETE : 0);
     }
     return MPR->heap->freedBlocks;
@@ -2584,6 +2591,7 @@ PUBLIC Mpr *mprCreate(int argc, char **argv, int flags)
     mpr->exitStrategy = 0;
     mpr->emptyString = sclone("");
     mpr->oneString = sclone("1");
+    mpr->rootString = sclone("/");
     mpr->idleCallback = mprServicesAreIdle;
     mpr->mimeTypes = mprCreateMimeTypes(NULL);
     mpr->terminators = mprCreateList(0, MPR_LIST_STATIC_VALUES);
@@ -2687,6 +2695,7 @@ static void manageMpr(Mpr *mpr, int flags)
         mprMark(mpr->spin);
         mprMark(mpr->cond);
         mprMark(mpr->stopCond);
+        mprMark(mpr->rootString);
         mprMark(mpr->emptyString);
         mprMark(mpr->oneString);
     }
@@ -17214,7 +17223,6 @@ static void manageModule(MprModule *mp, int flags)
         mprMark(mp->name);
         mprMark(mp->path);
         mprMark(mp->entry);
-        mprMark(mp->moduleData);
     }
 }
 
@@ -17657,11 +17665,8 @@ PUBLIC char *mprGetAbsPath(cchar *path)
     if (path == 0 || *path == '\0') {
         path = ".";
     }
-#if ME_ROM
-    result =  mprNormalizePath(path);
-    mprMapSeparators(result, defaultSep(fs));
-    return result;
-#elif CYGWIN
+    fs = mprLookupFileSystem(path);
+#if CYGWIN
     {
         ssize   len;
         /*
@@ -17685,7 +17690,6 @@ PUBLIC char *mprGetAbsPath(cchar *path)
         }
     }
 #endif
-    fs = mprLookupFileSystem(path);
     if (isFullPath(fs, path)) {
         /* Already absolute. On windows, must contain a drive specifier */
         result = mprNormalizePath(path);
@@ -17751,8 +17755,9 @@ PUBLIC char *mprGetAppPath()
     if (MPR->appPath) {
         return sclone(MPR->appPath);
     }
-
-#if MACOSX
+#if ME_ROM
+    MPR->appPath = mprGetCurrentPath();
+#elif MACOSX
 {
     MprPath info;
     char    path[ME_MAX_PATH], pbuf[ME_MAX_PATH];
@@ -17828,7 +17833,7 @@ PUBLIC char *mprGetAppPath()
         MPR->appPath = mprGetCurrentPath();
     }
 #endif
-    return sclone(MPR->appPath);
+    return MPR->appPath;
 }
 
 
@@ -17837,6 +17842,12 @@ PUBLIC char *mprGetAppPath()
  */
 PUBLIC char *mprGetCurrentPath()
 {
+#if ME_ROM
+    /* 
+        Current directory is always root
+     */
+    return MPR->rootString;
+#else
     char    dir[ME_MAX_PATH];
 
     if (getcwd(dir, sizeof(dir)) == 0) {
@@ -17867,6 +17878,7 @@ PUBLIC char *mprGetCurrentPath()
 }
 #endif
     return sclone(dir);
+#endif
 }
 
 
@@ -18678,7 +18690,7 @@ PUBLIC char *mprGetPortablePath(cchar *path)
 PUBLIC char *mprGetRelPath(cchar *destArg, cchar *originArg)
 {
     MprFileSystem   *fs;
-    char            originBuf[ME_MAX_FNAME], *dp, *result, *dest, *lastdp, *origin, *op, *lastop;
+    char            *dp, *result, *dest, *lastdp, *origin, *op, *lastop;
     int             originSegments, i, commonSegments, sep;
 
     fs = mprLookupFileSystem(destArg);
@@ -18698,11 +18710,7 @@ PUBLIC char *mprGetRelPath(cchar *destArg, cchar *originArg)
             Get the working directory. Ensure it is null terminated and leave room to append a trailing separators
             On cygwin, this will be a cygwin style path (starts with "/" and no drive specifier).
          */
-        if (getcwd(originBuf, sizeof(originBuf)) == 0) {
-            strcpy(originBuf, ".");
-        }
-        originBuf[sizeof(originBuf) - 2] = '\0';
-        origin = originBuf;
+        origin = mprGetCurrentPath();
     } else {
         origin = mprGetAbsPath(originArg);
     }
@@ -21063,13 +21071,11 @@ static MprRomInode *lookup(MprRomFileSystem *rfs, cchar *path)
             break;
         }
     }
-    /*
-        Skip over the leading "/"
-     */
-    if (*path == '/') {
-        path++;
+    if (path[0] == '/') {
+        return (MprRomInode*) mprLookupKey(rfs->fileIndex, path);
+    } else {
+        return (MprRomInode*) mprLookupKey(rfs->fileIndex, mprJoinPath(mprGetCurrentPath(), path));
     }
-    return (MprRomInode*) mprLookupKey(rfs->fileIndex, path);
 }
 
 

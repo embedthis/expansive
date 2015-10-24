@@ -523,6 +523,8 @@ public class Expansive {
                 delete service.transforms
             }
         }
+        preProcessors = preProcessors.unique()
+        postProcessors = postProcessors.unique()
     }
 
     function getInstalledPaks() {

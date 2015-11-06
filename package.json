@@ -34,7 +34,7 @@
         "ejs.version": "~0.8",
         "ejscript": "~2.7",
         "mpr": "~6.2",
-        "mpr-mbedtls": "~0.4",
+        "mpr-mbedtls": "~0.5",
         "ssl": "~0.9"
     },
     "optionalDependencies": {

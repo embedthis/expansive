@@ -2,7 +2,7 @@
     "name": "mpr",
     "description": "Embedthis Multithreaded Portable Runtime",
     "title": "Embedthis MPR",
-    "version": "6.2.1",
+    "version": "6.2.2",
     "keywords": [
         "mpr",
         "runtime"
@@ -37,7 +37,7 @@
         "ssl": "~0.9",
         "mpr-openssl": "~0.4",
         "mbedtls": "~2.1",
-        "mpr-mbedtls": "~0.4"
+        "mpr-mbedtls": "~0.5"
     },
     "devDependencies": {
         "makeme": ">=0.9.0",

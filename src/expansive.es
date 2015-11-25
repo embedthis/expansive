@@ -1168,6 +1168,9 @@ public class Expansive {
             mapping = ext + ' -> ' + next
             if (!mappings[mapping]) {
                 mapping = ext + ' -> *'
+                if (!mappings[mapping]) {
+                    mapping = ext + ' -> ' + ext
+                }
             }
         } else {
             mapping = ext + ' -> ' + ext

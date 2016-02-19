@@ -1,4 +1,4 @@
-Package: ${settings.product}
+Package: ${settings.name}
 Version: ${settings.version}
 Section: devel
 Priority: optional

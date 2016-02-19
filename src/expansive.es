@@ -1351,6 +1351,7 @@ public class Expansive {
             if (options.abort) {
                 fatal(e)
             }
+            print('Cannot render: ' + meta.sourcePath)
             print(e)
             return null
         } finally {

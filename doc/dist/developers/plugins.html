@@ -2,27 +2,28 @@
 <html lang="en">
 <head>
     <title>Plugins</title>
-    
+    <!-- Copyright Embedthis Software. All Rights Reserved. -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-    <meta name="description" content="Plugins">
-    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700' rel='stylesheet' type='text/css'>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="Plugins" />
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700'
+        rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
     
-    <link href="../images/favicon.ico" rel="shortcut icon">
-    <link href="../lib/semantic-ui/semantic.min.css" rel="stylesheet" type="text/css">
-    <link href="../css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="../css/api.min.css" rel="stylesheet" type="text/css">
+    <link href="../images/favicon.ico" rel="shortcut icon" />
+    <link href="../lib/semantic-ui/semantic.min.css" rel="stylesheet" type="text/css" />
+    <link href="../css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="../css/api.min.css" rel="stylesheet" type="text/css" />
     
 
-
+</head>
 <body class="show-sidebar">
          <div class="sidebar">
         <div class="ui large left vertical inverted labeled menu">
             <div class="item">
-                <a href="../index.html" class="logo">Expansive<br>Docs</a>
+                <a href="../index.html" class="logo">Expansive<br/>Docs</a>
             </div>
             <div class="item">
                 <div class="menu">
@@ -69,7 +70,7 @@
                     <a class="item" href="../users/deploying.html">Deploying a Site</a>
                     <a class="item" href="../users/configuration.html">Configuration</a>
 
-                    
+                    <!-- query engine -->
                     <a class="item" href="../users/sitemaps.html">Sitemaps</a>
                     <a class="item" href="../users/troubleshoot.html">Troubleshooting</a>
                 </div>
@@ -85,7 +86,7 @@
             <div class="item">
                 <a href="../developers/project.html">Project Resources</a>
                 <div class="menu">
-                    
+                    <!-- MOB -->
                     <a class="item" href="http://goo.gl/ynBrjA">Official Expansive News</a>
                     <a class="item" href="https://embedthis.com/expansive/">Expansive Web Site</a>
                     <a class="item" href="https://github.com/embedthis/exp">Source Code Repository</a>
@@ -283,27 +284,27 @@ mappings: {
 
             <table class="ui celled table" title="properties">
                 <thead>
-                    <tr><th>Property<th>Description
-                
+                    <tr><th>Property</th><th>Description</th></tr>
+                </thead>
                 <tbody>
-                    <tr><td>source<td>Current source file being processed. Relative path including 
+                    <tr><td>source</td><td>Current source file being processed. Relative path including 
                         <em>contents</em>, <em>layouts</em> or <em>partials</em> directory prefix.
-                        For example: <em>contents/sub/index.html</em>.
-                    <tr><td>sourcePath<td>Current source file being processed. Relative path excluding 
+                        For example: <em>contents/sub/index.html</em>.</td></tr>
+                    <tr><td>sourcePath</td><td>Current source file being processed. Relative path excluding 
                         <em>contents</em>, <em>layouts</em> or <em>partials</em> directory prefix.
-                        For example: <em>sub/index.html</em>.
-                    <tr><td>dest<td>Destination filename being created. Relative path including 
-                        <em>dist</em>. For example: <em>dist/sub/index.html</em>.
-                    <tr><td>destPath<td>Destination filename being created. Relative path excluding 
-                        <em>dist</em>. For example: <em>sub/index.html</em>.
-                    <tr><td>base<td>Source file without <em>contents</em> or <em>lib</em>. For example: 
-                        <em>sub/index.html</em>.
-                    <tr><td>document<td>Source of the document being processed. For partials or layouts, it is 
-                        set to the invoking document. For example: <em>sub/index.html</em>.
-                    <tr><td>url<td>Url reference made from <em>path</em>. For example: 
-                        <em>sub/index.html</em>.
-                    <tr><td>top<td>Relative URL to application home page. For example: <em>../</em>.
-                
+                        For example: <em>sub/index.html</em>.</td></tr>
+                    <tr><td>dest</td><td>Destination filename being created. Relative path including 
+                        <em>dist</em>. For example: <em>dist/sub/index.html</em>.</td></tr>
+                    <tr><td>destPath</td><td>Destination filename being created. Relative path excluding 
+                        <em>dist</em>. For example: <em>sub/index.html</em>.</td></tr>
+                    <tr><td>base</td><td>Source file without <em>contents</em> or <em>lib</em>. For example: 
+                        <em>sub/index.html</em>.</td></tr>
+                    <tr><td>document</td><td>Source of the document being processed. For partials or layouts, it is 
+                        set to the invoking document. For example: <em>sub/index.html</em>.</td></tr>
+                    <tr><td>url</td><td>Url reference made from <em>path</em>. For example: 
+                        <em>sub/index.html</em>.</td></tr>
+                    <tr><td>top</td><td>Relative URL to application home page. For example: <em>../</em>.</td></tr>
+                </tbody>
             </table>
 
             <p>See <a href="../users/meta.html#properties">Meta Data</a> for the full list of meta data properties.</p>
@@ -406,42 +407,42 @@ mappings: {
 
             <table class="ui celled table" title="functions">
             <thead>
-                <tr><th class="eight wide column">Syntax<th>Description
-            
+                <tr><th class="eight wide column">Syntax</th><th>Description</th></tr>
+            </thead>
             <tbody>
                 <tr>
-                    <td>addItems(collection: String, items: String|Array)
-                    <td>Add items to the named collection.
-                
+                    <td>addItems(collection: String, items: String|Array)</td>
+                    <td>Add items to the named collection.</td>
+                </tr>
                 <tr>
-                    <td>getFiles(patterns: String|Array, query: Object): Array
-                    <td>Query the meta data for matching files and return list of matching filenames.
-                
+                    <td>getFiles(patterns: String|Array, query: Object): Array</td>
+                    <td>Query the meta data for matching files and return list of matching filenames.</td>
+                </tr>
                 <tr>
-                    <td>getFileMeta(path: String): String
-                    <td>Get the file meta data for the given path.
-                
+                    <td>getFileMeta(path: String): String</td>
+                    <td>Get the file meta data for the given path.</td>
+                </tr>
                 <tr>
-                    <td>getItems(collection: String): String
-                    <td>Return the items for a named collection.
-                
+                    <td>getItems(collection: String): String</td>
+                    <td>Return the items for a named collection.</td>
+                </tr>
                 <tr>
-                    <td>removeItems(collection: String, items: String | Array)
-                    <td>Remove items from the named collection
-                
+                    <td>removeItems(collection: String, items: String | Array)</td>
+                    <td>Remove items from the named collection</td>
+                </tr>
                 <tr>
-                    <td>trace(tag: String, ...args)
-                    <td>Emit trace to the console.
-                
+                    <td>trace(tag: String, ...args)</td>
+                    <td>Emit trace to the console.</td>
+                </tr>
                 <tr>
-                    <td>vtrace(tag: String, ...args)
-                    <td>Emit trace to the console if expansive is run in verbose mode.
-                
+                    <td>vtrace(tag: String, ...args)</td>
+                    <td>Emit trace to the console if expansive is run in verbose mode.</td>
+                </tr>
                 <tr>
-                    <td>run(cmd: String, contents: String): String
-                    <td>Run the command with the contents as standard input and return the output of the command.
-                
-            
+                    <td>run(cmd: String, contents: String): String</td>
+                    <td>Run the command with the contents as standard input and return the output of the command.</td>
+                </tr>
+            </tbody>
             </table>
 
             <h2>Popular Plugins</h2>
@@ -469,5 +470,5 @@ mappings: {
 
         
 
-
-
+</body>
+</html>

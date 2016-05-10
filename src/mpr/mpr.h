@@ -987,10 +987,10 @@ typedef struct MprFreeQueue {
 #define MPR_MANAGER_OFFSET          1
 #define MPR_MEM_PAD_PTR(mp, offset) ((void*) (((char*) mp) + mp->size - ((offset) * sizeof(void*))))
 #define GET_MANAGER(mp)             ((MprManager) (*(void**) ((MPR_MEM_PAD_PTR(mp, MPR_MANAGER_OFFSET)))))
-#define SET_MANAGER(mp, fn)         if (1) { \
+#define SET_MANAGER(mp, fn)         do { \
                                         *((MprManager*) MPR_MEM_PAD_PTR(mp, MPR_MANAGER_OFFSET)) = fn ; \
                                         mp->hasManager = 1; \
-                                    } else
+                                    } while (0);
 /*
     Manager callback flags
  */
@@ -1698,7 +1698,7 @@ PUBLIC void mprRemoveRoot(cvoid *ptr);
                 } \
                 HINC(marked); \
             } \
-        } else
+        } else {}
 #endif
 
 /*

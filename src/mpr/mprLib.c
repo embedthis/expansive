@@ -10563,6 +10563,56 @@ PUBLIC char *mprEscapeSQL(cchar *cmd)
     return result;
 }
 
+#if KEEP
+static void charGen() 
+{
+    uchar    flags;
+    uint     c;
+
+    mprCreate(argc, argv, 0);
+
+    mprPrintf("static uchar charMatch[256] = {\n\t0x00,");
+
+    for (c = 1; c < 256; ++c) {
+        flags = 0;
+        if (c % 16 == 0)
+            mprPrintf("\n\t");
+#if ME_WIN_LIKE
+        if (strchr("&;`'\"|*?~<>^()[]{}$\\\n\r%", c)) {
+            flags |= MPR_ENCODE_SHELL;
+        }
+#else
+        if (strchr("&;`\'\"|*?~<>^()[]{}$\\\n", c)) {
+            flags |= MPR_ENCODE_SHELL;
+        }
+#endif
+
+        if (isalnum((uchar) c) || strchr("-_.~", c)) {
+            /* Acceptable */
+        } else if (strchr("#;,/?:@&=+$", c)) {
+            /* Reserved characters */
+            flags |= MPR_ENCODE_URI_COMPONENT | MPR_ENCODE_JS_URI_COMPONENT;
+        } else if (strchr("!'()*", c)) {
+            flags |= MPR_ENCODE_URI | MPR_ENCODE_URI_COMPONENT;
+        } else if (strchr("[]", c)) {
+            flags |= MPR_ENCODE_JS_URI | MPR_ENCODE_URI_COMPONENT | MPR_ENCODE_JS_URI_COMPONENT;
+        } else {
+            /* Matches " ", {, }, |, ^, \, ~, ` */
+            flags |= MPR_ENCODE_URI | MPR_ENCODE_URI_COMPONENT | MPR_ENCODE_JS_URI | MPR_ENCODE_JS_URI_COMPONENT;
+        }
+        if (strchr("<>&\"'", c) != 0) {
+            flags |= MPR_ENCODE_HTML;
+        }
+        if (strchr("\n\r\\\'\"\032", c) != 0) {
+            flags |= MPR_ENCODE_SQL;
+        }
+        mprPrintf("0x%02x%c", flags, (c < 255) ? ',' : ' ');
+    }
+    mprPrintf("\n};\n");
+}
+#endif
+
+
 
 /*
     Copyright (c) Embedthis Software. All Rights Reserved.

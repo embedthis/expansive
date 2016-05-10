@@ -1841,7 +1841,7 @@ public class Expansive {
             if (file.basename == 'index.html' && !control.keepIndex) {
                 file = file.dirname + '/'
             }
-            let url: Uri = site.join(base, Uri.encode(file.name)).trimEnd('.gz')
+            let url: String = site.join(base, Uri.encode(file.name)).toString().trimEnd('.gz').trimEnd('./')
             fp.write('    <url>\n' +
                 '        <loc>' + url + '</loc>\n' +
                 '        <lastmod>' + dir.join(file).modified.format('%F') + '</lastmod>\n' +

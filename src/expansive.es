@@ -24,6 +24,7 @@ const USAGE = 'Expansive Web Site Generator
     --clean              # Clean "dist" first
     --listen IP:PORT     # Endpoint to listen on
     --log path:level     # Trace to logfile
+    --mode [mode]        # Set the mode for this invocation
     --noclean            # Do not clean "dist" directory before render
     --norender           # Do not do an initial render before watching
     --nowatch            # Do not watch for changes, just serve
@@ -97,9 +98,11 @@ public class Expansive {
             keep:      { alias: 'k' },
             listen:    { range: String },
             log:       { alias: 'l', range: String },
+            mode:      { alias: 'm', range: String },
             noclean:   { },
             norender:  { },
             nowatch:   { },
+            profile:   { alias: 'p', range: String },
             rebuild:   { alias: 'r' },
             quiet:     { alias: 'q' },
             trace:     { alias: 't', range: String },
@@ -206,6 +209,9 @@ public class Expansive {
         if (options.verbose) {
             verbosity++
         }
+        if (options.profile) {
+            options.mode = options.profile
+        }
     }
 
     function setup(task) {
@@ -228,6 +234,7 @@ public class Expansive {
                             ' is not compatible with this requirement.' + '\n'
         }
         loadConfig('.', topMeta)
+        trace('Info', 'Using mode:', package.pak.mode)
         computePackageOrder()
         loadPlugins()
         setupEjsTransformer()
@@ -280,6 +287,9 @@ public class Expansive {
 
     function loadConfig(path: Path, meta = {}): Object {
         let cfg = readConfig(path)
+        if (options.mode) {
+            package.pak.mode = options.mode
+        }
         vtrace('Info', 'Using mode:', package.pak.mode)
         blend(cfg, { meta: {}, control: {}, services: {}}, {combine: true})
         let mode = cfg[package ? package.pak.mode : '']
@@ -503,7 +513,7 @@ public class Expansive {
                                 if (!stages.contains(transform.name)) {
                                     stages.push(transform)
                                 }
-                                vtrace('Plugin', service.name + ' provides transform "' + 
+                                vtrace('Plugin', service.name + ' provides transform "' +
                                     transform.name + '" for ' + mapping)
                             }
                         }
@@ -1214,7 +1224,7 @@ public class Expansive {
         return path ? directories.dist.join(path) : path
     }
 
-    /* 
+    /*
         Convert a source file by stripping the 'contents' prefixes
      */
     function getSourcePath(source: Path): Path {
@@ -1424,7 +1434,7 @@ public class Expansive {
                     try {
                         vtrace('Transform', transform.name)
                         /*
-                            Override service configuration with per-document meta.services 
+                            Override service configuration with per-document meta.services
                          */
                         meta.service = blend(meta.service || {}, transform.service, {overwrite: false})
                         contents = transform.render.call(this, contents, meta, transform)
@@ -1627,6 +1637,7 @@ public class Expansive {
         try {
             let contents
             [meta, contents] = getCached(partial, meta)
+            contents = contents.trimStart()
             contents = pipeline(contents, meta)
             write(contents)
         }
@@ -2009,7 +2020,7 @@ public class Expansive {
                 let criteria = pak.devDependencies.expansive
                 if (criteria) {
                     if (!Version(Config.Version).acceptable(criteria)) {
-                        throw 'Package ' + pak.name + ' requires Expansive ' + criteria + 
+                        throw 'Package ' + pak.name + ' requires Expansive ' + criteria +
                               '. Expansive version ' + Config.Version + ' is not compatible with this requirement.' + '\n'
                     }
                 }

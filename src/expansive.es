@@ -809,8 +809,8 @@ public class Expansive {
     }
 
     function watch(meta) {
-        if (package.pak.mode != 'debug') {
-            trace('Warn', 'Watching for changes only supported in debug mode')
+        if (package.pak.mode != 'debug' && package.pak.mode != 'dev') {
+            trace('Warn', 'Watching for changes only supported in debug/dev mode')
             return
         }
         trace('Watching', 'for changes every ' + control.watch + ' msec ...')
@@ -1300,6 +1300,7 @@ public class Expansive {
         meta.date = Date(meta.date)
         meta.isoDate = meta.date.toISOString()
         meta.services ||= {}
+        meta.version = package.version
         return meta
     }
 

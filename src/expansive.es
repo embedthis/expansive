@@ -18,7 +18,7 @@ const PACKAGE = Path('package.json')
 const LAST_GEN = Path('.expansive-lastgen')
 
 const USAGE = 'Expansive Web Site Generator
-  Usage: exp [options] [FILES ...]
+  Usage: expansive [options] [FILES ...]
     --abort              # Abort rendering on errors
     --chdir dir          # Change to directory before running
     --clean              # Clean "dist" first
@@ -28,6 +28,7 @@ const USAGE = 'Expansive Web Site Generator
     --noclean            # Do not clean "dist" directory before render
     --norender           # Do not do an initial render before watching
     --nowatch            # Do not watch for changes, just serve
+    --profile PROFILE    # Set the build profile
     --quiet              # Quiet mode
     --trace path:level   # Trace http requests
     --verbose            # Verbose mode

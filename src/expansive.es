@@ -314,11 +314,11 @@ public class Expansive {
 
             //  TODO - somehow move back to exp-blog
             if (cfg.meta.blog) {
-                if (cfg.meta.blog.description) {
-                    meta.description = cfg.meta.blog.description
-                }
                 if (cfg.meta.blog.title) {
                     meta.title = cfg.meta.blog.title
+                }
+                if (cfg.meta.blog.description) {
+                    meta.description = cfg.meta.blog.description
                 }
             }
         }
@@ -901,7 +901,8 @@ public class Expansive {
 
     function internalServer() {
         let address = options.listen || control.listen || '127.0.0.1:4000'
-        let server: HttpServer = new HttpServer({documents: directories.dist})
+        let documents = control.docs || directories.dist
+        let server: HttpServer = new HttpServer({documents: documents})
         let routes = control.routes || Router.Top
         var router = Router(Router.WebSite)
         router.addCatchall()
@@ -1332,7 +1333,8 @@ public class Expansive {
         }
         contents = renderContents(contents, meta)
         if (meta.redirect) {
-            contents = '<html><head><meta http-equiv="refresh" content="0; url=' + meta.redirect + '"/></head></html>\n'
+            contents = '<html><head><title>' + meta.title + 
+                       '</title><meta http-equiv="refresh" content="0; url=' + meta.redirect + '"/></head></html>\n'
         }
         if (contents !== null) {
             writeDest(contents, meta)
@@ -1869,7 +1871,7 @@ public class Expansive {
         }
     }
 
-    function fatal(...args): Void {
+    public function fatal(...args): Void {
         log.error(...args)
         App.exit(1)
     }

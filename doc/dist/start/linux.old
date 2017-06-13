@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Installing on Mac</title>
+    <title>Installing on Linux</title>
     <!-- Copyright Embedthis Software. All Rights Reserved. -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="description" content="Installing on Mac" />
+    <meta name="description" content="Installing on Linux" />
     <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700'
         rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
@@ -144,7 +144,7 @@
             
             
             <div class="divider">/</div>
-            <a class="active section" href="mac.html">Installing on Mac</a>
+            <a class="active section" href="linux.old">Installing on Linux</a>
             
         </div>
         
@@ -153,30 +153,17 @@
     </div>
     <div class="content">
 
-            <h1>Installing on MAC OS X</h1>
-            <p>The Embedthis Expansive install distribution for Mac OS X is published as a an installable pkg file.</p>
-            
-            <a id="pkg"></a>
-            <h2>Installing the PKG Image</h2>
-            <ol>
-                <li>Double click on the PKG image.</li>
-            </ol>
-            
-            <a id="removing"></a>
-            <h2>Removing Expansive</h2>
-            <ol>
-                <li>Run a terminal and change directory to the installation directory for Expansive. </li>
-                <li>Run the remove script in the install directory for Expansive by typing:</li>
-            </ol>
-            <pre class="ui code segment">
-sudo ./uninstall
-</pre>
-            
+            <h1>Installing on Linux</h1>
+            <p>Running Expansive on Linux is supported by building from source code.
+            Please see instructions at <a href="source.html">Building from Source</a>.</p>
+
+            <a id="running"></a>
+            <h2>Running Expansive</h2>
             <p>You can run exp via:</p>
             <pre class="ui code segment">
 exp
 </pre>
-            <p>To get all the options for Expansive read the man page via:</p>
+            <p>To get all the options for Expansive, read the man page via:</p>
             <pre class="ui code segment">
 man exp
 </pre>or get the command help via:

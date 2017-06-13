@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Installing on Linux</title>
+    <title>Installing on Windows</title>
     <!-- Copyright Embedthis Software. All Rights Reserved. -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="description" content="Installing on Linux" />
+    <meta name="description" content="Installing on Windows" />
     <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700'
         rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
@@ -144,7 +144,7 @@
             
             
             <div class="divider">/</div>
-            <a class="active section" href="linux.html">Installing on Linux</a>
+            <a class="active section" href="windows.old">Installing on Windows</a>
             
         </div>
         
@@ -153,20 +153,45 @@
     </div>
     <div class="content">
 
-            <h1>Installing on Linux</h1>
-            <p>Running Expansive on Linux is supported by building from source code.
-            Please see instructions at <a href="source.html">Building from Source</a>.</p>
+            <h1>Installing on Windows</h1>
+            <p>The Embedthis Expansive install package for Windows is an installation executable compressed in a ZIP file
+            called:</p>
+            <pre class="ui code segment">
+exp-VERSION-BUILD-MS-WIN-i686.exe.zip
+</pre>
+            <p>The distribution image contains the binary distribution, documentation and development headers, and
+            libraries in the one package. During installation you will have the option of installing the full package
+            or portions of the distribution.</p><a id="exe"></a>
+            <h2>Installing the EXE Image</h2>
+            <ol>
+                <li>Login with administrator privileges.</li>
+                <li>Run winzip and extract the contents of the zipped EXE install image to a folder of your
+                choosing.</li>
+                <li>Browse to the location holding the EXE install image and run it.</li>
+            </ol>
+
+            <a id="removing"></a>
+            <h2>Removing Expansive</h2>
+            <ol>
+                <li>Login with administrator privileges.</li>
+                <li>Run the <b>Add / Remove Programs</b> applet from the <b>control panel</b>.</li>
+                <li>Select <b>Embedthis Expansive</b> and choose remove.</li>
+            </ol>
+
+            <a id="silentInstallation"></a>
+            <h2>Silent Installation</h2>
+            <p>If you need to do batch or unattended installations, you can install Expansive silently. Use the
+            <b>/silent</b> switch to suppress questions and <b>/verysilent</b> to suppress all visual
+            output.</p>
 
             <a id="running"></a>
             <h2>Running Expansive</h2>
-            <p>You can run exp via:</p>
+            <p>To run expansive type the following in a command window:</p>
             <pre class="ui code segment">
 exp
 </pre>
-            <p>To get all the options for Expansive, read the man page via:</p>
-            <pre class="ui code segment">
-man exp
-</pre>or get the command help via:
+
+            <p>To get all the options for Expansive:</p>
             <pre class="ui code segment">
 exp --help
 </pre>

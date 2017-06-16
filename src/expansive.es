@@ -311,16 +311,6 @@ public class Expansive {
                 }
             }
             blend(serviceConfig, cfg.services)
-
-            //  TODO - somehow move back to exp-blog
-            if (cfg.meta.blog) {
-                if (cfg.meta.blog.title) {
-                    meta.title = cfg.meta.blog.title
-                }
-                if (cfg.meta.blog.description) {
-                    meta.description = cfg.meta.blog.description
-                }
-            }
         }
         if (control.script) {
             try {

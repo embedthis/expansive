@@ -105,8 +105,8 @@
   </PropertyGroup>
   
       <ItemGroup>
-    <ClCompile Include="..\..\src\expansive.c" />
     <ClCompile Include="..\..\src\expParser.c" />
+    <ClCompile Include="..\..\src\expansive.c" />
   </ItemGroup>
 
       <ItemDefinitionGroup>

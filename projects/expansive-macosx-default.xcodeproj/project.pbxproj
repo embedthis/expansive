@@ -98,8 +98,8 @@
 
 /* Begin PBXBuildFile section */
 		1DB926561DB957180000002B /* ejsc.c in Sources */ = {isa = PBXBuildFile; fileRef = 1DB926561DB957180000002C /* ejsc.c */; };
-		1DB926561DB957180000002D /* expansive.c in Sources */ = {isa = PBXBuildFile; fileRef = 1DB926561DB957180000002E /* expansive.c */; };
-		1DB926561DB957180000002F /* expParser.c in Sources */ = {isa = PBXBuildFile; fileRef = 1DB926561DB9571800000030 /* expParser.c */; };
+		1DB926561DB957180000002D /* expParser.c in Sources */ = {isa = PBXBuildFile; fileRef = 1DB926561DB957180000002E /* expParser.c */; };
+		1DB926561DB957180000002F /* expansive.c in Sources */ = {isa = PBXBuildFile; fileRef = 1DB926561DB9571800000030 /* expansive.c */; };
 		1DB926561DB9571800000031 /* ejsLib.c in Sources */ = {isa = PBXBuildFile; fileRef = 1DB926561DB9571800000032 /* ejsLib.c */; };
 		1DB926561DB9571800000033 /* httpLib.c in Sources */ = {isa = PBXBuildFile; fileRef = 1DB926561DB9571800000034 /* httpLib.c */; };
 		1DB926561DB9571800000035 /* mbedtls.c in Sources */ = {isa = PBXBuildFile; fileRef = 1DB926561DB9571800000036 /* mbedtls.c */; };
@@ -661,10 +661,10 @@
 		1DB926561DB957180000002C /* ejsc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ejsc.c; path = src/ejscript/ejsc.c; sourceTree = "<group>"; };
 		1DB926561DB95718000000B4 /* ejs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ejs.h; path = src/ejscript/ejs.h; sourceTree = "<group>"; };
 		1DB926561DB95718000000B5 /* ejsc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = expansive-ejsc; sourceTree = BUILT_PRODUCTS_DIR; };
-		1DB926561DB957180000002E /* expansive.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = expansive.c; path = src/expansive.c; sourceTree = "<group>"; };
+		1DB926561DB957180000002E /* expParser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = expParser.c; path = src/expParser.c; sourceTree = "<group>"; };
 		1DB926561DB95718000000B6 /* ejs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ejs.h; path = build/macosx-x64-default/inc/ejs.h; sourceTree = "<group>"; };
 		1DB926561DB95718000000B7 /* expansive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = expansive.h; path = build/macosx-x64-default/inc/expansive.h; sourceTree = "<group>"; };
-		1DB926561DB9571800000030 /* expParser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = expParser.c; path = src/expParser.c; sourceTree = "<group>"; };
+		1DB926561DB9571800000030 /* expansive.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = expansive.c; path = src/expansive.c; sourceTree = "<group>"; };
 		1DB926561DB95718000000B8 /* expansive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = expansive; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DB926561DB9571800000032 /* ejsLib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ejsLib.c; path = src/ejscript/ejsLib.c; sourceTree = "<group>"; };
 		1DB926561DB95718000000B9 /* mpr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mpr.h; path = build/macosx-x64-default/inc/mpr.h; sourceTree = "<group>"; };
@@ -816,8 +816,8 @@
                 isa = PBXGroup;
                 children = (
 				1DB926561DB95718000000B7 /* expansive.h */,
-				1DB926561DB957180000002E /* expansive.c */,
-				1DB926561DB9571800000030 /* expParser.c */,
+				1DB926561DB957180000002E /* expParser.c */,
+				1DB926561DB9571800000030 /* expansive.c */,
 			);
                 name = "expansive";
                 path = ..;
@@ -1123,9 +1123,9 @@ cd ../src/ejscript
     			files = (
     			);
     			inputPaths = (
-    ../src/expansive.es,
+    ../paks/ejs.version/Version.es,
 ../src/ExpParser.es,
-../paks/ejs.version/Version.es
+../src/expansive.es
     			);
     			outputPaths = (
     ../build/macosx-x64-default/bin/expansive.mod
@@ -1134,7 +1134,7 @@ cd ../src/ejscript
     			shellPath = /bin/bash;
     			shellScript = "PATH=$PATH:/usr/local/bin
 cd ..
-	\"./build/macosx-x64-default/bin/expansive-ejsc\" --debug --out \"./build/macosx-x64-default/bin/expansive.mod\" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs.version/Version.es
+	\"./build/macosx-x64-default/bin/expansive-ejsc\" --debug --out \"./build/macosx-x64-default/bin/expansive.mod\" --optimize 9 paks/ejs.version/Version.es src/ExpParser.es src/expansive.es
 ";
     		};
 		1DB926561DB9571800000011 /* ShellScript for install-certs */ = {
@@ -1329,8 +1329,8 @@ fi";
     			isa = PBXSourcesBuildPhase;
     			buildActionMask = 2147483647;
     			files = (
-    				1DB926561DB957180000002D /* expansive.c in Sources */,
-				1DB926561DB957180000002F /* expParser.c in Sources */,
+    				1DB926561DB957180000002D /* expParser.c in Sources */,
+				1DB926561DB957180000002F /* expansive.c in Sources */,
     			);
     			runOnlyForDeploymentPostprocessing = 0;
     		};

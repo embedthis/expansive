@@ -3,7 +3,7 @@
 #
 
 NAME                  = expansive
-VERSION               = 0.7.2
+VERSION               = 0.7.3
 
 OS                    = windows
 PA                    = $(PROCESSOR_ARCHITECTURE)
@@ -849,16 +849,16 @@ build\$(CONFIG)\bin\expansive-ejs.exe: $(DEPS_44)
 #
 #   expansive.mod
 #
-DEPS_45 = $(DEPS_45) src\expansive.es
-DEPS_45 = $(DEPS_45) src\ExpParser.es
 DEPS_45 = $(DEPS_45) paks\ejs.version\Version.es
+DEPS_45 = $(DEPS_45) src\ExpParser.es
+DEPS_45 = $(DEPS_45) src\expansive.es
 !IF "$(ME_COM_EJSCRIPT)" == "1"
 DEPS_45 = $(DEPS_45) build\$(CONFIG)\bin\ejs.mod
 !ENDIF
 
 build\$(CONFIG)\bin\expansive.mod: $(DEPS_45)
 	@echo .. [Compile] expansive.mod
-	"./$(BUILD)/bin/expansive-ejsc" --debug --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs.version/Version.es
+	"./$(BUILD)/bin/expansive-ejsc" --debug --out "./$(BUILD)/bin/expansive.mod" --optimize 9 paks/ejs.version/Version.es src/ExpParser.es src/expansive.es
 
 #
 #   expansive
@@ -871,8 +871,8 @@ DEPS_46 = $(DEPS_46) build\$(CONFIG)\bin\libhttp.dll
 DEPS_46 = $(DEPS_46) build\$(CONFIG)\bin\libejs.dll
 !ENDIF
 DEPS_46 = $(DEPS_46) build\$(CONFIG)\bin\expansive.mod
-DEPS_46 = $(DEPS_46) build\$(CONFIG)\obj\expansive.obj
 DEPS_46 = $(DEPS_46) build\$(CONFIG)\obj\expParser.obj
+DEPS_46 = $(DEPS_46) build\$(CONFIG)\obj\expansive.obj
 
 !IF "$(ME_COM_MBEDTLS)" == "1"
 LIBS_46 = $(LIBS_46) libmbedtls.lib
@@ -915,7 +915,7 @@ LIBS_46 = $(LIBS_46) libhttp.lib
 
 build\$(CONFIG)\bin\expansive.exe: $(DEPS_46)
 	@echo ..... [Link] build\$(CONFIG)\bin\expansive.exe
-	"$(LD)" -nologo -out:$(BUILD)\bin\expansive.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\expansive.obj" "$(BUILD)\obj\expParser.obj" $(LIBPATHS_46) $(LIBS_46) $(LIBS_46) $(LIBS)  $(LOG)
+	"$(LD)" -nologo -out:$(BUILD)\bin\expansive.exe -entry:mainCRTStartup -subsystem:console $(LDFLAGS) $(LIBPATHS) "$(BUILD)\obj\expParser.obj" "$(BUILD)\obj\expansive.obj" $(LIBPATHS_46) $(LIBS_46) $(LIBS_46) $(LIBS)  $(LOG)
 
 !IF "$(ME_COM_HTTP)" == "1"
 #

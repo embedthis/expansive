@@ -100,7 +100,7 @@
 
       <CustomBuildStep>
         <Command>cd ..\..
-"./build/windows-x86-default/bin/expansive-ejsc" --debug --out "./build/windows-x86-default/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs.version/Version.es
+"./build/windows-x86-default/bin/expansive-ejsc" --debug --out "./build/windows-x86-default/bin/expansive.mod" --optimize 9 paks/ejs.version/Version.es src/ExpParser.es src/expansive.es
 cd projects\expansive-windows-default</Command>
         <Outputs>$(BinDir)\expansive.mod</Outputs>
       </CustomBuildStep>

@@ -3,7 +3,7 @@
 #
 
 NAME                  := expansive
-VERSION               := 0.7.2
+VERSION               := 0.7.3
 PROFILE               ?= default
 ARCH                  ?= $(shell uname -m | sed 's/i.86/x86/;s/x86_64/x64/;s/arm.*/arm/;s/mips.*/mips/')
 CC_ARCH               ?= $(shell echo $(ARCH) | sed 's/x86/i686/;s/x64/x86_64/')
@@ -775,16 +775,16 @@ endif
 #
 #   expansive.mod
 #
-DEPS_45 += src/expansive.es
-DEPS_45 += src/ExpParser.es
 DEPS_45 += paks/ejs.version/Version.es
+DEPS_45 += src/ExpParser.es
+DEPS_45 += src/expansive.es
 ifeq ($(ME_COM_EJSCRIPT),1)
     DEPS_45 += $(BUILD)/bin/ejs.mod
 endif
 
 $(BUILD)/bin/expansive.mod: $(DEPS_45)
 	echo '   [Compile] expansive.mod' ; \
-	"./$(BUILD)/bin/expansive-ejsc" --debug --out "./$(BUILD)/bin/expansive.mod" --optimize 9 src/expansive.es src/ExpParser.es paks/ejs.version/Version.es
+	"./$(BUILD)/bin/expansive-ejsc" --debug --out "./$(BUILD)/bin/expansive.mod" --optimize 9 paks/ejs.version/Version.es src/ExpParser.es src/expansive.es
 
 #
 #   expansive
@@ -797,8 +797,8 @@ ifeq ($(ME_COM_EJSCRIPT),1)
     DEPS_46 += $(BUILD)/bin/libejs.dylib
 endif
 DEPS_46 += $(BUILD)/bin/expansive.mod
-DEPS_46 += $(BUILD)/obj/expansive.o
 DEPS_46 += $(BUILD)/obj/expParser.o
+DEPS_46 += $(BUILD)/obj/expansive.o
 
 ifeq ($(ME_COM_MBEDTLS),1)
     LIBS_46 += -lmbedtls
@@ -841,7 +841,7 @@ endif
 
 $(BUILD)/bin/expansive: $(DEPS_46)
 	@echo '      [Link] $(BUILD)/bin/expansive'
-	$(CC) -o $(BUILD)/bin/expansive -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/expansive.o" "$(BUILD)/obj/expParser.o" $(LIBPATHS_46) $(LIBS_46) $(LIBS_46) $(LIBS) 
+	$(CC) -o $(BUILD)/bin/expansive -arch $(CC_ARCH) $(LDFLAGS) $(LIBPATHS) "$(BUILD)/obj/expParser.o" "$(BUILD)/obj/expansive.o" $(LIBPATHS_46) $(LIBS_46) $(LIBS_46) $(LIBS) 
 
 ifeq ($(ME_COM_HTTP),1)
 #

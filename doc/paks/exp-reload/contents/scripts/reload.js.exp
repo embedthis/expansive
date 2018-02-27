@@ -1,7 +1,9 @@
 <@
     let reload = expansive.services.reload
-    if (reload && reload.enable && expansive.package.pak.mode == 'debug') {
+    let mode = expansive.package.pak.mode
+    if (reload && reload.enable && (mode == 'debug' || mode == 'dev')) {
  @>
+print("MOB5")
     $(document).ready(function() {
         (function() {
             var r = new XMLHttpRequest();

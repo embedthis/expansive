@@ -33,7 +33,7 @@ Expansive.load({
                     if (!(service.files is Array)) {
                         service.files = [ service.files ]
                     }
-                    expansive.control.collections.scripts = 
+                    expansive.control.collections.scripts =
                         (expansive.control.collections.scripts + service.files).unique()
                 }
                 if (!service.extract) {
@@ -68,7 +68,7 @@ Expansive.load({
                     let minified = vfile.replaceExt('min.js')
                     /*
                         Minify if required, or a suitable minfied version does not exist or !usemin
-                     */                           
+                     */
                     if (service.minify || !(minified.exists && service.usemin && (!service.usemap ||
                             (vfile.replaceExt('min.map').exists || vfile.replaceExt('min.js.map').exists)))) {
                         if (service.minify && service.dotmin) {
@@ -182,7 +182,7 @@ Expansive.load({
                     let directories = expansive.directories
                     let service = expansive.services.js
                     if (!service.hash[collections.scripts]) {
-                        let files = directories.contents.files(collections.scripts, 
+                        let files = directories.contents.files(collections.scripts,
                             { contents: true, directories: false, relative: true})
                         files = expansive.orderFiles(files, "js")
                         service.hash[collections.scripts] = buildScriptList(files).unique()
@@ -191,6 +191,7 @@ Expansive.load({
                         if (filter && !Path(script).glob(filter)) {
                             continue
                         }
+                        script = Path(script).portable
                         let uri = meta.top.join(script).trimStart('./')
                         write('<script src="' + uri + '"></script>\n    ')
                     }
@@ -206,6 +207,7 @@ Expansive.load({
                     }
                     for each (script in extras) {
                         let uri = meta.top.join(script).trimStart('./')
+                        script = Path(script).portable
                         write('<script src="' + uri + '"></script>\n    ')
                     }
                 }
@@ -254,7 +256,7 @@ Expansive.load({
                 }
 
                 /*
-                    Local function to extract onclick attributes 
+                    Local function to extract onclick attributes
                  */
                 function handleScriptAttributes(contents, meta, state): String {
                     let result = ''

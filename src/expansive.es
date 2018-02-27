@@ -14,7 +14,7 @@ const CONFIG: Path = Path('expansive')
 const HOME = Path(App.getenv('HOME') || App.getenv('USERPROFILE') || '.')
 const LISTEN = '127.0.0.1:4000'
 const EXTENSIONS = ['js', 'css']
-const PACKAGE = Path('package.json')
+const PAK = Path('pak.json')
 const LAST_GEN = Path('.expansive-lastgen')
 
 const USAGE = 'Expansive Web Site Generator
@@ -24,11 +24,10 @@ const USAGE = 'Expansive Web Site Generator
     --clean              # Clean "dist" first
     --listen IP:PORT     # Endpoint to listen on
     --log path:level     # Trace to logfile
-    --mode [mode]        # Set the mode for this invocation
     --noclean            # Do not clean "dist" directory before render
     --norender           # Do not do an initial render before watching
     --nowatch            # Do not watch for changes, just serve
-    --profile PROFILE    # Set the build profile
+    --profile PROFILE    # Set the build profile (dev, prod, ...)
     --quiet              # Quiet mode
     --trace path:level   # Trace http requests
     --verbose            # Verbose mode
@@ -38,7 +37,7 @@ const USAGE = 'Expansive Web Site Generator
     deploy [directory]   # Deploy required production files
     edit key[=value]     # Get and set expansive.json values
     init                 # Create expansive.json
-    mode [debug|release] # Select property mode set
+    profile [dev|prod]   # Set profile
     render               # Render entire site
     serve                # Serve and watch for changes
     watch                # Watch for changes and render as required
@@ -77,6 +76,7 @@ public class Expansive {
     public var services: Object = {}
     var serviceConfig: Object = {}
     var sitemaps: Array = []
+    //  MOB - not used
     var skipFilter: Object = {}
     var stats: Object
     public var topMeta: Object
@@ -120,10 +120,7 @@ public class Expansive {
         title: 'Display Package Title - several words. E.g. Company Product',
         description: 'Full Package Description - one line',
         version: '1.0.0',
-        pak: {
-            mode: 'debug',
-            import: true,
-        },
+        import: true,
         directories: {
             export: 'contents/lib'
         }
@@ -161,20 +158,6 @@ public class Expansive {
             control: control,
         }
         directories = control.directories
-        //  DEPRECATE
-        if (!directories.lib.exists && Path('lib').exists) {
-            trace('Upgrade', 'Move lib directory to ' + directories.lib)
-            let package = loadPackage()
-            if (!package.directories || !package.directories.export) {
-                Path('lib').rename(directories.lib)
-                package.directories ||= {}
-                package.directories.export = directories.lib
-                delete package._installedDependencies_
-                trace('Upgrade', 'Add package.json directories.export')
-                PACKAGE.write(serialize(package, {pretty: true, indent: 4}) + '\n')
-            }
-        }
-
         impliedUpdates = {}
         destPathCache = {}
         resolveCache = {}
@@ -210,9 +193,12 @@ public class Expansive {
         if (options.verbose) {
             verbosity++
         }
-        if (options.profile) {
-            options.mode = options.profile
+        //  LEGACY
+        if (options.mode) {
+            options.profile = options.mode
         }
+        //  LEGACY
+        options.mode = options.profile
     }
 
     function setup(task) {
@@ -232,10 +218,10 @@ public class Expansive {
         criteria ||= config.expansive
         if (criteria && !Version(Config.Version).acceptable(criteria)) {
             throw 'Requires Expansive ' + criteria + '. Expansive version ' + Config.Version +
-                            ' is not compatible with this requirement.' + '\n'
+                  ' is not compatible with this requirement.' + '\n'
         }
         loadConfig('.', topMeta)
-        trace('Info', 'Using mode:', package.pak.mode)
+        trace('Info', 'Using profile:', package.profile)
         computePackageOrder()
         loadPlugins()
         setupEjsTransformer()
@@ -288,19 +274,21 @@ public class Expansive {
 
     function loadConfig(path: Path, meta = {}): Object {
         let cfg = readConfig(path)
-        if (options.mode) {
-            package.pak.mode = options.mode
+        if (options.profile) {
+            package.profile = options.profile
         }
-        vtrace('Info', 'Using mode:', package.pak.mode)
+        //  LEGACY
+        package.mode = package.profile
+        vtrace('Info', 'Using profile:', package.profile)
         blend(cfg, { meta: {}, control: {}, services: {}}, {combine: true})
-        let mode = cfg[package ? package.pak.mode : '']
-        if (mode) {
-            blend(cfg.meta, mode.meta, {combine: true})
+        let profile = cfg[package ? package.profile : '']
+        if (profile) {
+            blend(cfg.meta, profile.meta, {combine: true})
             if (!initialized) {
-                blend(cfg.control, mode.control, {combine: true})
-                blend(cfg.services, mode.services, {combine: true})
+                blend(cfg.control, profile.control, {combine: true})
+                blend(cfg.services, profile.services, {combine: true})
             }
-            delete meta[cfg.mode]
+            delete meta[cfg.profile]
         }
         blend(meta, cfg.meta)
         if (!initialized) {
@@ -394,48 +382,10 @@ public class Expansive {
         }
         let pkg = readPackage(path)
         if (!pkg) {
-            throw 'Cannot find plugin package.json at: ' + path
+            throw 'Cannot find plugin pak json at: ' + path
         }
         for (let [name, requiredVersion] in pkg._installedDependencies_) {
             loadPlugin(name, requiredVersion)
-        }
-    }
-
-    function fixMappings() {
-        for each (service in services) {
-            /*
-                Overwrite transform mappings with user configuration from 'services.*.mappings'
-                This may be a String, Array or Object
-             */
-            if (service.mappings) {
-                if (service.mappings is String || service.mappings is Array) {
-                    let transform = transforms[service.name]
-                    if (transform) {
-                        transform.mappings = service.mappings
-                    }
-                } else {
-                    for (let [name,mapping] in service.mappings) {
-                        let transform = transforms[service.name + '-' + name]
-                        if (transform) {
-                            transform.mappings = mapping
-                        }
-                    }
-                }
-            }
-            for each (transform in service.transforms) {
-                if (transform.mappings is String) {
-                    let v = {}
-                    v[transform.mappings] = transform.mappings
-                    transform.mappings = v
-                }
-                if (transform.mappings is Array) {
-                    let v = {}
-                    for each (mapping in transform.mappings) {
-                        v[mapping] = mapping
-                    }
-                    transform.mappings = v
-                }
-            }
         }
     }
 
@@ -528,10 +478,48 @@ public class Expansive {
         postProcessors = postProcessors.unique()
     }
 
+    function fixMappings() {
+        for each (service in services) {
+            /*
+                Overwrite transform mappings with user configuration from 'services.*.mappings'
+                This may be a String, Array or Object
+             */
+            if (service.mappings) {
+                if (service.mappings is String || service.mappings is Array) {
+                    let transform = transforms[service.name]
+                    if (transform) {
+                        transform.mappings = service.mappings
+                    }
+                } else {
+                    for (let [name,mapping] in service.mappings) {
+                        let transform = transforms[service.name + '-' + name]
+                        if (transform) {
+                            transform.mappings = mapping
+                        }
+                    }
+                }
+            }
+            for each (transform in service.transforms) {
+                if (transform.mappings is String) {
+                    let v = {}
+                    v[transform.mappings] = transform.mappings
+                    transform.mappings = v
+                }
+                if (transform.mappings is Array) {
+                    let v = {}
+                    for each (mapping in transform.mappings) {
+                        v[mapping] = mapping
+                    }
+                    transform.mappings = v
+                }
+            }
+        }
+    }
+
     function getInstalledPaks() {
         let deps = {}
         for each (path in directories.paks.files('*')) {
-            if (path.isDir && path.join('package.json').exists) {
+            if (path.isDir && (path.join(PAK).exists || path.join('package.json').exists)) {
                 let name = path.basename
                 deps[name] = true
             }
@@ -540,9 +528,12 @@ public class Expansive {
     }
 
     function readPackage(dir: Path) {
-        let path = dir.join(PACKAGE)
+        let path = dir.join(PAK)
         if (!path.exists) {
-            return null
+            path = dir.join("package.json")
+            if (!path.exists) {
+                return null
+            }
         }
         let pkg = path.readJSON()
         pkg._installedDependencies_ = getInstalledPaks()
@@ -552,13 +543,22 @@ public class Expansive {
     function loadPackage() {
         let pkg = readPackage('.')
         if (pkg) {
-            pkg.pak ||= {}
+            pkg.profile = options.profile || pkg.profile
+            let product = Path('product.json')
+            if (product.exists) {
+                let data = product.readJSON()
+                if (data && data.profile) {
+                    pkg.profile ||= data.profile
+                    vtrace('Info', 'Set profile ' + pkg.profile + ' from product.json')
+                }
+            }
+            pkg.profile ||= 'debug'
             blend(directories, pkg.directories)
             castDirectories()
             topMeta.title = pkg.title
             topMeta.description = pkg.description
         }
-        return pkg || {pak: {}}
+        return pkg
     }
 
     function findPackage(name, requiredVersion = '*'): Path? {
@@ -572,7 +572,7 @@ public class Expansive {
         let pakcache = App.home.join('.paks')
         for each (vpath in Version.sort(pakcache.join(name).files('*/*'))) {
             let version = Version(vpath.basename)
-            if (version.acceptable(requiredVersion)) {
+            if (requiredVersion == true || version.acceptable(requiredVersion)) {
                 return vpath
             }
         }
@@ -604,8 +604,8 @@ public class Expansive {
             edit(rest, meta)
             break
 
-        case 'mode':
-            mode(rest)
+        case 'profile':
+            profile(rest)
             break
 
         case 'render':
@@ -744,7 +744,8 @@ public class Expansive {
             }
         }
 
-        let files = directories.top.files('contents/**', {contents: true, relative: true})
+        //  MOB - why is contents hard coded here
+        let files = directories.top.files(directories.contents + '/**', {contents: true, relative: true})
         for (let [index,file] in files) {
             if (!filter(file)) {
                 continue
@@ -756,21 +757,6 @@ public class Expansive {
                 }
             }
         }
-        if (false) {
-            let files = directories.top.files('contents/**', {contents: true, relative: true})
-            for (let [index,file] in files) {
-                if (!filter(file)) {
-                    continue
-                }
-                if (!file.isDir && (file.modified > getLastRendered(file))) {
-                    let meta = getFileMeta(file)
-                    if (!meta || !meta.draft) {
-                        modify(file, 'file')
-                    }
-                }
-            }
-        }
-
         /*
             This is costly - do only first time
          */
@@ -800,8 +786,8 @@ public class Expansive {
     }
 
     function watch(meta) {
-        if (package.pak.mode != 'debug' && package.pak.mode != 'dev') {
-            trace('Warn', 'Watching for changes only supported in debug/dev mode')
+        if (package.profile != 'debug' && package.profile != 'dev') {
+            trace('Warn', 'Watching for changes only supported in debug/dev profile')
             return
         }
         trace('Watching', 'for changes every ' + control.watch + ' msec ...')
@@ -885,6 +871,7 @@ public class Expansive {
         for each (request in reload) {
             request.write('html')
             request.finalize()
+            request.close()
         }
         reload = []
     }
@@ -928,7 +915,7 @@ public class Expansive {
         }
         options.serving = true
         let address = options.listen || control.listen || '127.0.0.1:4000'
-        if (package.pak.mode == 'release') {
+        if (package.profile == 'release') {
             options.nowatch = true
         }
         if (options.nowatch) {
@@ -1041,8 +1028,9 @@ public class Expansive {
             sitemaps = []
             for each (dir in dirs) {
                 if (findConfig(dir)) {
-                    let meta = metaCache[dir.parent] || topMeta
-                    let meta = metaCache[dir] = loadConfig(dir, meta.clone(true))
+                    let baseMeta = (metaCache[dir.parent] || topMeta).clone(true)
+                    delete baseMeta.sitemap
+                    let meta = metaCache[dir] = loadConfig(dir, baseMeta)
                     if (meta.sitemap) {
                         /* Site maps must be processed after all rendering using the documents directory */
                         let pubdir = trimPath(dir, directories.contents)
@@ -1068,6 +1056,10 @@ public class Expansive {
         if (base == 'expansive.json' || base == 'expansive.es') {
             return false
         }
+        if (control.filters && !path.glob(control.filters)) {
+            vtrace('Info', 'Filter', path)
+            return false
+        }
         if (!filters) {
             return true
         }
@@ -1089,7 +1081,7 @@ public class Expansive {
             if (!filter(file)) {
                 continue
             }
-            if (modified.file[file] || modified.everything) {
+            if (filters || modified.file[file] || modified.everything) {
                 let meta = metaCache[file.dirname]
                 if (copy[file]) {
                     copyFile(file, meta)
@@ -1287,7 +1279,9 @@ public class Expansive {
         }
         meta.absurl = meta.abstop.join(meta.url).normalize
 
-        meta.mode = package.pak.mode || 'debug'
+        meta.profile = package.profile || 'debug'
+        //  LEGACY
+        meta.mode = meta.profile
         meta.date ||= new Date
         meta.date = Date(meta.date)
         meta.isoDate = meta.date.toISOString()
@@ -1323,7 +1317,7 @@ public class Expansive {
         }
         contents = renderContents(contents, meta)
         if (meta.redirect) {
-            contents = '<html><head><title>' + meta.title + 
+            contents = '<html><head><title>' + meta.title +
                        '</title><meta http-equiv="refresh" content="0; url=' + meta.redirect + '"/></head></html>\n'
         }
         if (contents !== null) {
@@ -1716,7 +1710,7 @@ public class Expansive {
     function deploy(rest, meta) {
         if (!control.deploy) {
             control.deploy = {
-                from: [directories.dist.join('**'), directories.cache.join('*'), 'package.json', 'esp.json'],
+                from: [directories.dist.join('**'), directories.cache.join('*'), PAK, 'package.json', 'esp.json'],
                 flatten: false,
                 clean: true
             }
@@ -1801,24 +1795,23 @@ public class Expansive {
         for each (p in [ directories.contents, directories.dist, directories.layouts, directories.partials ]) {
             Path(p).makeDir()
         }
-        if (!PACKAGE.exists) {
+        if (!PAK.exists) {
             PakTemplate.name = '' + App.dir.basename
             PakTemplate.title = PakTemplate.name.toPascal()
             PakTemplate.description = PakTemplate.name.toPascal() + ' Description'
-            PACKAGE.write(serialize(PakTemplate, {pretty: true, indent: 4}) + '\n')
+            PAK.write(serialize(PakTemplate, {pretty: true, indent: 4}) + '\n')
         }
     }
 
-    function mode(newMode, meta) {
-        if (newMode.length == 0) {
-            print(package.pak ? package.pak.mode : 'debug')
+    function profile(newProfile, meta) {
+        if (newProfile.length == 0) {
+            print(package.profile || 'debug')
         } else {
-            package.pak ||= {}
-            package.pak.mode = newMode[0].toString()
+            package.profile = newProfile[0].toString()
             delete package._installedDependencies_
             delete package._expansive_
-            PACKAGE.write(serialize(package, {pretty: true, indent: 4}) + '\n')
-            trace('Set', 'Mode to "' + package.pak.mode + '"')
+            PAK.write(serialize(package, {pretty: true, indent: 4}) + '\n')
+            trace('Set', 'Profile to "' + package.profile + '"')
             options.clean = true
             clean(topMeta)
         }
@@ -1867,7 +1860,7 @@ public class Expansive {
     }
 
     function checkEngines(name, path) {
-        let path = path.join(PACKAGE)
+        let path = path.join(PAK)
         if (path.exists) {
             let obj = path.readJSON()
             for (engine in obj.engines) {
@@ -2000,9 +1993,13 @@ public class Expansive {
             dependencies = (pak.dependencies.clone() || {})
             blend(dependencies, pak._installedDependencies_)
         } else {
-            path = directories.paks.join(name, PACKAGE)
+            path = directories.paks.join(name, PAK)
             if (!path.exists) {
-                return
+                //  LEGACY
+                path = directories.paks.join(name, 'package.json')
+                if (!path.exists) {
+                    return
+                }
             }
             pak = path.readJSON()
             path = directories.paks.join(name, CONFIG).joinExt('json')

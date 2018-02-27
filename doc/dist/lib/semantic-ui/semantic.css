@@ -4778,7 +4778,8 @@ input::selection {
   text-align: justify;
   -webkit-hyphens: auto;
   -ms-hyphens: auto;
-  hyphens: auto;
+  -moz-hyphens: auto;
+       hyphens: auto;
 }
 
 /*******************************
@@ -19838,7 +19839,8 @@ ol.ui.horizontal.list li:before,
   text-align: justify;
   -webkit-hyphens: auto;
   -ms-hyphens: auto;
-  hyphens: auto;
+  -moz-hyphens: auto;
+       hyphens: auto;
 }
 
 /*----------------------

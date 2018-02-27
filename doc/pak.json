@@ -7,8 +7,6 @@
     "directories": {
         "export": "contents/lib"
     },
-    "pak": {
-        "import": true,
-        "mode": "debug"
-    }
+    "import": true,
+    "mode": "debug"
 }

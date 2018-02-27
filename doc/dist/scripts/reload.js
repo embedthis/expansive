@@ -1,8 +1,4 @@
-<@
-    let reload = expansive.services.reload
-    let profile = expansive.package.profile
-    if (reload && reload.enable && (profile == 'debug' || profile == 'dev')) {
- @>
+
     $(document).ready(function() {
         (function() {
             var r = new XMLHttpRequest();
@@ -15,4 +11,4 @@
             r.send();
         })();
     });
-<@ } @>
+

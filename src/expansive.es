@@ -915,7 +915,7 @@ public class Expansive {
         }
         options.serving = true
         let address = options.listen || control.listen || '127.0.0.1:4000'
-        if (package.profile == 'release') {
+        if (package.profile == 'release' || package.profile == 'prod') {
             options.nowatch = true
         }
         if (options.nowatch) {

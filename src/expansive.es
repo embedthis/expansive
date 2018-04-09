@@ -99,6 +99,7 @@ public class Expansive {
             keep:      { alias: 'k' },
             listen:    { range: String },
             log:       { alias: 'l', range: String },
+            //  LEGACY
             mode:      { alias: 'm', range: String },
             noclean:   { },
             norender:  { },
@@ -209,7 +210,7 @@ public class Expansive {
                 fatal('Cannot find expansive configuration file')
             }
         }
-        package = loadPackage()
+        package = loadPak()
         config = readConfig('.')
         let criteria
         if (package.devDependencies) {
@@ -222,7 +223,7 @@ public class Expansive {
         }
         loadConfig('.', topMeta)
         trace('Info', 'Using profile:', package.profile)
-        computePackageOrder()
+        computeOrder()
         loadPlugins()
         setupEjsTransformer()
         clean(meta)
@@ -256,6 +257,9 @@ public class Expansive {
         return null
     }
 
+    /*
+        Read expansive.json or expansive.es
+     */
     function readConfig(path: Path): Object {
         path = findConfig(path)
         currentConfigPath = path
@@ -355,7 +359,7 @@ public class Expansive {
         }
         plugins[name] = true
 
-        let path = findPackage(name, requiredVersion)
+        let path = findPak(name, requiredVersion)
         if (!path) {
             trace('Warn', 'Cannot load plugin ' + name + ' ' + requiredVersion)
             return
@@ -380,7 +384,7 @@ public class Expansive {
                 }
             }
         }
-        let pkg = readPackage(path)
+        let pkg = readPak(path)
         if (!pkg) {
             throw 'Cannot find plugin pak json at: ' + path
         }
@@ -527,21 +531,34 @@ public class Expansive {
         return deps
     }
 
-    function readPackage(dir: Path) {
+    function readPak(dir: Path) {
         let path = dir.join(PAK)
-        if (!path.exists) {
+        let pkg
+        if (path.exists) {
+            pkg = path.readJSON()
+            if (!pkg.version) {
+                let package = dir.join("package.json")
+                if (package.exists) {
+                    let data = package.readJSON()
+                    pkg.version = data.version
+                }
+            }
+        } else {
             path = dir.join("package.json")
             if (!path.exists) {
                 return null
             }
+            pkg = path.readJSON()
         }
-        let pkg = path.readJSON()
         pkg._installedDependencies_ = getInstalledPaks()
         return pkg
     }
 
-    function loadPackage() {
-        let pkg = readPackage('.')
+    /*
+        Load the top level pak.json, product.json or package.json
+     */
+    function loadPak() {
+        let pkg = readPak('.')
         if (pkg) {
             pkg.profile = options.profile || pkg.profile
             let product = Path('product.json')
@@ -561,7 +578,7 @@ public class Expansive {
         return pkg
     }
 
-    function findPackage(name, requiredVersion = '*'): Path? {
+    function findPak(name, requiredVersion = '*'): Path? {
         if (name.contains('#')) {
             [name,requiredVersion] = name.split('#')
         }
@@ -891,6 +908,7 @@ public class Expansive {
                     dontAutoFinalize()
                     self.reload.push(this)
                 } else {
+                    request.setHeader('X-Frame-Options', 'AllowAll')
                     server.serve(request, router)
                 }
             } catch (e) {
@@ -1978,7 +1996,7 @@ public class Expansive {
     /*
         Compute the render order requirements for packages.
      */
-    private function computePackageOrder(name = null) {
+    private function computeOrder(name = null) {
         let pak, path
         if (paks[name]) {
             return
@@ -2021,7 +2039,7 @@ public class Expansive {
 
         for (dname in dependencies) {
             /* Depth first traversal */
-            computePackageOrder(dname)
+            computeOrder(dname)
         }
         paks[pak.name] = pak
 

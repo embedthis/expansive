@@ -1,6 +1,7 @@
 {
     "name": "exp-css",
     "description": "CSS Plugin for Expansive",
+    "version": "0.3.1",
     "keywords": [
         "expansive-plugin",
         "css"
@@ -24,6 +25,5 @@
             }
         ]
     },
-    "origin": "embedthis/exp-css",
-    "migrated": true
+    "origin": "embedthis/exp-css"
 }

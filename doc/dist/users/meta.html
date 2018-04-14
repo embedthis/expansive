@@ -2,20 +2,19 @@
 <html lang="en">
 <head>
     <title>Meta Data</title>
-    <!-- Copyright Embedthis Software. All Rights Reserved. -->
+    
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="description" content="Meta Data" />
-    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700'
-        rel='stylesheet' type='text/css'>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <meta name="description" content="Meta Data">
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
     
-    <link href="../images/favicon.ico" rel="shortcut icon" />
-    <link href="../lib/semantic-ui/semantic.css" rel="stylesheet" type="text/css" />
-    <link href="../css/all.css" rel="stylesheet" type="text/css" />
-    <link href="../css/api.css" rel="stylesheet" type="text/css" />
+    <link href="../images/favicon.ico" rel="shortcut icon">
+    <link href="/lib/semantic-ui/semantic.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/api.min.css" rel="stylesheet" type="text/css">
     
 
 </head>
@@ -23,7 +22,7 @@
     <div class="sidebar">
         <div class="ui large left vertical inverted labeled menu">
             <div class="item">
-                <a href="../index.html" class="logo">Expansive<br/>Docs</a>
+                <a href="../index.html" class="logo">Expansive<br>Docs</a>
             </div>
             <div class="item">
                 <div class="menu">
@@ -70,7 +69,7 @@
                     <a class="item" href="../users/deploying.html">Deploying a Site</a>
                     <a class="item" href="../users/configuration.html">Configuration</a>
 
-                    <!-- query engine -->
+                    
                     <a class="item" href="../users/sitemaps.html">Sitemaps</a>
                     <a class="item" href="../users/troubleshoot.html">Troubleshooting</a>
                 </div>
@@ -86,7 +85,7 @@
             <div class="item">
                 <a href="../developers/project.html">Project Resources</a>
                 <div class="menu">
-                    <!-- MOB -->
+                    
                     <a class="item" href="https://embedthis.com/blog/categories/Expansive">Expansive News</a>
                     <a class="item" href="https://embedthis.com/expansive/">Expansive Web Site</a>
                     <a class="item" href="https://github.com/embedthis/exp">Source Code Repository</a>
@@ -239,40 +238,40 @@
         <p>These are the standard, pre-defined Meta properties available in content, layout and partial pages.</p>
         <table class="ui celled table" title="predefined">
         <thead>
-            <tr><th>Property</th><th>Description</th></tr>
+            <tr><th>Property<th>Description</tr>
         </thead>
         <tbody>
-            <tr><td>abstop</td><td>Absolute URL to the top level home page of the site.</td></tr>
-            <tr><td>absurl</td><td>Absolute URL from the application to to the current page.</td></tr>
-            <tr><td>date</td><td>Current date and time</td></tr>
-            <tr><td>description</td><td>Description of the web site. Sourced from the <em>description</em> 
-                property in the package.json file.</td></tr>
-            <tr><td>dest</td><td>Final destination name of the rendered page or file in the <em>dist</em> directory.</td></tr>
-            <tr><td>destPath</td><td>Destination filename of the page relative to the <em>dist</em> directory.</td></tr>
-            <tr><td>current</td><td>Current virtual filename for the interim pipeline content during transformations.</td></tr>
-            <tr><td>document</td><td>Input file name of the page being processed. For partials and layouts, 
-                this is set to the invoking content page.</td></tr>
-            <tr><td>extension</td><td>The extension of the processed page filename.</td></tr>
-            <tr><td>extensions</td><td>The set of extensions on the original content page.</td></tr>
-            <tr><td>isLayout</td><td>True if a layout is being processed.</td></tr>
-            <tr><td>isPartial</td><td>True if a partial page is being processed.</td></tr>
-            <tr><td>layout</td><td>Layout page in use. Set to '' if no layout being used.</td></tr>
-            <tr><td>mode</td><td>Index name in the pak.modes property. The selected property collection is copied 
+            <tr><td>abstop<td>Absolute URL to the top level home page of the site.</tr>
+            <tr><td>absurl<td>Absolute URL from the application to to the current page.</tr>
+            <tr><td>date<td>Current date and time</tr>
+            <tr><td>description<td>Description of the web site. Sourced from the <em>description</em> 
+                property in the package.json file.</tr>
+            <tr><td>dest<td>Final destination name of the rendered page or file in the <em>dist</em> directory.</tr>
+            <tr><td>destPath<td>Destination filename of the page relative to the <em>dist</em> directory.</tr>
+            <tr><td>current<td>Current virtual filename for the interim pipeline content during transformations.</tr>
+            <tr><td>document<td>Input file name of the page being processed. For partials and layouts, 
+                this is set to the invoking content page.</tr>
+            <tr><td>extension<td>The extension of the processed page filename.</tr>
+            <tr><td>extensions<td>The set of extensions on the original content page.</tr>
+            <tr><td>isLayout<td>True if a layout is being processed.</tr>
+            <tr><td>isPartial<td>True if a partial page is being processed.</tr>
+            <tr><td>layout<td>Layout page in use. Set to '' if no layout being used.</tr>
+            <tr><td>mode<td>Index name in the pak.modes property. The selected property collection is copied 
                 up to the top level of the meta data. This may be used to select a <em>debug</em> or <em>release</em>
-                 configuration.</td></tr>
-            <tr><td>partial</td><td>Name of the partial page being processed.</td></tr>
-            <tr><td>service</td><td>Name of the transformation service being run.</td></tr>
-            <tr><td>site</td><td>Home page URL for the web site.</td></tr>
-            <tr><td>source</td><td>Current input source file being processed. May be a document, partial, layout or 
+                 configuration.</tr>
+            <tr><td>partial<td>Name of the partial page being processed.</tr>
+            <tr><td>service<td>Name of the transformation service being run.</tr>
+            <tr><td>site<td>Home page URL for the web site.</tr>
+            <tr><td>source<td>Current input source file being processed. May be a document, partial, layout or 
                 any input resource file. Includes the <em>contents</em>, <em>lib</em>, <em>layouts</em> or <em>partials</em>
-                directory.</td></tr>
-            <tr><td>site</td><td>Canonical absolute URL to the site. Includes scheme and host.</em> 
-            <tr><td>sourcePath</td><td>Source filename relative to the <em>contents</em>, <em>lib</em>, <em>layouts</em>, or 
-                <em>partials</em> directories.</td></tr>
-            <tr><td>title</td><td>Title of the web site. Sourced from the <em>title</em> property in the <em>package.json</em> 
-                file.</td></tr>
-            <tr><td>top</td><td>Relative URL to the top level home page of the site.</td></tr>
-            <tr><td>url</td><td>Relative URL from the application to to the current page.</td></tr>
+                directory.</tr>
+            <tr><td>site<td>Canonical absolute URL to the site. Includes scheme and host. 
+            <tr><td>sourcePath<td>Source filename relative to the <em>contents</em>, <em>lib</em>, <em>layouts</em>, or 
+                <em>partials</em> directories.</tr>
+            <tr><td>title<td>Title of the web site. Sourced from the <em>title</em> property in the <em>package.json</em> 
+                file.</tr>
+            <tr><td>top<td>Relative URL to the top level home page of the site.</tr>
+            <tr><td>url<td>Relative URL from the application to to the current page.</tr>
         </tbody>
         </table>
 
@@ -303,12 +302,14 @@
         <p>&copy; Embedthis Software. All rights reserved.</p>
     </div>
 
-    <script src="../lib/jquery/jquery.min.js"></script>
-    <script src="../lib/semantic-ui/semantic.js"></script>
-    <script src="../scripts/sidebar.js"></script>
+    <script src="/lib/jquery/jquery.min.js"></script>
+    <script src="/lib/jquery/pak.min.js"></script>
+    <script src="/lib/semantic-ui/semantic.min.js"></script>
+    <script src="/scripts/sidebar.min.js"></script>
      
 
     
 
-</body>
-</html>
+
+
+

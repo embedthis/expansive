@@ -177,7 +177,7 @@ Expansive.load({
 
                     /*
                         Pages have different scripts and so must compute script list per page.
-                        This is hased and saved.
+                        This is hashed and saved.
                      */
                     let directories = expansive.directories
                     let service = expansive.services.js
@@ -192,11 +192,17 @@ Expansive.load({
                             continue
                         }
                         script = Path(script).portable
-                        let uri = meta.top.join(script).trimStart('./')
-                        write('<script src="' + uri + '"></script>\n    ')
+                        // let uri = meta.top.join(script).trimStart('./')
+                        if (!script.startsWith('http') && !script.startsWith('..')) {
+                            script = '/' + script
+                        }
+                        write('<script src="' + script + '"></script>\n    ')
                     }
                     if (extras && extras is String) {
                         extras = [extras]
+                    }
+                    if (collections.remoteScripts) {
+                        extras = extras + collections.remoteScripts
                     }
                     if (service.states) {
                         let extracted = service.states[meta.destPath]
@@ -206,9 +212,17 @@ Expansive.load({
                         }
                     }
                     for each (script in extras) {
-                        let uri = meta.top.join(script).trimStart('./')
-                        script = Path(script).portable
-                        write('<script src="' + uri + '"></script>\n    ')
+                        let async = ''
+                        if (script.startsWith('async ')) {
+                            async = 'async '
+                            script = script.split('async ')[1]
+                        }
+                        // let uri = meta.top.join(script).trimStart('./')
+                        // script = Path(script).portable
+                        if (!script.startsWith('http') && !script.startsWith('..')) {
+                            script = '/' + script
+                        }
+                        write('<script ' + async + 'src="' + script + '"></script>\n    ')
                     }
                 }
             },

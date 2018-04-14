@@ -2,20 +2,19 @@
 <html lang="en">
 <head>
     <title>Expansive Commands</title>
-    <!-- Copyright Embedthis Software. All Rights Reserved. -->
+    
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="description" content="Expansive Commands" />
-    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700'
-        rel='stylesheet' type='text/css'>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <meta name="description" content="Expansive Commands">
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Julius+Sans+One' rel='stylesheet' type='text/css'>
     
-    <link href="../images/favicon.ico" rel="shortcut icon" />
-    <link href="../lib/semantic-ui/semantic.css" rel="stylesheet" type="text/css" />
-    <link href="../css/all.css" rel="stylesheet" type="text/css" />
-    <link href="../css/api.css" rel="stylesheet" type="text/css" />
+    <link href="../images/favicon.ico" rel="shortcut icon">
+    <link href="/lib/semantic-ui/semantic.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/api.min.css" rel="stylesheet" type="text/css">
     
 
 </head>
@@ -23,7 +22,7 @@
     <div class="sidebar">
         <div class="ui large left vertical inverted labeled menu">
             <div class="item">
-                <a href="../index.html" class="logo">Expansive<br/>Docs</a>
+                <a href="../index.html" class="logo">Expansive<br>Docs</a>
             </div>
             <div class="item">
                 <div class="menu">
@@ -70,7 +69,7 @@
                     <a class="item" href="../users/deploying.html">Deploying a Site</a>
                     <a class="item" href="../users/configuration.html">Configuration</a>
 
-                    <!-- query engine -->
+                    
                     <a class="item" href="../users/sitemaps.html">Sitemaps</a>
                     <a class="item" href="../users/troubleshoot.html">Troubleshooting</a>
                 </div>
@@ -86,7 +85,7 @@
             <div class="item">
                 <a href="../developers/project.html">Project Resources</a>
                 <div class="menu">
-                    <!-- MOB -->
+                    
                     <a class="item" href="https://embedthis.com/blog/categories/Expansive">Expansive News</a>
                     <a class="item" href="https://embedthis.com/expansive/">Expansive Web Site</a>
                     <a class="item" href="https://github.com/embedthis/exp">Source Code Repository</a>
@@ -181,16 +180,16 @@
         <p>This will create the following files and directories:</p>
 		<table class="ui celled table" title="files">
 			<thead>
-				<tr><th>Name</th><th>Description</th></tr>
+				<tr><th>Name<th>Description</tr>
 			</thead>
 			<tbody>
-				<tr><td>contents</td><td>Source content for the web site including web pages, images and assets.</td></tr>
-				<tr><td>dist</td><td>Distribution directory where the final public documents of the web 
-	                site will be placed.</td></tr>
-				<tr><td>expansive.json</td><td>Expansive configuration file.</td></tr>
-				<tr><td>layouts</td><td>Directory for master page layouts.</td></tr>
-				<tr><td>package.json</td><td>Web site package description file.</td></tr>
-				<tr><td>partials</td><td>Directory for partial pages.</td></tr>
+				<tr><td>contents<td>Source content for the web site including web pages, images and assets.</tr>
+				<tr><td>dist<td>Distribution directory where the final public documents of the web 
+	                site will be placed.</tr>
+				<tr><td>expansive.json<td>Expansive configuration file.</tr>
+				<tr><td>layouts<td>Directory for master page layouts.</tr>
+				<tr><td>package.json<td>Web site package description file.</tr>
+				<tr><td>partials<td>Directory for partial pages.</tr>
 			</tbody>
 		</table>
 
@@ -206,11 +205,11 @@
 
 		<table class="ui celled table" title="directories">
 			<thead>
-				<tr><th>Name</th><th>Description</th></tr>
+				<tr><th>Name<th>Description</tr>
 			</thead>
 			<tbody>
-				<tr><td>paks</td><td>Installed packages &mdash; full contents.</td></tr>
-                <tr><td>contents/lib</td><td>Exported package library code and assets.</td></tr>
+				<tr><td>paks<td>Installed packages &mdash; full contents.</tr>
+                <tr><td>contents/lib<td>Exported package library code and assets.</tr>
 			</tbody>
 		</table>
 
@@ -273,21 +272,21 @@ $ expansive mode debug</code>
         <p>The <em>expansive</em> command can accept the following command line arguments.</p>
         <table class="ui celled table" title="options">
         <thead>
-        	<tr><th>Option</th><th>Description</th></tr>
+        	<tr><th>Option<th>Description</tr>
         </thead>
         <tbody>
-        	<tr><td>--abort</td><td>Abort rendering on errors</td></tr>
-            <tr><td>--benchmark</td><td>Show per-plugin statistics</td></tr>
-        	<tr><td>--chdir directory</td><td>Change to directory before running</td></tr>
-        	<tr><td>--listen IP:PORT</td><td>Listen endpoint to serve on</td></tr>
-        	<tr><td>--log path:level</td><td>Log messages to log file at verbosity level (0-5)</td></tr>
-        	<tr><td>--noclean</td><td>Do not clean the <em>dist</em> directory before rendering</td></tr>
-        	<tr><td>--norender</td><td>Do not do an initial render before watching</td></tr>
-        	<tr><td>--nowatch</td><td>Do not watch for changes, just serve</td></tr>
-        	<tr><td>--quiet</td><td>Quiet mode</td></tr>
-        	<tr><td>--trace path:level</td><td>Trace http requests to file at level (0-5)</td></tr>
-        	<tr><td>--verbose</td><td>Verbose mode</td></tr>
-        	<tr><td>--version</td><td>Display version information</td></tr>
+        	<tr><td>--abort<td>Abort rendering on errors</tr>
+            <tr><td>--benchmark<td>Show per-plugin statistics</tr>
+        	<tr><td>--chdir directory<td>Change to directory before running</tr>
+        	<tr><td>--listen IP:PORT<td>Listen endpoint to serve on</tr>
+        	<tr><td>--log path:level<td>Log messages to log file at verbosity level (0-5)</tr>
+        	<tr><td>--noclean<td>Do not clean the <em>dist</em> directory before rendering</tr>
+        	<tr><td>--norender<td>Do not do an initial render before watching</tr>
+        	<tr><td>--nowatch<td>Do not watch for changes, just serve</tr>
+        	<tr><td>--quiet<td>Quiet mode</tr>
+        	<tr><td>--trace path:level<td>Trace http requests to file at level (0-5)</tr>
+        	<tr><td>--verbose<td>Verbose mode</tr>
+        	<tr><td>--version<td>Display version information</tr>
         </tbody>
         </table>
 
@@ -296,12 +295,14 @@ $ expansive mode debug</code>
         <p>&copy; Embedthis Software. All rights reserved.</p>
     </div>
 
-    <script src="../lib/jquery/jquery.min.js"></script>
-    <script src="../lib/semantic-ui/semantic.js"></script>
-    <script src="../scripts/sidebar.js"></script>
+    <script src="/lib/jquery/jquery.min.js"></script>
+    <script src="/lib/jquery/pak.min.js"></script>
+    <script src="/lib/semantic-ui/semantic.min.js"></script>
+    <script src="/scripts/sidebar.min.js"></script>
      
 
     
 
-</body>
-</html>
+
+
+

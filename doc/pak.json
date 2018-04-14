@@ -8,5 +8,5 @@
         "export": "contents/lib"
     },
     "import": true,
-    "mode": "debug"
+    "profile": "debug"
 }

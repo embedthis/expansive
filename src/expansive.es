@@ -211,6 +211,9 @@ public class Expansive {
             }
         }
         package = loadPak()
+        if (!package) {
+            throw 'Cannot find pak.json'
+        }
         config = readConfig('.')
         let criteria
         if (package.devDependencies) {

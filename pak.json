@@ -38,11 +38,11 @@
         "ssl": "~0.9"
     },
     "optionalDependencies": {
-        "mpr-openssl": "~0.5"
+        "mpr-openssl": "~1"
     },
     "devDependencies": {
-        "makeme": ">=0.9.0",
-        "pak": ">=0.11.0"
+        "makeme": ">=1.0",
+        "pak": ">=1.0"
     },
     "import": true
 }

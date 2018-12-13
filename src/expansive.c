@@ -33,7 +33,7 @@ MAIN(ejsMain, int argc, char **argv, char **envp)
     char    *argp, *searchPath, *homeDir, *logSpec, *traceSpec;
     int     nextArg, err, flags;
 
-    /*  
+    /*
         Initialize Multithreaded Portable Runtime (MPR)
      */
     mpr = mprCreate(argc, argv, 0);
@@ -41,7 +41,7 @@ MAIN(ejsMain, int argc, char **argv, char **envp)
     mprAddRoot(app);
     mprAddStandardSignals();
 
-    if (mprStart(mpr) < 0) {
+    if (mprStart() < 0) {
         mprLog("expansive", 0, "Cannot start mpr services");
         return EJS_ERR;
     }
@@ -78,7 +78,7 @@ MAIN(ejsMain, int argc, char **argv, char **envp)
             }
 
         } else if (smatch(argp, "--name")) {
-            /* Just ignore. Used to tag commands with a unique command line */ 
+            /* Just ignore. Used to tag commands with a unique command line */
             nextArg++;
 
         } else if (smatch(argp, "--search") || smatch(argp, "--searchpath")) {
@@ -180,11 +180,11 @@ static cchar *findExpansive()
 {
     cchar    *path;
 
-    path = mprJoinPath(mprGetAppDir(), "expansive.mod"); 
+    path = mprJoinPath(mprGetAppDir(), "expansive.mod");
     if (mprPathExists(path, R_OK)) {
         return path;
     }
-    path = mprJoinPath(mprGetAppDir(), "expansive.es"); 
+    path = mprJoinPath(mprGetAppDir(), "expansive.es");
     if (mprPathExists(path, R_OK)) {
         return path;
     }
@@ -198,7 +198,7 @@ static cchar *findExpansive()
     Copyright (c) Embedthis Software LLC, 2003-2014. All Rights Reserved.
 
     This software is distributed under commercial and open source licenses.
-    You may use the Embedthis Open Source license or you may acquire a 
+    You may use the Embedthis Open Source license or you may acquire a
     commercial license from Embedthis Software. You agree to be fully bound
     by the terms of either license. Consult the LICENSE.md distributed with
     this software for full details and other copyrights.

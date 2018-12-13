@@ -1108,7 +1108,7 @@
     ../src/ejscript/ejs.es
     			);
     			outputPaths = (
-    ../build/macosx-x64-default/bin/ejs.mod
+    
     			);
     			runOnlyForDeploymentPostprocessing = 0;
     			shellPath = /bin/bash;
@@ -1128,7 +1128,7 @@ cd ../src/ejscript
 ../src/expansive.es
     			);
     			outputPaths = (
-    ../build/macosx-x64-default/bin/expansive.mod
+    
     			);
     			runOnlyForDeploymentPostprocessing = 0;
     			shellPath = /bin/bash;
@@ -1154,7 +1154,15 @@ cd ..
 ../src/certs/samples/test.key
     			);
     			outputPaths = (
-    ../build/macosx-x64-default/bin
+    ../build/macosx-x64-default/bin/ca.crt,
+../build/macosx-x64-default/bin/ca.key,
+../build/macosx-x64-default/bin/ec.crt,
+../build/macosx-x64-default/bin/ec.key,
+../build/macosx-x64-default/bin/roots.crt,
+../build/macosx-x64-default/bin/self.crt,
+../build/macosx-x64-default/bin/self.key,
+../build/macosx-x64-default/bin/test.crt,
+../build/macosx-x64-default/bin/test.key
     			);
     			runOnlyForDeploymentPostprocessing = 0;
     			shellPath = /bin/bash;
@@ -1181,7 +1189,7 @@ cd ..
     ../src/sample.json
     			);
     			outputPaths = (
-    ../build/macosx-x64-default/bin/sample.json
+    ../build/macosx-x64-default/bin/sample.json/sample.json
     			);
     			runOnlyForDeploymentPostprocessing = 0;
     			shellPath = /bin/bash;

@@ -33,6 +33,7 @@
         "certs": "~0.1",
         "ejs.version": "~0.8",
         "ejscript": "~2.7",
+        "me-win": "~0.1",
         "mpr": "~8",
         "mpr-mbedtls": "~2",
         "ssl": "~0.9"

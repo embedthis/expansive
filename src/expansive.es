@@ -1336,6 +1336,7 @@ public class Expansive {
         if (!fileMeta) {
             delete meta.layout
         }
+        trace('Render', file)
         contents = renderContents(contents, meta)
         if (meta.redirect) {
             contents = '<html><head><title>' + meta.title +
@@ -1452,6 +1453,7 @@ public class Expansive {
                             trace('Error', 'Cannot render ' + path)
                             print(e)
                         } else {
+                            trace('Error', 'Cannot render ' + path + ' for document ' + meta.dest)
                             throw e
                         }
                     }
@@ -1831,6 +1833,7 @@ public class Expansive {
             package.profile = newProfile[0].toString()
             delete package._installedDependencies_
             delete package._expansive_
+            delete package.mode
             PAK.write(serialize(package, {pretty: true, indent: 4}) + '\n')
             trace('Set', 'Profile to "' + package.profile + '"')
             options.clean = true

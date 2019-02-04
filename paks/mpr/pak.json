@@ -2,7 +2,7 @@
     "name": "mpr",
     "description": "Embedthis Multithreaded Portable Runtime",
     "title": "Embedthis MPR",
-    "version": "8.0.0",
+    "version": "8.0.1",
     "keywords": [
         "mpr",
         "runtime"
@@ -12,10 +12,7 @@
         "email": "dev@embedthis.com",
         "url": "https://embedthis.com"
     },
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/embedthis/mpr.git"
-    },
+    "repository": "embedthis/mpr",
     "bugs": {
         "url": "http://github.com/embedthis/mpr/issues"
     },
@@ -30,6 +27,7 @@
         }
     ],
     "dependencies": {
+        "me-win": "~0.1",
         "osdep": "~1"
     },
     "optionalDependencies": {

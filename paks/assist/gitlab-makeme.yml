@@ -2,7 +2,7 @@
 #   gitlab-makeme.yml - Template building with MakeMe
 #
 #   Inputs:
-#       AWS_PROFILE     mobsense
+#       AWS_PROFILE     ACCOUNT
 #       PROFILE         dev, release, ...
 #   Outputs
 #       build/*/img/    built images
@@ -13,8 +13,9 @@ stages:
     - publish
 
 before_script:
+    - set -e
     - ./configure --profile ${PROFILE}
-    - eval $(paks/assist/secrets --env '' --profile "${PROFILE}" --aws-profile "${AWS_PROFILE}" get)
+    - eval $(paks/assist/secrets --env '' --profile "${PROFILE}" --aws-profile "${AWS_PROFILE}" get || echo exit 2)
 
 .build: &build
     stage: build
@@ -28,7 +29,7 @@ before_script:
 .publish: &publish
     stage: publish
     script:
-        - me publish
+        - AWS_PROFILE="${AWS_PROFILE}" BUCKET="${BUCKET}" me publish
     only: [ 'tags', 'triggers', 'schedules', 'web', 'api' ]
     environment:
         name: ${PROFILE}

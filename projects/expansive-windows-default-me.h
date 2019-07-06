@@ -117,11 +117,17 @@
 #ifndef ME_NAME
     #define ME_NAME "expansive"
 #endif
+#ifndef ME_PARTS
+    #define ME_PARTS "undefined"
+#endif
 #ifndef ME_PLATFORMS
     #define ME_PLATFORMS "local"
 #endif
 #ifndef ME_PREFIXES
     #define ME_PREFIXES "install-prefixes"
+#endif
+#ifndef ME_PROFILE
+    #define ME_PROFILE "undefined"
 #endif
 #ifndef ME_TITLE
     #define ME_TITLE "Embedthis Expansive"
@@ -130,7 +136,7 @@
     #define ME_TUNE "speed"
 #endif
 #ifndef ME_VERSION
-    #define ME_VERSION "1.0.1"
+    #define ME_VERSION "1.0.3"
 #endif
 
 /* Prefixes */
@@ -228,10 +234,10 @@
     #define ME_MINOR_VERSION 0
 #endif
 #ifndef ME_PATCH_VERSION
-    #define ME_PATCH_VERSION 1
+    #define ME_PATCH_VERSION 3
 #endif
 #ifndef ME_VNUM
-    #define ME_VNUM 100000001
+    #define ME_VNUM 100000003
 #endif
 
 /* Components */

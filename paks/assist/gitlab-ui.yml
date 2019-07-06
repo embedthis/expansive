@@ -2,7 +2,7 @@
 #   gitlab-ui.yml - Template CI/CD for building a UI hosted in S3
 #
 #   Inputs:
-#       AWS_PROFILE     mobsense
+#       AWS_PROFILE     ACCOUNT
 #       PROFILE         dev, release, prod, ...
 #       UI              "ui"
 #   Outputs
@@ -17,8 +17,9 @@ variables:
     UI: 'ui'
 
 before_script:
+    - set -e
     - ./configure --profile ${PROFILE}
-    - eval $(paks/assist/secrets --env '' --profile "${PROFILE}" --aws-profile "${AWS_PROFILE}" get)
+    - eval $(paks/assist/secrets --env '' --profile "${PROFILE}" --aws-profile "${AWS_PROFILE}" get || echo exit 2)
 
 build-ui:
     stage: build

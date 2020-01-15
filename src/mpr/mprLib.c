@@ -2176,13 +2176,8 @@ PUBLIC MprMemStats *mprGetMemStats()
 #if ME_BSD_LIKE
     size_t      len;
     int         mib[2];
-#if FREEBSD
-    size_t      ram, usermem;
-    mib[1] = HW_MEMSIZE;
-#else
-    int64 ram, usermem;
+    int64       ram, usermem;
     mib[1] = HW_PHYSMEM;
-#endif
 #if MACOSX
     sysctlbyname("hw.memsize", &ram, &len, NULL, 0);
 #else
@@ -9884,7 +9879,7 @@ PUBLIC int mprWaitForEvent(MprDispatcher *dispatcher, MprTicks timeout, int64 ma
     if (changed) {
         return 0;
     }
-    if (!ownedDispatcher(dispatcher)) {
+    if (!ownedDispatcher(dispatcher) || dispatchEvents(dispatcher) == 0) {
         mprYield(MPR_YIELD_STICKY);
         mprWaitForCond(dispatcher->cond, delay);
         mprResetYield();
@@ -9893,10 +9888,6 @@ PUBLIC int mprWaitForEvent(MprDispatcher *dispatcher, MprTicks timeout, int64 ma
     lock(es);
     dispatcher->flags &= ~MPR_DISPATCHER_WAITING;
     unlock(es);
-
-    if (ownedDispatcher(dispatcher)) {
-        dispatchEvents(dispatcher);
-    }
     return 0;
 }
 
@@ -11224,10 +11215,12 @@ PUBLIC MprEvent *mprCreateEvent(MprDispatcher *dispatcher, cchar *name, MprTicks
         return 0;
     }
     if ((event = createEvent(dispatcher, name, period, proc, data, flags)) != NULL) {
-        // DEPRECATE - only for ejscript
+#if DEPRECATE || 1
+        // only for ejscript
         if (!(flags & MPR_EVENT_DONT_QUEUE)) {
             mprQueueEvent(dispatcher, event);
         }
+#endif
     }
     return event;
 }
@@ -14351,6 +14344,7 @@ PUBLIC cchar *mprGetJson(MprJson *obj, cchar *key)
 }
 
 
+
 PUBLIC int mprSetJsonObj(MprJson *obj, cchar *key, MprJson *value)
 {
     if (key && !strpbrk(key, ".[]*")) {
@@ -17440,6 +17434,9 @@ PUBLIC MprModule *mprCreateModule(cchar *name, cchar *path, cchar *entry, void *
     if (entry && *entry) {
         mp->entry = sclone(entry);
     }
+    /*
+        Not managed by default unless MPR_MODULE_DATA_MANAGED is set
+     */
     mp->moduleData = data;
     mp->lastActivity = mprGetTicks();
     index = mprAddItem(ms->modules, mp);
@@ -17456,6 +17453,9 @@ static void manageModule(MprModule *mp, int flags)
         mprMark(mp->name);
         mprMark(mp->path);
         mprMark(mp->entry);
+        if (mp->flags & MPR_MODULE_DATA_MANAGED) {
+            mprMark(mp->moduleData);
+        }
     }
 }
 
@@ -24148,6 +24148,40 @@ PUBLIC char *scontains(cchar *str, cchar *pattern)
 }
 
 
+PUBLIC char *sncaselesscontains(cchar *str, cchar *pattern, ssize limit)
+{
+    cchar   *cp, *s1, *s2;
+    ssize   lim;
+
+    if (limit < 0) {
+        limit = MAXINT;
+    }
+    if (str == 0) {
+        return 0;
+    }
+    if (pattern == 0 || *pattern == '\0') {
+        return 0;
+    }
+    for (cp = str; limit > 0 && *cp; cp++, limit--) {
+        s1 = cp;
+        s2 = pattern;
+        for (lim = limit; lim > 0 && *s1 && *s2 && (tolower((uchar) *s1) == tolower((uchar) *s2)); lim--) {
+            s1++;
+            s2++;
+        }
+        if (*s2 == '\0') {
+            return (char*) cp;
+        }
+    }
+    return 0;
+}
+
+
+PUBLIC char *scaselesscontains(cchar *str, cchar *pattern)
+{
+    return sncaselesscontains(str, pattern, -1);
+}
+
 /*
     Copy a string into a buffer. Always ensure it is null terminated
  */
@@ -27054,6 +27088,12 @@ PUBLIC char *mprFormatTm(cchar *format, struct tm *tp)
                 cp++;
                 goto again;
 
+            case 'f':
+                strcpy(--dp, "000");
+                dp += slen(dp);
+                cp++;
+                break;
+
             case 'F':
                 strcpy(dp, "Y-%m-%d");
                 dp += 7;
@@ -27346,6 +27386,10 @@ PUBLIC char *mprFormatTm(cchar *format, struct tm *tp)
 
         case 'e':                                       /* day of month (1-31). Single digits preceeded by a blank */
             digits(buf, 2, ' ', tp->tm_mday);
+            break;
+
+        case 'f':                                       /* milliseconds */
+            mprPutStringToBuf(buf, "000");
             break;
 
         case 'F':                                       /* %m/%d/%y */

@@ -827,7 +827,7 @@ public class Expansive {
                 restartServer(true)
             }
             if (modified.any) {
-                reloadBrowsers();
+                reloadBrowsers()
             }
             App.sleep(control.watch)
             vtrace('Check', 'for changes (' + Date().format('%I:%M:%S') + ')')

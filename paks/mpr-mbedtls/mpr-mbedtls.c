@@ -68,6 +68,7 @@ static void     merror(int rc, cchar *fmt, ...);
 static int      parseCert(mbedtls_x509_crt *cert, cchar *file, char **errorMsg);
 static int      parseCrl(mbedtls_x509_crl *crl, cchar *path, char **errorMsg);
 static int      parseKey(mbedtls_pk_context *key, cchar *path, char **errorMsg);
+static int      preloadMbed(MprSsl *ssl, int flags);
 static ssize    readMbed(MprSocket *sp, void *buf, ssize len);
 static char     *replaceHyphen(char *cipher, char from, char to);
 PUBLIC int      sniCallback(void *unused, mbedtls_ssl_context *ctx, cuchar *hostname, size_t len);
@@ -92,6 +93,7 @@ PUBLIC int mprSslInit(void *unused, MprModule *module)
     mbedProvider->upgradeSocket = upgradeMbed;
     mbedProvider->closeSocket = closeMbed;
     mbedProvider->disconnectSocket = disconnectMbed;
+    mbedProvider->preload = preloadMbed;
     mbedProvider->readSocket = readMbed;
     mbedProvider->writeSocket = writeMbed;
     mbedProvider->socketState = getMbedState;
@@ -405,30 +407,37 @@ static int handshakeMbed(MprSocket *sp)
             mbedtls_strerror(-rc, ebuf, sizeof(ebuf));
             sp->errorMsg = sfmt("%s: error -0x%x", ebuf, -rc);
         }
-        sp->flags |= MPR_SOCKET_EOF;
+        sp->flags |= MPR_SOCKET_EOF | MPR_SOCKET_ERROR;
         errno = EPROTO;
         return MPR_ERR_CANT_READ;
     }
     if ((vrc = mbedtls_ssl_get_verify_result(&mb->ctx)) != 0) {
         if (vrc & MBEDTLS_X509_BADCERT_MISSING) {
             sp->errorMsg = sclone("Certificate missing");
+            sp->flags |= MPR_SOCKET_CERT_ERROR;
 
         } if (vrc & MBEDTLS_X509_BADCERT_EXPIRED) {
             sp->errorMsg = sclone("Certificate expired");
+            sp->flags |= MPR_SOCKET_CERT_ERROR;
 
         } else if (vrc & MBEDTLS_X509_BADCERT_REVOKED) {
             sp->errorMsg = sclone("Certificate revoked");
+            sp->flags |= MPR_SOCKET_CERT_ERROR;
 
         } else if (vrc & MBEDTLS_X509_BADCERT_CN_MISMATCH) {
             sp->errorMsg = sclone("Certificate common name mismatch");
+            sp->flags |= MPR_SOCKET_CERT_ERROR;
 
         } else if (vrc & MBEDTLS_X509_BADCERT_KEY_USAGE || vrc & MBEDTLS_X509_BADCERT_EXT_KEY_USAGE) {
             sp->errorMsg = sclone("Unauthorized key use in certificate");
+            sp->flags |= MPR_SOCKET_CERT_ERROR;
 
         } else if (vrc & MBEDTLS_X509_BADCERT_NOT_TRUSTED) {
             sp->errorMsg = sclone("Certificate not trusted");
             if (!sp->ssl->verifyIssuer) {
                 vrc = 0;
+            } else {
+                sp->flags |= MPR_SOCKET_CERT_ERROR;
             }
 
         } else if (vrc & MBEDTLS_X509_BADCERT_SKIP_VERIFY) {
@@ -440,15 +449,18 @@ static int handshakeMbed(MprSocket *sp)
         } else {
             if (mb->ctx.client_auth && !sp->ssl->certFile) {
                 sp->errorMsg = sclone("Server requires a client certificate");
+                sp->flags |= MPR_SOCKET_CERT_ERROR;
 
             } else if (rc == MBEDTLS_ERR_NET_CONN_RESET) {
                 sp->errorMsg = sclone("Peer disconnected");
+                sp->flags |= MPR_SOCKET_ERROR;
 
             } else {
                 char ebuf[256];
                 mbedtls_x509_crt_verify_info(ebuf, sizeof(ebuf), "", vrc);
                 strim(ebuf, "\n", 0);
                 sp->errorMsg = sfmt("Cannot handshake: %s, error -0x%x", ebuf, -rc);
+                sp->flags |= MPR_SOCKET_ERROR;
             }
         }
     }
@@ -505,7 +517,7 @@ static int getPeerCertInfo(MprSocket *sp)
         if (mprGetLogLevel() >= 6) {
             char buf[4096];
             mbedtls_x509_crt_info(buf, sizeof(buf) - 1, "", peer);
-            mprLog("info mbedtls", 6, "Peer certificate\n%s", buf);
+            mprLog("info mbedtls", mbedLogLevel, "Peer certificate\n%s", buf);
         }
     }
     sp->cipher = replaceHyphen(sclone(mbedtls_ssl_get_ciphersuite(ctx)), '-', '_');
@@ -529,6 +541,11 @@ static int getPeerCertInfo(MprSocket *sp)
     return 0;
 }
 
+static int preloadMbed(MprSsl *ssl, int flags)
+{
+    mprLog("error mpr ssl openssl", 4, "Preload not yet supported with MbedTLS");
+    return 0;
+}
 
 /*
     Return the number of bytes read. Return -1 on errors and EOF. Distinguish EOF via mprIsSocketEof.
@@ -604,7 +621,7 @@ static ssize writeMbed(MprSocket *sp, cvoid *buf, ssize len)
     rc = 0;
     do {
         rc = mbedtls_ssl_write(&mb->ctx, (uchar*) buf, (int) len);
-        mprDebug("debug mpr ssl mbedtls", 6, "mbedtls write: write returned %d (0x%04x), len %zd", rc, rc, len);
+        mprDebug("debug mpr ssl mbedtls", mbedLogLevel, "mbedtls write: write returned %d (0x%04x), len %zd", rc, rc, len);
         if (rc <= 0) {
             if (rc == MBEDTLS_ERR_SSL_WANT_READ || rc == MBEDTLS_ERR_SSL_WANT_WRITE) {
                 break;
@@ -826,11 +843,11 @@ static int *getCipherSuite(MprSsl *ssl)
         static int once = 0;
         if (!once++) {
             cp = (ciphers && *ciphers) ? result : mbedtls_ssl_list_ciphersuites();
-            mprLog("info mbedtls", 6, "\nCiphers:");
+            mprLog("info mbedtls", mbedLogLevel, "\nCiphers:");
             for (; *cp; cp++) {
                 scopy(buf, sizeof(buf), mbedtls_ssl_get_ciphersuite_name(*cp));
                 replaceHyphen(buf, '-', '_');
-                mprLog("info mbedtls", 6, "0x%04X %s", *cp, buf);
+                mprLog("info mbedtls", mbedLogLevel, "0x%04X %s", *cp, buf);
             }
         }
     }

@@ -53,6 +53,7 @@ public class Expansive {
     public var control: Object
     var copy: Object
     var currentConfig: Object
+    public var currentMeta: Object
     public var directories: Object
     var dirTokens: Object
     var errors: Number = 0
@@ -61,6 +62,7 @@ public class Expansive {
     var impliedUpdates: Object
     var initialized: Boolean
     public var lastGen: Date
+    var loaders: Object = {}
     public var log: Logger = App.log
     public var metaCache: Object
     public var modified: Object = {file: {}}
@@ -317,6 +319,10 @@ public class Expansive {
             delete control.script
         }
         castDirectories()
+        meta.path = path
+        for each (loader in loaders) {
+            loader.call(this, meta)
+        }
         return meta
     }
 
@@ -404,6 +410,7 @@ public class Expansive {
         for (let [name, requiredVersion] in package._installedDependencies_) {
             loadPlugin(name, requiredVersion)
         }
+        //  MOB - why build meta cache twice?
         buildMetaCache()
         blend(services, serviceConfig, {combine: true})
         fixMappings()
@@ -632,7 +639,6 @@ public class Expansive {
             if (rest.length > 0) {
                 filters = rest
             }
-            runWatchers()
             render()
             break
 
@@ -651,7 +657,6 @@ public class Expansive {
             if (task) {
                 /* Process only specified files */
                 filters = [task] + rest
-                runWatchers()
                 render()
             } else {
                 serve(topMeta)
@@ -711,6 +716,10 @@ public class Expansive {
         path.remove()
     }
 
+    public function addLoader(key, fn) {
+        loaders[key] = fn
+    }
+
     public function addWatcher(key, fn) {
         watchers[key] = fn
     }
@@ -764,7 +773,6 @@ public class Expansive {
             }
         }
 
-        //  MOB - why is contents hard coded here
         let files = directories.top.files(directories.contents + '/**', {contents: true, relative: true})
         for (let [index,file] in files) {
             if (!filter(file)) {
@@ -817,7 +825,6 @@ public class Expansive {
             control.watch = 1000
         }
         while (true) {
-            runWatchers()
             render()
             if (modified.any && options.serving) {
                 trace('Restart', 'Content modified')
@@ -889,7 +896,7 @@ public class Expansive {
 
     function reloadBrowsers() {
         for each (request in reload) {
-            request.write('html')
+            request.write('reload')
             request.finalize()
             request.close()
         }
@@ -906,7 +913,7 @@ public class Expansive {
         let self = this
         server.on('readable', function (event, request) {
             try {
-                if (request.pathInfo == '/reload-service') {
+                if (request.pathInfo.indexOf('/reload-service') == 0) {
                     setLimits({inactivityTimeout: 999999999, requestTimeout: 99999999})
                     dontAutoFinalize()
                     self.reload.push(this)
@@ -952,13 +959,15 @@ public class Expansive {
         if (options.norender) {
             return
         }
-        stats.started = new Date
         stats.files = 0
         collections = control.collections.clone()
         if (modified.everything || modified.partial) {
             cache = {}
         }
         buildMetaCache()
+        runWatchers()
+
+        stats.started = new Date
         preProcess()
         renderFiles()
         renderDocuments()
@@ -1078,7 +1087,7 @@ public class Expansive {
             return false
         }
         if (control.filters && !path.glob(control.filters)) {
-            vtrace('Info', 'Filter', path)
+            // vtrace('Info', 'Filter', path)
             return false
         }
         if (!filters) {
@@ -1498,6 +1507,7 @@ public class Expansive {
             code = parser.parse(contents)
             stat.parse += mark.elapsed
             mark = new Date
+            this.currentMeta = meta
             eval(code)
             stat.eval += mark.elapsed
 
@@ -2122,12 +2132,6 @@ try {
     commercial license from Embedthis Software. You agree to be fully bound
     by the terms of either license. Consult the LICENSE.md distributed with
     this software for full details and other copyrights.
-
-    Local variables:
-    tab-width: 4
-    c-basic-offset: 4
-    End:
-    vim: sw=4 ts=4 expandtab
 
     @end
  */

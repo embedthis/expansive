@@ -109,6 +109,9 @@ struct  MprXml;
 /*
     Select wakeup port. Port can be any free port number. If this is not free, the MPR will use the next free port.
  */
+#ifndef ME_WAKEUP_ADDR
+    #define ME_WAKEUP_ADDR      "127.0.0.1"
+#endif
 #ifndef ME_WAKEUP_PORT
     #define ME_WAKEUP_PORT      9473
 #endif
@@ -186,6 +189,7 @@ struct  MprXml;
 #define MPR_EVENT_EPOLL         2           /**< epoll_wait */
 #define MPR_EVENT_KQUEUE        3           /**< BSD kqueue */
 #define MPR_EVENT_SELECT        4           /**< traditional select() */
+#define MPR_EVENT_SELECT_PIPE   5           /**< Select with pipe for wakeup */
 
 #ifndef ME_EVENT_NOTIFIER
     #if MACOSX || SOLARIS
@@ -194,7 +198,7 @@ struct  MprXml;
         #define ME_EVENT_NOTIFIER MPR_EVENT_ASYNC
     #elif VXWORKS
         #define ME_EVENT_NOTIFIER MPR_EVENT_SELECT
-    #elif (LINUX || ME_BSD_LIKE)
+    #elif LINUX
         #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,0)
             #define ME_EVENT_NOTIFIER MPR_EVENT_EPOLL
         #else
@@ -519,7 +523,7 @@ typedef struct MprSpin {
 
 /**
     Create a Mutex lock object.
-    @description This call creates a Mutex lock object that can be used in #mprLock, #mprTryLock and #mprUnlock calls.
+    @description This call creates a Mutex lock object that can be used in mprLock #mprTryLock and mprUnlock calls.
     @ingroup MprSync
     @stability Stable.
  */
@@ -528,7 +532,7 @@ PUBLIC MprMutex *mprCreateLock(void);
 /**
     Initialize a statically allocated Mutex lock object.
     @description This call initialized a Mutex lock object without allocation. The object can then be used used
-        in #mprLock, #mprTryLock and #mprUnlock calls.
+        in mprLock mprTryLock and mprUnlock calls.
     @param mutex Reference to an MprMutex structure to initialize
     @returns A reference to the supplied mutex. Returns null on errors.
     @ingroup MprSync
@@ -548,7 +552,7 @@ PUBLIC bool mprTryLock(MprMutex *lock);
 
 /**
     Create a spin lock lock object.
-    @description This call creates a spinlock object that can be used in #mprSpinLock, and #mprSpinUnlock calls. Spin locks
+    @description This call creates a spinlock object that can be used in mprSpinLock, and mprSpinUnlock calls. Spin locks
         using MprSpin are much faster than MprMutex based locks on some systems.
     @ingroup MprSync
     @stability Stable.
@@ -558,7 +562,7 @@ PUBLIC MprSpin *mprCreateSpinLock(void);
 /**
     Initialize a statically allocated spinlock object.
     @description This call initialized a spinlock lock object without allocation. The object can then be used used
-        in #mprSpinLock and #mprSpinUnlock calls.
+        in mprSpinLock and mprSpinUnlock calls.
     @param lock Reference to a static #MprSpin  object.
     @returns A reference to the MprSpin object. Returns null on errors.
     @ingroup MprSync
@@ -579,8 +583,9 @@ PUBLIC bool mprTrySpinLock(MprSpin *lock);
     For maximum performance, use the spin lock/unlock routines macros
  */
 #if !ME_DEBUG
-#define ME_USE_LOCK_MACROS 1
+    #define ME_USE_LOCK_MACROS 1
 #endif
+
 #if ME_USE_LOCK_MACROS && !DOXYGEN
     /*
         Spin lock macros
@@ -670,6 +675,17 @@ PUBLIC void mprGlobalUnlock(void);
     Lock free primitives
  */
 
+ /*
+     AtomicBarrier memory models
+  */
+ #define MPR_ATOMIC_RELAXED      __ATOMIC_RELAXED
+ #define MPR_ATOMIC_CONSUME      __ATOMIC_CONSUME
+ #define MPR_ATOMIC_ACQUIRE      __ATOMIC_ACQUIRE
+ #define MPR_ATOMIC_RELEASE      __ATOMIC_RELEASE
+ #define MPR_ATOMIC_ACQ_REL      __ATOMIC_ACQ_REL
+ #define MPR_ATOMIC_SEQUENTIAL   __ATOMIC_SEQ_CST
+
+
 /**
     Open and initialize the atomic subystem
     @ingroup MprSync
@@ -679,10 +695,12 @@ PUBLIC void mprAtomicOpen(void);
 
 /**
     Apply a full (read+write) memory barrier
+    @param model Memory model. Set to MPR_ATOMIC_RELAXED, MPR_ATOMIC_CONSUME, MPR_ATOMIC_ACQUIRE,
+        MPR_ATOMIC_RELEASE, MPR_ATOMIC_ACQREL, MPR_ATOMIC_SEQUENTIAL
     @ingroup MprSync
-    @stability Stable.
+    @stability Evolving.
  */
-PUBLIC void mprAtomicBarrier(void);
+PUBLIC void mprAtomicBarrier(int model);
 
 /**
     Atomic list insertion. Inserts "item" at the "head" of the list. The "link" field is the next field in item.
@@ -723,6 +741,23 @@ PUBLIC void mprAtomicAdd(volatile int *target, int value);
     @stability Stable.
  */
 PUBLIC void mprAtomicAdd64(volatile int64 *target, int64 value);
+
+#if ME_COMPILER_HAS_ATOMIC
+    #define mprAtomicLoad(ptr, ret, model) __atomic_load(ptr, ret, model)
+    #define mprAtomicStore(ptr, val, model) __atomic_store(ptr, val, model)
+#else
+    #define mprAtomicLoad(ptr, ret, model) \
+        if (1) { \
+            mprAtomicBarrier(model); \
+            *ret = *ptr; \
+        } else
+    #define mprAtomicStore(ptr, val, model) \
+        if (1) { \
+            mprAtomicBarrier(model); \
+            *ptr = val; \
+        } else
+
+#endif
 
 /********************************* Memory Allocator ***************************/
 /*
@@ -1008,8 +1043,9 @@ typedef struct MprFreeQueue {
  */
 #define MPR_ALLOC_POLICY_NOTHING    0       /**< Do nothing */
 #define MPR_ALLOC_POLICY_PRUNE      1       /**< Prune all non-essential memory and continue */
-#define MPR_ALLOC_POLICY_RESTART    2       /**< Gracefully restart the app if memory maxHeap level is exceeded */
-#define MPR_ALLOC_POLICY_EXIT       3       /**< Exit the app if maxHeap exceeded */
+#define MPR_ALLOC_POLICY_RESTART    2       /**< Gracefully restart the app */
+#define MPR_ALLOC_POLICY_EXIT       3       /**< Exit the app cleanly */
+#define MPR_ALLOC_POLICY_ABORT      4       /**< Abort the app and dump core */
 
 /*
     MprMemNotifier cause argument
@@ -1028,7 +1064,7 @@ typedef struct MprFreeQueue {
         Allocations will be rejected for MPR_MEM_FAIL and MPR_MEM_TOO_BIG, otherwise the allocations will proceed and the
         memory notifier will be invoked.
     @param policy Memory depletion policy. Set to one of #MPR_ALLOC_POLICY_NOTHING, #MPR_ALLOC_POLICY_PRUNE,
-        #MPR_ALLOC_POLICY_RESTART or #MPR_ALLOC_POLICY_EXIT.
+        #MPR_ALLOC_POLICY_RESTART, #MPR_ALLOC_POLICY_EXIT or #MPR_ALLOC_POLICY_ABORT.
     @param size Size of the allocation that triggered the low memory condition.
     @param total Total memory currently in use
     @ingroup MprMem
@@ -2320,8 +2356,8 @@ PUBLIC int64 stoiradix(cchar *str, int radix, int *err);
     @description Split a string into tokens using a character set as delimiters.
     @param str String to tokenize.
     @param delim Set of characters that are used as token separators.
-    @param last Last token pointer.
-    @return Returns a pointer to the next token.
+    @param last Last token pointer. This is a pointer inside the original string.
+    @return Returns a pointer to the next token. The pointer is inside the original string and is not allocated.
     @ingroup MprString
     @stability Stable
  */
@@ -3236,6 +3272,7 @@ PUBLIC char *mprFormatLocalTime(cchar *fmt, MprTime time);
     Convert a time value to universal time and format as a string.
     @description Format a time string. This uses strftime if available and so the supported formats vary from
         platform to platform. Strftime should supports some of these these formats described below.
+    @param time Time to format. Use mprGetTime to retrieve the current time.
     @param fmt Time format string
             \n
          %A ... full weekday name (Monday)
@@ -3345,8 +3382,6 @@ PUBLIC char *mprFormatLocalTime(cchar *fmt, MprTime time);
         "%v "07-Jul-2003"
             \n
         RFC3399: "%FT%TZ" "1985-04-12T23:20:50.52Z" which is April 12 1985, 23:20.50 and 52 msec
-\n\n
-    @param time Time to format. Use mprGetTime to retrieve the current time.
     @return The formatting time string
     @ingroup MprTime
     @stability Stable
@@ -4173,6 +4208,7 @@ PUBLIC int mprStartLogging(cchar *logSpec, int flags);
  */
 PUBLIC void mprDebug(cchar *tags, int level, cchar *fmt, ...);
 #endif
+
 PUBLIC void mprLogProc(cchar *tags, int level, cchar *fmt, ...) PRINTF_ATTRIBUTE(3,4);
 
 /**
@@ -5827,8 +5863,7 @@ PUBLIC int mprUnloadModule(MprModule *mp);
 #define MPR_EVENT_QUICK             0x2     /**< Execute inline without executing via a thread */
 #define MPR_EVENT_DONT_QUEUE        0x4     /**< Don't queue the event. User must call mprQueueEvent */
 #define MPR_EVENT_STATIC_DATA       0x8     /**< Event data is permanent and should not be marked by GC */
-#define MPR_EVENT_RUNNING           0x10    /**< Event currently executing */
-#define MPR_EVENT_ALWAYS            0x20    /**< Always invoke the callback even if the event not run  */
+#define MPR_EVENT_ALWAYS            0x10    /**< Always invoke the callback even if the event not run  */
 
 #define MPR_EVENT_MAX_PERIOD (MAXINT64 / 2)
 
@@ -6662,6 +6697,17 @@ PUBLIC ssize mprGetJsonLength(MprJson *obj);
 PUBLIC MprJson *mprHashToJson(MprHash *hash);
 
 /**
+    Convert a JSON object to a string of environment variables
+    @param json JSON object tree
+    @param prefix String prefix for environment substrings
+    @param list MprList to hold environment strings. Set to NULL and this routine will create a list.
+    @return A list of environment strings
+    @ingroup MprJson
+    @stability Prototype
+ */
+PUBLIC MprList *mprJsonToEnv(MprJson *json, cchar *prefix, MprList *list);
+
+/**
     Convert a JSON object into a Hash object
     @param json JSON object tree
     @return An MprHash instance
@@ -7214,13 +7260,13 @@ typedef struct MprWaitService {
     int             breakFd[2];             /* Event or pipe to wakeup */
 #elif ME_EVENT_NOTIFIER == MPR_EVENT_KQUEUE
     int             kq;                     /* Kqueue() return descriptor */
-#elif ME_EVENT_NOTIFIER == MPR_EVENT_SELECT
+#elif ME_EVENT_NOTIFIER == MPR_EVENT_SELECT || ME_EVENT_NOTIFIER == MPR_EVENT_SELECT_PIPE
     fd_set          readMask;               /* Current read events mask */
     fd_set          writeMask;              /* Current write events mask */
     int             highestFd;              /* Highest socket in masks + 1 */
-    int             breakSock;              /* Socket to wakeup select */
+    int             breakFd[2];             /* Socket to wakeup select in [0] */
     struct sockaddr_in breakAddress;        /* Address of wakeup socket */
-#endif /* EVENT_SELECT */
+#endif /* EVENT_SELECT || MPR_EVENT_SELECT_PIPE */
     MprMutex        *mutex;                 /* General multi-thread sync */
     MprSpin         *spin;                  /* Fast short locking */
 } MprWaitService;
@@ -7306,7 +7352,6 @@ typedef struct MprWaitHandler {
     int             notifierIndex;      /**< Index for notifier */
     int             flags;              /**< Control flags */
     void            *handlerData;       /**< Argument to pass to proc - managed reference */
-    MprEvent        *event;             /**< Event object to process I/O events */
     MprWaitService  *service;           /**< Wait service pointer */
     MprDispatcher   *dispatcher;        /**< Event dispatcher to use for I/O events */
     MprEventProc    proc;               /**< Callback event procedure */
@@ -7388,7 +7433,7 @@ PUBLIC void mprWaitOn(MprWaitHandler *wp, int desiredMask);
 /*
    Internal
  */
-PUBLIC void mprDoWaitRecall(MprWaitService *ws);
+PUBLIC int mprDoWaitRecall(MprWaitService *ws);
 
 /******************************* Notification *********************************/
 /**
@@ -7453,6 +7498,15 @@ typedef struct MprSocketProvider {
         @stability Stable
      */
     ssize   (*flushSocket)(struct MprSocket *socket);
+
+    /**
+        Preload SSL configuration
+        @param ssl SSL configurations to use.
+        @param flags Set to MPR_SOCKET_SERVER for server side use.
+        @returns Zero if successful, otherwise a negative MPR error code.
+        @stability Prototype
+     */
+    int  (*preload)(struct MprSsl *ssl, int flags);
 
     /**
         Read from a socket
@@ -7589,6 +7643,8 @@ PUBLIC void mprSetSocketPrebindCallback(MprSocketPrebind callback);
 #define MPR_SOCKET_DISCONNECTED     0x4000  /**< The mprDisconnectSocket has been called */
 #define MPR_SOCKET_HANDSHAKING      0x8000  /**< Doing an SSL handshake */
 #define MPR_SOCKET_CERT_ERROR       0x10000 /**< Error when validating peer certificate */
+#define MPR_SOCKET_ERROR            0x20000 /**< Hard error (not just eof) */
+#define MPR_SOCKET_REUSE_PORT       0x40000 /**< Set SO_REUSEPORT option */
 
 /**
     Socket Service
@@ -8118,7 +8174,7 @@ PUBLIC ssize mprWriteSocketVector(MprSocket *sp, MprIOVec *iovec, int count);
     #define ME_MPR_SSL_CACHE 512
 #endif
 #ifndef ME_MPR_SSL_LOG_LEVEL
-    #define ME_MPR_SSL_LOG_LEVEL 6
+    #define ME_MPR_SSL_LOG_LEVEL 7
 #endif
 #ifndef ME_MPR_SSL_RENEGOTIATE
     #define ME_MPR_SSL_RENEGOTIATE 1
@@ -8174,12 +8230,12 @@ typedef struct MprSsl {
  */
 #define MPR_PROTO_SSLV2    0x1              /**< SSL V2 protocol */
 #define MPR_PROTO_SSLV3    0x2              /**< SSL V3 protocol */
-#define MPR_PROTO_TLSV1_0  0x8              /**< TLS V1.0 protocol */
-#define MPR_PROTO_TLSV1_1  0x10             /**< TLS V1.1 protocol */
-#define MPR_PROTO_TLSV1_2  0x20             /**< TLS V1.2 protocol */
-#define MPR_PROTO_TLSV1_3  0x40             /**< TLS V1.3 protocol */
-#define MPR_PROTO_TLSV1    (MPR_PROTO_TLSV1_1 | MPR_PROTO_TLSV1_2 | MPR_PROTO_TLSV1_3)
-#define MPR_PROTO_ALL      0x6B             /**< All protocols */
+#define MPR_PROTO_TLSV1_0  0x10             /**< TLS V1.0 protocol */
+#define MPR_PROTO_TLSV1_1  0x20             /**< TLS V1.1 protocol */
+#define MPR_PROTO_TLSV1_2  0x40             /**< TLS V1.2 protocol */
+#define MPR_PROTO_TLSV1_3  0x80             /**< TLS V1.3 protocol */
+#define MPR_PROTO_TLSV1    (MPR_PROTO_TLSV1_0 | MPR_PROTO_TLSV1_1 | MPR_PROTO_TLSV1_2 | MPR_PROTO_TLSV1_3)
+#define MPR_PROTO_ALL      0xF3             /**< All protocols */
 
 /**
     Add the ciphers to use for SSL
@@ -8219,6 +8275,13 @@ PUBLIC int mprLoadSsl(void);
     @stability Stable
  */
 PUBLIC int mprSslInit(void *unused, MprModule *module);
+
+/**
+    Preload SSL configuration
+    @ingroup MprSsl
+    @stability Prototype
+ */
+PUBLIC int mprPreloadSsl(struct MprSsl *ssl, int flags);
 
 /**
     Set the ALPN protocols for SSL
@@ -8528,7 +8591,6 @@ PUBLIC void mprActivateWorker(MprWorker *worker, MprWorkerProc proc, void *data)
 /**
     Dedicate a worker thread to a current real thread. This implements thread affinity and is required on some platforms
         where some APIs (waitpid on uClibc) cannot be called on a different thread.
-    @param worker Worker object
     @param worker Worker thread reference
     @ingroup MprWorker
     @stability Internal
@@ -8554,7 +8616,6 @@ PUBLIC ssize mprGetBusyWorkerCount(void);
 
 /**
     Release a worker thread. This releases a worker thread to be assignable to any real thread.
-    @param worker Worker object
     @param worker Worker thread reference
     @stability Internal
  */

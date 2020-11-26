@@ -5887,7 +5887,7 @@ static void connTimeout(HttpConn *conn, MprEvent *mprEvent)
                 httpTrace(conn, event, "error", "msg:'%s'", msg);
             }
         } else {
-            httpError(conn, HTTP_CODE_REQUEST_TIMEOUT, "%s", msg);
+            httpError(conn, HTTP_CODE_REQUEST_TIMEOUT | HTTP_CLOSE, "%s", msg);
         }
     }
     if (httpClientConn(conn)) {
@@ -6988,7 +6988,7 @@ PUBLIC int httpDigestParse(HttpConn *conn, cchar **username, cchar **password)
             httpTrace(conn, "auth.digest.error", "error", "msg:'Access denied, Bad qop'");
             return MPR_ERR_BAD_STATE;
 
-        } else if ((when + (5 * 60)) < time(0)) {
+        } else if ((when + ME_DIGEST_NONCE_DURATION) < time(0)) {
             httpTrace(conn, "auth.digest.error", "error", "msg:'Access denied, Nonce is stale'");
             return MPR_ERR_BAD_STATE;
         }
@@ -12278,23 +12278,26 @@ static void outgoingRangeService(HttpQueue *q)
         }
     }
     for (packet = httpGetPacket(q); packet; packet = httpGetPacket(q)) {
-        if (packet->flags & HTTP_PACKET_DATA) {
-            if (!applyRange(q, packet)) {
-                return;
+        if (tx->outputRanges) {
+            if (packet->flags & HTTP_PACKET_DATA) {
+                if (!applyRange(q, packet)) {
+                    return;
+                }
+                continue;
+            } else {
+                /*
+                    Send headers and end packet downstream
+                 */
+                if (packet->flags & HTTP_PACKET_END && tx->rangeBoundary) {
+                    httpPutPacketToNext(q, createFinalRangePacket(conn));
+                }
             }
-        } else {
-            /*
-                Send headers and end packet downstream
-             */
-            if (packet->flags & HTTP_PACKET_END && tx->rangeBoundary) {
-                httpPutPacketToNext(q, createFinalRangePacket(conn));
-            }
-            if (!httpWillNextQueueAcceptPacket(q, packet)) {
-                httpPutBackPacket(q, packet);
-                return;
-            }
-            httpPutPacketToNext(q, packet);
         }
+        if (!httpWillNextQueueAcceptPacket(q, packet)) {
+            httpPutBackPacket(q, packet);
+            return;
+        }
+        httpPutPacketToNext(q, packet);
     }
 }
 
@@ -15307,7 +15310,9 @@ static char *expandRequestTokens(HttpConn *conn, char *str)
         if ((key = stok(&tok[2], ".:}", &value)) == 0) {
             continue;
         }
-        if ((stok(value, "}", &cp)) == 0) {
+        if ((stok(value, "}", &p)) != 0) {
+            cp = p;
+        } else {
             continue;
         }
         if (smatch(key, "header")) {
@@ -15422,7 +15427,7 @@ static char *expandRequestTokens(HttpConn *conn, char *str)
     }
     assert(cp);
     if (tok) {
-        if (tok > cp) {
+        if (cp && tok > cp) {
             mprPutBlockToBuf(buf, tok, tok - cp);
         }
     } else {
@@ -16159,6 +16164,7 @@ static bool parseIncoming(HttpConn *conn)
     /*
         Don't start processing until all the headers have been received (delimited by two blank lines)
      */
+    start = mprGetBufStart(packet->content);
     if ((end = sncontains(start, "\r\n\r\n", len)) == 0 && (end = sncontains(start, "\n\n", len)) == 0) {
         if (len >= limits->headerSize) {
             httpLimitError(conn, HTTP_ABORT | HTTP_CODE_REQUEST_TOO_LARGE,
@@ -16405,7 +16411,7 @@ static bool parseResponseLine(HttpConn *conn, HttpPacket *packet)
     tx = conn->tx;
 
     protocol = getToken(conn, NULL, TOKEN_WORD);
-    if (protocol == NULL || protocol == '\0') {
+    if (protocol == NULL || *protocol == '\0') {
         httpBadRequestError(conn, HTTP_ABORT | HTTP_CODE_NOT_ACCEPTABLE, "Unsupported HTTP protocol");
         return 0;
     }
@@ -16807,7 +16813,7 @@ static bool parseHeaders(HttpConn *conn, HttpPacket *packet)
     if (conn->http10 && !keepAliveHeader) {
         conn->keepAliveCount = 0;
     }
-    if (httpClientConn(conn) && conn->mustClose && rx->length < 0) {
+    if (httpClientConn(conn) && conn->mustClose && rx->length < 0 && rx->status != 204) {
         /*
             Google does responses with a body and without a Content-Lenght like this:
                 Connection: close

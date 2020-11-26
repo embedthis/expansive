@@ -3,28 +3,29 @@
 <head>
 <title>Expansive Man Page</title>
 </head>
-<BODY><PRE>
-EXP(1)                           User Commands                          EXP(1)
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
 
-<B>NAME</B>
-       expansive  - Embedthis Expansive -- Fast, Flexible Static Web Site Gen-
-       erator
 
-<B>SYNOPSIS</B>
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
        <B>exp</B>
            <B>--abort</B>
-           <B>--chdir directory</B>
+           <B>--chdir</B> <B>directory</B>
            <B>--clean</B>
-           <B>--listen IP:PORT</B>
-           <B>--log path:level</B>
+           <B>--listen</B> <B>IP:PORT</B>
+           <B>--log</B> <B>path:level</B>
            <B>--noclean</B>
            <B>--norender</B>
            <B>--nowatch</B>
            <B>--quiet</B>
-           <B>--trace path:level</B>
-           <B>--verbose dir</B>
+           <B>--trace</B> <B>path:level</B>
+           <B>--verbose</B> <B>dir</B>
            <B>--version</B>
-           <B>commands ...</B>
+           <B>commands</B> <B>...</B>
+
 
        <B>Commands:</B>
            clean
@@ -36,42 +37,41 @@ EXP(1)                           User Commands                          EXP(1)
            serve
            watch
            FILES ...
-           &lt;CR&gt;
+           &lt;;CR&gt;;
 
-<B>DESCRIPTION</B>
-       <B>Expansive </B>is a fast and flexible static web site generator.  It quickly
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       <B>Expansive</B> is a fast and flexible static web site generator.  It quickly
        creates HTML pages from layouts, partials and content pages.  Expansive
        brings dynamic content to static web sites.
+
 
        Expansive includes flexible tooling so  you  can  build  your  site  in
        development  mode and painlessly switch to production mode for release.
        It will minify, compress and bundle your site for easy deployment.
 
-<B>WHY EXPANSIVE?</B>
+
+
+
+</PRE>
+<H2>WHY EXPANSIVE?</H2><PRE>
        There are many web site site generators, why another one? Most existing
        site  generators are slow, often painfully slow.  When creating or man-
        aging a web site, you need tools that do not delay the creative  design
        process.  They need to be as fast as possible. Expansive is designed to
        be fast, without sacrificing features.
 
-<B>FEATURES</B>
+
+
+</PRE>
+<H2>FEATURES</H2><PRE>
        Expansive generates static web sites from pages, layouts, partials  and
-       scripts. It has the following major features:
 
-           . Javascript templates for dynamic content
-           . Layout pages to define the look and feel of site
-           . Partial pages to include replicated content
-           . Per-page meta data to control layouts and partials
-           . Integrated web server to serve content
-           . Watches for changes and automatically render site
-           . Scripting support via change events
-           . Automatic sitemap creation
-           .  Complete  tooling  for  minifying, compression and bundling your
-       site
-           . Content transition pipeline
-           . Open plugin architecture
 
-<B>NICE PARTS</B>
+
+</PRE>
+<H2>NICE PARTS</H2><PRE>
        While Expansive has a strong feature set, there are  some  characteris-
        tics that make Expansive particularly sweet.
 
@@ -80,7 +80,11 @@ EXP(1)                           User Commands                          EXP(1)
            . Easy to create and install new plugins
            . Great diagnostics when things go wrong
 
-<B>BASIC USAGE</B>
+
+
+
+</PRE>
+<H2>BASIC USAGE</H2><PRE>
        To  prepare a directory for expansive and create an expansive.json con-
        figuration file:
 
@@ -119,30 +123,24 @@ EXP(1)                           User Commands                          EXP(1)
 
        To clean the rendered site under 'dist'
 
-           expansive clean
-
-<B>DIRECTORIES</B>
-       Expansive uses the following directories:
-
-           contents    Souce web content to be processed
-           dist         Final  output  directory containing the rendered docu-
-       ments
-           files       Files to be copied and not processed
-           layouts     For master page layouts
-           partials    For partial web pages that can  be  included  by  other
-       pages
 
        These  directories can be modified via meta 'directories' collection in
        the package.json file.
 
-<B>PROCESSING</B>
+
+
+</PRE>
+<H2>PROCESSING</H2><PRE>
        Expansive operates by processing web  pages  from  the  'contents'  and
        'lib'  directories.  It  uses layout pages from the 'layouts' directory
        and includes partial pages from the 'partials'  directory.   Raw  files
        may be copied from the 'files' directory. Documents are rendered to the
        'dist' output directory.
 
-<B>CONFIGURATION</B>
+
+
+</PRE>
+<H2>CONFIGURATION</H2><PRE>
        Expansive is controlled by an 'expansive.json' configuration file. This
        defines top level configuration for the site and controls how Expansive
        renders the site. An expansive.json file must be present for  Expansive
@@ -151,6 +149,7 @@ EXP(1)                           User Commands                          EXP(1)
        To prepare a new site to use Expansive, run:
 
            expansive init
+
 
        This  creates  an  expansive.json  and  package.json  file.  The expan-
        sive.json file controls Expansive execution. The package.json  file  is
@@ -178,40 +177,31 @@ EXP(1)                           User Commands                          EXP(1)
        tion of Expansive. These values are made available to web pages via the
        'expansive.control' property.
 
+
        In the 'control' section, the 'documents' array defines the set of pat-
-       terns to select documents from the 'contents' directory for processing.
-       The 'copy' array defines a set of patterns  to  select  files  to  copy
-       without  processing.   The copy patterns are relative to the 'contents'
-       directory.
-
-<B>DYNAMIC CONTENT</B>
-       Expansive uses embedded  Javascript  in  web  pages  to  fully  support
-       dynamic content.  Scripts can be embedded via the special Expansive tag
-       '&lt;@ ...  @&gt;'. This will run the script when the page  is  rendered  and
-       replace  the  script  with  rendered  data.   When the script runs, the
-       'this' object is set to the  'expansive'  object  for  easy  access  to
-       Expansive methods. See SCRIPTING below for more details.
-
        For example, to render the current date in a document:
 
-        &lt;p&gt;Today is &lt;@ write(Date()) @&gt;
+        &lt;;p&gt;;Today is &lt;;@ write(Date()) @&gt;;
 
-       The write function is used to render data to be used in place of the &lt;@
-       @&gt; element.  You can use 'writeSafe' to HTML  escape  the  data  before
-       writing.  You can also use a simpler form &lt;@= that means use the result
+       The write function is used to render data to be used in place of the &lt;;@
+       @&gt;; element.  You can use 'writeSafe' to HTML  escape  the  data  before
+       writing.  You can also use a simpler form &lt;;@= that means use the result
        of the Javascript expression, HTML escapse the data and then write  it.
        For example:
 
-        &lt;p&gt;Today is &lt;@= Date() @&gt;
+        &lt;;p&gt;;Today is &lt;;@= Date() @&gt;;
 
        Even  simpler, you can use an abbreviated @= variable to emit the value
        of a Javascript variable. For example:
 
-        &lt;p&gt;Site URL is @={meta.site}&lt;/p&gt;
+        &lt;;p&gt;;Site URL is @={meta.site}&lt;;/p&gt;;
 
        The top URL of the site may be abbreviated as '@~'.
 
-<B>TRANSFORMATIONS</B>
+
+
+</PRE>
+<H2>TRANSFORMATIONS</H2><PRE>
        Expansive will interpret document extensions and  automatically  trans-
        form  content  from  one  format to another.  For example, the filename
        'instructions.html.md' tells Expansive that the  data  is  in  Markdown
@@ -233,28 +223,20 @@ EXP(1)                           User Commands                          EXP(1)
        The transformation pipeline for specific extensions can  be  overridden
        via the 'expansive.transforms' meta property.
 
-<B>PLUGINS</B>
+
+
+</PRE>
+<H2>PLUGINS</H2><PRE>
        Expansive  may be extended via plugins that provide transformations and
        additional scripting capability.  Plugins are installed using  the  Pak
        manager via 'pak install NAMES...'. Once installed, expansive will load
        all installed plugin packages.
 
-<B>USEFUL PLUGINS</B>
+
+
+</PRE>
+<H2>USEFUL PLUGINS</H2><PRE>
        Here are some of the more useful Expansive plugins:
-
-       exp-bash  Run shell scripts and capture the output.
-
-       exp-css   Process CSS files to add browser specific prefixes and minify
-                 the  output.  Requires  'autoprefixer'  and  'recess'  to  be
-                 installed.
-
-       exp-esp   Compile ESP web pages and applications.
-
-       exp-gzip  Compress final output using gzip. Files are rendered  with  a
-                 'gz' extension.
-
-       exp-js    Process  Javascript  files  to  mangle  and  minify. Requires
-                 'uglify' to be installed.
 
        exp-less  Process Less stylesheets into CSS. Requires  'recess'  to  be
                  installed.
@@ -278,15 +260,19 @@ EXP(1)                           User Commands                          EXP(1)
             }
         }
 
+
        See  specific  plugin  documentation  for the configuration options for
        each plugin.
 
-<B>LAYOUTS</B>
+
+
+</PRE>
+<H2>LAYOUTS</H2><PRE>
        A layout page defines the top level HTML content for a  set  of  pages.
        The  layout  defines  the format, look and feel of the web site so that
        each pages does not need to replicate this content. Document pages nom-
        inate  a layout page to use, and the layout page then wraps the content
-       page to create a composite page.  The '&lt;@ content @&gt;' tag in the layout
+       page to create a composite page.  The '&lt;;@ content @&gt;;' tag in the layout
        is  replaced  with  the web page content after separating the page meta
        data.
 
@@ -296,26 +282,15 @@ EXP(1)                           User Commands                          EXP(1)
        cessing.  Layout pages may nest, i.e. may use other layout pages.  Lay-
        out pages can use any desired transformation file extension.
 
-             &lt;!DOCTYPE html&gt;
-             &lt;html lang="en"&gt;
-             &lt;head&gt;
-                 &lt;title&gt;&lt;@= meta.title @&gt;&lt;/title&gt;
-                 &lt;link href="css/api.css" rel="stylesheet" type="text/css" /&gt;
-             &lt;/head&gt;
-             &lt;body&gt;
-                 &lt;div class="content"&gt;
-                     &lt;@ content @&gt;
-                 &lt;/div&gt;
-             &lt;/body&gt;
-             &lt;/html&gt;
-
-<B>PARTIALS</B>
-       Web pages often need to have content that is common  across  a  set  of
-       pages.  Expansive  supports this via partial pages that can be included
-       by any page, layout or other partial page. A page specifies  a  partial
-       by using the 'partial' Javascript function. For example:
-
-        &lt;@ partial('header') @&gt;
+             &lt;;!DOCTYPE html&gt;;
+             &lt;;html lang="en"&gt;;
+             &lt;;head&gt;;
+                 &lt;;title&gt;;&lt;;@= meta.title @&gt;;&lt;;/title&gt;;
+                 &lt;;link href="css/api.css" rel="stylesheet" type="text/css" /&gt;;
+             &lt;;/head&gt;;
+             &lt;;body&gt;;
+                 &lt;;div class="content"&gt;;
+                     &lt;;@ content @&gt;;
 
        The partial function will search for a file starting with 'header.html'
        in the 'partials' directory.  Partials  are  transformed  according  to
@@ -324,10 +299,14 @@ EXP(1)                           User Commands                          EXP(1)
        then  piping the output into the Markdown to create html data that will
        then be included in place of the original partial tag.
 
+
        Partials can be nested, in that a partial page may include another par-
        ital page to any depth.
 
-<B>META DATA</B>
+
+
+</PRE>
+<H2>META DATA</H2><PRE>
        Pages, layouts and partials can define meta data at the top of the file
        via a Javascript literal.  Meta data is passed to the Javascript execu-
        tion  context for each page, layout and partial where scripts can exam-
@@ -337,12 +316,13 @@ EXP(1)                           User Commands                          EXP(1)
                 draft: true,
                 navigation: 'blog',
              }
-             &lt;h1&gt;Page Header&lt;/h1&gt;
+             &lt;;h1&gt;;Page Header&lt;;/h1&gt;;
 
        The meta data is added to the current meta  data  collection  from  the
        expansive.json  file  and passed to the layout page, partials pages and
        content pages. The meta data can be  accessed  via  the  global  'meta'
        Javascript variable.
+
 
        Meta data is inherited and aggregated as Expansive processes a web site
        directory. In each directory, a site  may  define  an  'expansive.json'
@@ -351,7 +331,10 @@ EXP(1)                           User Commands                          EXP(1)
        In  this  manner upper levels can define the parameters for subdirecto-
        ries in the site. Meta data is never passed back up the tree.
 
-<B>META PROPERTIES</B>
+
+
+</PRE>
+<H2>META PROPERTIES</H2><PRE>
        Expansive defines a rich set of meta properties for you to use in  your
        pages:
 
@@ -365,19 +348,6 @@ EXP(1)                           User Commands                          EXP(1)
 
        document    Input  file  name of the document being processed. For par-
                    tials and layouts, this is set to the invoking document.
-
-       extension   The extension of the public document filename.
-
-       extensions  The set of extensions on the original input document.
-
-       from        The filename  extension  being  processed  by  the  current
-                   transformation.
-
-       isLayout    True if a layout is being processed.
-
-       isPartial   True if a partial page is being processed.
-
-       layout      Layout page in use. Set to '' if no layout being used.
 
        mode        Index name in the pak.modes property. The selected property
                    collection is copied up to the top level of the meta  data.
@@ -421,7 +391,10 @@ EXP(1)                           User Commands                          EXP(1)
 
        url         URL for the current page.
 
-<B>EXPANSIVE CONTROL</B>
+
+
+</PRE>
+<H2>EXPANSIVE CONTROL</H2><PRE>
        Expansive defines a set of control  properites  in  the  meta.expansive
        property.  These  are originally sourced from the 'control' property in
        the 'expansive.json' file.
@@ -431,26 +404,13 @@ EXP(1)                           User Commands                          EXP(1)
                    files under the directory are copied. The files  are  rela-
                    tive to the 'contents' directory.
 
-       documents   Array  of patterns to process. The patterns may include "*"
-                   or "**". If a directory is specifed, all  files  under  the
-                   directory  are  processed.  The  files  are relative to the
-                   'contents' directory.
-
-       files       Array of directories containing  raw  content  to  copy  to
-                   'dist' without processing. By default, contains 'files'.
-
-       listen      Address on which to listen for HTTP requests. May be just a
-                   port number.
-
-       script      Script to evaluate  to  inject  code  into  the  Javascript
-                   global execution context.
 
        transforms  Hash  of extension mappings to a list of transform services
-                   for those mappings. Mappings are in the form 'ext -&gt;  ext'.
+                   for those mappings. Mappings are in the form 'ext -&gt;;  ext'.
                    For example:
 
                     transforms: {
-                       'less -&gt; css': [
+                       'less -&gt;; css': [
                            'compile-less',
                            'prefix-css',
                            'minify-css',
@@ -462,10 +422,14 @@ EXP(1)                           User Commands                          EXP(1)
                    pile-less,   compile-markdown,   compile-sass,    compress,
                    minify-css, minify-js, prefix-css, shell.
 
+
        watch       Time  in  milliseconds to wait between checking for render-
                    ing.
 
-<B>CREATING PLUGINS</B>
+
+
+</PRE>
+<H2>CREATING PLUGINS</H2><PRE>
        Expansive   plugins    are    created    using    the    Pak    utility
        (https://embedthis.com/pak)   and  published  to  the  Pak  Catalog  at
        (https://embedthis.com/catalog/). The plugin contains an expansive.json
@@ -487,25 +451,12 @@ EXP(1)                           User Commands                          EXP(1)
            }
         }
 
+
        The plugin specifies a one or more transformations via the 'transforms'
        collection. Each transform definition provides  an  implemention  of  a
        transform  service. The 'name' property specifies the transform service
        name. The service name provides an abstract  name  for  which  multiple
        plugins may provide the implementation.
-
-       The  'mappings'  property specifies a set of the input and output file-
-       name extensions used when transforming documents.   If  all  extensions
-       are supported, set the value to '*'. The value may be an arrays if mul-
-       tiple extensions are supported. Extensions may be multipart, for  exam-
-       ple: 'min.js'.
-
-       The  transform  script should define a global 'transform' function that
-       will be invoked for matching content.  It is  invoked  with  the  'con-
-       tents'  to transform (String), the meta data collection and the service
-       object that contains service options.  The function should  return  the
-       transformed data.
-
-       A  plugin  may  also define other Javascript functions and variables in
        'script' that will be injected into the global scope of Expansive  when
        it executes.
 
@@ -526,9 +477,13 @@ EXP(1)                           User Commands                          EXP(1)
        is disabled. See the plugin specific README documentation for supported
        configuration properties for each service.
 
-<B>SCRIPTING</B>
+
+
+</PRE>
+<H2>SCRIPTING</H2><PRE>
        Expansive  defines a Javascript global "expansive" to access and manage
        Expansive services. This object provides the following methods:
+
 
        addItems(collection, items)
               Add items  to  a  named  collection.  Collections  are  globally
@@ -556,19 +511,6 @@ EXP(1)                           User Commands                          EXP(1)
               require Javascripts and have them emitted uniquely by a partial.
               Requires the exp-js plugin.
 
-       renderStyles
-              Render all stylesheets added to the 'styles' and 'inline-styles'
-              collections via 'addItems'. This permits documents, partials and
-              layouts to require stylesheets and have them emitted uniquely by
-              a partial. Requires the exp-css plugin.
-
-       trace(tag, msg...)
-              To emit console trace while processing.
-
-<B>COMMANDS</B>
-       clean  Remove rendered content from the 'dist' output directory.
-
-       deploy Deploy rendered content to a directory. This by  default  copies
               'dist', 'cache', and expansive.json to 'deploy'.
 
        init   Initialize  a directory by creating an 'expansive.json' configu-
@@ -602,58 +544,77 @@ EXP(1)                           User Commands                          EXP(1)
               render.   Expansive  will  render  only the documents that begin
               with the given patterns.
 
-<B>OPTIONS</B>
-       <B>--abort   </B>Abort processing on render errors.
 
-       <B>--chdir directory</B>
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>--abort</B>   Abort processing on render errors.
+
+
+       <B>--chdir</B> <B>directory</B>
                  Change to directory before running.
 
-       <B>--clean   </B>Clean output "dist" directory first.
 
-       <B>--listen IP:PORT URI</B>
+       <B>--clean</B>   Clean output "dist" directory first.
+
+
+       <B>--listen</B> <B>IP:PORT</B> <B>URI</B>
                  Change the port on which Expansive will listen. Can omit  the
                  IP portion and only specify a port.
 
-       <B>--log filename:level</B>
-                 Emit  trace  to  the specified file. The level is a verbosity
-                 level from 0-5 with 5 being the most verbose.
 
-       <B>--noclean </B>Do not  clean  the  'dist'  directory  before  rendering.  By
-                 default  Expansive  will  remove all the content under 'dist'
-                 first.
+       <B>--log</B> <B>filename:level</B>
 
-       <B>--norender</B>
-                 Do not do an initial render before watching for changes.
 
-       <B>--nowatch </B>Do not watch for changes when serving content.
+       <B>--quiet</B>   Run in quiet mode. Do not emit activity trace to the console.
 
-       <B>--quiet   </B>Run in quiet mode. Do not emit activity trace to the console.
 
-       <B>--trace filename:level</B>
+       <B>--trace</B> <B>filename:level</B>
                  Trace  HTTP  requests  to  the specified file. The level is a
                  verbosity level from 0-5 with 5 being the most verbose.  HTTP
                  requests and HTTP headers will be traced at levels 2-4.
 
-       <B>--verbose </B>Run in verbose mode. Emit more activity trace.
 
-       <B>--versions URI</B>
+       <B>--verbose</B> Run in verbose mode. Emit more activity trace.
+
+
+       <B>--versions</B> <B>URI</B>
                  Show expansive version information.
 
-       <B>--DIGIT   </B>Emit log and HTTP trace to stderr at the specified level. The
+
+       <B>--DIGIT</B>   Emit log and HTTP trace to stderr at the specified level. The
                  DIGIT must be 0 to 5 with 5 being  the  most  verbose.   This
                  option   is   the   same   as   "--log  stderr:DIGIT  --trace
                  stderr:DIGIT"
 
-<B>REPORTING BUGS</B>
+
+
+
+</PRE>
+<H2>REPORTING BUGS</H2><PRE>
        Report bugs to dev@embedthis.com.
 
-<B>COPYRIGHT</B>
+
+</PRE>
+<H2>COPYRIGHT</H2><PRE>
        Copyright (C) Embedthis Software. MakeMe, Pak and Ejscript are a trade-
        marks of Embedthis Software.
 
-<B>SEE ALSO</B>
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
        ejs, esp, me, pak, http://embedthis.com/expansive/
 
-exp                               March 2014                            EXP(1)
-</PRE></BODY>
+
+
+exp                               March 2014                            <B>EXP(1)</B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>
 </html>

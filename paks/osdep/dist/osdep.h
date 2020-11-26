@@ -119,8 +119,8 @@
 #endif
 
 /*
-    Operating system defines. Use compiler standard defintions to sleuth.  Works for all except VxWorks which does not
-    define any special symbol.  NOTE: Support for SCOV Unix, LynxOS and UnixWare is deprecated.
+    Operating system defines. Use compiler standard defintions to sleuth. Works for all except VxWorks which does not
+    define any special symbol. NOTE: Support for SCOV Unix, LynxOS and UnixWare is deprecated.
  */
 #if defined(__APPLE__)
     #define ME_OS "macosx"
@@ -143,6 +143,8 @@
     #define ME_UNIX_LIKE 1
     #define ME_WIN_LIKE 0
     #define ME_BSD_LIKE 1
+    #define HAS_USHORT 1
+    #define HAS_UINT 1
 
 #elif defined(__OpenBSD__)
     #define ME_OS "freebsd"
@@ -240,7 +242,7 @@
 
 #endif
 
-#if __WORDSIZE == 64 || __amd64 || __x86_64 || __x86_64__ || _WIN64 || __mips64 || __arch64__ || __arm64__
+#if __WORDSIZE == 64 || __amd64 || __x86_64 || __x86_64__ || _WIN64 || __mips64 || __arch64__ || __arm64__ || __aarch64__
     #define ME_64 1
     #define ME_WORDSIZE 64
 #else
@@ -383,6 +385,8 @@
 #endif
 #if ME_BSD_LIKE
     #include    <readpassphrase.h>
+    #include    <sys/sysctl.h>
+    #include    <sys/event.h>
 #endif
     #include    <setjmp.h>
     #include    <signal.h>
@@ -451,7 +455,6 @@
     #include    <mach/mach_init.h>
     #include    <mach/mach_time.h>
     #include    <mach/task.h>
-    #include    <sys/sysctl.h>
     #include    <libkern/OSAtomic.h>
 #endif
 #if VXWORKS
@@ -471,6 +474,7 @@
     #include    <taskHookLib.h>
     #include    <unldLib.h>
     #if _WRS_VXWORKS_MAJOR >= 6
+        #include    <taskLibCommon.h>
         #include    <wait.h>
     #endif
     #if _WRS_VXWORKS_MAJOR > 6 || (_WRS_VXWORKS_MAJOR == 6 && _WRS_VXWORKS_MINOR >= 8)
@@ -485,6 +489,10 @@
     #include    <nettools/inc/dnsif.h>
     #include    <socket.h>
     #include    <file.h>
+#endif
+
+#if ME_COMPILER_HAS_ATOMIC
+    #include   <stdatomic.h>
 #endif
 
 /************************************** Types *********************************/
@@ -925,9 +933,9 @@ typedef int64 Ticks;
 #endif
 
 #if VXWORKS
-/*
-    Old VxWorks can't do array[]
- */
+    /*
+        Old VxWorks cannot do array[]
+     */
     #define ARRAY_FLEX 0
 #else
     #define ARRAY_FLEX
@@ -941,6 +949,8 @@ typedef int64 Ticks;
 #else
     #define ME_DEPRECATED(MSG)
 #endif
+
+#define NOT_USED(x) ((void*) x)
 
 /********************************** Tunables *********************************/
 /*
@@ -1017,11 +1027,12 @@ typedef int64 Ticks;
 
 #if ME_UNIX_LIKE
     #define closesocket(x)  close(x)
-    #ifndef PTHREAD_MUTEX_RECURSIVE_NP
+    #if !defined(PTHREAD_MUTEX_RECURSIVE_NP) || FREEBSD
         #define PTHREAD_MUTEX_RECURSIVE_NP PTHREAD_MUTEX_RECURSIVE
-    #endif
-    #ifndef PTHREAD_MUTEX_RECURSIVE
-        #define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
+    #else
+        #ifndef PTHREAD_MUTEX_RECURSIVE
+            #define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
+        #endif
     #endif
 #endif
 
@@ -1041,7 +1052,7 @@ typedef int64 Ticks;
     #endif
 #endif
 
-#if MACOSX
+#if ME_BSD_LIKE
     /*
         Fix for MAC OS X - getenv
      */
@@ -1057,6 +1068,14 @@ typedef int64 Ticks;
 
 #if SOLARIS
     #define INADDR_NONE     ((in_addr_t) 0xffffffff)
+#endif
+
+#ifdef SIGINFO
+    #define ME_SIGINFO SIGINFO
+#elif (defined(SIGIPRW)
+    #define ME_SIGINFO SIGIPRW
+#else
+    #define ME_SIGINFO NULL
 #endif
 
 #if VXWORKS

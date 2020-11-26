@@ -38,6 +38,8 @@
  #include    <openssl/rand.h>
  #include    <openssl/err.h>
  #include    <openssl/dh.h>
+ #include    <openssl/rsa.h>
+ #include    <openssl/bio.h>
 
 #if OPENSSL_VERSION_NUMBER >= 0x10002000L
     #include    <openssl/x509v3.h>
@@ -236,6 +238,12 @@ typedef struct CRYPTO_dynlock_value DynLock;
     #define ME_MPR_SSL_CURVE "prime256v1"
 #endif
 
+/*
+    Certificate and key formats
+ */
+#define FORMAT_PEM 1
+#define FORMAT_DER 2
+
 /***************************** Forward Declarations ***************************/
 
 static void     closeOss(MprSocket *sp, bool gracefully);
@@ -253,6 +261,7 @@ static void     manageOpenConfig(OpenConfig *cfg, int flags);
 static void     manageOpenProvider(MprSocketProvider *provider, int flags);
 static void     manageOpenSocket(OpenSocket *ssp, int flags);
 static cchar    *mapCipherNames(cchar *ciphers);
+static int      preloadOss(MprSsl *ssl, int flags);
 static ssize    readOss(MprSocket *sp, void *buf, ssize len);
 static void     setSecured(MprSocket *sp);
 static int      setCertFile(SSL_CTX *ctx, cchar *certFile);
@@ -294,6 +303,7 @@ PUBLIC int mprSslInit(void *unused, MprModule *module)
         return MPR_ERR_MEMORY;
     }
     openProvider->name = sclone("openssl");
+    openProvider->preload = preloadOss;
     openProvider->upgradeSocket = upgradeOss;
     openProvider->closeSocket = closeOss;
     openProvider->disconnectSocket = disconnectOss;
@@ -578,11 +588,43 @@ static int configOss(MprSsl *ssl, int flags, char **errorMsg)
     /*
         Define default OpenSSL options
         Ensure we generate a new private key for each connection
-        Disable SSLv2 and SSLv3 by default -- they are insecure.
+        Disable SSLv2, SSLv3 and TLSv1 by default -- they are insecure.
      */
-    cfg->setFlags = SSL_OP_ALL | SSL_OP_SINGLE_DH_USE | SSL_OP_SINGLE_ECDH_USE | SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3;
-#ifdef SSL_OP_NO_TLSv1
+    cfg->setFlags = SSL_OP_ALL | SSL_OP_SINGLE_DH_USE | SSL_OP_SINGLE_ECDH_USE | SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1;
+
+    /*
+        Configuration time controls
+     */
+#if UNUSED
     if (!(ssl->protocols & MPR_PROTO_TLSV1)) {
+        /* Disable all TLS V1.* */
+#ifdef SSL_OP_NO_TLSv1
+        cfg->setFlags |= SSL_OP_NO_TLSv1;
+#endif
+#ifdef SSL_OP_NO_TLSv1_1
+        cfg->setFlags |= SSL_OP_NO_TLSv1_1;
+#endif
+#ifdef SSL_OP_NO_TLSv1_2
+        cfg->setFlags |= SSL_OP_NO_TLSv1_2;
+#endif
+#ifdef SSL_OP_NO_TLSv1_3
+        cfg->setFlags |= SSL_OP_NO_TLSv1_3;
+#endif
+    }
+#endif /* UNUSED */
+
+#ifdef SSL_OP_NO_SSLv2
+    if (!(ssl->protocols & MPR_PROTO_SSLV2)) {
+        cfg->setFlags |= SSL_OP_NO_SSLv2;
+    }
+#endif
+#ifdef SSL_OP_NO_SSLv3
+    if (!(ssl->protocols & MPR_PROTO_SSLV3)) {
+        cfg->setFlags |= SSL_OP_NO_SSLv3;
+    }
+#endif
+#ifdef SSL_OP_NO_TLSv1
+    if (!(ssl->protocols & MPR_PROTO_TLSV1_0)) {
         cfg->setFlags |= SSL_OP_NO_TLSv1;
     }
 #endif
@@ -852,6 +894,26 @@ static void closeOss(MprSocket *sp, bool gracefully)
 }
 
 
+static int preloadOss(MprSsl *ssl, int flags)
+{
+    char    *errorMsg;
+
+    assert(ssl);
+
+    if (ssl == 0) {
+        ssl = mprCreateSsl(flags & MPR_SOCKET_SERVER);
+    }
+    lock(ssl);
+    if (configOss(ssl, flags, &errorMsg) < 0) {
+        mprLog("error mpr ssl openssl", 4, "Cannot configure SSL %s", errorMsg);
+        unlock(ssl);
+        return MPR_ERR_CANT_INITIALIZE;
+    }
+    unlock(ssl);
+    return 0;
+}
+
+
 /*
     Upgrade a standard socket to use SSL/TLS. Used by both clients and servers to upgrade a socket for SSL.
     If a client, this may block while connecting.
@@ -975,19 +1037,20 @@ static ssize readOss(MprSocket *sp, void *buf, ssize len)
     retries = 5;
     for (i = 0; i < retries; i++) {
         rc = SSL_read(osp->handle, buf, (int) len);
-        if (rc < 0) {
+        if (rc <= 0) {
             error = SSL_get_error(osp->handle, rc);
             if (error == SSL_ERROR_WANT_READ || error == SSL_ERROR_WANT_CONNECT || error == SSL_ERROR_WANT_ACCEPT) {
                 continue;
             }
             mprLog("info mpr ssl openssl", 5, "SSL_read %s", getOssError(sp));
+            sp->flags |= MPR_SOCKET_EOF | MPR_SOCKET_ERROR;
         }
         break;
     }
     if (osp->cfg->maxHandshakes && osp->handshakes > osp->cfg->maxHandshakes) {
         mprLog("error mpr ssl openssl", 4, "TLS renegotiation attack");
         rc = -1;
-        sp->flags |= MPR_SOCKET_EOF;
+        sp->flags |= MPR_SOCKET_EOF | MPR_SOCKET_ERROR;
         return MPR_ERR_BAD_STATE;
     }
     if (rc <= 0) {
@@ -1000,17 +1063,18 @@ static ssize readOss(MprSocket *sp, void *buf, ssize len)
             sp->flags |= MPR_SOCKET_EOF;
             rc = -1;
         } else if (error == SSL_ERROR_SYSCALL) {
-            sp->flags |= MPR_SOCKET_EOF;
+            sp->flags |= MPR_SOCKET_EOF | MPR_SOCKET_ERROR;
             rc = -1;
         } else if (error != SSL_ERROR_ZERO_RETURN) {
             /* SSL_ERROR_SSL */
             mprLog("info mpr ssl openssl", 4, "%s", getOssError(sp));
             rc = -1;
-            sp->flags |= MPR_SOCKET_EOF;
+            sp->flags |= MPR_SOCKET_EOF | MPR_SOCKET_ERROR;
         }
     } else {
         if (!(sp->flags & MPR_SOCKET_SERVER) && !sp->secured) {
             if (checkPeerCertName(sp) < 0) {
+                sp->flags |= MPR_SOCKET_EOF | MPR_SOCKET_CERT_ERROR;
                 return MPR_ERR_BAD_STATE;
             }
         }
@@ -1258,38 +1322,42 @@ static int checkPeerCertName(MprSocket *sp)
 }
 
 
-static int setCertFile(SSL_CTX *ctx, cchar *certFile)
+/*
+    Load a certificate into the context from the supplied buffer. Type indicates the desired format. The path is only used for errors.
+ */
+static int loadCert(SSL_CTX *ctx, cchar *buf, ssize len, int type, cchar *path)
 {
     X509    *cert;
     BIO     *bio;
-    char    *buf;
-    int     rc;
+    bool    loaded;
 
     assert(ctx);
-    assert(certFile);
+    assert(buf);
+    assert(type);
+    assert(path && *path);
 
-    rc = -1;
-    bio = 0;
-    buf = 0;
     cert = 0;
+    loaded = 0;
 
-    if (ctx == NULL) {
-        return rc;
-    }
-    if ((buf = mprReadPathContents(certFile, NULL)) == 0) {
-        mprLog("error openssl", 0, "Unable to read certificate %s", certFile);
-
-    } else if ((bio = BIO_new_mem_buf(buf, -1)) == 0) {
-        mprLog("error openssl", 0, "Unable to allocate memory for certificate %s", certFile);
-
-    } else if ((cert = PEM_read_bio_X509(bio, NULL, 0, NULL)) == 0) {
-        mprLog("error openssl", 0, "Unable to parse certificate %s", certFile);
-
-    } else if (SSL_CTX_use_certificate(ctx, cert) != 1) {
-        mprLog("error openssl", 0, "Unable to use certificate %s", certFile);
-
+    if ((bio = BIO_new_mem_buf(buf, (int) len)) == 0) {
+        mprLog("error openssl", 0, "Unable to allocate memory for certificate %s", path);
     } else {
-        rc = 0;
+        if (type == FORMAT_PEM) {
+            if ((cert = PEM_read_bio_X509(bio, NULL, 0, NULL)) == 0) {
+                /* Error reported by caller if loading all formats fail */
+            }
+        } else if (type == FORMAT_DER) {
+            if ((cert = d2i_X509_bio(bio, NULL)) == 0) {
+                /* Error reported by caller */
+            }
+        }
+        if (cert) {
+            if (SSL_CTX_use_certificate(ctx, cert) != 1) {
+                mprLog("error openssl", 0, "Unable to use certificate %s", path);
+            } else {
+                loaded = 1;
+            }
+        }
     }
     if (bio) {
         BIO_free(bio);
@@ -1297,45 +1365,114 @@ static int setCertFile(SSL_CTX *ctx, cchar *certFile)
     if (cert) {
         X509_free(cert);
     }
+    return loaded ? 0 : MPR_ERR_CANT_LOAD;
+}
+
+
+/*
+    Load a certificate file in either PEM or DER format
+ */
+static int setCertFile(SSL_CTX *ctx, cchar *certFile)
+{
+    cchar   *buf;
+    ssize   len;
+    int     rc;
+
+    assert(ctx);
+    assert(certFile);
+
+    rc = 0;
+
+    if (ctx == NULL || certFile == NULL) {
+        return rc;
+    }
+    if ((buf = mprReadPathContents(certFile, &len)) == 0) {
+        mprLog("error openssl", 0, "Unable to read certificate %s", certFile);
+        rc = MPR_ERR_CANT_READ;
+    } else {
+        if (loadCert(ctx, buf, len, FORMAT_PEM, certFile) < 0 && loadCert(ctx, buf, len, FORMAT_DER, certFile) < 0) {
+            mprLog("error openssl", 0, "Unable to load certificate %s", certFile);
+            rc = MPR_ERR_CANT_LOAD;
+        }
+    }
     return rc;
 }
 
 
-static int setKeyFile(SSL_CTX *ctx, cchar *keyFile)
+/*
+    Load a key into the context from the supplied buffer. Type indicates the key format.  Path only used for diagnostics.
+ */
+static int loadKey(SSL_CTX *ctx, cchar *buf, ssize len, int type, cchar *path)
 {
     RSA     *key;
     BIO     *bio;
+    bool    loaded;
+
+    assert(ctx);
+    assert(buf);
+    assert(type);
+    assert(path && *path);
+
+    key = 0;
+    loaded = 0;
+
+    if ((bio = BIO_new_mem_buf(buf, (int) len)) == 0) {
+        mprLog("error openssl", 0, "Unable to allocate memory for key %s", path);
+    } else {
+        if (type == FORMAT_PEM) {
+            if ((key = PEM_read_bio_RSAPrivateKey(bio, NULL, 0, NULL)) == 0) {
+                /* Error reported by caller if loading all formats fail */
+            }
+        } else if (type == FORMAT_DER) {
+            if ((key = d2i_RSAPrivateKey_bio(bio, NULL)) == 0) {
+                /* Error reported by caller if loading all formats fail */
+            }
+        }
+    }
+    if (key) {
+        if (SSL_CTX_use_RSAPrivateKey(ctx, key) != 1) {
+            mprLog("error openssl", 0, "Unable to use key %s", path);
+        } else {
+            loaded = 1;
+        }
+    }
+    if (bio) {
+        BIO_free(bio);
+    }
+    if (key) {
+        RSA_free(key);
+    }
+    return loaded ? 0 : MPR_ERR_CANT_LOAD;
+}
+
+
+/*
+    Load a key file in either PEM or DER format
+ */
+static int setKeyFile(SSL_CTX *ctx, cchar *keyFile)
+{
+    RSA     *key;
     char    *buf;
+    ssize   len;
     int     rc;
 
     assert(ctx);
     assert(keyFile);
 
     key = 0;
-    bio = 0;
     buf = 0;
-    rc = -1;
+    rc = 0;
 
     if (ctx == NULL || keyFile == NULL) {
         ;
-
-    } else if ((buf = mprReadPathContents(keyFile, NULL)) == 0) {
-        mprLog("error openssl", 0, "Unable to read certificate %s", keyFile);
-
-    } else if ((bio = BIO_new_mem_buf(buf, -1)) == 0) {
-        mprLog("error openssl", 0, "Unable to allocate memory for key %s", keyFile);
-
-    } else if ((key = PEM_read_bio_RSAPrivateKey(bio, NULL, 0, NULL)) == 0) {
-        mprLog("error openssl", 0, "Unable to parse key %s", keyFile);
-
-    } else if (SSL_CTX_use_RSAPrivateKey(ctx, key) != 1) {
-        mprLog("error openssl", 0, "Unable to use key %s", keyFile);
-
+    } else if ((buf = mprReadPathContents(keyFile, &len)) == 0) {
+        mprLog("error openssl", 0, "Unable to read key %s", keyFile);
+        rc = MPR_ERR_CANT_READ;
     } else {
-        rc = 0;
-    }
-    if (bio) {
-        BIO_free(bio);
+        if (loadKey(ctx, buf, len, FORMAT_PEM, keyFile) < 0 && loadKey(ctx, buf, len, FORMAT_DER, keyFile) < 0) {
+            mprLog("error openssl", 0, "Unable to load key %s", keyFile);
+            rc = MPR_ERR_CANT_LOAD;
+        }
     }
     if (key) {
         RSA_free(key);

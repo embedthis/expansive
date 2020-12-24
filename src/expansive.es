@@ -814,10 +814,11 @@ public class Expansive {
     }
 
     function watch(meta) {
+        /*
         if (package.profile != 'debug' && package.profile != 'dev') {
             trace('Warn', 'Watching for changes only supported in debug/dev profile')
             return
-        }
+        } */
         trace('Watching', 'for changes every ' + control.watch + ' msec ...')
         options.watching = true
         if (control.watch < 1000) {
@@ -832,6 +833,7 @@ public class Expansive {
                     dump('Modified', modified)
                 }
                 restartServer(true)
+                modified = { file: {} }
             }
             if (modified.any) {
                 reloadBrowsers()
@@ -943,9 +945,11 @@ public class Expansive {
         }
         options.serving = true
         let address = options.listen || control.listen || '127.0.0.1:4000'
+        /*
         if (package.profile == 'release' || package.profile == 'prod') {
             options.nowatch = true
         }
+        */
         if (options.nowatch) {
             trace('Listen', address)
             App.run()

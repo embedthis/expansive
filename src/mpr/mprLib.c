@@ -16751,6 +16751,7 @@ static char *standardMimeTypes[] = {
     "js",    "application/javascript",
     "json",  "application/json",
     "less",  "text/css",
+    "mjs",   "application/javascript",
     "mp3",   "audio/mpeg",
     "mp4",   "video/mp4",
     "mov",   "video/quicktime",

@@ -154,7 +154,7 @@ public class Expansive {
                 top:        Path('.'),
             },
             listen: LISTEN,
-            watch: 1500,
+            watch: 2500,
         }
         topMeta = {
             layout: 'default',
@@ -686,7 +686,6 @@ public class Expansive {
         File is a path without 'contents', 'layouts' etc.
      */
     public function modify(file, ...kinds) {
-        // throw new Error('modify')
         for each (kind in kinds) {
             modified[kind] ||= {}
             modified[kind][file] = true
@@ -694,6 +693,9 @@ public class Expansive {
         modified.any = true
         if (options.why) {
             trace('Modified', file)
+        }
+        if (modified.everything || modified.partial) {
+            cache = {}
         }
         event('onchange', file)
     }
@@ -921,6 +923,11 @@ public class Expansive {
                     self.reload.push(this)
                 } else {
                     request.setHeader('X-Frame-Options', 'AllowAll')
+                    if (self.control.headers) {
+                        for (header in self.control.headers) {
+                            request.setHeader(header, self.control.headers[header])
+                        }
+                    }
                     server.serve(request, router)
                 }
             } catch (e) {

@@ -835,10 +835,10 @@ public class Expansive {
                     dump('Modified', modified)
                 }
                 restartServer(true)
+                if (modified.any) {
+                    reloadBrowsers()
+                }
                 modified = { file: {} }
-            }
-            if (modified.any) {
-                reloadBrowsers()
             }
             App.sleep(control.watch)
             vtrace('Check', 'for changes (' + Date().format('%I:%M:%S') + ')')

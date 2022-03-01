@@ -1283,6 +1283,7 @@ public class Expansive {
         site       - Canonical absolute URL to the site. Includes scheme and host
      */
     public function initMeta(path, meta) {
+        meta.pubsite = Uri(meta.site)
         if (options.serve) {
             let original: Uri? = meta.site
             meta.site = Uri(options.listen || control.listen || meta.site || 'http://localhost:4000').complete()
@@ -1319,6 +1320,7 @@ public class Expansive {
             meta.url ||= Uri(Uri.encode(meta.destPath))
         }
         meta.absurl = meta.abstop.join(meta.url).normalize
+        meta.fullurl = meta.site + '' + meta.url
 
         meta.profile = package.profile || 'debug'
         //  LEGACY

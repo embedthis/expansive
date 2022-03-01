@@ -1,5 +1,5 @@
 /*
- * Embedthis MPR Library Source 9.0.1
+ * Embedthis MPR Library Source 9.0.2
  */
 
 #include "mpr.h"
@@ -2507,7 +2507,7 @@ PUBLIC int mprIsValid(cvoid *ptr)
         return 0;
     }
     mp = GET_MEM(ptr);
-    if (mp->free) {
+    if (!mp || mp->free) {
         return 0;
     }
 #if ME_WIN

@@ -5,14 +5,9 @@
     "keywords": [
         "ejs"
     ],
-    "devDependencies": {
-        "ejscript": "~2"
-    },
     "repository": {
         "type": "git",
         "url": "git://github.com/embedthis/ejs.version.git"
     },
-    "pak": {
-        "origin": "embedthis/ejs.version"
-    }
+    "origin": "embedthis/ejs.version"
 }

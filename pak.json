@@ -30,14 +30,14 @@
         }
     ],
     "dependencies": {
-        "assist": "~0.1",
-        "certs": "~0.1",
-        "ejs.version": "~0.8",
+        "assist": "~1",
+        "certs": "~1",
+        "ejs.version": "~1",
         "ejscript": "~2.7",
-        "me-win": "~0.1",
-        "mpr": "~8",
-        "mpr-mbedtls": "~2",
-        "ssl": "~0.9"
+        "me-win": "~1",
+        "mpr": "~9",
+        "mpr-mbedtls": "~3",
+        "ssl": "~1"
     },
     "optionalDependencies": {
         "mpr-openssl": "~1"

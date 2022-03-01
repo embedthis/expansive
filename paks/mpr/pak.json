@@ -2,7 +2,7 @@
     "name": "mpr",
     "description": "Embedthis Multithreaded Portable Runtime",
     "title": "Embedthis MPR",
-    "version": "9.0.1",
+    "version": "9.0.2",
     "keywords": [
         "mpr",
         "runtime"

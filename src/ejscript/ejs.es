@@ -2797,7 +2797,7 @@ module ejs {
             cmd.finalize()
             cmd.wait()
             if (cmd.status != 0 && options.exceptions !== false) {
-                throw new IOError('Command failed, status ' + cmd.status + '\n' + cmd.error)
+                throw new IOError('Command failed, status ' + cmd.status + '\n' + command + '\n' + cmd.error)
             }
             /* Currently undocumented */
             if (options.error && cmd.error) {
@@ -9653,6 +9653,7 @@ module ejs {
                 /*
                     Process all qualifying files
                  */
+                let unique = 0
                 for each (item in commands) {
                     let src = this.join(item.from)
                     let dest = item.to
@@ -9687,6 +9688,13 @@ module ejs {
 
                         if (options.filter) {
                             data = data.replace(options.filter, '')
+                        }
+                        if (options.replace) {
+                            for each (tuple in options.replace) {
+                                let from = tuple[0]
+                                let to = tuple[1].replace(/\{U}/g, '_' + unique++)
+                                data = data.replace(from, to)
+                            }
                         }
                         contents.push(data)
                         if (options.dividerFile) {

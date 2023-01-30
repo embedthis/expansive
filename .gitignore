@@ -1,2 +1,16 @@
 /start.me
 .local.mk
+**/*.guid
+.DS_Store
+.cdrc
+.expansive-lastgen
+.install-certs-modified
+.profile
+.tags
+build/
+projects/*-mine*
+projecs/*.sdf
+projecs/*.sln
+projecs/*.suo
+projects/*/project.xcworkspace/
+projects/*/xcuserdata/

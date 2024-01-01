@@ -119,12 +119,6 @@ static char *buildScript(Ejs *ejs, cchar *contents, cchar *delims)
 
         case EXP_TOK_HOME:
             /* @~ -- home url */
-/*
-            if (state.next[0] && state.next[0] != '/' && state.next[0] != '\'' && state.next[0] != '"') {
-                ejsThrowError(ejs, "Using @~ without following /");
-                return 0;
-            }
-*/
             token = strim(token, " \t\r\n;", MPR_TRIM_BOTH);
             mprPutToBuf(body, "  write('' + (top));\n", token);
             break;

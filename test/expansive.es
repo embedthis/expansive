@@ -2,7 +2,7 @@
 Expansive.init({
     meta: {
         title: "Home page title",
-        url: "https://embedthis.com",
+        url: "https://www.embedthis.com",
         description: "Meta data description (optional)",
         keywords: "Meta data keywords (optional)",
     },

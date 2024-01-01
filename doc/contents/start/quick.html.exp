@@ -1,0 +1,38 @@
+{ title: 'Quick Start', crumbs: [ { 'Getting Started': 'index.html' }, ], }
+<h1>Expansive Quick Start</h1>
+<ol>
+  <li>
+    <h3>
+      <a href="https://www.embedthis.com/expansive/download.html">Download</a>
+    </h3>
+    <p>
+      First download Expansive on your system. You can download a binary package
+      from
+      <a href="https://www.embedthis.com/expansive/download.html"
+        >https://www.embedthis.com/expansive/download.html</a
+      >.
+    </p>
+  </li>
+  <li>
+    <h3><a href="installing.html">Installing Expansive</a></h3>
+    <p>
+      Install Expansive on your system by following the
+      <a href="installing.html">instructions</a> relevant for your system.
+    </p>
+  </li>
+  <li>
+    <h3><a href="../users/tour.html">Quick Tour</a></h3>
+    <p>
+      Take the <a href="../users/tour.html">Expansive Tour</a>. This will give
+      you a quick overview of Expansive and how to use it.
+    </p>
+  </li>
+  <li>
+    <h3><a href="../index.html">Read the doc</a></h3>
+    <p>
+      There is a wealth of documentation to read. Try the
+      <a href="../users/index.html">User's Guide</a> and
+      <a href="../developers/index.html">Developer's Guide</a> first.
+    </p>
+  </li>
+</ol>

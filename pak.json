@@ -5,7 +5,7 @@
     "keywords": [
         "expansive"
     ],
-    "homepage": "https://embedthis.com/expansive/",
+    "homepage": "https://www.embedthis.com/expansive/",
     "author": {
         "name": "Embedthis Software",
         "email": "dev@embedthis.com",
@@ -30,7 +30,6 @@
         }
     ],
     "dependencies": {
-        "assist": "~1",
         "certs": "~1",
         "ejs.version": "~1",
         "ejscript": "~2.7",

@@ -29,6 +29,7 @@ const USAGE = 'Expansive Web Site Generator
     --nowatch            # Do not watch for changes, just serve
     --profile PROFILE    # Set the build profile (dev, prod, ...)
     --quiet              # Quiet mode
+    --rebuild            # Clean and render
     --trace path:level   # Trace http requests
     --verbose            # Verbose mode
     --version            # Output version information
@@ -78,7 +79,6 @@ public class Expansive {
     public var services: Object = {}
     var serviceConfig: Object = {}
     var sitemaps: Array = []
-    //  MOB - not used
     var skipFilter: Object = {}
     var stats: Object
     public var topMeta: Object
@@ -170,6 +170,7 @@ public class Expansive {
             blendMeta(topMeta, App.config.expansive)
         }
         global.meta = topMeta
+        global.css = topMeta.css = topMeta.css || {}
         lastGen = LAST_GEN.exists ? LAST_GEN.modified : Date(0)
         addWatcher('standard', standardWatcher)
     }
@@ -410,7 +411,6 @@ public class Expansive {
         for (let [name, requiredVersion] in package._installedDependencies_) {
             loadPlugin(name, requiredVersion)
         }
-        //  MOB - why build meta cache twice?
         buildMetaCache()
         blend(services, serviceConfig, {combine: true})
         fixMappings()
@@ -1081,6 +1081,9 @@ public class Expansive {
                 } else {
                     metaCache[dir] = metaCache[dir.parent] || metaCache['.']
                 }
+                if (metaCache[dir] && metaCache[dir].layout == null) {
+                    print("MC for ", dir, "has no layout");
+                }
             }
         }
     }
@@ -1123,11 +1126,16 @@ public class Expansive {
                 continue
             }
             if (filters || modified.file[file] || modified.everything) {
-                let meta = metaCache[file.dirname]
+                let meta = metaCache[file.dirname] || {}
                 if (copy[file]) {
                     copyFile(file, meta)
                 } else {
-                    renderDocument(file, meta)
+                    try {
+                        renderDocument(file, meta)
+                    } catch (err) {
+                        print('Cannot render', file)
+                        throw err
+                    }
                 }
             }
         }
@@ -1168,7 +1176,7 @@ public class Expansive {
     }
 
     function renderSitemaps() {
-        if (modified.everything && !filters) {
+        if (/* modified.everything && */ !filters && !options.watching) {
             for each (map in sitemaps) {
                 sitemap(map)
             }
@@ -1349,13 +1357,23 @@ public class Expansive {
      */
     function renderDocument(file, meta) {
         let [fileMeta, contents] = splitMetaContents(file, file.readString())
-        meta = blendMeta(meta.clone(true), fileMeta || {})
+        if (fileMeta) {
+            meta = blendMeta(meta.clone(true), fileMeta || {})
+        } else {
+            meta = meta.clone(true)
+        }
+        if (!meta) {
+            return
+        }
         if (meta.draft) {
             return
         }
         meta.document = file
         meta.isDocument = true
-        if (!fileMeta) {
+        /*
+            This is the code that prevents all files being interpreted as exp documents
+         */
+        if (!fileMeta && file.extension != 'exp') {
             delete meta.layout
         }
         trace('Render', file)
@@ -1383,6 +1401,7 @@ public class Expansive {
         let priorMeta = global.meta
         try {
             global.meta = meta
+            global.css = meta.css = meta.css || {}
             contents = pipeline(contents, meta)
             if (meta.layout) {
                 contents = blendLayout(contents, meta)
@@ -1398,6 +1417,128 @@ public class Expansive {
             return null
         } finally {
             global.meta = priorMeta
+            global.css = global.meta.css
+        }
+    }
+
+    public function renderImage (url, options = {}) {
+        let width = ''
+        if (meta.summary) {
+            if (options.summary) {
+                blend(options, options.summary)
+            }
+        } else {
+            if (options.post) {
+                blend(options, options.post)
+            }
+        }
+        let style = '', clear = '', css = ''
+        if (options.lead) {
+            if (meta.summary) {
+                css += 'w-[30%] '
+                delete options.width
+                delete options.css
+            } else {
+                css += '!mt-0 '
+                if (!options.width) {
+                    css += 'w-[40%] '
+                }
+                if (options.css && options.css.contains('right')) {
+                    css += 'float-right !ml-8 '
+                } else {
+                    css += 'float-left !mr-8 '
+                }
+            }
+        }
+        if (options.width) {
+            if (topMeta.csp) {
+                let width = parseInt(options.width / 10) * 10
+                css += 'w-[' + width + '] '
+                dump(service)
+            } else {
+                let width = options.width
+                if (parseInt(width) == width) {
+                    style += 'width:' + options.width + '%;'
+                } else {
+                    style += 'width:' + options.width + ';'
+                }
+            }
+        }
+        if (options.widths) {
+            let index = meta.summary ? 0 : 1
+            let width = options.widths[index]
+            if (topMeta.csp) {
+                width = parseInt(width / 10) * 10
+                css += 'w-[' + width + '] '
+            } else {
+                style += 'width:' + width + ';'
+            }
+        }
+        if (options.style) {
+            if (topMeta.csp) {
+                trace('Warn', 'Inline styles used with CSP')
+            } else {
+                style += options.style + ';'
+            }
+        }
+        if (options.clearfix || options.clear) {
+            clear = 'clearfix'
+        }
+        if (options.css) {
+            css += options.css + ' ' + clear + ' '
+            if (options.css.contains('screen')) {
+                css += 'dark:shadow-none '
+            }
+        } else if (clear) {
+            css += 'clear-both '
+        }
+        if (options.caption) {
+            css += 'captioned '
+        }
+        if (css) {
+            css = 'class="' + css.trim() + '" '
+        }
+        if (style) {
+            style = 'style="' + style.trim().trim(';') + ';" '
+        }
+        url = url || meta.featured
+        let alt = options.alt || Uri(url).basename.trimExt()
+        let type = Uri(url).extension
+        let avif = url.replace(/jpg|jpeg|png/, 'avif')
+
+        if (meta.summary) {
+            if (options.ifpost) {
+                return
+            }
+            write('<a href="' + meta.url.basename + '">\n')
+        } else {
+            if (options.ifsummary) {
+                return
+            }
+            if (options.click) {
+                write('<a href="' + options.click + '">\n')
+            }
+        }
+        let apath = directories.contents.join(avif[0] == '/' ? avif.slice(1) : avif)
+        if (apath.exists && avif != url) {
+            write('<picture>\n' +
+                '<source srcset="' + avif + '" type="image/avif">\n' +
+                '<source srcset="' + url + '" type="image/' + type + '">\n' +
+                '<img ' + css + style + 'src="' + url + '" alt="' + alt + '">\n' +
+              '</picture>\n')
+        } else {
+            write('<img ' + css + style + 'src="' + url + '" alt="' + alt + '">\n')
+        }
+        if (!meta.summary) {
+            if (options.click) {
+                write('</a>\n')
+            }
+        }
+        if (options.caption) {
+            write('<div class="caption">' + options.caption + '</div>\n')
+        }
+        if (options.lead) {
+            write('<div class="nop"></div>')
         }
     }
 
@@ -1517,6 +1658,7 @@ public class Expansive {
         let stat = stats.transforms.exp
         try {
             let mark = new Date
+            contents = contents.replace(/<!--prettier-ignore-->\s*/sm, '')
             code = parser.parse(contents)
             stat.parse += mark.elapsed
             mark = new Date
@@ -1617,6 +1759,7 @@ public class Expansive {
     function blendLayout(contents, meta) {
         let priorMeta = meta
         global.meta = meta = meta.clone(true)
+        global.css = meta.css = meta.css || {}
         if (!meta.layout) {
             contents = pipeline(contents, meta)
         } else {
@@ -1642,6 +1785,7 @@ public class Expansive {
             }
         }
         global.meta = priorMeta
+        global.css = global.meta.css || {}
         return contents
     }
 
@@ -1651,6 +1795,7 @@ public class Expansive {
     public function blendPartial(name: Path, options = {}) {
         let priorMeta = global.meta
         let meta = global.meta = global.meta.clone(true)
+        global.css = meta.css = meta.css || {}
         let partial = findFile(directories.partials, name, meta)
         if (!partial) {
             fatal('Cannot find partial "' + name + '"' + ' for ' + meta.source)
@@ -1680,13 +1825,48 @@ public class Expansive {
             fatal(e)
         }
         global.meta = priorMeta
+        global.css = global.meta || {}
+    }
+
+    public function svg(name: Path, options = {}) {
+        let svg = Path(name)
+        if (!svg.exists && directories.svg) {
+            svg = directories.svg.join(svg)
+        }
+        if (!svg.exists) {
+            throw 'Cannot find ' + svg
+        }
+        let data = svg.readString()
+        if (options.klass) {
+            data = data.replace(/\<svg/, '<svg class="' + options.klass + '"')
+        }
+        let color = options.fill ? options.fill : 'currentColor'
+        data = data.replace(/\<svg/, '<svg fill="' + color + '"')
+
+        if (options.viewbox) {
+            data = data.replace(/viewBox="[^"]*"/, 'viewBox="' + options.viewbox + '"')
+        }
+        write(data)
+    }
+
+    public function vary(name, ...variants) {
+        write(`<script>\n(function() {\n` + 
+        `let variants = ` + JSON.stringify(variants) + `;\n` + 
+        `let variant = variants[Date.now() % variants.length];\n` + 
+        `document.getElementById(variant).style.display = 'block';\n` + 
+        `(globalThis.metricVariants = globalThis.metricVariants || {})["` + name + `"] = variant;\n` +
+        `})();\n</script>\n`)
     }
 
     function setupEjsTransformer() {
         global.partial = blendPartial
+        global.vary = vary
         global.write = write
         global.writeSafe = writeSafe
+        global.renderImage = renderImage
         global.partial.bind(this)
+        global.renderImage.bind(this)
+        global.vary.bind(this)
         global.write.bind(this)
         global.writeSafe.bind(this)
     }
@@ -1705,42 +1885,18 @@ public class Expansive {
     public function splitMetaContents(file, contents): Array {
         let meta
         try {
-            if (contents[0] == '-') {
-                /* Legacy format of meta data */
-                let parts = contents.split('---')
-                if (parts) {
-                    let mdata = parts[1].trim()
-                    contents = parts.slice(2).join('---')
-                    meta = {}
-                    for each (item in mdata.split('\n')) {
-                        let parts = item.trim().match(/([^:]*):(.*)/)
-                        if (parts && parts.length >= 2) {
-                            let key = parts[1]
-                            let value = parts[2].trim().trim('"').trim("'")
-                            meta[key] = value
-                        }
-                    }
-                }
-            } else {
-                //  TODO - need something better
-                if (contents[0] == '{' && file.extension != 'json' && file.extension != 'map') {
-                    let parts = contents.split('\n}')
-                    //  TODO - need something better
-                    if (parts && parts.length > 1) {
-                        try {
-                            meta = deserialize(parts[0] + '}')
-                        } catch (e) {
-                            trace('Error', 'Badly formatted meta data in ' + file)
-                            App.log.debug(3, e)
-                        }
-                        contents = parts.slice(1).join('\n}')
-                    }
+            if (file.extension == 'exp') {
+                //  Non greedy match of all characters up to a } at the end of a line
+                let match = contents.match(/^.*?}$/sm)
+                if (match) {
+                    let prefix = contents.substring(0, match[0].length)
+                    prefix = prefix.replace(/<!--prettier-ignore-->\s*/sm, '')
+                    meta = JSON.parse(prefix)
+                    contents = contents.substring(match[0].length)
                 }
             }
         } catch (e) {
-            trace('Error', 'Cannot parse meta data in ' + file)
-            App.log.debug(3, e)
-            App.exit(1)
+            //  Continue without parsing meta
         }
         return [meta, contents]
     }
@@ -1940,14 +2096,22 @@ public class Expansive {
         }
     }
 
-    public function addItems(collection, items) {
+    public function addItems(collection, items, modifiers = '') {
         if (!items) {
             return
         }
         if (!(items is Array)) {
             items = [items]
         }
-        collections[collection] = ((collections[collection] || []) + items).unique()
+        //  If called before rendering, update the control
+        let collections = collections || control.collections
+        let list = (collections[collection] || [])
+        for each (let item in items) {
+            if (!list.find(function(i) { return i.item == item })) {
+                list.push({item, modifiers})
+            }
+        }
+        collections[collection] = list
     }
 
     public function getFiles(patterns: Object, query: Object) {
@@ -1985,7 +2149,11 @@ public class Expansive {
         if (!(items is Array)) {
             items = [items]
         }
-        collections[collection] -= items
+        for each (let item in items) {
+            collections[collection] = collections[collection].map(function(i) {
+                return i.item != item
+            })
+        }
     }
 
     public function resetItems(collection) {
@@ -1999,10 +2167,8 @@ public class Expansive {
         if (!items || !collections[collection]) {
             return
         }
-        if (!(items is Array)) {
-            items = [items]
-        }
-        collections[collection] = items.unique()
+        collections[collection] = []
+        addItems(collection, items)
     }
 
     function castDirectories() {

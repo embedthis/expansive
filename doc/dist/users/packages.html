@@ -28,7 +28,7 @@
                 <div class="menu">
                     <a class="header item" href="../index.html">Home</a>
                     <a class="item" href="../users/features.html">Expansive Features</a>
-                    <a class="item" href="https://embedthis.com/expansive/download.html">Download</a>
+                    
                     <a class="item" href="../licensing/index.html">Licensing</a>
                 </div>
             </div>
@@ -86,21 +86,21 @@
                 <a href="../developers/project.html">Project Resources</a>
                 <div class="menu">
                     
-                    <a class="item" href="https://embedthis.com/blog/categories/Expansive">Expansive News</a>
-                    <a class="item" href="https://embedthis.com/expansive/">Expansive Web Site</a>
+                    <a class="item" href="https://www.embedthis.com/blog/categories/Expansive/">Expansive News</a>
+                    <a class="item" href="https://www.embedthis.com/expansive/">Expansive Web Site</a>
                     <a class="item" href="https://github.com/embedthis/exp">Source Code Repository</a>
                     <a class="item" href="https://github.com/embedthis/exp/issues">Project Issue Database</a>
                     <a class="item" href="https://github.com/embedthis/exp/releases">Change Log</a>
                     <a class="item" href="https://github.com/embedthis/exp/milestones">Roadmap</a>
-                    <a class="item" href="https://embedthis.com/developers/contributors.html">Contributors Agreement</a>
+                    
                 </div>
             </div>
             <div class="item">
                 <b>Links</b>
                 <div class="menu">
-                    <a class="item" href="https://embedthis.com/">Embedthis Web Site</a>
-                    <a class="item" href="https://embedthis.com/expansive/">Expansive Web Site</a>
-                    <a class="item" href="https://embedthis.com/blog/">Embedthis Blog</a>
+                    <a class="item" href="https://www.embedthis.com/">Embedthis Web Site</a>
+                    <a class="item" href="https://www.embedthis.com/expansive/">Expansive Web Site</a>
+                    <a class="item" href="https://www.embedthis.com/blog/">Embedthis Blog</a>
                     <a class="item" href="http://twitter.com/embedthat">Twitter</a>
                 </div>
             </div>
@@ -116,12 +116,12 @@
                 <i class="icon list layout"></i>
             </div>
             <div class="right menu">
-                <a class="item" href="https://embedthis.com/">Embedthis</a>
-                    <a class="item" href="https://embedthis.com/expansive/">Expansive Site</a>
+                <a class="item" href="https://www.embedthis.com/">Embedthis</a>
+                    <a class="item" href="https://www.embedthis.com/expansive/">Expansive Site</a>
                     <span class="desktop-only">
-                        <a class="item" href="https://embedthis.com/blog/categories/Expansive">Expansive News</a>
+                        <a class="item" href="https://www.embedthis.com/blog/categories/Expansive/">Expansive News</a>
                         <a class="item" href="https://github.com/embedthis/expansive">Repository</a>
-                        <a class="item" href="https://embedthis.com/blog/">Blog</a>
+                        <a class="item" href="https://www.embedthis.com/blog/">Blog</a>
                         <a class="item" href="https://twitter.com/embedthat">Twitter</a>
                     </span>
 
@@ -147,31 +147,41 @@
     </div>
     <div class="content">
 
-   
-        <h1>Packages</h1>
- 
-		<p>Expansive can be extended by installable packages to provide content and extended functionality.
-        Expansive uses packages to deliver content, plugins and skeletons. Expansive has a wide variety of 
-        extension packages to make your development more productive.</p>
 
-		<h2>The Pak Manager</h2>
-		<p>Expansive uses the amazing <a href="https://embedthis.com/pak/">Pak</a> 
-		package manager and the online <a href="https://embedthis.com/catalog/">Pak Catalog</a> of 
-		packages. The Pak utility is used to install, manage, upgrade and uninstall packages for Expansive.
+<h1>Packages</h1>
 
-		<p>For example, to install <a href="http://jquery.com">jQuery</a> using Pak:</p>
-		<pre class="code">$ <b>pak install jquery</b>
+<p>
+  Expansive can be extended by installable packages to provide content and
+  extended functionality. Expansive uses packages to deliver content, plugins
+  and skeletons. Expansive has a wide variety of extension packages to make your
+  development more productive.
+</p>
+
+<h2>The Pak Manager</h2>
+<p>
+  Expansive uses the amazing
+  <a href="https://www.embedthis.com/pak/">Pak</a> package manager.
+  The Pak utility is used to install, manage, upgrade and uninstall
+  packages for Expansive.
+</p>
+
+<p>For example, to install <a href="http://jquery.com">jQuery</a> using Pak:</p>
+<pre class="code">$ <b>pak install jquery</b>
 [Install] jquery 1.11.1</pre>
 
-		<p>Behinds the scenes, Pak has downloaded jquery into your local Pak cache &mdash; typically <em>~/.paks</em>, 
-		installed jQuery into the local <em>paks</em> directory, and added jQuery to the list of dependencies 
-		in the <em>package.json</em>. When Expansive next renders the site, it will notice that jQuery has provided
-		the <em>jquery.js</em> script and Expansive will automatically generates a reference for <em>jquery.js</em>
-		in the generated HTML. In this way, many Expansive extension packages, can just be installed and they 
-		self-configure into your application.</p>
+<p>
+  Behinds the scenes, Pak has downloaded jquery into your local Pak cache
+  &mdash; typically <em>~/.paks</em>, installed jQuery into the local
+  <em>paks</em> directory, and added jQuery to the list of dependencies in the
+  <em>package.json</em>. When Expansive next renders the site, it will notice
+  that jQuery has provided the <em>jquery.js</em> script and Expansive will
+  automatically generates a reference for <em>jquery.js</em> in the generated
+  HTML. In this way, many Expansive extension packages, can just be installed
+  and they self-configure into your application.
+</p>
 
-		<p>This is what the <em>dist/index.html</em> home page now looks like:</p>
-   		<pre class="code">
+<p>This is what the <em>dist/index.html</em> home page now looks like:</p>
+<pre class="code">
 &lt;html&gt;
 &lt;head&gt;
     &lt;title&gt;Blog&lt;/title&gt;
@@ -182,22 +192,13 @@
 &lt;/body&gt;
 &lt;/html&gt;
 </pre>
-		<p>See <a href="stylescripts.html">Scripts and Stylesheets</a> for more details.
-		See the <a href="https://embedthis.com/catalog/search?exp">Pak Catalog</a> for more Expansive 
-			plugins and packages, including: 
-			<a href="https://embedthis.com/catalog/#/?keywords=bootstrap">Bootstrap</a>,
-			<a href="https://embedthis.com/catalog/#/?keywords=angular">Angular</a>,
-			<a href="https://embedthis.com/catalog/#/?keywords=font-awesome">Font Awesome</a>,
-			<a href="https://embedthis.com/catalog/#/?keywords=semantic">Semantic UI</a>, and
-			<a href="https://embedthis.com/catalog/#/?keywords=sass">Sass</a>.</p>
 
-        <h2>Want More?</h2>
-        <p>Read more about packages with:</p> 
-        <ul>
-            <li><a href="plugins.html">Plugins</a></li>
-            <li><a href="skeletons.html">Skeletons</a></li>
-        </ul>
-		
+<h2>Want More?</h2>
+<p>Read more about packages with:</p>
+<ul>
+  <li><a href="plugins.html">Plugins</a></li>
+  <li><a href="skeletons.html">Skeletons</a></li>
+</ul>
 
     </div>
     <div class="terms ui basic center aligned segment">
@@ -205,8 +206,8 @@
     </div>
 
     <script src="../lib/jquery/jquery.min.js"></script>
+    <script src="../lib/jquery/jquery.slim.min.js"></script>
     <script src="../lib/semantic-ui/semantic.min.js"></script>
-    <script src="../scripts/sidebar.min.js"></script>
      
 
     

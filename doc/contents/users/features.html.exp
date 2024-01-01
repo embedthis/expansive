@@ -1,0 +1,180 @@
+{ title: 'Expansive Features', crumbs: [ ], }
+
+<h1>Expansive Features</h1>
+<p>
+  Expansive will generate static web sites from pages, layouts, partials and
+  scripts. It has the following major features:
+</p>
+<ul>
+  <li>Ejscript templates for dynamic content</li>
+  <li>Layout pages to define the look and feel of site</li>
+  <li>Partial pages to include replicated content</li>
+  <li>Per-page meta data to control layouts and partials</li>
+  <li>Integrated web server to serve content</li>
+  <li>Watch for changes and automatically render site</li>
+  <li>Scripting support via change events</li>
+  <li>Automatic sitemap creation</li>
+  <li>Content transition pipeline</li>
+  <li>Open plugin architecture</li>
+</ul>
+
+<h3>Performance</h3>
+<ul>
+  <li>
+    Very fast rendering. Benchmark: sample site with 1329 pages, 92 scripted
+    pages using master layout, partials, and generating 8 sitemaps &mdash;
+    rendered in 1.97 secs.
+  </li>
+  <li>
+    Expansive monitoring same site for changes each second uses only 1.7% of the
+    CPU on a Mac notebook.
+  </li>
+</ul>
+
+<h3>Expansive Command Tool</h3>
+<ul>
+  <li>clean &mdash; remove generated site</li>
+  <li>edit &mdash; edit configuration in expansive.json</li>
+  <li>init &mdash; initialize directories for Expansive</li>
+  <li>mode &mdash; set the mode property in package.json</li>
+  <li>render &mdash; create and render site contents</li>
+  <li>watch &mdash; Watch documents for changes and re-render</li>
+  <li>path-names &mdash; Render specific pages or directories</li>
+</ul>
+
+<h3>Dynamic Content</h3>
+<ul>
+  <li>
+    Embedded Ejscript statements and expressions for dynamically created content
+  </li>
+  <li>API to manage documents, files and meta data</li>
+  <li>API to hook events for custom behavior</li>
+</ul>
+
+<h3>Page Layout</h3>
+<ul>
+  <li>Master layout pages can define the look and feel of entire site</li>
+  <li>Master pages can be nested</li>
+  <li>Partial pages permit sharing of common page content</li>
+  <li>Partial pages can be nested</li>
+  <li>Configurable meta data enables parameterized layouts and partials</li>
+  <li>Scripting to dynamically generate page content</li>
+</ul>
+
+<h3>Configuration</h3>
+<ul>
+  <li>
+    Per-directory expansive.es configuration file &mdash; inherited by lower
+    directories
+  </li>
+  <li>
+    Per-document meta definition and variables &mdash; passed to partials and
+    layouts
+  </li>
+</ul>
+
+<h3>Plugins</h3>
+<ul>
+  <li>Extensible, modular plugin interface</li>
+  <li>
+    Plugins packaged as <a href="https://www.embedthis.com/pak/">Paks</a> for
+    easy installation via the
+    <a href="https://www.embedthis.com/pak">Pak</a> utility.
+  </li>
+</ul>
+
+<h3>Developer Support</h3>
+<ul>
+  <li>Open source &mdash; full source code available</li>
+  <li>Implemented in under 2K lines of Javascript</li>
+</ul>
+
+<h3>Platform Support</h3>
+<ul>
+  <li>Linux (2.6)</li>
+  <li>Windows (7 and later)</li>
+  <li>MAC OSX (Lion)</li>
+  <li>Free BSD</li>
+  <li>Unix</li>
+</ul>
+
+<h3>Other Features</h3>
+<ul>
+  <li>Packaged installations for Windows and MAC OS X</li>
+  <li>Expansive command line tool</li>
+</ul>
+
+<h2>Selection of Plugins</h2>
+<table class="ui table" title="plugins">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>exp-css</td>
+      <td>
+        Process CSS files to add browser specific prefixes and minify the
+        output.
+      </td>
+    </tr>
+    <tr>
+      <td>exp-esp</td>
+      <td>Compile ESP pages and applications.</td>
+    </tr>
+    <tr>
+      <td>exp-gzip</td>
+      <td>Compress final output using gzip.</td>
+    </tr>
+    <tr>
+      <td>exp-js</td>
+      <td>Process Javascript files to mangle and minify.</td>
+    </tr>
+    <tr>
+      <td>exp-less</td>
+      <td>Process Less stylesheets into CSS.</td>
+    </tr>
+    <tr>
+      <td>exp-md</td>
+      <td>Process markdown pages.</td>
+    </tr>
+    <tr>
+      <td>exp-ng</td>
+      <td>Angular applications.</td>
+    </tr>
+    <tr>
+      <td>exp-sass</td>
+      <td>Process SASS files into css.</td>
+    </tr>
+    <tr>
+      <td>exp-shell</td>
+      <td>Run shell scripts and capture the output.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Selection of Skeletons</h2>
+<p>
+  Skeletons provide ready-to-go starting points for your applications. The
+  include configuration and packages required for specific environments.
+</p>
+<table class="ui table" title="skeletons">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>exp-html-skeleton</td>
+      <td>Run shell scripts and capture the output.</td>
+    </tr>
+    <tr>
+      <td>exp-semantic-skeleton</td>
+      <td>Run shell scripts and capture the output.</td>
+    </tr>
+  </tbody>
+</table>

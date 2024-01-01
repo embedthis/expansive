@@ -4,7 +4,7 @@ Welcome to Expansive -- a fast, flexible static web site generator.
 
 This document contains details regarding the installation procedure for the binary Embedthis Expansive package. This package contains pre-built stand-alone web server and an embeddable HTTP library with headers. You can read the documentation for the latest release online at:
 
-https://embedthis.com/exp/doc/index.html
+https://www.embedthis.com/exp/doc/index.html
 
 This software is copyrighted and distributed under license. Please read the LICENSE.TXT for details.
 

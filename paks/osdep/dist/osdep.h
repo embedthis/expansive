@@ -1,5 +1,9 @@
-/**
-    osdep.h -- O/S abstraction for products using MakeMe.
+/*
+    osdep.h -- O/S abstraction layer.
+
+    This module provides a portable cross-platform abstraction layer.
+    By including "osdep.h", you will include most common O/S headers and define
+    a set of useful cross-platform constants.
  */
 
 #ifndef _h_OSDEP
@@ -8,6 +12,12 @@
 /********************************** Includes **********************************/
 
 #include "me.h"
+
+/**
+    Operating system dependent layer that provides a portable cross-platform abstraction layer.
+    @defgroup Osdep Osdep
+    @stability Evolving
+*/
 
 /******************************* Default Features *****************************/
 /*
@@ -32,14 +42,18 @@
  */
 #define ME_CPU_UNKNOWN     0
 #define ME_CPU_ARM         1           /**< Arm */
-#define ME_CPU_ITANIUM     2           /**< Intel Itanium */
-#define ME_CPU_X86         3           /**< X86 */
-#define ME_CPU_X64         4           /**< AMD64 or EMT64 */
-#define ME_CPU_MIPS        5           /**< Mips */
-#define ME_CPU_PPC         6           /**< Power PC */
-#define ME_CPU_SPARC       7           /**< Sparc */
-#define ME_CPU_TIDSP       8           /**< TI DSP */
-#define ME_CPU_SH          9           /**< SuperH */
+#define ME_CPU_ARM64       2           /**< Arm64 */
+#define ME_CPU_ITANIUM     3           /**< Intel Itanium */
+#define ME_CPU_X86         4           /**< X86 */
+#define ME_CPU_X64         5           /**< AMD64 or EMT64 */
+#define ME_CPU_MIPS        6           /**< Mips */
+#define ME_CPU_PPC         7           /**< Power PC */
+#define ME_CPU_PPC64       8           /**< Power PC 64 */
+#define ME_CPU_SPARC       9           /**< Sparc */
+#define ME_CPU_TIDSP       10          /**< TI DSP */
+#define ME_CPU_SH          11          /**< SuperH */
+#define ME_CPU_RISCV       12          /**< RiscV */
+#define ME_CPU_RISCV64     13          /**< RiscV64 */
 
 /*
     Byte orderings
@@ -56,12 +70,12 @@
     #define ME_CPU_ARCH ME_CPU_ALPHA
     #define CPU_ENDIAN ME_LITTLE_ENDIAN
 
-#elif defined(__arm__)
-    #define ME_CPU "arm"
-    #define ME_CPU_ARCH ME_CPU_ARM
+#elif defined(__arm64__) || defined(__aarch64__)
+    #define ME_CPU "arm64"
+    #define ME_CPU_ARCH ME_CPU_ARM64
     #define CPU_ENDIAN ME_LITTLE_ENDIAN
 
-#elif defined(__arm64__) || defined(__aarch64__)
+#elif defined(__arm__)
     #define ME_CPU "arm"
     #define ME_CPU_ARCH ME_CPU_ARM
     #define CPU_ENDIAN ME_LITTLE_ENDIAN
@@ -86,10 +100,14 @@
     #define ME_CPU_ARCH ME_CPU_MIPS
     #define CPU_ENDIAN ME_BIG_ENDIAN
 
-#elif defined(__ppc__) || defined(__powerpc__) || defined(__ppc64__) || defined(__ppc)
+#elif defined(__ppc__) || defined(__powerpc__) || defined(__ppc)
     #define ME_CPU "ppc"
     #define ME_CPU_ARCH ME_CPU_PPC
     #define CPU_ENDIAN ME_BIG_ENDIAN
+
+#elif defined(__ppc64__)
+    #define CPU "ppc64"
+    #define CPU_ARCH CPU_PPC64
 
 #elif defined(__sparc__)
     #define ME_CPU "sparc"
@@ -107,6 +125,15 @@
     #define ME_CPU_ARCH ME_CPU_SH
     #define CPU_ENDIAN ME_LITTLE_ENDIAN
 
+#elif defined(__riscv_32)
+    #define ME_CPU "riscv"
+    #define ME_CPU_ARCH CPU_RISCV
+    #define ME_CPU_ENDIAN LITTLE_ENDIAN
+
+#elif defined(__riscv_64)
+    #define ME_CPU "riscv64"
+    #define ME_CPU_ARCH CPU_RISCV64
+    #define ME_CPU_ENDIAN LITTLE_ENDIAN
 #else
     #error "Cannot determine CPU type in osdep.h"
 #endif
@@ -301,7 +328,9 @@
         Use GNU extensions for:
             RTLD_DEFAULT for dlsym()
      */
+    #define __STDC_WANT_LIB_EXT2__ 1
     #define _GNU_SOURCE 1
+    #define __USE_XOPEN 1
     #if !ME_64
         #define _LARGEFILE64_SOURCE 1
         #ifdef __USE_FILE_OFFSET64
@@ -456,6 +485,7 @@
     #include    <mach/mach_time.h>
     #include    <mach/task.h>
     #include    <libkern/OSAtomic.h>
+    #include    <net/if_dl.h>
 #endif
 #if VXWORKS
     #include    <vxWorks.h>
@@ -505,6 +535,8 @@
             #define HAS_BOOL 1
             /**
                 Boolean data type.
+                @ingroup Osdep
+                @stability Stable
              */
             #if !WINDOWS || ((_MSC_VER < 1800) && !defined(bool))
                 /* Bool introduced via stdbool in VS 2015 */
@@ -518,6 +550,8 @@
     #define HAS_UCHAR 1
     /**
         Unsigned char data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef unsigned char uchar;
 #endif
@@ -526,6 +560,8 @@
     #define HAS_SCHAR 1
     /**
         Signed char data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef signed char schar;
 #endif
@@ -534,6 +570,8 @@
     #define HAS_CCHAR 1
     /**
         Constant char data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef const char cchar;
 #endif
@@ -542,6 +580,8 @@
     #define HAS_CUCHAR 1
     /**
         Unsigned char data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef const unsigned char cuchar;
 #endif
@@ -550,6 +590,8 @@
     #define HAS_USHORT 1
     /**
         Unsigned short data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef unsigned short ushort;
 #endif
@@ -558,6 +600,8 @@
     #define HAS_CUSHORT 1
     /**
         Constant unsigned short data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef const unsigned short cushort;
 #endif
@@ -566,6 +610,8 @@
     #define HAS_CVOID 1
     /**
         Constant void data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef const void cvoid;
 #endif
@@ -574,6 +620,8 @@
     #define HAS_INT8 1
     /**
         Integer 8 bits data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef char int8;
 #endif
@@ -582,6 +630,8 @@
     #define HAS_UINT8 1
     /**
         Unsigned integer 8 bits data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef unsigned char uint8;
 #endif
@@ -590,6 +640,8 @@
     #define HAS_INT16 1
     /**
         Integer 16 bits data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef short int16;
 #endif
@@ -598,6 +650,8 @@
     #define HAS_UINT16 1
     /**
         Unsigned integer 16 bits data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef unsigned short uint16;
 #endif
@@ -606,6 +660,8 @@
     #define HAS_INT32 1
     /**
         Integer 32 bits data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef int int32;
 #endif
@@ -614,6 +670,8 @@
     #define HAS_UINT32 1
     /**
         Unsigned integer 32 bits data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef unsigned int uint32;
 #endif
@@ -622,6 +680,8 @@
     #define HAS_UINT 1
     /**
         Unsigned integer (machine dependent bit size) data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef unsigned int uint;
 #endif
@@ -630,6 +690,8 @@
     #define HAS_ULONG 1
     /**
         Unsigned long (machine dependent bit size) data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef unsigned long ulong;
 #endif
@@ -638,6 +700,8 @@
     #define HAS_CINT 1
     /**
         Constant int data type.
+        @ingroup Osdep
+        @stability Stable
      */
     typedef const int cint;
 #endif
@@ -647,6 +711,8 @@
     #if ME_UNIX_LIKE || VXWORKS || DOXYGEN
         /**
             Signed integer size field large enough to hold a pointer offset.
+            @ingroup Osdep
+            @stability Stable
          */
         typedef ssize_t ssize;
     #elif TIDSP
@@ -657,8 +723,10 @@
     #endif
 #endif
 
-/*
+/**
     Windows uses uint for write/read counts (Ugh!)
+    @ingroup Osdep
+    @stability Stable
  */
 #if ME_WIN_LIKE
     typedef uint wsize;
@@ -672,6 +740,8 @@
     #elif VXWORKS || DOXYGEN
         /**
             Integer 64 bit data type.
+            @ingroup Osdep
+            @stability Stable
          */
         typedef long long int int64;
     #elif ME_WIN_LIKE
@@ -695,11 +765,17 @@
 
 /**
     Signed file offset data type. Supports large files greater than 4GB in size on all systems.
+    @ingroup Osdep
+    @stability Stable
  */
 typedef int64 Offset;
 
 #if DOXYGEN
-    /** Size to hold the length of a socket address */
+    /**
+        Size to hold the length of a socket address
+        @ingroup Osdep
+        @stability Stable
+     */
     typedef int Socklen;
 #elif VXWORKS
     typedef int Socklen;
@@ -708,7 +784,11 @@ typedef int64 Offset;
 #endif
 
 #if DOXYGEN || ME_UNIX_LIKE || VXWORKS
-    /** Argument for sockets */
+    /**
+        Argument for sockets
+        @ingroup Osdep
+        @stability Stable
+    */
     typedef int Socket;
     #ifndef SOCKET_ERROR
         #define SOCKET_ERROR -1
@@ -732,15 +812,24 @@ typedef int64 Offset;
     #endif
 #endif
 
+/**
+    Time in milliseconds since Jan 1, 1970.
+    @ingroup Osdep
+    @stability Stable
+*/
 typedef int64 Time;
 
 /**
     Elapsed time data type. Stores time in milliseconds from some arbitrary start epoch.
+    @ingroup Osdep
+    @stability Stable
  */
 typedef int64 Ticks;
 
 /**
     Time/Ticks units per second (milliseconds)
+    @ingroup Osdep
+    @stability Stable
  */
 #define TPS 1000
 
@@ -967,7 +1056,7 @@ typedef int64 Ticks;
     #define ME_MAX_PATH         1024        /**< Reasonable filename size */
 #endif
 #ifndef ME_BUFSIZE
-    #define ME_BUFSIZE          4096        /**< Reasonable size for buffers */
+    #define ME_BUFSIZE          8192        /**< Reasonable size for buffers */
 #endif
 #ifndef ME_MAX_BUFFER
     #define ME_MAX_BUFFER       ME_BUFSIZE  /* DEPRECATE */
@@ -1290,7 +1379,7 @@ extern "C" {
         PUBLIC int gettimeofday(struct timeval *tv, struct timezone *tz);
     #endif
     PUBLIC char *strdup(const char *);
-    PUBLIC int sysClkRateGet();
+    PUBLIC int sysClkRateGet(void);
 
     #if _WRS_VXWORKS_MAJOR < 6
         #define NI_MAXHOST      128
@@ -1348,7 +1437,7 @@ extern "C" {
     extern long _get_osfhandle(int handle);
     extern char *getcwd(char* buffer, int maxlen);
     extern char *getenv(cchar *charstuff);
-    extern pid_t getpid();
+    extern pid_t getpid(void);
     extern long lseek(int handle, long offset, int origin);
     extern int mkdir(cchar *dir, int mode);
     extern time_t mktime(struct tm *pt);
@@ -1411,6 +1500,18 @@ extern "C" {
     extern struct tm *localtime_r(const time_t *when, struct tm *tp);
     extern struct tm *gmtime_r(const time_t *t, struct tm *tp);
 #endif /* WINCE */
+
+/*
+    Help for generated documentation
+ */
+#if DOXYGEN
+    /** Argument for sockets */
+    typedef int Socket;
+    /** Unsigned integral type. Equivalent in size to void* */
+    typedef long size_t;
+    /** Unsigned time type. Time in seconds since Jan 1, 1970 */
+    typedef long time_t;
+#endif
 
 #ifdef __cplusplus
 }

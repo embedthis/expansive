@@ -479,8 +479,8 @@ EXPANSIVE CONTROL
 
 CREATING PLUGINS
        Expansive plugins are created using the Pak utility
-       (https://embedthis.com/pak) and published to the Pak Catalog at
-       (https://embedthis.com/catalog/). The plugin contains an expansive.json
+       (https://www.embedthis.com/pak) and published to the Pak Catalog at
+       (https://www.embedthis.com/catalog/). The plugin contains an expansive.json
        file that includes transforms relevant to the plugin.  For example:
 
         {

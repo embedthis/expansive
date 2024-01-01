@@ -9,11 +9,11 @@
         "javascript",
         "ecmascript"
     ],
-    "homepage": "https://embedthis.com/ejscript/",
+    "homepage": "https://www.embedthis.com/ejscript/",
     "author": {
         "name": "Embedthis Software",
         "email": "dev@embedthis.com",
-        "url": "https://embedthis.com"
+        "url": "https://www.embedthis.com"
     },
     "repository": {
         "type": "git",
@@ -30,26 +30,9 @@
         },
         {
             "type": "Commercial",
-            "url": "https://embedthis.com/licensing/"
+            "url": "https://www.embedthis.com/licensing/"
         }
     ],
-    "dependencies": {
-        "assist": "~1",
-        "http": "~7",
-        "me-win": "~1",
-        "mpr": "~8",
-        "osdep": "~1",
-        "pcre": "~1",
-        "ssl": "~1",
-        "zlib": "~1"
-    },
-    "optionalDependencies": {
-        "certs": "~1",
-        "mpr-mbedtls": "~2",
-        "mpr-openssl": "~1",
-        "sqlite": "~3",
-        "watchdog": "~1"
-    },
     "devDependencies": {
         "makeme": ">=1.0",
         "pak": ">=1.0"
@@ -59,5 +42,13 @@
         "doc/api/"
     ],
     "import": true,
+    "dependencies": {
+        "http": "~7",
+        "mpr": "~9.0.3",
+        "osdep": "~0.9",
+        "pcre": "~1.0",
+        "ssl": "~0.9",
+        "zlib": "~1.0"
+    },
     "origin": "embedthis/ejscript"
 }
